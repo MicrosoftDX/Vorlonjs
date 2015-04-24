@@ -1,0 +1,49 @@
+// Base styling
+
+*, *:after, *:before
+  box-sizing: border-box
+
+html
+  font-size: 100%
+  text-size-adjust: none
+
+body
+  background: white
+  text-rendering: optimizeLegibility
+  font-smoothing: antialiased
+  font-family: $font-family-roboto
+  font-weight: $font-weight-normal
+  font-size: 16px
+  line-height: 1.4
+  color: $grey-drk
+
+h1:not(.logo), h2, h3
+  margin-bottom: 15px
+  font-family: $font-family-oswald
+  font-weight: $font-weight-bold
+  line-height: 1.2
+  text-transform: uppercase
+  letter-spacing: .5px
+
+h1:not(.logo)
+  font-size: 18px
+
+h2
+  font-size: 16px
+
+h3
+  font-size: 14px
+
+a
+  color: $blue
+  text-decoration: none
+
+// Clearfix
+.cf
+  &:before,
+  &:after
+    content: " "
+    display: table
+
+  &:after
+    clear: both

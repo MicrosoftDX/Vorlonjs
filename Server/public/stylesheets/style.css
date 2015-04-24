@@ -1,0 +1,385 @@
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+*,
+*:after,
+*:before {
+  box-sizing: border-box;
+}
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: none;
+}
+body {
+  background: white;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Roboto', Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #444;
+}
+h1:not(.logo),
+h2,
+h3 {
+  margin-bottom: 15px;
+  font-family: 'Oswald', Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+h1:not(.logo) {
+  font-size: 18px;
+}
+h2 {
+  font-size: 16px;
+}
+h3 {
+  font-size: 14px;
+}
+a {
+  color: #007ca7;
+  text-decoration: none;
+}
+.cf:before,
+.cf:after {
+  content: " ";
+  display: table;
+}
+.cf:after {
+  clear: both;
+}
+.btn {
+  margin: 10px 0;
+  display: inline-block;
+  border-radius: 3px;
+  font-weight: 400;
+  text-align: center;
+  cursor: pointer;
+}
+.btn.btn-primary {
+  padding: 8px 10px;
+  background: #00b7c7;
+  color: white;
+}
+.btn.btn-primary:hover {
+  background: #00a5b3;
+}
+.btn.btn-secondary {
+  padding: 8px 10px;
+  background: #ccc;
+  color: #444;
+}
+.btn.btn-secondary:hover {
+  background: #b8b8b8;
+}
+/*
+ * StyleSheet for JQuery splitter Plugin
+ * Copyright (C) 2010 Jakub Jankiewicz <http://jcubic.pl>
+ *
+ * Same license as plugin
+ */
+.splitter_panel {
+  position: relative;
+}
+.splitter_panel .vsplitter {
+  cursor: col-resize;
+  z-index: 900;
+  width: 5px;
+  background-color: white;
+  border-right: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+}
+.splitter_panel .hsplitter {
+  cursor: row-resize;
+  z-index: 800;
+  height: 8px;
+  background: white url("../images/icon-resize-horiz.svg") no-repeat center center;
+  background-size: auto 3px;
+  border-bottom: 1px solid #ddd;
+  border-top: 1px solid #ddd;
+}
+.splitter_panel .vsplitter.splitter-invisible,
+.splitter_panel .hsplitter.splitter-invisible {
+  background: none;
+}
+.splitter_panel .vsplitter,
+.splitter_panel .left_panel,
+.splitter_panel .right_panel,
+.splitter_panel .hsplitter,
+.splitter_panel .top_panel,
+.splitter_panel .bottom_panel {
+  position: absolute;
+  overflow: auto;
+}
+.splitter_panel .vsplitter,
+.splitter_panel .left_panel,
+.splitter_panel .right_panel {
+  height: 100%;
+}
+.splitter_panel .hsplitter,
+.splitter_panel .top_panel,
+.splitter_panel .bottom_panel {
+  width: 100%;
+}
+.splitter_panel .top_panel,
+.splitter_panel .left_panel,
+.splitter_panel .right_panel,
+.splitter_panel .vsplitter {
+  top: 0;
+}
+.splitter_panel .top_panel,
+.splitter_panel .bottom_panel,
+.splitter_panel .left_panel,
+.splitter_panel .hsplitter {
+  left: 0;
+}
+.splitter_panel .bottom_panel {
+  bottom: 0;
+}
+.splitter_panel .right_panel {
+  right: 0;
+}
+.splitterMask {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  cursor: default;
+}
+.sidebar {
+  width: 200px;
+  height: 100vh;
+  padding-bottom: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: auto;
+  background: #f7f7f7;
+  border-right: 1px solid #ddd;
+}
+.sidebar .sidebar-header {
+  background: #1d0c3d;
+  color: white;
+}
+.sidebar .logo {
+  height: 40px;
+  background: url("../images/vorlon-logo-white.svg") no-repeat center center;
+  background-size: auto 20px;
+  text-indent: -9999em;
+}
+.sidebar .session-info {
+  padding: 15px;
+  background: #6b2d81;
+  font-weight: 400;
+}
+.sidebar .session-info p span {
+  font-weight: 300;
+}
+.sidebar .client-pane {
+  padding: 15px;
+}
+.sidebar .client-pane h2 {
+  margin-bottom: 5px;
+}
+.sidebar .client-pane .btn {
+  width: 100%;
+  margin: 0 0 15px;
+}
+.sidebar .client-pane .client {
+  margin: 0 -15px;
+  padding: 2px 15px;
+  display: block;
+  font-size: 15px;
+  color: #444;
+}
+.sidebar .client-pane .client.active {
+  background-color: white;
+  font-weight: 400;
+}
+.dashboard {
+  min-width: 700px;
+  min-height: 350px;
+  padding-left: 200px;
+  overflow-y: hidden;
+}
+.dashboard-initial {
+  height: 100vh;
+  position: relative;
+}
+.dashboard-initial .get-started {
+  max-width: 300px;
+  padding: 30px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  text-align: center;
+}
+.dashboard-plugins {
+  height: 100vh;
+}
+.dashboard-plugins .panel-top,
+.dashboard-plugins .panel-bottom {
+  position: relative;
+  overflow: hidden !important;
+  height: 400px;
+}
+.dashboard-plugins .panel-bottom {
+  margin-top: 8px;
+}
+.dashboard-plugins .tab-bar {
+  height: 30px;
+  background: #f7f7f7;
+  border-bottom: 1px solid #ddd;
+  font-weight: 400;
+}
+.dashboard-plugins .tab {
+  height: 100%;
+  padding: 4px 10px;
+  position: relative;
+  display: block;
+  float: left;
+}
+.dashboard-plugins .tab:not(.active) {
+  cursor: pointer;
+  opacity: 0.5;
+}
+.dashboard-plugins .tab:not(.active):hover {
+  opacity: 0.9;
+}
+.dashboard-plugins .tab:not(.add) {
+  background: white;
+  border-right: 1px solid #ddd;
+}
+.dashboard-plugins .plugin {
+  width: 100%;
+  height: calc(100% - 30px);
+  overflow: auto;
+}

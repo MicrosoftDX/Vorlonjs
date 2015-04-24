@@ -1,0 +1,12 @@
+section.sidebar
+  header.sidebar-header
+    h1.logo Vorlon.js
+    .session-info
+      p Session ID: 
+        span(data-hook='session-id') ab38dklf
+      p Client ID: 
+        span(data-hook='client-id')
+  #clientsListPane.client-pane
+    a#identify.btn.btn-primary(onclick='vorlonDashboard.identify()') Identify a client
+    h2 Client List
+    #clientsListPaneContent.client-list

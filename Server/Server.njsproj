@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Name>Server</Name>
+    <RootNamespace>VorlonJS.API</RootNamespace>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+    <LaunchUrl>
+    </LaunchUrl>
+    <NameOfLastUsedPublishProfile>vorlonjs</NameOfLastUsedPublishProfile>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>ff85083b-df28-448b-8280-60ca2e5507dc</ProjectGuid>
+    <ProjectHome>
+    </ProjectHome>
+    <StartupFile>server.ts</StartupFile>
+    <StartWebBrowser>True</StartWebBrowser>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <ProjectView>ProjectFiles</ProjectView>
+    <NodejsPort>1337</NodejsPort>
+    <TypeScriptSourceMap>False</TypeScriptSourceMap>
+    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
+    <EnableTypeScript>true</EnableTypeScript>
+    <StartWebBrowser>True</StartWebBrowser>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="config\vorlon.redisconfig.ts" />
+    <TypeScriptCompile Include="public\vorlon.dashboardManager.ts" />
+    <TypeScriptCompile Include="Scripts\typings\express\express.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\node\node.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\redis\redis.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\socket.io\socket.io.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\stylus\stylus.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\vorlon\plugins\domExplorer\vorlon.domExplorer.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\vorlon\plugins\modernizrReport\vorlon.modernizrReport.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\vorlon\vorlon.clientMessenger.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\vorlon\vorlon.core.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\vorlon\vorlon.enums.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\vorlon\vorlon.plugin.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\vorlon\vorlon.tools.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\winston\winston.d.ts" />
+    <TypeScriptCompile Include="Scripts\vorlon.dashboard.ts" />
+    <TypeScriptCompile Include="Scripts\vorlon.IWebServerComponent.ts" />
+    <TypeScriptCompile Include="Scripts\vorlon.webServer.ts" />
+    <TypeScriptCompile Include="server.ts" />
+    <Content Include="package.json" />
+    <Content Include="public\catalog.json" />
+    <Content Include="public\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="public\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="public\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="public\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="public\javascripts\jquery-1.10.2.min.map" />
+    <Content Include="public\stylesheets\bootstrap.css" />
+    <Content Include="public\stylesheets\bootstrap.min.css" />
+    <Content Include="public\stylesheets\style.styl" />
+    <Content Include="public\vorlon\plugins\domExplorer\control.css" />
+    <Content Include="public\vorlon\plugins\domExplorer\control.html" />
+    <Content Include="public\vorlon\plugins\interactiveConsole\control.css" />
+    <Content Include="public\vorlon\plugins\interactiveConsole\control.html" />
+    <Content Include="public\vorlon\plugins\modernizrReport\control.css" />
+    <Content Include="public\vorlon\plugins\modernizrReport\control.html" />
+    <Content Include="README.md" />
+    <Content Include="views\dashboard.jade" />
+    <Content Include="views\getsession.jade" />
+    <Content Include="views\layout.jade" />
+    <None Include="vorlonjs.pubxml" />
+    <Content Include="views\login.jade" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config" />
+    <Content Include="bin\ChangeConfig.ps1" />
+    <Content Include="bin\download.ps1" />
+    <Content Include="bin\setup_web.cmd" />
+    <Content Include="bin\node.cmd" />
+    <TypeScriptCompile Include="Scripts\vorlon.server.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\" />
+    <Folder Include="config\" />
+    <Folder Include="public\vorlon\plugins\" />
+    <Folder Include="public\vorlon\plugins\domExplorer\" />
+    <Folder Include="public\vorlon\plugins\interactiveConsole\" />
+    <Folder Include="public\vorlon\plugins\modernizrReport\" />
+    <Folder Include="Scripts\typings\vorlon\plugins\" />
+    <Folder Include="Scripts\typings\vorlon\plugins\domExplorer\" />
+    <Folder Include="Scripts\typings\vorlon\plugins\interactiveConsole\" />
+    <Folder Include="Scripts\typings\vorlon\plugins\modernizrReport\" />
+    <Folder Include="Scripts\typings\winston\" />
+    <Folder Include="views\" />
+    <Folder Include="public\" />
+    <Folder Include="public\fonts\" />
+    <Folder Include="public\javascripts\" />
+    <Folder Include="public\stylesheets\" />
+    <Folder Include="public\vorlon\" />
+    <Folder Include="Scripts\" />
+    <Folder Include="Scripts\typings\" />
+    <Folder Include="Scripts\typings\express\" />
+    <Folder Include="Scripts\typings\jquery\" />
+    <Folder Include="Scripts\typings\redis\" />
+    <Folder Include="Scripts\typings\node\" />
+    <Folder Include="Scripts\typings\socket.io\" />
+    <Folder Include="Scripts\typings\stylus\" />
+    <Folder Include="Scripts\typings\vorlon\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="public\javascripts\_references.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="public\javascripts\bootstrap.js" />
+    <Compile Include="public\javascripts\bootstrap.min.js" />
+    <Compile Include="public\javascripts\jquery-1.10.2.js" />
+    <Compile Include="public\javascripts\jquery-1.10.2.min.js" />
+    <Compile Include="public\javascripts\modernizr-2.6.2.js" />
+    <Compile Include="public\javascripts\respond.js" />
+    <Compile Include="public\javascripts\respond.min.js" />
+    <Compile Include="public\javascripts\socket.io-1.3.5.js" />
+    <Compile Include="public\vorlon\plugins\domExplorer\vorlon.domExplorer.js" />
+    <Compile Include="public\vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.js" />
+    <Compile Include="public\vorlon\plugins\modernizrReport\modernizr..js" />
+    <Compile Include="public\vorlon\plugins\modernizrReport\vorlon.modernizrReport.js" />
+    <Compile Include="public\vorlon\vorlon-noplugin.js" />
+    <Compile Include="public\vorlon\vorlon-noplugin.max.js" />
+    <Compile Include="public\vorlon\vorlon.js" />
+    <Compile Include="public\vorlon\vorlon.max.js" />
+    <None Include="public\javascripts\jquery-1.10.2.intellisense.js" />
+    <None Include="public\javascripts\jquery.validate-vsdoc.js" />
+    <Compile Include="public\javascripts\jquery.validate.js" />
+    <Compile Include="public\javascripts\jquery.validate.min.js" />
+    <Compile Include="public\javascripts\jquery.validate.unobtrusive.js" />
+    <Compile Include="public\javascripts\jquery.validate.unobtrusive.min.js" />
+  </ItemGroup>
+  <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

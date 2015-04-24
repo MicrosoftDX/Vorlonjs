@@ -1,0 +1,8 @@
+.log
+Scripts/**/*.js
+Scripts/**/*.js.map
+config/**/*.js
+config/**/*.js.map
+public/vorlon.dashboardManager.js
+public/vorlon.dashboardManager.js.map
+server.js

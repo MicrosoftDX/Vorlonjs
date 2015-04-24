@@ -1,0 +1,94 @@
+@import '../globals/variables'
+// DOM Explorer plugin styling
+
+.plugin-dom-explorer
+
+  .dom-explorer-container
+    height: 100%
+    overflow: hidden !important
+    font-family: $font-family-menlo
+    font-size: 12px
+    line-height: 1.5
+
+  .panel-left,
+  .panel-right
+    height: 100%
+
+  .tree-view,
+  .style-view
+    padding: 15px
+
+  .treeNodeButton
+    color: $grey-drk
+    margin-left: -7px
+    width: 20px
+    text-align: center
+    cursor: pointer
+    display: inline-block
+
+  .treeNodeHeader
+    text-decoration: none
+    color: $grey-med
+
+  .treeNodeSelected
+    background: rgba(0, 183, 199, 0.1)
+
+  .treeNodeTools
+    color: $grey-drk
+    float: right
+    text-decoration: none
+
+  .treeNodeText
+    text-decoration: none
+    border-left: $border-light
+    padding-left: 10px
+
+  .firstTreeNodeText
+    text-decoration: none
+    padding-left: 0px
+
+  .treeNodeClosingText
+    border-left: $border-light
+    padding-left: 13px
+
+  .nodeName
+    color: $vorlon-purple
+
+  .nodeTag
+    color: $vorlon-purple
+
+  .nodeAttribute
+    color: $red
+
+  .nodeValue
+    color: $blue
+
+  .styleLabel
+    float: left
+    clear: left
+    width: 40%
+    color: $red
+
+  .styleLabel.editable
+    background-color: $grey-drk
+    color: white
+
+  .styleValue
+    float: right
+    width: 60%
+    padding-left: 10px
+    color: $grey-drk
+
+  .styleValue.editable
+    background-color: $grey-drk
+    color: white
+
+  .styleButton
+    float: left
+    clear: left
+    color: $grey-drk
+    margin-left: -7px
+    width: 20px
+    text-align: center
+    cursor: pointer
+    display: inline-block

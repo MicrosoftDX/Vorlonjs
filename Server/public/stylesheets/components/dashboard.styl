@@ -1,0 +1,83 @@
+// Main dashboard view styling
+
+.dashboard
+  min-width: 700px
+  min-height: 350px
+  padding-left: 200px // width of sidebar
+  overflow-y: hidden
+
+.dashboard-initial
+  height: 100vh
+  position:relative
+
+  .get-started
+    max-width: 300px
+    padding: 30px
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%,-50%)
+    border: $border-med
+    border-radius: 10px
+    text-align: center
+
+.dashboard-plugins
+  height: 100vh
+
+  // Panel positions and default sizing
+  .panel-top,
+  .panel-bottom
+    position: relative
+    overflow: hidden !important
+    height: 400px
+
+  .panel-bottom
+    margin-top: 8px // height of hsplitter
+
+  // Tabs
+  .tab-bar
+    height: 30px
+    background: $grey-light
+    border-bottom: $border-med
+    font-weight: $font-weight-bold
+
+  .tab
+    height: 100%
+    padding: 4px 10px
+    position: relative
+    display: block
+    float: left
+
+    &:not(.active)
+      cursor: pointer
+      opacity: .5
+
+      &:hover
+        opacity: .9
+
+    &:not(.add)
+      background: white
+      border-right: $border-med
+
+  // Close button styles, not used right now
+  // .panel-top
+
+  //   .tab
+  //     padding-right: 25px
+
+  //     .close
+  //       position: absolute
+  //       right: 8px
+  //       top: 8px
+  //       font-size: 11px
+  //       color: #888
+  //       cursor: pointer
+
+  //       &:hover
+  //         color: #444
+
+  // Plugin container
+  .plugin
+    width: 100%
+    height: calc(100% - 30px) // minus height of tab bar
+    overflow: auto

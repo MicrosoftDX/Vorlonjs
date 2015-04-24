@@ -1,0 +1,14 @@
+section.dashboard-plugins
+  section.panel-top#pluginsPane
+    header.tab-bar.cf#pluginsListPaneContent
+      .tab(data-plugin-target='DOM') DOM Explorer
+      .tab(data-plugin-target='MODERNIZR') Modernizr
+
+    .plugin.plugin-dom-explorer(data-plugin='DOM')
+    .plugin.plugin-modernizr(data-plugin='MODERNIZR')
+
+  section.panel-bottom
+    header.tab-bar.cf
+      .tab.active Console
+
+    .plugin.plugin-console(data-plugin='CONSOLE')

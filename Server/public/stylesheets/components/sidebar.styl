@@ -1,0 +1,57 @@
+// Sidebar
+
+.sidebar
+  width: 200px
+  height: 100vh
+  padding-bottom: 20px
+  position: absolute
+  top: 0
+  left: 0
+  overflow: auto
+  background: $grey-light
+  border-right: $border-med
+
+  .sidebar-header
+    background: $vorlon-purple
+    color: white
+
+  .logo
+    height: 40px
+    background: url(../images/vorlon-logo-white.svg) no-repeat center center
+    background-size: auto 20px
+    text-indent: -9999em
+
+  // Session IDs
+  .session-info
+    padding: 15px
+    background: $purple
+    font-weight: $font-weight-bold
+
+    p span
+      font-weight: $font-weight-normal
+
+  // Client list
+  .client-pane
+    padding: 15px
+
+    h2
+      margin-bottom: 5px
+
+    .btn
+      width: 100%
+      margin: 0 0 15px
+
+    .client
+      margin: 0 -15px
+      display: block
+      font-size: 15px
+      color: $grey-drk
+
+      &.active
+        background-color: white
+        font-weight: $font-weight-bold
+
+      a
+        display: block
+        padding: 2px 15px
+
