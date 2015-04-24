@@ -35,4 +35,4 @@ Read [CONTRIBUTING.md](./CONTRIBUTING.md) for more info on contributing to Vorlo
 
 ## License
 
-Vorlon.JS is released under the Apache 2 license. Please see [LICENSE](./LICENSE) for full details.
+Vorlon.JS is released under the MIT license. Please see [LICENSE](./LICENSE) for full details.
