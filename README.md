@@ -29,6 +29,11 @@ Read further documentation about Vorlon.JS, and writing your own plugins at [htt
 
 To compile typescript and start the Vorlon.JS server from checked out code run `npm start`, or to just build typescript you can run `npm build`. Compiled JS should not be checked into the repo, it will be compiled and pushed to npm as part of the preinstall step once changes are merged.
 
+### Visual Studio users
+
+For Visual Studio users, we provide an integrated solution through VorlonJS.sln. In order to interact with Node.js, you just need to install the NodeJS Tool for Visual Studio [plugin](https://nodejstools.codeplex.com/).
+Once the plugin is installed, just open the solution and you'll be ready to develop for Vorlon.js.
+
 ## Contributing
 
 Read [CONTRIBUTING.md](./CONTRIBUTING.md) for more info on contributing to Vorlon.JS.
