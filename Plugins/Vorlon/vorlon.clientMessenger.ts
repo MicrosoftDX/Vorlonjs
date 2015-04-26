@@ -1,6 +1,7 @@
 ﻿module VORLON {
     import Socket = SocketIO.Socket;
     declare var io;
+    
 
     export class ClientMessenger {
         private _socket: Socket;
