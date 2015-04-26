@@ -4,6 +4,7 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     typescript = require('gulp-typescript'),
     merge = require('merge2');
+    webserver = require('gulp-webserver');
     gulpFilter = require('gulp-filter');
 
 /**
@@ -131,4 +132,17 @@ gulp.task('watch', function() {
     'Vorlon/**/*.ts',
     'Vorlon/plugins/**/*.*',
   ], ['default']);
+});
+
+/**
+ * Web server task to serve a local test page
+ */
+gulp.task('webserver', function() {
+  gulp.src('samples')
+    .pipe(webserver({
+      livereload: true,
+      open: 'http://localhost:1338/index.html',
+      port: 1338,
+      fallback: 'index.html'
+    }));
 });
