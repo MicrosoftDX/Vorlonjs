@@ -77,7 +77,13 @@
         }
 
         public _loadNewScriptAsync(scriptName: string, callback: () => void) {
-            var basedUrl = "/" + this.loadingDirectory + "/" + this.name + "/";
+            var basedUrl = "";
+            if(this.loadingDirectory.indexOf('http') === 0){
+                basedUrl = this.loadingDirectory + "/" + this.name + "/";
+            }
+            else{
+                basedUrl = "/" + this.loadingDirectory + "/" + this.name + "/";
+            }
             var scriptToLoad = document.createElement("script");
             scriptToLoad.setAttribute("src", basedUrl + scriptName);
             scriptToLoad.onload = callback;
