@@ -164,7 +164,6 @@ var VORLON;
     VORLON.Tools = Tools;
 })(VORLON || (VORLON = {}));
 
-//# sourceMappingURL=vorlon.tools.js.map
 var VORLON;
 (function (VORLON) {
     (function (RuntimeSide) {
@@ -181,7 +180,6 @@ var VORLON;
     var PluginType = VORLON.PluginType;
 })(VORLON || (VORLON = {}));
 
-//# sourceMappingURL=vorlon.enums.js.map
 var VORLON;
 (function (VORLON) {
     var Plugin = (function () {
@@ -280,7 +278,6 @@ var VORLON;
     VORLON.Plugin = Plugin;
 })(VORLON || (VORLON = {}));
 
-//# sourceMappingURL=vorlon.plugin.js.map
 var VORLON;
 (function (VORLON) {
     var ClientMessenger = (function () {
@@ -453,7 +450,6 @@ var VORLON;
     VORLON.ClientMessenger = ClientMessenger;
 })(VORLON || (VORLON = {}));
 
-//# sourceMappingURL=vorlon.clientMessenger.js.map
 var VORLON;
 (function (VORLON) {
     var Core = (function () {
@@ -611,7 +607,6 @@ var VORLON;
     VORLON.Core = Core;
 })(VORLON || (VORLON = {}));
 
-//# sourceMappingURL=vorlon.core.js.map
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -751,7 +746,6 @@ var VORLON;
     VORLON.Core.RegisterPlugin(new InteractiveConsole());
 })(VORLON || (VORLON = {}));
 
-//# sourceMappingURL=../../plugins/interactiveConsole/vorlon.interactiveConsole.js.map
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -1108,7 +1102,6 @@ var VORLON;
     VORLON.Core.RegisterPlugin(new DOMExplorer());
 })(VORLON || (VORLON = {}));
 
-//# sourceMappingURL=../../plugins/domExplorer/vorlon.domExplorer.js.map
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -1268,7 +1261,6 @@ var VORLON;
     VORLON.Core.RegisterPlugin(new ModernizrReport());
 })(VORLON || (VORLON = {}));
 
-//# sourceMappingURL=../../plugins/modernizrReport/vorlon.modernizrReport.js.map
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -1341,5 +1333,3 @@ var VORLON;
     //Register the plugin with vorlon core
     VORLON.Core.RegisterPlugin(new Sample());
 })(VORLON || (VORLON = {}));
-
-//# sourceMappingURL=../../plugins/sample/sample.js.map

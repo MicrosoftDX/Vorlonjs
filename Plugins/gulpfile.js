@@ -3,6 +3,7 @@ var gulp = require('gulp'),
     rename = require('gulp-rename'),
     concat = require('gulp-concat'),
     typescript = require('gulp-typescript'),
+    merge = require('merge2');
     gulpFilter = require('gulp-filter');
 
 /**
@@ -11,11 +12,10 @@ var gulp = require('gulp'),
 gulp.task('typescript-to-js', function() {
   //Compile all ts file into their respective js file.
   
-  var tsResult = gulp.src(['Vorlon/**/*.ts','libs/**/*.d.ts'])
+  var tsResult = gulp.src(['Vorlon/**/*.ts', 'libs/**.ts'])
                        .pipe(typescript({ 
                             declarationFiles: true,
-                            noExternalResolve: true, 
-                            target: 'ES5'}
+                            noExternalResolve: true, target: 'ES5'}
                           ));
   
    return merge([
@@ -64,7 +64,6 @@ gulp.task('scripts', function () {
         .pipe(concat('vorlon.max.js'))
         .pipe(gulp.dest('release/'))
         .pipe(rename('vorlon.js'))
-        //.pipe(uglify({ outSourceMap: true })) //waiting for https://github.com/gulpjs/gulp/issues/356
         .pipe(uglify())
         .pipe(gulp.dest('release/'));
 

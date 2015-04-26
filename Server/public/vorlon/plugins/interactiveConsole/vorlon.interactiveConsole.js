@@ -136,5 +136,3 @@ var VORLON;
     // Register
     VORLON.Core.RegisterPlugin(new InteractiveConsole());
 })(VORLON || (VORLON = {}));
-
-//# sourceMappingURL=../../plugins/interactiveConsole/vorlon.interactiveConsole.js.map

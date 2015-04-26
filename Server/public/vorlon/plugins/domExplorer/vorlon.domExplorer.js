@@ -353,5 +353,3 @@ var VORLON;
     // Register
     VORLON.Core.RegisterPlugin(new DOMExplorer());
 })(VORLON || (VORLON = {}));
-
-//# sourceMappingURL=../../plugins/domExplorer/vorlon.domExplorer.js.map

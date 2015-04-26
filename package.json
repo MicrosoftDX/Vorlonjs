@@ -33,7 +33,8 @@
     "gulp-sourcemaps": "^1.5.2",
     "gulp-uglify": "^0.3.0",
     "gulp-util": "^2.2.14",
-    "through": "^2.3.4"
+    "through": "^2.3.4",
+    "merge2": "^0.3.5"
   },
   "scripts": {
     "build-server": "gulp --gulpfile=./Server/gulpfile.js --cwd=./Server",
