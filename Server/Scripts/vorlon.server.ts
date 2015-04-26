@@ -84,10 +84,15 @@ export module VORLON {
                 var session = this.sessions[req.params.idSession];
                 var clients = new Array();
                 if (session != null) {
+                    var nbClients = 0;
                     for (var client in session.connectedClients) {
-                        clients.push({ "clientid": session.connectedClients[client].clientId, "displayid": session.connectedClients[client].displayId });
+                        var currentclient = session.connectedClients[client];
+                        if(currentclient.opened){
+                            clients.push({ "clientid": currentclient.clientId, "displayid": currentclient.displayId });
+                            nbClients++;
+                        }
                     }
-                    this._log.info("API : GetClients nb client " + clients.length.toString() + " in session " + req.params.idSession, { type: "API", session: req.params.idSession });
+                    this._log.info("API : GetClients nb client " + nbClients + " in session " + req.params.idSession, { type: "API", session: req.params.idSession });
                 }
                 else {
                     this._log.warn("API : No client in session " + req.params.idSession, { type: "API", session: req.params.idSession });
@@ -226,6 +231,10 @@ export module VORLON {
                 }
                 else {
                     session.connectedClients[receiveMessage._clientId].socket = socket;
+                    session.connectedClients[receiveMessage._clientId].opened = true;
+                     if (this.dashboards[receiveMessage._sessionId] != undefined) {
+                        this.dashboards[receiveMessage._sessionId].emit("refreshclients");
+                    }
                     this._log.info("PLUGIN : Client Reconnect (" + session.connectedClients[receiveMessage._clientId].displayId + ")[" + receiveMessage.ua + "] on sessionid : " + receiveMessage._sessionId + " socketid = " + socket.id, { type: "PLUGIN", session: receiveMessage._sessionId });
                 }
 
@@ -282,7 +291,7 @@ export module VORLON {
                 for (var session in this.sessions) {
                     for (var client in this.sessions[session].connectedClients) {
                         if (this.sessions[session].connectedClients[client].socket.id === socket.id) {
-                            this.sessions[session].connectedClients[client].socket = null;
+                            this.sessions[session].connectedClients[client].opened = false;
                             this._log.info("PLUGIN : Delete client socket " + socket.id + " for session " + session + "(" + session + ") ", { type: "PLUGIN", session: session });
                         }
                     }
@@ -294,7 +303,7 @@ export module VORLON {
                 for (var session in this.sessions) {
                     for (var client in this.sessions[session].connectedClients) {
                         if (receiveMessage.socketid === this.sessions[session].connectedClients[client].socket.id) {
-                            delete this.sessions[session].connectedClients[client];
+                            this.sessions[session].connectedClients[client].opened = false;
                             this._log.info("PLUGIN : Send RefreshClients to Dashboard " + socket.id + " for session " + session + "(" + session + ") ", { type: "PLUGIN", session: session });
                             this.dashboards[session].emit("refreshclients");
                             this._log.info("PLUGIN : Client Close " + socket.id + " for session " + session + "(" + session + ") ", { type: "PLUGIN", session: session });
@@ -366,9 +375,14 @@ export module VORLON {
                 var session = this.sessions[receiveMessage._sessionId];
 
                 if (session != null) {
+                    var nbClients = 0;
                     for (var client in session.connectedClients) {
-                        session.connectedClients[client].socket.emit("identify", session.connectedClients[client].displayId);
-                        this._log.info("DASHBOARD : Dashboard send identify " + session.connectedClients[client].displayId + " to socketid : " + session.connectedClients[client].socket.id, { type: "DASHBOARD", session: receiveMessage._sessionId });
+                        var currentclient = session.connectedClients[client];
+                        if(currentclient.opened){
+                            currentclient.socket.emit("identify", currentclient.displayId);
+                            this._log.info("DASHBOARD : Dashboard send identify " + currentclient.displayId + " to socketid : " + currentclient.socket.id, { type: "DASHBOARD", session: receiveMessage._sessionId });
+                            nbClients++;
+                        }
                     }
                     this._log.info("DASHBOARD : Send " + session.nbClients + " identify(s)", { type: "DASHBOARD", session: receiveMessage._sessionId });
                 }
@@ -424,11 +438,13 @@ export module VORLON {
         public clientId: string;
         public displayId: number;
         public socket: SocketIO.Socket;
+        public opened: boolean;
 
-        constructor(clientId: string, socket: SocketIO.Socket, displayId: number) {
+        constructor(clientId: string, socket: SocketIO.Socket, displayId: number, opened: boolean = true) {
             this.clientId = clientId;
             this.socket = socket;
             this.displayId = displayId;
+            this.opened = opened;
         }
     }
 }

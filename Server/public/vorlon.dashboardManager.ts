@@ -97,6 +97,8 @@ module VORLON {
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
+                        DashboardManager.ClientList = new Array<any>();
+                        
                         var clients = JSON.parse(xhr.responseText);
 
                         var divClientsListPane = <HTMLDivElement> document.getElementById("clientsListPaneContent");
