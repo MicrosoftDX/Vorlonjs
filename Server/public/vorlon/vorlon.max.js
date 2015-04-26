@@ -252,7 +252,13 @@ var VORLON;
             request.send(null);
         };
         Plugin.prototype._loadNewScriptAsync = function (scriptName, callback) {
-            var basedUrl = "/" + this.loadingDirectory + "/" + this.name + "/";
+            var basedUrl = "";
+            if (this.loadingDirectory.indexOf('http') === 0) {
+                basedUrl = this.loadingDirectory + "/" + this.name + "/";
+            }
+            else {
+                basedUrl = "/" + this.loadingDirectory + "/" + this.name + "/";
+            }
             var scriptToLoad = document.createElement("script");
             scriptToLoad.setAttribute("src", basedUrl + scriptName);
             scriptToLoad.onload = callback;
@@ -601,7 +607,7 @@ var VORLON;
             }
         };
         Core._plugins = new Array();
-        Core._RetryTimeout = 1000;
+        Core._RetryTimeout = 1002;
         return Core;
     })();
     VORLON.Core = Core;
