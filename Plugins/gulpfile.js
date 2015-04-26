@@ -81,7 +81,7 @@ gulp.task('copy', function () {
             'release/vorlon-noplugin.max.js',
             'release/vorlon-noplugin.js'
         ])
-        .pipe(gulp.dest('../Server/public/Vorlon'));
+        .pipe(gulp.dest('../Server/public/vorlon'));
 
 });
 
@@ -113,7 +113,7 @@ gulp.task('default', ['typescript'], function() {
 /**
  * The default typescript task, call the tasks: scripts, scripts-noplugin AFTER the task typescript-to-js
  */
-gulp.task('typescript', function() {
+gulp.task('typescript', ['typescript-to-js'], function() {
     gulp.start('scripts', 'scripts-noplugin');
 });
 
