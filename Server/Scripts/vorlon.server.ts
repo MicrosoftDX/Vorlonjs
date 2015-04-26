@@ -138,8 +138,9 @@ export module VORLON {
                             this._log.error("ROUTE : Error reading JS File");
                             return;
                         }
-
-                        javascriptFile += "\r" + data.toString();
+                        var vorlonpluginfiles: string = data.toString();
+                        vorlonpluginfiles = vorlonpluginfiles.replace('this.loadingDirectory = "Vorlon/plugins";', 'this.loadingDirectory = "http://' + req.headers.host + '/vorlon/plugins";')
+                        javascriptFile += "\r" + vorlonpluginfiles;
                         javascriptFile += "\r (function() { VORLON.Core.Start('http://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
                         res.send(javascriptFile);
                     });
