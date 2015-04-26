@@ -12,3 +12,12 @@ gulp.task('typescript-to-js', function() {
 gulp.task('default', function() {
   gulp.start('typescript-to-js');
 });
+
+/**
+ * Watch typescript task, will call the default typescript task if a typescript file is updated.
+ */
+gulp.task('watch', function() {
+  gulp.watch([
+    './**/*.ts',
+  ], ['default']);
+});

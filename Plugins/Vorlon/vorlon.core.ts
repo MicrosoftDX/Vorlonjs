@@ -6,7 +6,7 @@
         static _listenClientId: string;
         static _side: RuntimeSide;
 
-        static _RetryTimeout = 1000;
+        static _RetryTimeout = 1002;
 
         public static get Messenger(): ClientMessenger {
             return Core._messenger;
