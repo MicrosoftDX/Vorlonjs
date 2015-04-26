@@ -156,4 +156,5 @@ var VORLON;
     // Register
     VORLON.Core.RegisterPlugin(new ModernizrReport());
 })(VORLON || (VORLON = {}));
-//# sourceMappingURL=vorlon.modernizrReport.js.map
+
+//# sourceMappingURL=../../plugins/modernizrReport/vorlon.modernizrReport.js.map

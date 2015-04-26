@@ -3,7 +3,6 @@ var gulp = require('gulp'),
     rename = require('gulp-rename'),
     concat = require('gulp-concat'),
     typescript = require('gulp-typescript'),
-	  sourcemaps = require('gulp-sourcemaps'),
     gulpFilter = require('gulp-filter');
 
 /**
@@ -13,28 +12,16 @@ gulp.task('typescript-to-js', function() {
   //Compile all ts file into their respective js file.
   
   var tsResult = gulp.src(['Vorlon/**/*.ts','libs/**/*.d.ts'])
-                       .pipe(sourcemaps.init()) // This means sourcemaps will be generated
-                       .pipe(typescript({ noExternalResolve: true, target: 'ES5'}));
+                       .pipe(typescript({ 
+                            declarationFiles: true,
+                            noExternalResolve: true, 
+                            target: 'ES5'}
+                          ));
   
-   return tsResult.js
-                .pipe(sourcemaps.write('.')) // Now the sourcemaps are added to the .js file
-                .pipe(gulp.dest('release'));
-});
-
-/**
- * Compile the declaration file vorlon.d.ts
- */
-gulp.task('typescript-declaration', ['typescript-to-js'], function() {
-	
-	var tsResult = gulp.src(['Vorlon/**/*.ts','libs/**/*.d.ts'])
-                       .pipe(typescript({
-                           declarationFiles: true,
-                           noExternalResolve: true,
-						               target: 'ES5'
-                       }));
-
-    return tsResult.dts.pipe(concat('vorlon.d.ts'))
-	.pipe(gulp.dest('release/'));
+   return merge([
+      tsResult.dts.pipe(gulp.dest('release')),
+      tsResult.js.pipe(gulp.dest('release'))
+      ]);
 });
 
 /**
@@ -119,14 +106,14 @@ gulp.task('copyDTS', function () {
 /**
  * The default task, call the tasks: scripts, scripts-noplugin, copy, copyPlugins
  */
-gulp.task('default', function() {
-    gulp.start('typescript', 'scripts', 'scripts-noplugin', 'copy', 'copyPlugins', 'copyDTS');
+gulp.task('default', ['typescript'], function() {
+    gulp.start('copy', 'copyPlugins', 'copyDTS');
 });
 
 /**
  * The default typescript task, call the tasks: scripts, scripts-noplugin AFTER the task typescript-to-js
  */
-gulp.task('typescript', ['typescript-declaration'], function() {
+gulp.task('typescript', function() {
     gulp.start('scripts', 'scripts-noplugin');
 });
 

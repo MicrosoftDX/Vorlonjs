@@ -128,12 +128,12 @@ table {
 }
 html {
   font-size: 100%;
-  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
 }
 body {
   background: white;
   text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
   font-family: 'Roboto', Helvetica, Arial, sans-serif;
   font-weight: 300;
   font-size: 16px;
@@ -312,7 +312,6 @@ a {
 }
 .sidebar .client-pane .client {
   margin: 0 -15px;
-  padding: 2px 15px;
   display: block;
   font-size: 15px;
   color: #444;
@@ -320,6 +319,10 @@ a {
 .sidebar .client-pane .client.active {
   background-color: white;
   font-weight: 400;
+}
+.sidebar .client-pane .client a {
+  display: block;
+  padding: 2px 15px;
 }
 .dashboard {
   min-width: 700px;

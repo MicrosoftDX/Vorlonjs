@@ -19,7 +19,7 @@ var VORLON;
                     optionalParams[_i - 0] = arguments[_i];
                 }
                 hookingFunction(optionalParams);
-                previousFunction.call(rootObject, optionalParams);
+                previousFunction.apply(rootObject, optionalParams);
             };
         };
         Tools.CreateCookie = function (name, value, days) {
@@ -163,6 +163,7 @@ var VORLON;
     })();
     VORLON.Tools = Tools;
 })(VORLON || (VORLON = {}));
+
 //# sourceMappingURL=vorlon.tools.js.map
 var VORLON;
 (function (VORLON) {
@@ -179,6 +180,7 @@ var VORLON;
     })(VORLON.PluginType || (VORLON.PluginType = {}));
     var PluginType = VORLON.PluginType;
 })(VORLON || (VORLON = {}));
+
 //# sourceMappingURL=vorlon.enums.js.map
 var VORLON;
 (function (VORLON) {
@@ -256,7 +258,8 @@ var VORLON;
             var scriptToLoad = document.createElement("script");
             scriptToLoad.setAttribute("src", basedUrl + scriptName);
             scriptToLoad.onload = callback;
-            document.body.appendChild(scriptToLoad);
+            var first = document.getElementsByTagName('script')[0];
+            first.parentNode.insertBefore(scriptToLoad, first);
         };
         Plugin.prototype._stripContent = function (content) {
             // in case of SVG injection
@@ -276,6 +279,7 @@ var VORLON;
     })();
     VORLON.Plugin = Plugin;
 })(VORLON || (VORLON = {}));
+
 //# sourceMappingURL=vorlon.plugin.js.map
 var VORLON;
 (function (VORLON) {
@@ -448,6 +452,7 @@ var VORLON;
     })();
     VORLON.ClientMessenger = ClientMessenger;
 })(VORLON || (VORLON = {}));
+
 //# sourceMappingURL=vorlon.clientMessenger.js.map
 var VORLON;
 (function (VORLON) {
@@ -605,4 +610,5 @@ var VORLON;
     })();
     VORLON.Core = Core;
 })(VORLON || (VORLON = {}));
+
 //# sourceMappingURL=vorlon.core.js.map

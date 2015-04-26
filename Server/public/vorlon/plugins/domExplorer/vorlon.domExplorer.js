@@ -149,6 +149,11 @@ var VORLON;
                 _this._containerDiv = filledDiv;
                 _this._treeDiv = document.getElementById("treeView");
                 _this._styleView = document.getElementById("styleView");
+                $('.dom-explorer-container').split({
+                    orientation: 'vertical',
+                    limit: 50,
+                    position: '70%'
+                });
                 _this._ready = true;
             });
         };
@@ -348,4 +353,5 @@ var VORLON;
     // Register
     VORLON.Core.RegisterPlugin(new DOMExplorer());
 })(VORLON || (VORLON = {}));
-//# sourceMappingURL=vorlon.domExplorer.js.map
+
+//# sourceMappingURL=../../plugins/domExplorer/vorlon.domExplorer.js.map

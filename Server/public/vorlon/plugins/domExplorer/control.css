@@ -11,6 +11,10 @@
 }
 .plugin-dom-explorer .tree-view,
 .plugin-dom-explorer .style-view {
+  padding: 0;
+}
+.plugin-dom-explorer #treeView,
+.plugin-dom-explorer #styleView {
   padding: 15px;
 }
 .plugin-dom-explorer .treeNodeButton {
@@ -61,22 +65,20 @@
 .plugin-dom-explorer .styleLabel {
   float: left;
   clear: left;
-  width: 40%;
+  width: 45%;
   color: #ed2424;
-}
-.plugin-dom-explorer .styleLabel.editable {
-  background-color: #444;
-  color: white;
 }
 .plugin-dom-explorer .styleValue {
   float: right;
-  width: 60%;
+  width: 55%;
   padding-left: 10px;
   color: #444;
 }
+.plugin-dom-explorer .styleLabel.editable,
 .plugin-dom-explorer .styleValue.editable {
-  background-color: #444;
-  color: white;
+  background-color: rgba(0,183,199,0.1);
+  color: #666;
+  outline: none;
 }
 .plugin-dom-explorer .styleButton {
   float: left;
