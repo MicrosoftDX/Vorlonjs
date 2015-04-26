@@ -2,15 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Vorlon.js - Test page</title>
-    <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
-    <script src="http://localhost:1337/vorlon.max.js"></script>
-	<!--<script src="/vorlon/vorlon.tools.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>   
+	<script src="/vorlon/vorlon.tools.js"></script>
 	<script src="/vorlon/vorlon.plugin.js"></script>
 	<script src="/vorlon/vorlon.clientMessenger.js"></script>
 	<script src="/vorlon/vorlon.core.js"></script>
 	<script src="/vorlon/plugins/interactiveConsole/vorlon.interactiveConsole.js"></script>
 	<script src="/vorlon/plugins/domExplorer/vorlon.domExplorer.js"></script>
-	<script src="/vorlon/plugins/modernizrReport/vorlon.modernizrReport.js"></script>-->
+	<script src="/vorlon/plugins/modernizrReport/vorlon.modernizrReport.js"></script>
     <style>
         html, body {
             width: 100%;
@@ -45,7 +44,7 @@
     <script>
 		//VORLON.Core.Start("http://10.85.192.18:1337", "pierlag");
         //VORLON.Core.Start(null);
-        //VORLON.Core.Start("http://localhost:1337", "davca");
+        VORLON.Core.Start("http://localhost:1337", "default");
 
         function Test() {
         	console.warn("0!!!");
