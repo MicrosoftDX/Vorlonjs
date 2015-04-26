@@ -158,14 +158,15 @@ export module VORLON {
 
             //Redis
             var redisConfig = redisConfigImport.VORLON.RedisConfig;
-            var pub = redis.createClient(redisConfig._redisPort, redisConfig._redisMachine);
-            pub.auth(redisConfig._redisPassword);
-            var sub = redis.createClient(redisConfig._redisPort, redisConfig._redisMachine);
-            sub.auth(redisConfig._redisPassword);
-
-            var socketredis = require("socket.io-redis");
-            io.adapter(socketredis({ pubClient: pub, subClient: sub }));
-
+			if (redisConfig.fackredis === false)
+			{
+				var pub = redis.createClient(redisConfig._redisPort, redisConfig._redisMachine);
+				pub.auth(redisConfig._redisPassword);
+				var sub = redis.createClient(redisConfig._redisPort, redisConfig._redisMachine);
+				sub.auth(redisConfig._redisPassword);
+				var socketredis = require("socket.io-redis");
+				io.adapter(socketredis({ pubClient: pub, subClient: sub }));
+			}
             //Listen on /
             io.on("connection", socket => {
                 this.addClient(socket);
