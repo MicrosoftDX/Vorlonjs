@@ -8,7 +8,7 @@ import path = require("path");
 var fakeredis = require("fakeredis");
 
 var winstonDisplay = require("winston-logs-display");
-import redisConfigImport = require("../config/VORLON.RedisConfig");
+import redisConfigImport = require("../config/vorlon.redisconfig");
 var redisConfig = redisConfigImport.VORLON.RedisConfig;
 
 //Vorlon
