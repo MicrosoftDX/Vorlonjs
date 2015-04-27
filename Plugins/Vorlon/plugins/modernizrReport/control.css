@@ -18,6 +18,16 @@
 .plugin-modernizr .modernizr-features-list td {
   border-bottom: 1px solid #eee;
 }
+.plugin-modernizr .modernizr-features-list th:first-child,
+.plugin-modernizr .modernizr-features-list td:first-child {
+  width: 70%;
+}
+.plugin-modernizr .modernizr-features-list th:last-child,
+.plugin-modernizr .modernizr-features-list td:last-child {
+  width: 30%;
+  font-weight: bold;
+  text-align: center;
+}
 .plugin-modernizr .modernizr-features-list .modernizrFeatureSupported {
   color: #52ba19;
 }
