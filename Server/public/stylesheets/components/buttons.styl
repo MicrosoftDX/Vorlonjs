@@ -7,9 +7,9 @@
   font-weight: $font-weight-bold
   text-align: center
   cursor: pointer
+  padding: 8px 10px
 
   &.btn-primary
-    padding: 8px 10px
     background: $teal
     color: white
 
@@ -17,9 +17,12 @@
       background: darken($teal, 10%)
 
   &.btn-secondary
-    padding: 8px 10px
     background: $grey-med
     color: $grey-drk
 
     &:hover
       background: darken($grey-med, 10%)
+
+  &.btn-small
+    padding: 2px 5px
+    font-size: 90%

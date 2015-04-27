@@ -23,7 +23,8 @@
     "stylus": "^0.50.0",
     "winston": "^0.9.0",
     "winston-azure": "0.0.4",
-    "winston-logs-display": "^0.1.1"
+    "winston-logs-display": "^0.1.1",
+    "xmlhttprequest": "^1.7.0"
   },
   "devDependencies": {
     "gulp": "^3.8.11",
