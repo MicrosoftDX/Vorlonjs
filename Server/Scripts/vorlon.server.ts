@@ -80,6 +80,18 @@ export module VORLON {
                 this.json(res, this.guid());
             });
 
+            app.get("/api/reset/:idSession", (req: any, res: any) => {
+                var session = this.sessions[req.params.idSession];
+                if(session && session.connectedClients){
+                    for (var client in session.connectedClients) {
+                        delete session.connectedClients[client];
+                    }
+                }
+                delete this.sessions[req.params.idSession];
+                res.writeHead(200, {  });
+                res.end();
+            });
+
             app.get("/api/getclients/:idSession",(req: any, res: any) => {
                 var session = this.sessions[req.params.idSession];
                 var clients = new Array();

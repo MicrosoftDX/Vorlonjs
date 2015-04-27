@@ -1,5 +1,6 @@
 ﻿import express = require("express");
 import http = require("http");
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
@@ -25,6 +26,7 @@ export module VORLON {
             app.route('/dashboard/').get(this.defaultDashboard);
 
             app.route('/dashboard/:sessionid').get(this.dashboard);
+            app.route('/dashboard/:sessionid/reset').get(this.dashboardServerReset);
             app.route('/dashboard/:sessionid/:clientid').get(this.dashboardWithClient);
 
             //Post
@@ -50,6 +52,21 @@ export module VORLON {
 
         private getsession(req: express.Request, res: express.Response) {
             res.render('getsession', { title: 'Get Session' });
+        }
+
+        private dashboardServerReset(req: any, res: any) {
+            var sessionid = req.params.sessionid;
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        res.send("Done.");
+                    }
+                }
+            }
+
+            xhr.open("GET", "http://" + req.headers.host + "/api/reset/" + sessionid);
+            xhr.send();
         }
 
         private login(req: express.Request, res: express.Response) {
