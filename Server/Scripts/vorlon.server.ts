@@ -141,7 +141,23 @@ export module VORLON {
             });
 
             app.get("/vorlon.max.js/:idsession",(req: any, res: any) => {
-                //Read Socket.io file
+                this._sendVorlonJSFile("../public/vorlon/vorlon.max.js", req, res);
+            });
+
+            app.get("/vorlon.js/",(req: any, res: any) => {
+              res.redirect("/vorlon.js/default");
+            });
+
+            app.get("/vorlon.js/:idsession",(req: any, res: any) => {
+                this._sendVorlonJSFile("../public/vorlon/vorlon.js", req, res);
+            });
+
+            //DisplayLogs
+            winstonDisplay(app, this._log);
+        }
+
+        private _sendVorlonJSFile(filepath:string, req: any, res: any){
+            //Read Socket.io file
                 var javascriptFile: string;
                 fs.readFile(path.join(__dirname, "../public/javascripts/socket.io-1.3.5.js"),(err, data) => {
                     if (err) {
@@ -150,22 +166,18 @@ export module VORLON {
                     }
                     javascriptFile = data.toString();
                     //Read Vorlon.js one file
-                    fs.readFile(path.join(__dirname, "../public/vorlon/vorlon.max.js"),(err, data) => {
+                    fs.readFile(path.join(__dirname, filepath),(err, data) => {
                         if (err) {
                             this._log.error("ROUTE : Error reading JS File");
                             return;
                         }
                         var vorlonpluginfiles: string = data.toString();
-                        vorlonpluginfiles = vorlonpluginfiles.replace('this.loadingDirectory = "Vorlon/plugins";', 'this.loadingDirectory = "http://' + req.headers.host + '/vorlon/plugins";')
+                        vorlonpluginfiles = vorlonpluginfiles.replace('"Vorlon/plugins"', '"http://' + req.headers.host + '/vorlon/plugins"');
                         javascriptFile += "\r" + vorlonpluginfiles;
                         javascriptFile += "\r (function() { VORLON.Core.Start('http://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
                         res.send(javascriptFile);
                     });
                 });
-            });
-
-            //DisplayLogs
-            winstonDisplay(app, this._log);
         }
 
         public start(httpServer: http.Server): void {
