@@ -3,6 +3,9 @@ Scripts/**/*.js
 Scripts/**/*.js.map
 config/**/*.js
 config/**/*.js.map
+server.js
+
 public/vorlon.dashboardManager.js
 public/vorlon.dashboardManager.js.map
-server.js
+public/vorlon/**/*
+public/stylesheets/**/*.css

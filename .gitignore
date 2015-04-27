@@ -2,5 +2,4 @@ npm-debug.log
 *.log
 tsconfig.json
 /Plugins/obj
-Server/public/vorlon/**/*
 **/node_modules
