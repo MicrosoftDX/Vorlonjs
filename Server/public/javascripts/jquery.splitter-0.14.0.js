@@ -231,7 +231,7 @@
             $(document.documentElement).bind('mousedown.splitter touchstart.splitter', function(e) {
                 if (splitter_id !== null) {
                     current_splitter = splitters[splitter_id];
-                    $('<div class="splitterMask"></div>').css('cursor', splitter.css('cursor')).insertAfter(current_splitter);
+                    $('<div class="splitterMask"></div>').css('cursor', $(e.target).css('cursor')).insertAfter(current_splitter);
                     current_splitter.settings.onDragStart(e);
                     return false;
                 }
