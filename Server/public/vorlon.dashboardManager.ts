@@ -130,6 +130,8 @@ module VORLON {
                             pluginlistelement.appendChild(pluginlistelementa);
 
                             DashboardManager.ClientList.push(client);
+
+                            DashboardManager.UpdateClientWaitingInfo(client.clientid, client.waitingevents);
                         }
                     }
                 }
@@ -148,6 +150,10 @@ module VORLON {
         }
 
         private _onClientUpdateWaitingEvents(clientid: string, waitingevents: number): void {
+            DashboardManager.UpdateClientWaitingInfo(clientid, waitingevents);
+        }
+
+        public static UpdateClientWaitingInfo(clientid: string, waitingevents: number): void{
             var clientLink = document.getElementById(clientid);
             for (var id in DashboardManager.ClientList) {
                 var client = DashboardManager.ClientList[id];

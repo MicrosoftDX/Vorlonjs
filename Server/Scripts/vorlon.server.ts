@@ -88,7 +88,7 @@ export module VORLON {
                     for (var client in session.connectedClients) {
                         var currentclient = session.connectedClients[client];
                         if(currentclient.opened){
-                            clients.push({ "clientid": currentclient.clientId, "displayid": currentclient.displayId });
+                            clients.push({ "clientid": currentclient.clientId, "displayid": currentclient.displayId, "waitingevents": currentclient.waitingevents });
                             nbClients++;
                         }
                     }
@@ -278,12 +278,9 @@ export module VORLON {
 
             socket.on("waitingevents",(message: any) => {
                 var receiveMessage = JSON.parse(message);
-
-                //this._log.info("Plugin received waitingevents : " + receiveMessage._sessionId, { type: "PLUGIN", session: receiveMessage._sessionId });
                 if (this.dashboards[receiveMessage._sessionId] != null) {
                     this.dashboards[receiveMessage._sessionId].emit("waitingevents", message);
-                } else {
-                    //this._log.error("No dashboard for session id :" + receiveMessage._sessionId, { type: "PLUGIN", session: receiveMessage._sessionId });
+                    this.sessions[receiveMessage._sessionId].connectedClients[receiveMessage._clientId].waitingevents = receiveMessage._waitingEvents;
                 }
             });
 
@@ -439,12 +436,14 @@ export module VORLON {
         public displayId: number;
         public socket: SocketIO.Socket;
         public opened: boolean;
+        public waitingevents: number;
 
         constructor(clientId: string, socket: SocketIO.Socket, displayId: number, opened: boolean = true) {
             this.clientId = clientId;
             this.socket = socket;
             this.displayId = displayId;
             this.opened = opened;
+            this.waitingevents = 0;
         }
     }
 }
