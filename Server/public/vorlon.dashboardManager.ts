@@ -145,6 +145,21 @@ module VORLON {
             Core.Messenger.sendRealtimeMessage("", { "_sessionid": DashboardManager.SessionId }, VORLON.RuntimeSide.Dashboard, "identify");
         }
 
+        public resetDashboard(): void {
+            var sessionid = DashboardManager.SessionId;
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        location.reload();
+                    }
+                }
+            }
+
+            xhr.open("GET", "/api/reset/" + sessionid);
+            xhr.send();
+        }
+
         private _onRefreshClients(): void {
             DashboardManager.RefreshClients();
         }
