@@ -18,7 +18,7 @@ With the server is running, open http://localhost:1337 in your browser to see th
 The last step is to enable Vorlon.JS by adding this to your app:
 
 ```
-<script src="http://localhost:1337/client.js"></script>
+<script src="http://localhost:1337/vorlon.js"></script>
 ```
 
 ## Documentation
