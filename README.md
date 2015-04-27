@@ -32,7 +32,12 @@ If you wish to work on Vorlon.JS's server or core plugin code, you'll need to cl
 Vorlon is written in typescript, which is compiled with gulp. There are two main directories:
 
 * [/Server](./Server) contains the code for the vorlon server, and the dashboard code
+ * [/Server/Scripts](./Server/Scripts) contains the server and dashboard code
+ * [/Server/public](./Server/public) contains the dashboard files served by express web server
 * [/Plugins](./Plugins) contains the code for vorlon core, and for the plugins
+ *  [/Plugins/samples](./Plugins/samples) contains the sample client web page you can use to test your dashboard
+ *  [/Plugins/Vorlon](./Plugins/Vorlon) contains the client infrastructure code
+ *  [/Plugins/Vorlon/plugins](./Plugins/Vorlon/plugins) contains default plugins
 
 ### Compiling from source
 
