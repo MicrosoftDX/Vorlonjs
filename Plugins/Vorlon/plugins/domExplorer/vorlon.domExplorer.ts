@@ -4,6 +4,7 @@
 
         private _previousSelectedNode: HTMLElement;
         private _internalId = 0;
+        private _lastElementSelectedClientSide;
 
         constructor() {
             super("domExplorer", "control.html", "control.css");
@@ -142,6 +143,15 @@
         }
 
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
+            if(!receivedObject.order) {
+                switch (receivedObject.type) {
+                    case "unselect":
+                        this._lastElementSelectedClientSide.style.border = this._lastElementSelectedClientSide.__savedBorder;
+                        break;
+                }
+                return;
+            }
+
             var element = this._getElementByInternalId(receivedObject.order, document.body);
 
             if (!element) {
@@ -152,6 +162,7 @@
                 case "select":
                     element.__savedBorder = element.style.border;
                     element.style.border = "2px solid red";
+                    this._lastElementSelectedClientSide = element;
                     break;
                 case "unselect":
                     element.style.border = element.__savedBorder;
@@ -356,6 +367,12 @@
                     Core.Messenger.sendRealtimeMessage(this.getID(), {
                         type: "unselect",
                         order: (<any>this._previousSelectedNode).__targetInternalId
+                    }, RuntimeSide.Dashboard);
+                }
+                else {
+                     Core.Messenger.sendRealtimeMessage(this.getID(), {
+                        type: "unselect",
+                        order: null
                     }, RuntimeSide.Dashboard);
                 }
 
