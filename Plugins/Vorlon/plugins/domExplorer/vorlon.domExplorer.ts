@@ -157,7 +157,9 @@
             if(!receivedObject.order) {
                 switch (receivedObject.type) {
                     case "unselect":
-                        this._lastElementSelectedClientSide.style.border = this._lastElementSelectedClientSide.__savedBorder;
+                        if(this._lastElementSelectedClientSide){
+                            this._lastElementSelectedClientSide.style.border = this._lastElementSelectedClientSide.__savedBorder;
+                        }
                         break;
                 }
                 return;
