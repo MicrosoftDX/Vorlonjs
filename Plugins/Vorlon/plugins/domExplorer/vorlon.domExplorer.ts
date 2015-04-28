@@ -5,6 +5,7 @@
         private _previousSelectedNode: HTMLElement;
         private _internalId = 0;
         private _lastElementSelectedClientSide;
+        private _timeoutId;
 
         constructor() {
             super("domExplorer", "control.html", "control.css");
@@ -110,15 +111,25 @@
             Core.Messenger.sendRealtimeMessage(this.getID(), packagedObject, RuntimeSide.Client);
         }
 
+        private _markForRefresh() {
+            if (this._timeoutId) {
+                clearTimeout(this._timeoutId);
+            }
+
+            this._timeoutId = setTimeout(() => {
+                this.refresh();
+            }, 1000);
+        }
+
         public startClientSide(): void {
             document.addEventListener("DOMContentLoaded",() => {
                 if (Core.Messenger.isConnected) {
                     document.addEventListener("DOMNodeInserted",() => {
-                        this.refresh();
+                        this._markForRefresh();
                     });
 
                     document.addEventListener("DOMNodeRemoved",() => {
-                        this.refresh();
+                        this._markForRefresh();
                     });
                 }
 
@@ -174,7 +185,7 @@
         }
 
         public refresh(): void {
-            Tools.SetImmediate(() => { this._packageAndSendDOM() }); // Give some time for the DOM to rebuild
+            this._packageAndSendDOM();
         }
 
         // DASHBOARD
