@@ -74,6 +74,11 @@
   padding-left: 10px;
   color: #444;
 }
+.plugin-dom-explorer .styleLabel, .plugin-dom-explorer .styleValue {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 .plugin-dom-explorer .styleLabel.editable,
 .plugin-dom-explorer .styleValue.editable {
   background-color: rgba(0,183,199,0.1);
