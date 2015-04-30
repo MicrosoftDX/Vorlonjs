@@ -63,19 +63,18 @@
   color: #007ca7;
 }
 .plugin-dom-explorer .styleLabel {
-  float: left;
-  clear: left;
-  width: 45%;
+  display: inline-block;
+  padding-right: 10px;
   color: #ed2424;
 }
-.plugin-dom-explorer .styleValue {
-  float: right;
-  width: 55%;
-  padding-left: 10px;
-  color: #444;
+.plugin-dom-explorer .styleLabel:after {
+  content: ":";
 }
-.plugin-dom-explorer .styleLabel, .plugin-dom-explorer .styleValue {
+.plugin-dom-explorer .styleValue {
+  display: inline;
+  color: #444;
   word-wrap: break-word;
+  vertical-align: top;
 }
 .plugin-dom-explorer .styleLabel.editable,
 .plugin-dom-explorer .styleValue.editable {
@@ -84,12 +83,11 @@
   outline: none;
 }
 .plugin-dom-explorer .styleButton {
-  float: left;
-  clear: left;
+  max-width: 100px;
+  margin: 10px auto 0;
   color: #444;
-  margin-left: -7px;
-  width: 20px;
   text-align: center;
+  background: #eee;
+  border-radius: 3px;
   cursor: pointer;
-  display: inline-block;
 }
