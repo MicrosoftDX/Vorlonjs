@@ -75,9 +75,7 @@
   color: #444;
 }
 .plugin-dom-explorer .styleLabel, .plugin-dom-explorer .styleValue {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  word-wrap: break-word;
 }
 .plugin-dom-explorer .styleLabel.editable,
 .plugin-dom-explorer .styleValue.editable {
