@@ -1,5 +1,13 @@
 ﻿module VORLON {
     export class Tools {
+        
+        public static QuerySelectorById(root: HTMLElement, id: string): HTMLElement {
+            if (root.querySelector) {
+                return <HTMLElement>root.querySelector("#" + id);
+            }
+            
+            return document.getElementById(id);            
+        }
 
         public static SetImmediate(func: () => void): void {
             if (window.setImmediate) {

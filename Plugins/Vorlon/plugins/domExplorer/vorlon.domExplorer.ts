@@ -207,8 +207,8 @@
             this._insertHtmlContentAsync(this._dashboardDiv,(filledDiv) => {
                 this._containerDiv = filledDiv;
 
-                this._treeDiv = document.getElementById("treeView");
-                this._styleView = document.getElementById("styleView");
+                this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
+                this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
 
                 $('.dom-explorer-container').split({
                     orientation: 'vertical',
