@@ -1,10 +1,18 @@
 ﻿module VORLON {
     declare var $: any;
+
+    interface ObjPropertyDescriptor {
+        type: string;
+        name: string;
+        fullpath: string;
+        content: Array<ObjPropertyDescriptor>;
+    }
+
     export class ObjectExplorer extends Plugin {
 
-        private _previousSelectedNode: HTMLElement;
-        private _internalId = 0;
-        private _lastElementSelectedClientSide;
+        private _selectedObjProperty;
+        private _previousSelectedNode;
+        private _currentPropertyPath: string;
         private _timeoutId;
 
         constructor() {
@@ -13,107 +21,55 @@
         }
 
         public getID(): string {
-            return "OBJEXPLOR";
+            return "OBJEXPLORER";
         }
 
-        private _getAppliedStyles(node: HTMLElement): string[] {
-            // Style sheets
-            var styleNode = new Array<string>();
-            var sheets = <any>document.styleSheets;
-            var style: CSSStyleDeclaration;
-            var appliedStyles = new Array<string>();
+        private _getProperty(propertyPath: string): ObjPropertyDescriptor {
+            var selectedObj = window;
+            var roottokens = ['window'];
+            var tokens = roottokens;
+            console.log('get property for ' + propertyPath);
 
-            for (var c = 0; c < sheets.length; c++) {
-
-                var rules = sheets[c].rules || sheets[c].cssRules;
-
-                for (var r = 0; r < rules.length; r++) {
-                    var rule = rules[r];
-                    var selectorText = rule.selectorText;
-                    
-                    try{ 
-                        var matchedElts = document.querySelectorAll(selectorText);
-
-                        for (var index = 0; index < matchedElts.length; index++) {
-                            var element = matchedElts[index];
-                            style = rule.style;
-                            if (element === node) {
-                                for (var i = 0; i < style.length; i++) {
-                                    if (appliedStyles.indexOf(style[i]) === -1) {
-                                        appliedStyles.push(style[i]);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch(e) {
-                        // Ignoring this rule - Angular.js, etc..
-                    }                   
-                }
-            }
-
-            // Local style
-            style = node.style;
-            if (style) {
-                for (index = 0; index < style.length; index++) {
-                    if (appliedStyles.indexOf(style[index]) === -1) {
-                        appliedStyles.push(style[index]);
+            if (propertyPath && propertyPath !== 'window') {
+                tokens = propertyPath.split('.');
+                if (tokens && tokens.length) {
+                    for (var i = 0, l = tokens.length; i < l; i++) {
+                        selectedObj = selectedObj[tokens[i]];
+                        if (!selectedObj)
+                            break;
                     }
                 }
             }
 
-            // Get effective styles
-            var winObject = document.defaultView || window;
-            for (index = 0; index < appliedStyles.length; index++) {
-                var appliedStyle = appliedStyles[index];
-                if (winObject.getComputedStyle) {
-                    styleNode.push(appliedStyle + ":" + winObject.getComputedStyle(node, "").getPropertyValue(appliedStyle));
+            if (!selectedObj)
+                return { type: 'notfound', name: '', fullpath: propertyPath, content: [] };
+
+            var res = this.getObjDescriptor(selectedObj, tokens, true);
+            return res;
+        }
+
+        private getObjDescriptor(object: any, pathTokens: Array<string>, scanChild: boolean = false): ObjPropertyDescriptor {
+            pathTokens = pathTokens || [];
+            var name = pathTokens[pathTokens.length - 1];
+            var fullpath = 'window';
+            if (!name) {
+                name = 'window';
+                fullpath = 'window';
+            } else {
+                fullpath = fullpath + '.' + pathTokens.join('.');
+            }
+            var res = { type: typeof object, name: name, fullpath: fullpath, content: [] };
+            if (object && scanChild) {                
+                for (var e in object) {
+                    var itemTokens = pathTokens.concat([e]);
+                    res.content.push(this.getObjDescriptor(object[e], itemTokens, false));
                 }
             }
-
-            return styleNode;
+            return res;
         }
-
-        private _packageNode(node: any): any {
-            node.__internalId = this._internalId;
-
-            var packagedNode = {
-                id: node.id,
-                name: node.localName,
-                classes: node.className,
-                styles: this._getAppliedStyles(node),
-                internalId: this._internalId++
-            };
-
-            return packagedNode;
-        }
-
-        private _packageDOM(root: HTMLElement, packagedObject: any): void {
-            if (!root.children || root.children.length === 0) {
-                return;
-            }
-
-            for (var index = 0; index < root.children.length; index++) {
-                var node = <HTMLElement>root.children[index];
-
-                var packagedNode = this._packageNode(node);
-
-                this._packageDOM(node, packagedNode);
-
-                if (!packagedObject.children) {
-                    packagedObject.children = [];
-                }
-
-                packagedObject.children.push(packagedNode);
-            }
-        }
-
-        private _packageAndSendDOM() {
-            this._internalId = 0;
-
-            var packagedObject = this._packageNode(document.body);
-            this._packageDOM(document.body, packagedObject);
-
+        
+        private _packageAndSendObjectProperty() {
+            var packagedObject = this._getProperty(this._currentPropertyPath);
             Core.Messenger.sendRealtimeMessage(this.getID(), packagedObject, RuntimeSide.Client);
         }
 
@@ -124,7 +80,7 @@
 
             this._timeoutId = setTimeout(() => {
                 this.refresh();
-            }, 1000);
+            }, 10000);
         }
 
         public startClientSide(): void {
@@ -143,72 +99,39 @@
             });
         }
 
-        private _getElementByInternalId(internalId: string, node: any): any {
-            if (node.__internalId === internalId) {
-                return node;
-            }
-
-            for (var index = 0; index < node.children.length; index++) {
-                var result = this._getElementByInternalId(internalId, node.children[index]);
-
-                if (result) {
-                    return result;
-                }
-            }
-
-            return null;
-        }
-
+        
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
-            if(!receivedObject.order) {
-                switch (receivedObject.type) {
-                    case "unselect":
-                        if(this._lastElementSelectedClientSide){
-                            this._lastElementSelectedClientSide.style.border = this._lastElementSelectedClientSide.__savedBorder;
-                        }
-                        break;
-                }
-                return;
-            }
-
-            var element = this._getElementByInternalId(receivedObject.order, document.body);
-
-            if (!element) {
-                return;
-            }
-
             switch (receivedObject.type) {
-                case "select":
-                    element.__savedBorder = element.style.border;
-                    element.style.border = "2px solid red";
-                    this._lastElementSelectedClientSide = element;
+                case "query":
+                    this._currentPropertyPath = receivedObject.path;
+                    this._packageAndSendObjectProperty();
                     break;
-                case "unselect":
-                    element.style.border = element.__savedBorder;
-                    break;
-                case "ruleEdit":
-                    element.style[receivedObject.property] = receivedObject.newValue;
+                default:
                     break;
             }
         }
 
         public refresh(): void {
-            this._packageAndSendDOM();
+            this._packageAndSendObjectProperty();
         }
 
         // DASHBOARD
         private _containerDiv: HTMLElement;
+        private _searchBoxInput: HTMLInputElement;
+        private _searchBtn: HTMLButtonElement;
         private _treeDiv: HTMLElement;
-        private _styleView: HTMLElement;
+        private _objectContentView: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
+
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
 
             this._insertHtmlContentAsync(this._dashboardDiv,(filledDiv) => {
                 this._containerDiv = filledDiv;
-
-                this._treeDiv = document.getElementById("treeViewObj");
-                this._styleView = document.getElementById("styleViewObj");
+                this._searchBoxInput = <HTMLInputElement>this._containerDiv.querySelector("#txtPropertyName");
+                this._searchBtn = <HTMLButtonElement>this._containerDiv.querySelector("#btnSearchProp");
+                this._treeDiv = <HTMLElement>this._containerDiv.querySelector("#treeViewObj");
+                this._objectContentView = <HTMLElement>this._containerDiv.querySelector("#objectContentView");
 
                 $('.obj-explorer-container').split({
                     orientation: 'vertical',
@@ -216,8 +139,22 @@
                     position: '70%'
                 });
 
+                this._searchBtn.onclick = () => {
+                    var path = this._searchBoxInput.value;
+                    if (path) {
+                        this._currentPropertyPath = path;
+                        this._queryObjectContent(path);
+                    }
+                }
+
                 this._ready = true;
             });
+        }
+
+        private _queryObjectContent(objectPath: string) {
+            Core.Messenger.sendRealtimeMessage(this.getID(), {
+                type: "query",
+                path: objectPath }, RuntimeSide.Dashboard);
         }
 
         private _makeEditable(element: HTMLElement): void {
@@ -262,57 +199,10 @@
             return valueElement;
         }
 
-        // Generate styles for a selected node
-        private _generateStyle(property: string, value:string, internalId: string, editableLabel = false): void {
-            var label = document.createElement("div");
-            label.innerHTML = property;
-            label.className = "styleLabel";
-            label.contentEditable = "false";
-            this._styleView.appendChild(label);
-
-            var valueElement = this._generateClickableValue(label, value, internalId);
-
-            this._styleView.appendChild(valueElement);
-
-            if (editableLabel) {
-                label.addEventListener("blur", () => {
-                    label.contentEditable = "false";
-                    Tools.RemoveClass(label, "editable");
-                });
-
-                label.addEventListener("click", () => {
-                    this._makeEditable(label);
-                });
-
-                label.addEventListener("keydown", (evt) => {
-                    if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                        this._makeEditable(valueElement);
-                        evt.preventDefault();
-                    }
-                });
+        private _generateSelectedPropertyDescription(selectedProperty): void {
+            while (this._objectContentView.hasChildNodes()) {
+                this._objectContentView.removeChild(this._objectContentView.lastChild);
             }
-        }
-
-        private _generateStyles(styles: string[], internalId: string): void {
-            while (this._styleView.hasChildNodes()) {
-                this._styleView.removeChild(this._styleView.lastChild);
-            }
-
-            // Current styles
-            for (var index = 0; index < styles.length; index++) {
-                var style = styles[index];
-                var splits = style.split(":");
-
-                this._generateStyle(splits[0], splits[1], internalId);
-            }
-
-            // Append add style button
-            this._generateButton(this._styleView, "+", "styleButton",(button) => {
-                this._styleView.removeChild(button);
-                this._generateStyle("property", "value", internalId, true);
-                this._styleView.appendChild(button);
-            });
-
         }
 
         private _appendSpan(parent: HTMLElement, className: string, value: string): void {
@@ -324,24 +214,7 @@
         }
 
         private _generateColorfullLink(link: HTMLAnchorElement, receivedObject: any): void {
-            this._appendSpan(link, "nodeTag", "&lt;");
-            this._appendSpan(link, "nodeName", receivedObject.name);
-
-            if (receivedObject.id) {
-                this._appendSpan(link, "nodeAttribute", " id");
-                this._appendSpan(link, "nodeTag", "=\"");
-                this._appendSpan(link, "nodeValue", receivedObject.id);
-                this._appendSpan(link, "nodeTag", "\"");
-            }
-
-            if (receivedObject.classes) {
-                this._appendSpan(link, "nodeAttribute", " class");
-                this._appendSpan(link, "nodeTag", "=\"");
-                this._appendSpan(link, "nodeValue", receivedObject.classes);
-                this._appendSpan(link, "nodeTag", "\"");
-            }
-
-            this._appendSpan(link, "nodeTag", "&gt;");
+            this._appendSpan(link, "nodeName", receivedObject.name);            
         }
 
         private _generateColorfullClosingLink(link: HTMLElement, receivedObject: any): void {
@@ -383,25 +256,11 @@
             linkText.addEventListener("click",() => {
                 if (this._previousSelectedNode) {
                     Tools.RemoveClass(this._previousSelectedNode, "treeNodeSelected");
-                    Core.Messenger.sendRealtimeMessage(this.getID(), {
-                        type: "unselect",
-                        order: (<any>this._previousSelectedNode).__targetInternalId
-                    }, RuntimeSide.Dashboard);
-                }
-                else {
-                     Core.Messenger.sendRealtimeMessage(this.getID(), {
-                        type: "unselect",
-                        order: null
-                    }, RuntimeSide.Dashboard);
                 }
 
                 Tools.AddClass(linkText, "treeNodeSelected");
-                Core.Messenger.sendRealtimeMessage(this.getID(), {
-                    type: "select",
-                    order: receivedObject.internalId
-                }, RuntimeSide.Dashboard);
 
-                this._generateStyles(receivedObject.styles, receivedObject.internalId);
+                this._generateSelectedPropertyDescription(receivedObject);
 
                 this._previousSelectedNode = linkText;
             });
@@ -413,39 +272,22 @@
             root.appendChild(linkText);
             root.className = first ? "firstTreeNodeText" : "treeNodeText";
 
-            // Tools
-            if (receivedObject.id) {
-                var toolsLink = document.createElement("a");
-                toolsLink.innerHTML = "#";
-                toolsLink.className = "treeNodeTools";
-                toolsLink.href = "#";
-
-                toolsLink.addEventListener("click",() => {
-                    Core.Messenger.sendRealtimeMessage("CONSOLE", {
-                        type: "order",
-                        order: receivedObject.id
-                    }, RuntimeSide.Client, "protocol");
-                });
-
-                root.appendChild(toolsLink);
-            }
-
             // Children
-            if (receivedObject.children) {
-                for (var index = 0; index < receivedObject.children.length; index++) {
-                    var childObject = receivedObject.children[index];
+            if (receivedObject.content) {
+                for (var index = 0; index < receivedObject.content.length; index++) {
+                    var childObject = receivedObject.content[index];
 
                     this._generateTreeNode(container, childObject);
                 }
             }
 
-            if (receivedObject.name) {
-                var closingLink = document.createElement("div");
-                closingLink.className = "treeNodeClosingText";
-                this._generateColorfullClosingLink(closingLink, receivedObject);
+            //if (receivedObject.name) {
+            //    var closingLink = document.createElement("div");
+            //    closingLink.className = "treeNodeClosingText";
+            //    this._generateColorfullClosingLink(closingLink, receivedObject);
 
-                container.appendChild(closingLink);
-            }
+            //    container.appendChild(closingLink);
+            //}
 
             root.appendChild(container);
         }
