@@ -12,7 +12,17 @@
         }
 
         public startClientSide(): void {
-            // Overrides log, error and warn
+            // Overrides clear, log, error and warn
+            Tools.Hook(window.console, "clear",(): void => {
+                var data = {
+                    type: "clear"
+                };
+
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+
+                this._cache.push(data);
+            });
+
             Tools.Hook(window.console, "log",(message: string): void => {
                 var data = {
                     message: message,
