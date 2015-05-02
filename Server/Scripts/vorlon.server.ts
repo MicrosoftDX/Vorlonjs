@@ -13,6 +13,7 @@ var redisConfig = redisConfigImport.VORLON.RedisConfig;
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
+import tools = require("./vorlon.tools");
 
 export module VORLON {
     export class Server implements iwsc.VORLON.IWebServerComponent {
@@ -99,8 +100,9 @@ export module VORLON {
                     var nbClients = 0;
                     for (var client in session.connectedClients) {
                         var currentclient = session.connectedClients[client];
-                        if(currentclient.opened){
-                            clients.push({ "clientid": currentclient.clientId, "displayid": currentclient.displayId, "waitingevents": currentclient.waitingevents });
+                        if(currentclient.opened) {
+                            var name = tools.VORLON.Tools.GetOperatingSystem(currentclient.ua);
+                            clients.push({ "clientid": currentclient.clientId, "displayid": currentclient.displayId, "waitingevents": currentclient.waitingevents, "name": name });
                             nbClients++;
                         }
                     }
@@ -244,7 +246,7 @@ export module VORLON {
                 }
 
                 if (session.connectedClients[receiveMessage._clientId] == undefined) {
-                    session.connectedClients[receiveMessage._clientId] = new Client(receiveMessage._clientId, socket, ++session.nbClients);
+                    session.connectedClients[receiveMessage._clientId] = new Client(receiveMessage._clientId, receiveMessage.ua, socket, ++session.nbClients);
                     this._log.info("PLUGIN : Send Refresh clientlist to dashboard (" + session.connectedClients[receiveMessage._clientId].displayId + ")[" + receiveMessage.ua + "] on sessionid : " + receiveMessage._sessionId + " socketid = " + socket.id, { type: "PLUGIN", session: receiveMessage._sessionId });
 
                     if (this.dashboards[receiveMessage._sessionId] != undefined) {
@@ -461,9 +463,11 @@ export module VORLON {
         public socket: SocketIO.Socket;
         public opened: boolean;
         public waitingevents: number;
+        public ua: string;
 
-        constructor(clientId: string, socket: SocketIO.Socket, displayId: number, opened: boolean = true) {
+        constructor(clientId: string, ua: string, socket: SocketIO.Socket, displayId: number, opened: boolean = true) {
             this.clientId = clientId;
+            this.ua = ua;
             this.socket = socket;
             this.displayId = displayId;
             this.opened = opened;
