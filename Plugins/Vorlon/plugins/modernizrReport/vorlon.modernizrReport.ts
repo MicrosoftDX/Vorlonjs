@@ -6,7 +6,7 @@
     }
 
     declare var Modernizr;
-
+    
     export class ModernizrReport extends Plugin {
         public supportedFeatures: FeatureSupported[] = [];
 
@@ -92,7 +92,7 @@
 
                     var message: any = {};
                     message.features = this.supportedFeatures;
-
+                    
                     Core.Messenger.sendRealtimeMessage(this.getID(), message, RuntimeSide.Client, "message");
                 }
             });
@@ -101,7 +101,6 @@
         public refresh(): void {
             var message: any = {};
             message.features = this.supportedFeatures;
-
             Core.Messenger.sendRealtimeMessage(this.getID(), message, RuntimeSide.Client, "message");
         }
 
@@ -121,6 +120,23 @@
                 this._htmlFeaturesListTable = <HTMLTableElement>document.getElementById("htmlFeaturesList");
                 this._miscFeaturesListTable = <HTMLTableElement>document.getElementById("miscFeaturesList");
                 this._nonCoreFeaturesListTable = <HTMLTableElement>document.getElementById("nonCoreFeaturesList");
+                
+                var self = this;
+                var list = {};
+                var input = document.getElementById('css_feature_filter');
+                
+                input.addEventListener('keypress', function(e){
+                    var value = this.value;
+                    for (var z in list) {
+                        list[z].setAttribute('data-feature-visibility', z.indexOf(value) > -1 ? '' : 'hidden');
+                    }
+                });
+                
+                input.addEventListener('focus', function(){ 
+                    var featureElements = Array.prototype.slice.call(document.querySelectorAll('.modernizr-features-list td:first-child'), 0);
+                    featureElements.forEach(function(node){ list[node.textContent.toLowerCase()] = node.parentNode; });
+                });
+                
                 this._ready = true;
             });
         }
