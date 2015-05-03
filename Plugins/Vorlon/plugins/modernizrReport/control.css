@@ -64,8 +64,11 @@
     font-style: italic;
   }
 
-#css_feature_filter:not(:valid) {
+#css_feature_filter:invalid {
   outline: none;
+  -webkit-box-shadow: none;
+  -ms-box-shadow: none;
+  box-shadow: none;
 }
 
 #css_feature_filter:valid ~ table {
