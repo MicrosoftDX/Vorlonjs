@@ -64,7 +64,8 @@
 }
 .plugin-dom-explorer .styleLabel {
   display: inline-block;
-  padding-right: 10px;
+  margin-right: 2px;
+  padding: 0 2px;
   color: #ed2424;
 }
 .plugin-dom-explorer .styleLabel:after {
@@ -72,6 +73,8 @@
 }
 .plugin-dom-explorer .styleValue {
   display: inline;
+  margin-left: 2px;
+  padding: 0 2px;
   color: #444;
   word-wrap: break-word;
   vertical-align: top;
@@ -80,7 +83,7 @@
 .plugin-dom-explorer .styleValue.editable {
   background-color: rgba(0,183,199,0.1);
   color: #666;
-  outline: none;
+  outline: 1px solid rgb(255, 20, 147);
 }
 .plugin-dom-explorer .styleButton {
   max-width: 100px;
