@@ -64,6 +64,10 @@
     font-style: italic;
   }
 
+#css_feature_filter:not(:valid) {
+  outline: none;
+}
+
 #css_feature_filter:valid ~ table {
   margin: 0;
 }

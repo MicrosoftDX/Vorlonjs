@@ -125,7 +125,7 @@
                 var list = {};
                 var input = document.getElementById('css_feature_filter');
                 
-                input.addEventListener('keypress', function(e){
+                input.addEventListener('input', function(e){
                     var value = this.value;
                     for (var z in list) {
                         list[z].setAttribute('data-feature-visibility', z.indexOf(value) > -1 ? '' : 'hidden');
