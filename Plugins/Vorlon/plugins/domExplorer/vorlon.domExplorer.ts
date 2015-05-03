@@ -264,15 +264,16 @@
 
         // Generate styles for a selected node
         private _generateStyle(property: string, value:string, internalId: string, editableLabel = false): void {
+            var wrap = document.createElement("div");
+            wrap.className = 'styleWrap';
             var label = document.createElement("div");
             label.innerHTML = property;
             label.className = "styleLabel";
             label.contentEditable = "false";
-            this._styleView.appendChild(label);
-
             var valueElement = this._generateClickableValue(label, value, internalId);
-
-            this._styleView.appendChild(valueElement);
+            wrap.appendChild(label);
+            wrap.appendChild(valueElement);
+            this._styleView.appendChild(wrap);
 
             if (editableLabel) {
                 label.addEventListener("blur", () => {
