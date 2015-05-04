@@ -185,6 +185,7 @@
                         this._queryObjectContent(path);
                     }
                 }
+                
                 this._searchBoxInput.addEventListener("keydown",(evt) => {
                     if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
                         var path = this._searchBoxInput.value;
@@ -194,6 +195,7 @@
                         }
                     }
                 });
+                
                 this._ready = true;
             });
         }
