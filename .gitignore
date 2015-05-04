@@ -3,3 +3,6 @@ npm-debug.log
 tsconfig.json
 /Plugins/obj
 **/node_modules
+sync.bat
+*.suo
+/.vs/
