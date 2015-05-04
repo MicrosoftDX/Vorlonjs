@@ -1,14 +1,16 @@
 ﻿module VORLON {
     declare var $: any;
 
-    interface ObjPropertyDescriptor {
+    export interface ObjPropertyDescriptor {
         type: string;
         name: string;
         fullpath: string;
+        contentFetched: boolean;
+        value?: any;
         content: Array<ObjPropertyDescriptor>;
     }
 
-    export class ObjectExplorer extends Plugin {
+    export class ObjectExplorerPlugin extends Plugin {
 
         private _selectedObjProperty;
         private _previousSelectedNode;
@@ -18,21 +20,38 @@
         constructor() {
             super("objectExplorer", "control.html", "control.css");
             this._ready = false;
+            this._contentCallbacks = {};
         }
 
         public getID(): string {
             return "OBJEXPLORER";
         }
+        private STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+        private ARGUMENT_NAMES = /([^\s,]+)/g;
+        private rootProperty = 'window';
+
+        private getFunctionArgumentNames(func) {
+            var result = [];
+            try {
+                var fnStr = func.toString().replace(this.STRIP_COMMENTS, '');
+                result = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(this.ARGUMENT_NAMES);
+                if (result === null)
+                    result = [];
+            } catch (exception) {
+                console.error(exception);
+            }
+
+            return result;
+        }
 
         private _getProperty(propertyPath: string): ObjPropertyDescriptor {
             var selectedObj = window;
-            var roottokens = ['window'];
-            var tokens = roottokens;
-            console.log('get property for ' + propertyPath);
+            var tokens = [this.rootProperty];
+            console.log('get property for ' + (propertyPath || this.rootProperty));
 
-            if (propertyPath && propertyPath !== 'window') {
+            if (propertyPath && propertyPath !== this.rootProperty) {
                 tokens = propertyPath.split('.');
-                if (tokens && tokens.length) {
+                if (tokens && tokens.length) {                                
                     for (var i = 0, l = tokens.length; i < l; i++) {
                         selectedObj = selectedObj[tokens[i]];
                         if (!selectedObj)
@@ -41,9 +60,10 @@
                 }
             }
 
-            if (!selectedObj)
-                return { type: 'notfound', name: '', fullpath: propertyPath, content: [] };
-
+            if (!selectedObj) {
+                console.log('not found');
+                return { type: 'notfound', name: 'not found', fullpath: propertyPath, contentFetched: true, content: [] };
+            }
             var res = this.getObjDescriptor(selectedObj, tokens, true);
             return res;
         }
@@ -51,26 +71,49 @@
         private getObjDescriptor(object: any, pathTokens: Array<string>, scanChild: boolean = false): ObjPropertyDescriptor {
             pathTokens = pathTokens || [];
             var name = pathTokens[pathTokens.length - 1];
-            var fullpath = 'window';
-            if (!name) {
-                name = 'window';
-                fullpath = 'window';
-            } else {
-                fullpath = fullpath + '.' + pathTokens.join('.');
+            var type = typeof object;
+            if (object === null) {
+                type = 'null';
             }
-            var res = { type: typeof object, name: name, fullpath: fullpath, content: [] };
+            if (object === undefined) {
+                type = 'undefined';
+            }
+
+            var fullpath = this.rootProperty;
+            if (!name) {
+                name = this.rootProperty;
+                fullpath = this.rootProperty;
+            } else {
+                if (fullpath.indexOf(this.rootProperty + ".") !== 0 && pathTokens[0] !== this.rootProperty) {
+                    fullpath = this.rootProperty + '.' + pathTokens.join('.');
+                } else {
+                    fullpath = pathTokens.join('.');
+                }
+            }
+
+            //console.log('check ' + name + ' ' + type);
+            var res = { type: type, name: name, fullpath: fullpath, contentFetched: false, content: [], value: null };
+
+            if (type === 'string' || type === 'number' || type === 'boolean') {
+                res.value = object.toString();
+            } else if (type === 'function') {
+                res.value = this.getFunctionArgumentNames(object).join(',');
+            }
+
             if (object && scanChild) {                
                 for (var e in object) {
                     var itemTokens = pathTokens.concat([e]);
                     res.content.push(this.getObjDescriptor(object[e], itemTokens, false));
                 }
+                res.contentFetched = true;
             }
             return res;
         }
         
-        private _packageAndSendObjectProperty() {
-            var packagedObject = this._getProperty(this._currentPropertyPath);
-            Core.Messenger.sendRealtimeMessage(this.getID(), packagedObject, RuntimeSide.Client);
+        private _packageAndSendObjectProperty(type: string, path?: string) {
+            path = path || this._currentPropertyPath;
+            var packagedObject = this._getProperty(path);
+            Core.Messenger.sendRealtimeMessage(this.getID(), { type: type, path: packagedObject.fullpath, property: packagedObject }, RuntimeSide.Client);
         }
 
         private _markForRefresh() {
@@ -104,7 +147,10 @@
             switch (receivedObject.type) {
                 case "query":
                     this._currentPropertyPath = receivedObject.path;
-                    this._packageAndSendObjectProperty();
+                    this._packageAndSendObjectProperty(receivedObject.type);
+                    break;
+                case "queryContent":
+                    this._packageAndSendObjectProperty(receivedObject.type, receivedObject.path);
                     break;
                 default:
                     break;
@@ -112,7 +158,7 @@
         }
 
         public refresh(): void {
-            this._packageAndSendObjectProperty();
+            this._packageAndSendObjectProperty('refresh');
         }
 
         // DASHBOARD
@@ -120,8 +166,8 @@
         private _searchBoxInput: HTMLInputElement;
         private _searchBtn: HTMLButtonElement;
         private _treeDiv: HTMLElement;
-        private _objectContentView: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
+        private _contentCallbacks;
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
@@ -130,14 +176,7 @@
                 this._containerDiv = filledDiv;
                 this._searchBoxInput = <HTMLInputElement>this._containerDiv.querySelector("#txtPropertyName");
                 this._searchBtn = <HTMLButtonElement>this._containerDiv.querySelector("#btnSearchProp");
-                this._treeDiv = <HTMLElement>this._containerDiv.querySelector("#treeViewObj");
-                this._objectContentView = <HTMLElement>this._containerDiv.querySelector("#objectContentView");
-
-                $('.obj-explorer-container').split({
-                    orientation: 'vertical',
-                    limit: 50,
-                    position: '70%'
-                });
+                this._treeDiv = <HTMLElement>this._containerDiv.querySelector("#treeViewObj");                
 
                 this._searchBtn.onclick = () => {
                     var path = this._searchBoxInput.value;
@@ -146,7 +185,15 @@
                         this._queryObjectContent(path);
                     }
                 }
-
+                this._searchBoxInput.addEventListener("keydown",(evt) => {
+                    if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+                        var path = this._searchBoxInput.value;
+                        if (path) {
+                            this._currentPropertyPath = path;
+                            this._queryObjectContent(path);
+                        }
+                    }
+                });
                 this._ready = true;
             });
         }
@@ -167,44 +214,7 @@
             range.setEnd(element, 1);
             window.getSelection().addRange(range);
         }
-
-        private _generateClickableValue(label: HTMLElement, value: string, internalId: string): HTMLElement {
-            // Value
-            var valueElement = document.createElement("div");
-            valueElement.contentEditable = "false";
-            valueElement.innerHTML = value || "&nbsp;";
-            valueElement.className = "styleValue";
-
-            valueElement.addEventListener("keydown",(evt) => {
-                if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                    Core.Messenger.sendRealtimeMessage(this.getID(), {
-                        type: "ruleEdit",
-                        property: label.innerHTML,
-                        newValue: valueElement.innerHTML,
-                        order: internalId
-                    }, RuntimeSide.Dashboard);
-                    evt.preventDefault();
-                    valueElement.contentEditable = "false";
-                    Tools.RemoveClass(valueElement, "editable");
-                }
-            });
-
-            valueElement.addEventListener("blur",() => {
-                valueElement.contentEditable = "false";
-                Tools.RemoveClass(valueElement, "editable");
-            });
-
-            valueElement.addEventListener("click",() => this._makeEditable(valueElement));
-
-            return valueElement;
-        }
-
-        private _generateSelectedPropertyDescription(selectedProperty): void {
-            while (this._objectContentView.hasChildNodes()) {
-                this._objectContentView.removeChild(this._objectContentView.lastChild);
-            }
-        }
-
+               
         private _appendSpan(parent: HTMLElement, className: string, value: string): void {
             var span = document.createElement("span");
             span.className = className;
@@ -215,6 +225,11 @@
 
         private _generateColorfullLink(link: HTMLAnchorElement, receivedObject: any): void {
             this._appendSpan(link, "nodeName", receivedObject.name);            
+            this._appendSpan(link, "nodeType", '(' + receivedObject.type + ')');
+
+            if (receivedObject.value) {
+                this._appendSpan(link, "nodeValue", receivedObject.value);
+            }
         }
 
         private _generateColorfullClosingLink(link: HTMLElement, receivedObject: any): void {
@@ -231,38 +246,72 @@
             parentNode.appendChild(button);
         }
 
-        private _generateTreeNode(parentNode: HTMLElement, receivedObject: any, first = false): void {
+        private _generateTreeNode(parentNode: HTMLElement, receivedObject: ObjPropertyDescriptor, first = false): void {
             var root = document.createElement("div");
             parentNode.appendChild(root);
 
             var container = document.createElement("div");
+            container.style.display = 'none';
+            var treeChilds = [];
+            var renderChilds = () => {
+                // Children
+                if (receivedObject.contentFetched && receivedObject.content && receivedObject.content.length) {
+                    container.style.display = '';
+                    for (var index = 0; index < receivedObject.content.length; index++) {
+                        var childObject = receivedObject.content[index];
 
-            this._generateButton(root, "-", "treeNodeButton", (button) => {
-                if (container.style.display === "none") {
-                    container.style.display = "";
-                    button.innerHTML = "-";
-                } else {
-                    container.style.display = "none";
-                    button.innerHTML = "+";
+                        this._generateTreeNode(container, childObject);
+                    }
                 }
-            });
+            }
+
+            var getTreeChilds = () => {
+                if (receivedObject.content && receivedObject.content.length) {
+                    return receivedObject.content.filter(function (item) {
+                        return item.type === 'object';
+                    });
+                }
+
+                return [];
+            }
+
+            treeChilds = getTreeChilds();
+
+            if (receivedObject.type === 'object') {
+                this._generateButton(root, "+", "treeNodeButton",(button) => {
+                    if (!receivedObject.contentFetched) {
+                        this._contentCallbacks[receivedObject.fullpath] = (propertyData) => {
+                            this._contentCallbacks[receivedObject.fullpath] = null;
+                            receivedObject.contentFetched = true;
+                            receivedObject.content = propertyData.content;
+                            treeChilds = getTreeChilds();
+                            renderChilds();
+                        }
+
+                        Core.Messenger.sendRealtimeMessage(this.getID(), {
+                            type: "queryContent",
+                            path: receivedObject.fullpath
+                        }, RuntimeSide.Dashboard);
+                    }
+
+                    if (container.style.display === "none") {
+                        container.style.display = "";
+                        button.innerHTML = "-";
+                    } else {
+                        container.style.display = "none";
+                        button.innerHTML = "+";
+                    }
+                });
+            }
 
             // Main node
             var linkText = document.createElement("a");
-            (<any>linkText).__targetInternalId = receivedObject.internalId;
-
+            
             this._generateColorfullLink(linkText, receivedObject);
 
             linkText.addEventListener("click",() => {
-                if (this._previousSelectedNode) {
-                    Tools.RemoveClass(this._previousSelectedNode, "treeNodeSelected");
-                }
-
-                Tools.AddClass(linkText, "treeNodeSelected");
-
-                this._generateSelectedPropertyDescription(receivedObject);
-
-                this._previousSelectedNode = linkText;
+                this._searchBoxInput.value = receivedObject.fullpath;
+                this._queryObjectContent(receivedObject.fullpath);
             });
 
             linkText.href = "#";
@@ -272,35 +321,27 @@
             root.appendChild(linkText);
             root.className = first ? "firstTreeNodeText" : "treeNodeText";
 
-            // Children
-            if (receivedObject.content) {
-                for (var index = 0; index < receivedObject.content.length; index++) {
-                    var childObject = receivedObject.content[index];
-
-                    this._generateTreeNode(container, childObject);
-                }
-            }
-
-            //if (receivedObject.name) {
-            //    var closingLink = document.createElement("div");
-            //    closingLink.className = "treeNodeClosingText";
-            //    this._generateColorfullClosingLink(closingLink, receivedObject);
-
-            //    container.appendChild(closingLink);
-            //}
+            renderChilds();
 
             root.appendChild(container);
         }
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-            while (this._treeDiv.hasChildNodes()) {
-                this._treeDiv.removeChild(this._treeDiv.lastChild);
+            if (receivedObject.type === 'query' || receivedObject.type === 'refresh') {
+                while (this._treeDiv.hasChildNodes()) {
+                    this._treeDiv.removeChild(this._treeDiv.lastChild);
+                }
+                this._searchBoxInput.value = receivedObject.path;
+                this._generateTreeNode(this._treeDiv, receivedObject.property, true);
+            } else if (receivedObject.type === 'queryContent') {
+                var callback = this._contentCallbacks[receivedObject.path];
+                if (callback) {
+                    callback(receivedObject.property);
+                }
             }
-
-            this._generateTreeNode(this._treeDiv, receivedObject, true);
         }
     }
 
     // Register
-    Core.RegisterPlugin(new ObjectExplorer());
+    Core.RegisterPlugin(new ObjectExplorerPlugin());
 }

@@ -1,7 +1,5 @@
 .plugin-console {
-  padding-bottom: 10px;
-  font-family: 'Menlo', 'Consolas', 'Lucida Console', Courier, monospace;
-  font-size: 13px;
+  padding-bottom: 10px;  
 }
 .plugin-console .logs-container {
   height: calc(100% - 40px);
@@ -39,17 +37,6 @@
   color: #ed2424;
 }
 .plugin-console .console-input {
-  width: calc(100% - 30px);
-  height: 30px;
-  margin: 10px 15px 0;
-  padding: 0 10px;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-  font-family: 'Menlo', 'Consolas', 'Lucida Console', Courier, monospace;
-  font-size: 13px;
-  line-height: 1.2;
-}
-.plugin-console .console-input:focus {
-  outline: none;
-  border-color: #00b7c7;
+  width: calc(100% - 30px);  
+  margin: 10px 15px 0; 
 }

@@ -6,15 +6,12 @@
 </head>
 <body>
 <div id="ObjectExplorerContainer" class="obj-explorer-container">
-    <div class="tree-view-wrapper panel-left">
+    <div class="tree-view-wrapper">
       <div id="searchbox">
-      	<input type="search" name="txtPropertyName" id="txtPropertyName" placeholder="type object or property path here" />
-      	<button id="btnSearchProp">search</button>
+      	<input type="search" name="txtPropertyName" id="txtPropertyName" class="dashboard-input" placeholder="type object or property path here" />
+      	<button id="btnSearchProp" class="dashboard-button">refresh</button>
       </div>
-      <div id="treeViewObj"></div>
-    </div>
-    <div class="style-view-wrapper panel-right">
-      <div id="objectContentView"></div>
+      <div id="treeViewObj" class="code-text"></div>
     </div>
 </div>
 </body>

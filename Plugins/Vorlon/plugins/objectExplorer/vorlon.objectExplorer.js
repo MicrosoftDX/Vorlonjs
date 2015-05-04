@@ -6,21 +6,37 @@ var __extends = this.__extends || function (d, b) {
 };
 var VORLON;
 (function (VORLON) {
-    var ObjectExplorer = (function (_super) {
-        __extends(ObjectExplorer, _super);
-        function ObjectExplorer() {
+    var ObjectExplorerPlugin = (function (_super) {
+        __extends(ObjectExplorerPlugin, _super);
+        function ObjectExplorerPlugin() {
             _super.call(this, "objectExplorer", "control.html", "control.css");
+            this.STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+            this.ARGUMENT_NAMES = /([^\s,]+)/g;
+            this.rootProperty = 'window';
             this._ready = false;
+            this._contentCallbacks = {};
         }
-        ObjectExplorer.prototype.getID = function () {
+        ObjectExplorerPlugin.prototype.getID = function () {
             return "OBJEXPLORER";
         };
-        ObjectExplorer.prototype._getProperty = function (propertyPath) {
+        ObjectExplorerPlugin.prototype.getFunctionArgumentNames = function (func) {
+            var result = [];
+            try {
+                var fnStr = func.toString().replace(this.STRIP_COMMENTS, '');
+                result = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(this.ARGUMENT_NAMES);
+                if (result === null)
+                    result = [];
+            }
+            catch (exception) {
+                console.error(exception);
+            }
+            return result;
+        };
+        ObjectExplorerPlugin.prototype._getProperty = function (propertyPath) {
             var selectedObj = window;
-            var roottokens = ['window'];
-            var tokens = roottokens;
-            console.log('get property for ' + propertyPath);
-            if (propertyPath && propertyPath !== 'window') {
+            var tokens = [this.rootProperty];
+            console.log('get property for ' + (propertyPath || this.rootProperty));
+            if (propertyPath && propertyPath !== this.rootProperty) {
                 tokens = propertyPath.split('.');
                 if (tokens && tokens.length) {
                     for (var i = 0, l = tokens.length; i < l; i++) {
@@ -30,37 +46,60 @@ var VORLON;
                     }
                 }
             }
-            if (!selectedObj)
-                return { type: 'notfound', name: '', fullpath: propertyPath, content: [] };
+            if (!selectedObj) {
+                console.log('not found');
+                return { type: 'notfound', name: 'not found', fullpath: propertyPath, contentFetched: true, content: [] };
+            }
             var res = this.getObjDescriptor(selectedObj, tokens, true);
             return res;
         };
-        ObjectExplorer.prototype.getObjDescriptor = function (object, pathTokens, scanChild) {
+        ObjectExplorerPlugin.prototype.getObjDescriptor = function (object, pathTokens, scanChild) {
             if (scanChild === void 0) { scanChild = false; }
             pathTokens = pathTokens || [];
             var name = pathTokens[pathTokens.length - 1];
-            var fullpath = 'window';
+            var type = typeof object;
+            if (object === null) {
+                type = 'null';
+            }
+            if (object === undefined) {
+                type = 'undefined';
+            }
+            var fullpath = this.rootProperty;
             if (!name) {
-                name = 'window';
-                fullpath = 'window';
+                name = this.rootProperty;
+                fullpath = this.rootProperty;
             }
             else {
-                fullpath = fullpath + '.' + pathTokens.join('.');
+                if (fullpath.indexOf(this.rootProperty + ".") !== 0 && pathTokens[0] !== this.rootProperty) {
+                    fullpath = this.rootProperty + '.' + pathTokens.join('.');
+                }
+                else {
+                    fullpath = pathTokens.join('.');
+                }
             }
-            var res = { type: typeof object, name: name, fullpath: fullpath, content: [] };
+            //console.log('check ' + name + ' ' + type);
+            var res = { type: type, name: name, fullpath: fullpath, contentFetched: false, content: [], value: null };
+            if (type === 'string' || type === 'number' || type === 'boolean') {
+                res.value = object.toString();
+            }
+            else if (type === 'function') {
+                res.value = this.getFunctionArgumentNames(object).join(',');
+            }
             if (object && scanChild) {
                 for (var e in object) {
                     var itemTokens = pathTokens.concat([e]);
                     res.content.push(this.getObjDescriptor(object[e], itemTokens, false));
                 }
+                res.contentFetched = true;
             }
             return res;
         };
-        ObjectExplorer.prototype._packageAndSendObjectProperty = function () {
-            var packagedObject = this._getProperty(this._currentPropertyPath);
-            VORLON.Core.Messenger.sendRealtimeMessage(this.getID(), packagedObject, 0 /* Client */);
+        ObjectExplorerPlugin.prototype._packageAndSendObjectProperty = function (type, path) {
+            path = path || this._currentPropertyPath;
+            var packagedObject = this._getProperty(path);
+            VORLON.Core.Messenger.sendRealtimeMessage(this.getID(), { type: type, path: packagedObject.fullpath, property: packagedObject }, VORLON.RuntimeSide.Client);
         };
-        ObjectExplorer.prototype._markForRefresh = function () {
+        ObjectExplorerPlugin.prototype._markForRefresh = function () {
             var _this = this;
             if (this._timeoutId) {
                 clearTimeout(this._timeoutId);
@@ -69,7 +108,7 @@ var VORLON;
                 _this.refresh();
             }, 10000);
         };
-        ObjectExplorer.prototype.startClientSide = function () {
+        ObjectExplorerPlugin.prototype.startClientSide = function () {
             var _this = this;
             document.addEventListener("DOMContentLoaded", function () {
                 if (VORLON.Core.Messenger.isConnected) {
@@ -83,20 +122,23 @@ var VORLON;
                 _this.refresh();
             });
         };
-        ObjectExplorer.prototype.onRealtimeMessageReceivedFromDashboardSide = function (receivedObject) {
+        ObjectExplorerPlugin.prototype.onRealtimeMessageReceivedFromDashboardSide = function (receivedObject) {
             switch (receivedObject.type) {
                 case "query":
                     this._currentPropertyPath = receivedObject.path;
-                    this._packageAndSendObjectProperty();
+                    this._packageAndSendObjectProperty(receivedObject.type);
+                    break;
+                case "queryContent":
+                    this._packageAndSendObjectProperty(receivedObject.type, receivedObject.path);
                     break;
                 default:
                     break;
             }
         };
-        ObjectExplorer.prototype.refresh = function () {
-            this._packageAndSendObjectProperty();
+        ObjectExplorerPlugin.prototype.refresh = function () {
+            this._packageAndSendObjectProperty('refresh');
         };
-        ObjectExplorer.prototype.startDashboardSide = function (div) {
+        ObjectExplorerPlugin.prototype.startDashboardSide = function (div) {
             var _this = this;
             if (div === void 0) { div = null; }
             this._dashboardDiv = div;
@@ -105,12 +147,6 @@ var VORLON;
                 _this._searchBoxInput = _this._containerDiv.querySelector("#txtPropertyName");
                 _this._searchBtn = _this._containerDiv.querySelector("#btnSearchProp");
                 _this._treeDiv = _this._containerDiv.querySelector("#treeViewObj");
-                _this._objectContentView = _this._containerDiv.querySelector("#objectContentView");
-                $('.obj-explorer-container').split({
-                    orientation: 'vertical',
-                    limit: 50,
-                    position: '70%'
-                });
                 _this._searchBtn.onclick = function () {
                     var path = _this._searchBoxInput.value;
                     if (path) {
@@ -118,16 +154,25 @@ var VORLON;
                         _this._queryObjectContent(path);
                     }
                 };
+                _this._searchBoxInput.addEventListener("keydown", function (evt) {
+                    if (evt.keyCode === 13 || evt.keyCode === 9) {
+                        var path = _this._searchBoxInput.value;
+                        if (path) {
+                            _this._currentPropertyPath = path;
+                            _this._queryObjectContent(path);
+                        }
+                    }
+                });
                 _this._ready = true;
             });
         };
-        ObjectExplorer.prototype._queryObjectContent = function (objectPath) {
+        ObjectExplorerPlugin.prototype._queryObjectContent = function (objectPath) {
             VORLON.Core.Messenger.sendRealtimeMessage(this.getID(), {
                 type: "query",
                 path: objectPath
-            }, 1 /* Dashboard */);
+            }, VORLON.RuntimeSide.Dashboard);
         };
-        ObjectExplorer.prototype._makeEditable = function (element) {
+        ObjectExplorerPlugin.prototype._makeEditable = function (element) {
             element.contentEditable = "true";
             element.focus();
             VORLON.Tools.AddClass(element, "editable");
@@ -136,116 +181,116 @@ var VORLON;
             range.setEnd(element, 1);
             window.getSelection().addRange(range);
         };
-        ObjectExplorer.prototype._generateClickableValue = function (label, value, internalId) {
-            var _this = this;
-            // Value
-            var valueElement = document.createElement("div");
-            valueElement.contentEditable = "false";
-            valueElement.innerHTML = value || "&nbsp;";
-            valueElement.className = "styleValue";
-            valueElement.addEventListener("keydown", function (evt) {
-                if (evt.keyCode === 13 || evt.keyCode === 9) {
-                    VORLON.Core.Messenger.sendRealtimeMessage(_this.getID(), {
-                        type: "ruleEdit",
-                        property: label.innerHTML,
-                        newValue: valueElement.innerHTML,
-                        order: internalId
-                    }, 1 /* Dashboard */);
-                    evt.preventDefault();
-                    valueElement.contentEditable = "false";
-                    VORLON.Tools.RemoveClass(valueElement, "editable");
-                }
-            });
-            valueElement.addEventListener("blur", function () {
-                valueElement.contentEditable = "false";
-                VORLON.Tools.RemoveClass(valueElement, "editable");
-            });
-            valueElement.addEventListener("click", function () { return _this._makeEditable(valueElement); });
-            return valueElement;
-        };
-        ObjectExplorer.prototype._generateSelectedPropertyDescription = function (selectedProperty) {
-            while (this._objectContentView.hasChildNodes()) {
-                this._objectContentView.removeChild(this._objectContentView.lastChild);
-            }
-        };
-        ObjectExplorer.prototype._appendSpan = function (parent, className, value) {
+        ObjectExplorerPlugin.prototype._appendSpan = function (parent, className, value) {
             var span = document.createElement("span");
             span.className = className;
             span.innerHTML = value;
             parent.appendChild(span);
         };
-        ObjectExplorer.prototype._generateColorfullLink = function (link, receivedObject) {
+        ObjectExplorerPlugin.prototype._generateColorfullLink = function (link, receivedObject) {
             this._appendSpan(link, "nodeName", receivedObject.name);
+            this._appendSpan(link, "nodeType", '(' + receivedObject.type + ')');
+            if (receivedObject.value) {
+                this._appendSpan(link, "nodeValue", receivedObject.value);
+            }
         };
-        ObjectExplorer.prototype._generateColorfullClosingLink = function (link, receivedObject) {
+        ObjectExplorerPlugin.prototype._generateColorfullClosingLink = function (link, receivedObject) {
             this._appendSpan(link, "nodeTag", "&lt;/");
             this._appendSpan(link, "nodeName", receivedObject.name);
             this._appendSpan(link, "nodeTag", "&gt;");
         };
-        ObjectExplorer.prototype._generateButton = function (parentNode, text, className, onClick) {
+        ObjectExplorerPlugin.prototype._generateButton = function (parentNode, text, className, onClick) {
             var button = document.createElement("div");
             button.innerHTML = text;
             button.className = className;
             button.addEventListener("click", function () { return onClick(button); });
             parentNode.appendChild(button);
         };
-        ObjectExplorer.prototype._generateTreeNode = function (parentNode, receivedObject, first) {
+        ObjectExplorerPlugin.prototype._generateTreeNode = function (parentNode, receivedObject, first) {
             var _this = this;
             if (first === void 0) { first = false; }
             var root = document.createElement("div");
             parentNode.appendChild(root);
             var container = document.createElement("div");
-            this._generateButton(root, "-", "treeNodeButton", function (button) {
-                if (container.style.display === "none") {
-                    container.style.display = "";
-                    button.innerHTML = "-";
+            container.style.display = 'none';
+            var treeChilds = [];
+            var renderChilds = function () {
+                // Children
+                if (receivedObject.contentFetched && receivedObject.content && receivedObject.content.length) {
+                    container.style.display = '';
+                    for (var index = 0; index < receivedObject.content.length; index++) {
+                        var childObject = receivedObject.content[index];
+                        _this._generateTreeNode(container, childObject);
+                    }
                 }
-                else {
-                    container.style.display = "none";
-                    button.innerHTML = "+";
+            };
+            var getTreeChilds = function () {
+                if (receivedObject.content && receivedObject.content.length) {
+                    return receivedObject.content.filter(function (item) {
+                        return item.type === 'object';
+                    });
                 }
-            });
+                return [];
+            };
+            treeChilds = getTreeChilds();
+            if (receivedObject.type === 'object') {
+                this._generateButton(root, "+", "treeNodeButton", function (button) {
+                    if (!receivedObject.contentFetched) {
+                        _this._contentCallbacks[receivedObject.fullpath] = function (propertyData) {
+                            _this._contentCallbacks[receivedObject.fullpath] = null;
+                            receivedObject.contentFetched = true;
+                            receivedObject.content = propertyData.content;
+                            treeChilds = getTreeChilds();
+                            renderChilds();
+                        };
+                        VORLON.Core.Messenger.sendRealtimeMessage(_this.getID(), {
+                            type: "queryContent",
+                            path: receivedObject.fullpath
+                        }, VORLON.RuntimeSide.Dashboard);
+                    }
+                    if (container.style.display === "none") {
+                        container.style.display = "";
+                        button.innerHTML = "-";
+                    }
+                    else {
+                        container.style.display = "none";
+                        button.innerHTML = "+";
+                    }
+                });
+            }
             // Main node
             var linkText = document.createElement("a");
-            linkText.__targetInternalId = receivedObject.internalId;
             this._generateColorfullLink(linkText, receivedObject);
             linkText.addEventListener("click", function () {
-                if (_this._previousSelectedNode) {
-                    VORLON.Tools.RemoveClass(_this._previousSelectedNode, "treeNodeSelected");
-                }
-                VORLON.Tools.AddClass(linkText, "treeNodeSelected");
-                _this._generateSelectedPropertyDescription(receivedObject);
-                _this._previousSelectedNode = linkText;
+                _this._searchBoxInput.value = receivedObject.fullpath;
+                _this._queryObjectContent(receivedObject.fullpath);
             });
             linkText.href = "#";
             linkText.className = "treeNodeHeader";
             root.appendChild(linkText);
             root.className = first ? "firstTreeNodeText" : "treeNodeText";
-            // Children
-            if (receivedObject.content) {
-                for (var index = 0; index < receivedObject.content.length; index++) {
-                    var childObject = receivedObject.content[index];
-                    this._generateTreeNode(container, childObject);
-                }
-            }
-            //if (receivedObject.name) {
-            //    var closingLink = document.createElement("div");
-            //    closingLink.className = "treeNodeClosingText";
-            //    this._generateColorfullClosingLink(closingLink, receivedObject);
-            //    container.appendChild(closingLink);
-            //}
+            renderChilds();
             root.appendChild(container);
         };
-        ObjectExplorer.prototype.onRealtimeMessageReceivedFromClientSide = function (receivedObject) {
-            while (this._treeDiv.hasChildNodes()) {
-                this._treeDiv.removeChild(this._treeDiv.lastChild);
+        ObjectExplorerPlugin.prototype.onRealtimeMessageReceivedFromClientSide = function (receivedObject) {
+            if (receivedObject.type === 'query' || receivedObject.type === 'refresh') {
+                while (this._treeDiv.hasChildNodes()) {
+                    this._treeDiv.removeChild(this._treeDiv.lastChild);
+                }
+                this._searchBoxInput.value = receivedObject.path;
+                this._generateTreeNode(this._treeDiv, receivedObject.property, true);
             }
-            this._generateTreeNode(this._treeDiv, receivedObject, true);
+            else if (receivedObject.type === 'queryContent') {
+                var callback = this._contentCallbacks[receivedObject.path];
+                if (callback) {
+                    callback(receivedObject.property);
+                }
+            }
         };
-        return ObjectExplorer;
+        return ObjectExplorerPlugin;
     })(VORLON.Plugin);
-    VORLON.ObjectExplorer = ObjectExplorer;
+    VORLON.ObjectExplorerPlugin = ObjectExplorerPlugin;
     // Register
-    VORLON.Core.RegisterPlugin(new ObjectExplorer());
+    VORLON.Core.RegisterPlugin(new ObjectExplorerPlugin());
 })(VORLON || (VORLON = {}));
 //# sourceMappingURL=vorlon.objectExplorer.js.map
