@@ -104,6 +104,7 @@
                     var itemTokens = pathTokens.concat([e]);
                     res.content.push(this.getObjDescriptor(object[e], itemTokens, false));
                 }
+                
                 res.contentFetched = true;
             }
             return res;
@@ -215,6 +216,7 @@
             this._searchBoxInput.value = path;
             this._currentPropertyPath = path;
             this._queryObjectContent(this._currentPropertyPath);
+            this._treeDiv.scrollTop = 0;
         }
 
         private _queryObjectContent(objectPath: string) {
@@ -258,28 +260,29 @@
             var nodeButton = null;
             var container = document.createElement("div");
             container.style.display = 'none';
-            var treeChilds = [];
+
             var renderChilds = () => {
                 // Children
+                
+
                 if (receivedObject.contentFetched && receivedObject.content && receivedObject.content.length) {
-                    container.style.display = '';
-                    for (var index = 0; index < receivedObject.content.length; index++) {
-                        var childObject = receivedObject.content[index];
+                    var nodes = receivedObject.content.sort(function (a, b) {
+                        var lowerAName = a.name.toLowerCase();
+                        var lowerBName = b.name.toLowerCase();
 
-                        this._generateTreeNode(container, childObject);
-                    }
-                }
-            }
-
-            var getTreeChilds = () => {
-                if (receivedObject.content && receivedObject.content.length) {
-                    return receivedObject.content.filter(function (item) {
-                        return item.type === 'object';
+                        if (lowerAName > lowerBName)
+                            return 1;
+                        if (lowerAName < lowerBName)
+                            return -1;
+                        return 0;
                     });
-                }
 
-                return [];
-            }
+                    for (var index = 0, l=nodes.length; index < l; index++) {
+                        this._generateTreeNode(container, nodes[index]);
+                    }
+                    container.style.display = '';                    
+                }
+            }            
             
             var toggleNode = (button) => {
                 if (!receivedObject.contentFetched) {
@@ -287,7 +290,6 @@
                             this._contentCallbacks[receivedObject.fullpath] = null;
                             receivedObject.contentFetched = true;
                             receivedObject.content = propertyData.content;
-                            treeChilds = getTreeChilds();
                             renderChilds();
                         }
 
@@ -305,8 +307,6 @@
                         button.innerHTML = "+";
                     }
             };
-
-            treeChilds = getTreeChilds();
 
             if (receivedObject.type === 'object') {
                 nodeButton = this._generateButton(root, "+", "treeNodeButton",(button) => {

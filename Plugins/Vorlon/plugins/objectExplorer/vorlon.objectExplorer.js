@@ -179,6 +179,7 @@ var VORLON;
             this._searchBoxInput.value = path;
             this._currentPropertyPath = path;
             this._queryObjectContent(this._currentPropertyPath);
+            this._treeDiv.scrollTop = 0;
         };
         ObjectExplorerPlugin.prototype._queryObjectContent = function (objectPath) {
             VORLON.Core.Messenger.sendRealtimeMessage(this.getID(), {
@@ -217,24 +218,23 @@ var VORLON;
             var nodeButton = null;
             var container = document.createElement("div");
             container.style.display = 'none';
-            var treeChilds = [];
             var renderChilds = function () {
                 // Children
                 if (receivedObject.contentFetched && receivedObject.content && receivedObject.content.length) {
-                    container.style.display = '';
-                    for (var index = 0; index < receivedObject.content.length; index++) {
-                        var childObject = receivedObject.content[index];
-                        _this._generateTreeNode(container, childObject);
-                    }
-                }
-            };
-            var getTreeChilds = function () {
-                if (receivedObject.content && receivedObject.content.length) {
-                    return receivedObject.content.filter(function (item) {
-                        return item.type === 'object';
+                    var nodes = receivedObject.content.sort(function (a, b) {
+                        var lowerAName = a.name.toLowerCase();
+                        var lowerBName = b.name.toLowerCase();
+                        if (lowerAName > lowerBName)
+                            return 1;
+                        if (lowerAName < lowerBName)
+                            return -1;
+                        return 0;
                     });
+                    for (var index = 0, l = nodes.length; index < l; index++) {
+                        _this._generateTreeNode(container, nodes[index]);
+                    }
+                    container.style.display = '';
                 }
-                return [];
             };
             var toggleNode = function (button) {
                 if (!receivedObject.contentFetched) {
@@ -242,7 +242,6 @@ var VORLON;
                         _this._contentCallbacks[receivedObject.fullpath] = null;
                         receivedObject.contentFetched = true;
                         receivedObject.content = propertyData.content;
-                        treeChilds = getTreeChilds();
                         renderChilds();
                     };
                     VORLON.Core.Messenger.sendRealtimeMessage(_this.getID(), {
@@ -259,7 +258,6 @@ var VORLON;
                     button.innerHTML = "+";
                 }
             };
-            treeChilds = getTreeChilds();
             if (receivedObject.type === 'object') {
                 nodeButton = this._generateButton(root, "+", "treeNodeButton", function (button) {
                     toggleNode(nodeButton);

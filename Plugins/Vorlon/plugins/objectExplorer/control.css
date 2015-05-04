@@ -91,6 +91,11 @@
   color: #007ca7;
   margin-left: 6px;
 }
+.plugin-objexplorer .nodeType {
+  color: #BBB;
+  font-style: italic;
+  margin-left: 6px;
+}
 .plugin-objexplorer .attachNode {
   text-align: center;
   cursor: pointer;
