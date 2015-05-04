@@ -207,8 +207,8 @@
             this._insertHtmlContentAsync(this._dashboardDiv,(filledDiv) => {
                 this._containerDiv = filledDiv;
 
-                this._treeDiv = document.getElementById("treeView");
-                this._styleView = document.getElementById("styleView");
+                this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
+                this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
 
                 $('.dom-explorer-container').split({
                     orientation: 'vertical',
@@ -264,15 +264,16 @@
 
         // Generate styles for a selected node
         private _generateStyle(property: string, value:string, internalId: string, editableLabel = false): void {
+            var wrap = document.createElement("div");
+            wrap.className = 'styleWrap';
             var label = document.createElement("div");
             label.innerHTML = property;
             label.className = "styleLabel";
             label.contentEditable = "false";
-            this._styleView.appendChild(label);
-
             var valueElement = this._generateClickableValue(label, value, internalId);
-
-            this._styleView.appendChild(valueElement);
+            wrap.appendChild(label);
+            wrap.appendChild(valueElement);
+            this._styleView.appendChild(wrap);
 
             if (editableLabel) {
                 label.addEventListener("blur", () => {

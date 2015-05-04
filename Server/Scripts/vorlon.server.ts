@@ -174,7 +174,7 @@ export module VORLON {
                             return;
                         }
                         var vorlonpluginfiles: string = data.toString();
-                        vorlonpluginfiles = vorlonpluginfiles.replace('"Vorlon/plugins"', '"http://' + req.headers.host + '/vorlon/plugins"');
+                        vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"http://' + req.headers.host + '/vorlon/plugins"');
                         javascriptFile += "\r" + vorlonpluginfiles;
                         javascriptFile += "\r (function() { VORLON.Core.Start('http://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
                         res.send(javascriptFile);

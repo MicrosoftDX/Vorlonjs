@@ -12,7 +12,17 @@
         }
 
         public startClientSide(): void {
-            // Overrides log, error and warn
+            // Overrides clear, log, error and warn
+            Tools.Hook(window.console, "clear",(): void => {
+                var data = {
+                    type: "clear"
+                };
+
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+
+                this._cache.push(data);
+            });
+
             Tools.Hook(window.console, "log",(message: string): void => {
                 var data = {
                     message: message,
@@ -95,10 +105,10 @@
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div, (filledDiv) => {
                 // Log container
-                this._containerDiv = document.getElementById("logs");
+                this._containerDiv = Tools.QuerySelectorById(filledDiv, "logs");
 
                 // Interactive console
-                this._interactiveInput = <HTMLInputElement>document.getElementById("input");
+                this._interactiveInput = <HTMLInputElement>Tools.QuerySelectorById(div, "input");
                 this._interactiveInput.addEventListener("keydown",(evt) => {
                     if (evt.keyCode === 13) {
                         Core.Messenger.sendRealtimeMessage(this.getID(), {
