@@ -27,6 +27,10 @@
 
                 var rules = sheets[c].rules || sheets[c].cssRules;
 
+                if (!rules) {
+                    continue;
+                }
+
                 for (var r = 0; r < rules.length; r++) {
                     var rule = rules[r];
                     var selectorText = rule.selectorText;
