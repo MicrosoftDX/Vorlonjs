@@ -172,15 +172,6 @@ var VORLON;
                 path: objectPath
             }, VORLON.RuntimeSide.Dashboard);
         };
-        ObjectExplorerPlugin.prototype._makeEditable = function (element) {
-            element.contentEditable = "true";
-            element.focus();
-            VORLON.Tools.AddClass(element, "editable");
-            var range = document.createRange();
-            range.setStart(element, 0);
-            range.setEnd(element, 1);
-            window.getSelection().addRange(range);
-        };
         ObjectExplorerPlugin.prototype._appendSpan = function (parent, className, value) {
             var span = document.createElement("span");
             span.className = className;

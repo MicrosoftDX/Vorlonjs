@@ -33,7 +33,6 @@ declare module VORLON {
         private _contentCallbacks;
         startDashboardSide(div?: HTMLDivElement): void;
         private _queryObjectContent(objectPath);
-        private _makeEditable(element);
         private _appendSpan(parent, className, value);
         private _generateColorfullLink(link, receivedObject);
         private _generateColorfullClosingLink(link, receivedObject);

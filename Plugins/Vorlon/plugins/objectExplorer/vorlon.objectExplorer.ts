@@ -203,18 +203,7 @@
                 type: "query",
                 path: objectPath }, RuntimeSide.Dashboard);
         }
-
-        private _makeEditable(element: HTMLElement): void {
-            element.contentEditable = "true";
-            element.focus();
-            Tools.AddClass(element, "editable");
-
-            var range = document.createRange();
-            range.setStart(element, 0);
-            range.setEnd(element, 1);
-            window.getSelection().addRange(range);
-        }
-               
+    
         private _appendSpan(parent: HTMLElement, className: string, value: string): void {
             var span = document.createElement("span");
             span.className = className;
