@@ -3,7 +3,7 @@
         public htmlFragmentUrl;
         public cssStyleSheetUrl;
 
-        public loadingDirectory = "Vorlon/plugins";
+        public loadingDirectory = "vorlon/plugins";
         public name;
 
         public _ready = true;

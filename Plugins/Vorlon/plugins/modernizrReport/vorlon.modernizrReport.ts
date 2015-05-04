@@ -116,12 +116,12 @@
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div,(filledDiv) => {
-                this._cssFeaturesListTable = <HTMLTableElement>document.getElementById("cssFeaturesList");
-                this._htmlFeaturesListTable = <HTMLTableElement>document.getElementById("htmlFeaturesList");
-                this._miscFeaturesListTable = <HTMLTableElement>document.getElementById("miscFeaturesList");
-                this._nonCoreFeaturesListTable = <HTMLTableElement>document.getElementById("nonCoreFeaturesList");
+
+                this._cssFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "cssFeaturesList");
+                this._htmlFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "htmlFeaturesList");
+                this._miscFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "miscFeaturesList");
+                this._nonCoreFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "nonCoreFeaturesList");
                 
-                var self = this;
                 var list = {};
                 var input = document.getElementById('css_feature_filter');
                 

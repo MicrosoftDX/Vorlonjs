@@ -140,7 +140,7 @@ gulp.task('watch', function() {
 gulp.task('webserver', function() {
   gulp.src('samples')
     .pipe(webserver({
-      livereload: true,
+      livereload: false,
       open: 'http://localhost:1338/index.html',
       port: 1338,
       fallback: 'index.html'

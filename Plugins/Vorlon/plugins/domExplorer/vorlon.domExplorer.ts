@@ -30,19 +30,25 @@
                 for (var r = 0; r < rules.length; r++) {
                     var rule = rules[r];
                     var selectorText = rule.selectorText;
-                    var matchedElts = document.querySelectorAll(selectorText);
+                    
+                    try{ 
+                        var matchedElts = document.querySelectorAll(selectorText);
 
-                    for (var index = 0; index < matchedElts.length; index++) {
-                        var element = matchedElts[index];
-                        style = rule.style;
-                        if (element === node) {
-                            for (var i = 0; i < style.length; i++) {
-                                if (appliedStyles.indexOf(style[i]) === -1) {
-                                    appliedStyles.push(style[i]);
+                        for (var index = 0; index < matchedElts.length; index++) {
+                            var element = matchedElts[index];
+                            style = rule.style;
+                            if (element === node) {
+                                for (var i = 0; i < style.length; i++) {
+                                    if (appliedStyles.indexOf(style[i]) === -1) {
+                                        appliedStyles.push(style[i]);
+                                    }
                                 }
                             }
                         }
                     }
+                    catch(e) {
+                        // Ignoring this rule - Angular.js, etc..
+                    }                   
                 }
             }
 
@@ -201,8 +207,8 @@
             this._insertHtmlContentAsync(this._dashboardDiv,(filledDiv) => {
                 this._containerDiv = filledDiv;
 
-                this._treeDiv = document.getElementById("treeView");
-                this._styleView = document.getElementById("styleView");
+                this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
+                this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
 
                 $('.dom-explorer-container').split({
                     orientation: 'vertical',

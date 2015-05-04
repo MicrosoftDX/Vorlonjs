@@ -124,7 +124,7 @@ module VORLON {
                             clientlist.appendChild(pluginlistelement);
 
                             var pluginlistelementa = document.createElement("a");
-                            pluginlistelementa.innerText = " Client - " + client.displayid;
+                            pluginlistelementa.innerText = " " + client.name + " - " + client.displayid;
                             pluginlistelementa.setAttribute("href", "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
                             pluginlistelementa.id = client.clientid;
                             pluginlistelement.appendChild(pluginlistelementa);
@@ -173,7 +173,7 @@ module VORLON {
             for (var id in DashboardManager.ClientList) {
                 var client = DashboardManager.ClientList[id];
                 if (client.clientid === clientid) {
-                    clientLink.innerText = "Client - " + client.displayid + " (" + waitingevents + ")";
+                    clientLink.innerText = " " + client.name + " - " + client.displayid + " (" + waitingevents + ")";
                 }
             }
         }
