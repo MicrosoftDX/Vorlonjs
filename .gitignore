@@ -6,3 +6,4 @@ tsconfig.json
 sync.bat
 *.suo
 /.vs/
+bin/

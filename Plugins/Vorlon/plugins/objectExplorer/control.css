@@ -17,11 +17,13 @@
   border-bottom: 1px solid #EEE;
   display: flex;
 }
+.plugin-objexplorer .tree-view-wrapper #searchbox .dashboard-button {
+  margin-left: 4px;
+}
 .plugin-objexplorer .tree-view-wrapper #searchbox #txtPropertyName {
   display: block;
   flex: 1;
   width: 100%;
-  margin-right: 4px;
 }
 .plugin-objexplorer .tree-view-wrapper #treeViewObj {
   position: absolute;
@@ -40,13 +42,13 @@
   padding: 0;
 }
 .plugin-objexplorer .treeNodeButton {
-  color: #444;
+  color: #777;
   margin-left: -18px;
   margin-right: 4px;
   width: 14px;
   height: 14px;
   line-height: 12px;
-  border: 1px solid #DDD;
+  border: 1px solid #999;
   text-align: center;
   cursor: pointer;
   display: inline-block;
@@ -88,4 +90,11 @@
 .plugin-objexplorer .nodeValue {
   color: #007ca7;
   margin-left: 6px;
+}
+.plugin-objexplorer .attachNode {
+  text-align: center;
+  cursor: pointer;
+  display: inline;
+  color: #AAA;
+  margin-left: 5px;
 }

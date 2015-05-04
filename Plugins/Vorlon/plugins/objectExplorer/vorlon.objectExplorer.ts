@@ -11,7 +11,6 @@
     }
 
     export class ObjectExplorerPlugin extends Plugin {
-
         private _selectedObjProperty;
         private _previousSelectedNode;
         private _currentPropertyPath: string;
@@ -161,10 +160,12 @@
             this._packageAndSendObjectProperty('refresh');
         }
 
+        
         // DASHBOARD
         private _containerDiv: HTMLElement;
         private _searchBoxInput: HTMLInputElement;
         private _searchBtn: HTMLButtonElement;
+        private _searchUpBtn: HTMLButtonElement;
         private _treeDiv: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
         private _contentCallbacks;
@@ -176,13 +177,24 @@
                 this._containerDiv = filledDiv;
                 this._searchBoxInput = <HTMLInputElement>this._containerDiv.querySelector("#txtPropertyName");
                 this._searchBtn = <HTMLButtonElement>this._containerDiv.querySelector("#btnSearchProp");
+                this._searchUpBtn = <HTMLButtonElement>this._containerDiv.querySelector("#btnSearchUp");
                 this._treeDiv = <HTMLElement>this._containerDiv.querySelector("#treeViewObj");                
 
                 this._searchBtn.onclick = () => {
                     var path = this._searchBoxInput.value;
                     if (path) {
-                        this._currentPropertyPath = path;
-                        this._queryObjectContent(path);
+                        this.setCurrent(path);
+                    }
+                }
+
+                this._searchUpBtn.onclick = () => {
+                    var path = this._searchBoxInput.value;
+                    if (path) {
+                        var tokens = path.split('.');
+                        if (tokens.length > 1) {
+                            tokens.splice(tokens.length - 1, 1);
+                            this.setCurrent(tokens.join('.'));
+                        }
                     }
                 }
                 
@@ -190,14 +202,19 @@
                     if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
                         var path = this._searchBoxInput.value;
                         if (path) {
-                            this._currentPropertyPath = path;
-                            this._queryObjectContent(path);
+                            this.setCurrent(path);
                         }
                     }
                 });
                 
                 this._ready = true;
             });
+        }
+
+        private setCurrent(path) {
+            this._searchBoxInput.value = path;
+            this._currentPropertyPath = path;
+            this._queryObjectContent(this._currentPropertyPath);
         }
 
         private _queryObjectContent(objectPath: string) {
@@ -215,19 +232,16 @@
         }
 
         private _generateColorfullLink(link: HTMLAnchorElement, receivedObject: any): void {
-            this._appendSpan(link, "nodeName", receivedObject.name);            
-            this._appendSpan(link, "nodeType", '(' + receivedObject.type + ')');
+            this._appendSpan(link, "nodeName", receivedObject.name);     
+            
+            if (receivedObject.type !== 'object') {
+                this._appendSpan(link, "nodeType", '(' + receivedObject.type + ')');
+            }
 
             if (receivedObject.value) {
                 this._appendSpan(link, "nodeValue", receivedObject.value);
             }
-        }
-
-        private _generateColorfullClosingLink(link: HTMLElement, receivedObject: any): void {
-            this._appendSpan(link, "nodeTag", "&lt;/");
-            this._appendSpan(link, "nodeName", receivedObject.name);
-            this._appendSpan(link, "nodeTag", "&gt;");
-        }
+        }        
 
         private _generateButton(parentNode: HTMLElement, text: string, className: string, onClick: (button: HTMLElement) => void) {
             var button = document.createElement("div");
@@ -235,12 +249,13 @@
             button.className = className;
             button.addEventListener("click", () => onClick(button));
             parentNode.appendChild(button);
+            return button;
         }
 
         private _generateTreeNode(parentNode: HTMLElement, receivedObject: ObjPropertyDescriptor, first = false): void {
             var root = document.createElement("div");
             parentNode.appendChild(root);
-
+            var nodeButton = null;
             var container = document.createElement("div");
             container.style.display = 'none';
             var treeChilds = [];
@@ -265,12 +280,9 @@
 
                 return [];
             }
-
-            treeChilds = getTreeChilds();
-
-            if (receivedObject.type === 'object') {
-                this._generateButton(root, "+", "treeNodeButton",(button) => {
-                    if (!receivedObject.contentFetched) {
+            
+            var toggleNode = (button) => {
+                if (!receivedObject.contentFetched) {
                         this._contentCallbacks[receivedObject.fullpath] = (propertyData) => {
                             this._contentCallbacks[receivedObject.fullpath] = null;
                             receivedObject.contentFetched = true;
@@ -292,24 +304,39 @@
                         container.style.display = "none";
                         button.innerHTML = "+";
                     }
+            };
+
+            treeChilds = getTreeChilds();
+
+            if (receivedObject.type === 'object') {
+                nodeButton = this._generateButton(root, "+", "treeNodeButton",(button) => {
+                    toggleNode(nodeButton);
                 });
             }
 
             // Main node
-            var linkText = document.createElement("a");
-            
+            var linkText = null;
+                        
+            if (receivedObject.type === 'object') {
+                linkText = document.createElement("a");
+                linkText.addEventListener("click",() => {
+                    toggleNode(nodeButton);
+                });
+                linkText.href = "#";
+                linkText.className = "treeNodeHeader";
+            } else {
+                linkText = document.createElement("span");
+            }
+
             this._generateColorfullLink(linkText, receivedObject);
-
-            linkText.addEventListener("click",() => {
-                this._searchBoxInput.value = receivedObject.fullpath;
-                this._queryObjectContent(receivedObject.fullpath);
-            });
-
-            linkText.href = "#";
-
-            linkText.className = "treeNodeHeader";
-
             root.appendChild(linkText);
+
+            if (receivedObject.type === 'object') {
+                this._generateButton(root, "...", "attachNode",(button) => {
+                    this.setCurrent(receivedObject.fullpath);
+                });
+            }
+
             root.className = first ? "firstTreeNodeText" : "treeNodeText";
 
             renderChilds();

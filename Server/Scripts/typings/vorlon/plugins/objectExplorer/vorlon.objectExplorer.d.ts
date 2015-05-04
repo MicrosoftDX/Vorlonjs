@@ -28,14 +28,15 @@ declare module VORLON {
         private _containerDiv;
         private _searchBoxInput;
         private _searchBtn;
+        private _searchUpBtn;
         private _treeDiv;
         private _dashboardDiv;
         private _contentCallbacks;
         startDashboardSide(div?: HTMLDivElement): void;
+        private setCurrent(path);
         private _queryObjectContent(objectPath);
         private _appendSpan(parent, className, value);
         private _generateColorfullLink(link, receivedObject);
-        private _generateColorfullClosingLink(link, receivedObject);
         private _generateButton(parentNode, text, className, onClick);
         private _generateTreeNode(parentNode, receivedObject, first?);
         onRealtimeMessageReceivedFromClientSide(receivedObject: any): void;
