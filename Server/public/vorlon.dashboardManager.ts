@@ -173,7 +173,7 @@ module VORLON {
             for (var id in DashboardManager.ClientList) {
                 var client = DashboardManager.ClientList[id];
                 if (client.clientid === clientid) {
-                    clientLink.innerText = " " + client.name + " - " + client.displayid + " (" + waitingevents + ")";
+                    clientLink.textContent = " " + client.name + " - " + client.displayid + " (" + waitingevents + ")";
                 }
             }
         }
