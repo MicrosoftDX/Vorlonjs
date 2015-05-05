@@ -6,10 +6,10 @@
     }
 
     declare var Modernizr;
-
+    
     export class ModernizrReport extends Plugin {
         public supportedFeatures: FeatureSupported[] = [];
-
+        
         constructor() {
             super("modernizrReport", "control.html", "control.css");
             this._ready = false;
@@ -92,7 +92,7 @@
 
                     var message: any = {};
                     message.features = this.supportedFeatures;
-
+                    
                     Core.Messenger.sendRealtimeMessage(this.getID(), message, RuntimeSide.Client, "message");
                 }
             });
@@ -101,7 +101,6 @@
         public refresh(): void {
             var message: any = {};
             message.features = this.supportedFeatures;
-
             Core.Messenger.sendRealtimeMessage(this.getID(), message, RuntimeSide.Client, "message");
         }
 
@@ -110,6 +109,7 @@
         }
 
         // DASHBOARD
+        private _filterList: any = {};
         private _cssFeaturesListTable: HTMLTableElement;
         private _htmlFeaturesListTable: HTMLTableElement;
         private _miscFeaturesListTable: HTMLTableElement;
@@ -117,10 +117,20 @@
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div,(filledDiv) => {
+
                 this._cssFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "cssFeaturesList");
                 this._htmlFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "htmlFeaturesList");
                 this._miscFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "miscFeaturesList");
                 this._nonCoreFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "nonCoreFeaturesList");
+                
+                var list = this._filterList;
+                document.getElementById('css_feature_filter').addEventListener('input', function(e){
+                    var value = this.value;
+                    for (var z in list) {
+                        list[z].setAttribute('data-feature-visibility', z.indexOf(value) > -1 ? '' : 'hidden');
+                    }
+                });
+                
                 this._ready = true;
             });
         }
@@ -158,6 +168,9 @@
                     cellSupported.innerHTML = "×";
                 }
             }
+            Array.prototype.slice.call(document.querySelectorAll('.modernizr-features-list td:first-child'), 0).forEach(function(node){
+                this._filterList[node.textContent.toLowerCase()] = node.parentNode;
+            }, this);
         }
     }
 

@@ -100,7 +100,7 @@ module VORLON {
                         DashboardManager.ClientList = new Array<any>();
                         
                         var clients = JSON.parse(xhr.responseText);
-
+                        
                         var divClientsListPane = <HTMLDivElement> document.getElementById("clientsListPaneContent");
 
                         while (divClientsListPane.hasChildNodes()) {
@@ -115,7 +115,7 @@ module VORLON {
                             if (DashboardManager.ListenClientid === "") {
                                 DashboardManager.ListenClientid = client.clientid;
                             }
-
+                            
                             var pluginlistelement = document.createElement("li");
                             pluginlistelement.classList.add('client');
                             if(client.clientid === DashboardManager.ListenClientid) {

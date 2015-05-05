@@ -34,3 +34,51 @@
 .plugin-modernizr .modernizr-features-list .modernizrFeatureUnsupported {
   color: #ed2424;
 }
+#css_feature_filter {
+  display: block;
+  width: 100%;
+  max-width: 225px;
+  margin: 0 0 20px 0;
+  padding: 4px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+  #css_feature_filter::-webkit-input-placeholder {  
+    font-size: 80%;
+    font-style: italic;
+  }
+  #css_feature_filter:-moz-placeholder {  
+    font-size: 80%;
+    font-style: italic;
+  }
+  #css_feature_filter::-moz-placeholder {  
+    font-size: 80%;
+    font-style: italic;
+  }
+  #css_feature_filter:-ms-input-placeholder {  
+    font-size: 80%;
+    font-style: italic;
+  }
+  #css_feature_filter::placeholder {  
+    font-size: 80%;
+    font-style: italic;
+  }
+
+#css_feature_filter:invalid {
+  outline: none;
+  -webkit-box-shadow: none;
+  -ms-box-shadow: none;
+  box-shadow: none;
+}
+
+#css_feature_filter:valid ~ table {
+  margin: 0;
+}
+
+#css_feature_filter:valid ~ h1, #css_feature_filter:valid ~ table th {
+  display: none;
+}
+
+.plugin-modernizr .modernizr-features-list [data-feature-visibility="hidden"] {
+  display: none;
+}
