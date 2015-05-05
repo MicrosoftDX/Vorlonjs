@@ -34,8 +34,8 @@
                 for (var r = 0; r < rules.length; r++) {
                     var rule = rules[r];
                     var selectorText = rule.selectorText;
-                    
-                    try{ 
+
+                    try{
                         var matchedElts = document.querySelectorAll(selectorText);
 
                         for (var index = 0; index < matchedElts.length; index++) {
@@ -52,7 +52,7 @@
                     }
                     catch(e) {
                         // Ignoring this rule - Angular.js, etc..
-                    }                   
+                    }
                 }
             }
 
@@ -152,6 +152,10 @@
                 return node;
             }
 
+            if (!node.children) {
+                return null;
+            }
+
             for (var index = 0; index < node.children.length; index++) {
                 var result = this._getElementByInternalId(internalId, node.children[index]);
 
@@ -161,6 +165,7 @@
             }
 
             return null;
+
         }
 
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
