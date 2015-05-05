@@ -177,6 +177,7 @@ export module VORLON {
                         vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"http://' + req.headers.host + '/vorlon/plugins"');
                         javascriptFile += "\r" + vorlonpluginfiles;
                         javascriptFile += "\r (function() { VORLON.Core.Start('http://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
+                        res.header('Content-Type', 'application/javascript');
                         res.send(javascriptFile);
                     });
                 });
