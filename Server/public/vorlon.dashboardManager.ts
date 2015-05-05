@@ -124,7 +124,7 @@ module VORLON {
                             clientlist.appendChild(pluginlistelement);
 
                             var pluginlistelementa = document.createElement("a");
-                            pluginlistelementa.innerText = " " + client.name + " - " + client.displayid;
+                            pluginlistelementa.textContent = " " + client.name + " - " + client.displayid;
                             pluginlistelementa.setAttribute("href", "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
                             pluginlistelementa.id = client.clientid;
                             pluginlistelement.appendChild(pluginlistelementa);
