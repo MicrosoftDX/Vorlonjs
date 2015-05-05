@@ -9,7 +9,7 @@
     
     export class ModernizrReport extends Plugin {
         public supportedFeatures: FeatureSupported[] = [];
-
+        
         constructor() {
             super("modernizrReport", "control.html", "control.css");
             this._ready = false;
@@ -109,6 +109,7 @@
         }
 
         // DASHBOARD
+        private _filterList: any = {};
         private _cssFeaturesListTable: HTMLTableElement;
         private _htmlFeaturesListTable: HTMLTableElement;
         private _miscFeaturesListTable: HTMLTableElement;
@@ -122,19 +123,12 @@
                 this._miscFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "miscFeaturesList");
                 this._nonCoreFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "nonCoreFeaturesList");
                 
-                var list = {};
-                var input = document.getElementById('css_feature_filter');
-                
-                input.addEventListener('input', function(e){
+                var list = this._filterList;
+                document.getElementById('css_feature_filter').addEventListener('input', function(e){
                     var value = this.value;
                     for (var z in list) {
                         list[z].setAttribute('data-feature-visibility', z.indexOf(value) > -1 ? '' : 'hidden');
                     }
-                });
-                
-                input.addEventListener('focus', function(){ 
-                    var featureElements = Array.prototype.slice.call(document.querySelectorAll('.modernizr-features-list td:first-child'), 0);
-                    featureElements.forEach(function(node){ list[node.textContent.toLowerCase()] = node.parentNode; });
                 });
                 
                 this._ready = true;
@@ -174,6 +168,9 @@
                     cellSupported.innerHTML = "×";
                 }
             }
+            Array.prototype.slice.call(document.querySelectorAll('.modernizr-features-list td:first-child'), 0).forEach(function(node){
+                this._filterList[node.textContent.toLowerCase()] = node.parentNode;
+            }, this);
         }
     }
 
