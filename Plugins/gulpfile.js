@@ -3,8 +3,9 @@ var gulp = require('gulp'),
     rename = require('gulp-rename'),
     concat = require('gulp-concat'),
     typescript = require('gulp-typescript'),
-    merge = require('merge2');
-    webserver = require('gulp-webserver');
+    merge = require('merge2'),
+    webserver = require('gulp-webserver'),
+    less = require('gulp-less'),
     gulpFilter = require('gulp-filter');
 
 /**
@@ -23,6 +24,15 @@ gulp.task('typescript-to-js', function() {
       tsResult.dts.pipe(gulp.dest('release')),
       tsResult.js.pipe(gulp.dest('release'))
       ]);
+});
+
+/**
+ * Compile less files to their css respective files
+ */
+gulp.task('less-to-css', function() {
+  return gulp.src(['Vorlon/**/*.less'], { base : '.' })
+    .pipe(less())
+    .pipe(gulp.dest(''));  
 });
 
 /**
@@ -60,6 +70,7 @@ gulp.task('scripts', function () {
             'release/plugins/interactiveConsole/vorlon.interactiveConsole.js',
             'release/plugins/domExplorer/vorlon.domExplorer.js',
             'release/plugins/modernizrReport/vorlon.modernizrReport.js',
+            'release/plugins/objectExplorer/vorlon.objectExplorer.js',
             'release/plugins/sample/sample.js'
         ])
         .pipe(concat('vorlon.max.js'))
@@ -106,7 +117,7 @@ gulp.task('copyDTS', function () {
 /**
  * The default task, call the tasks: scripts, scripts-noplugin, copy, copyPlugins
  */
-gulp.task('default', ['typescript'], function() {
+gulp.task('default', ['typescript', 'less-to-css'], function() {
     gulp.start('copy', 'copyPlugins', 'copyDTS');
 });
 
@@ -130,6 +141,7 @@ gulp.task('typescript', ['typescript-to-js'], function() {
 gulp.task('watch', function() {
   gulp.watch([
     'Vorlon/**/*.ts',
+    'Vorlon/**/*.less',
     'Vorlon/plugins/**/*.*',
   ], ['default']);
 });

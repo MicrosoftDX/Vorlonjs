@@ -25,6 +25,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <TypeScriptToolsVersion>1.4</TypeScriptToolsVersion>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -91,6 +92,8 @@
     <Content Include="Vorlon\plugins\modernizrReport\control.css" />
     <Content Include="Vorlon\plugins\modernizrReport\control.html" />
     <Content Include="Vorlon\plugins\modernizrReport\modernizr.js" />
+    <Content Include="Vorlon\plugins\objectExplorer\control.css" />
+    <Content Include="Vorlon\plugins\objectExplorer\control.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -99,6 +102,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="libs\node.d.ts" />
     <TypeScriptCompile Include="libs\socket.io.d.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.ts" />
     <TypeScriptCompile Include="Vorlon\vorlon.tools.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\domExplorer\vorlon.domExplorer.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.ts" />

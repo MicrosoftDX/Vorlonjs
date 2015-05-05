@@ -1,9 +1,6 @@
 .plugin-dom-explorer .dom-explorer-container {
   height: 100%;
-  overflow: hidden !important;
-  font-family: 'Menlo', 'Consolas', 'Lucida Console', Courier, monospace;
-  font-size: 12px;
-  line-height: 1.5;
+  overflow: hidden !important;  
 }
 .plugin-dom-explorer .panel-left,
 .plugin-dom-explorer .panel-right {
