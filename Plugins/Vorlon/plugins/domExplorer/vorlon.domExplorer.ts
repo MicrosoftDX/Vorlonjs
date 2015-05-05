@@ -163,6 +163,9 @@
                     return result;
                 }
             }
+
+            return null;
+
         }
 
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
