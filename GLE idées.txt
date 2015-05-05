@@ -1,6 +1,0 @@
-plugin WEBGL => détails sur le contexte WEBGL (taille des textures, etc)
-plugin Cordova => liste des plugins, voir si autres infos intéressantes à glaner en runtime sur objet cordova
-plugin timeline avec window.performance.navigation
-plugin inspection variables javascript
-
-update plugin DOM explorer pour afficher la taille de l'élément cliqué (comme avec outils F12), computed styles
