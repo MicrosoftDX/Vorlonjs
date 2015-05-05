@@ -180,7 +180,8 @@
                 this._searchBtn = <HTMLButtonElement>this._containerDiv.querySelector("#btnSearchProp");
                 this._searchUpBtn = <HTMLButtonElement>this._containerDiv.querySelector("#btnSearchUp");
                 this._treeDiv = <HTMLElement>this._containerDiv.querySelector("#treeViewObj");                
-
+                this._addLoader();
+                
                 this._searchBtn.onclick = () => {
                     var path = this._searchBoxInput.value;
                     if (path) {
@@ -212,11 +213,21 @@
             });
         }
 
+        private _addLoader(){
+            var loader = document.createElement("div");
+            loader.className = "loader";
+            loader.innerHTML = '<span class="fa fa-spinner fa-spin"></span> loading...';
+
+            this._treeDiv.appendChild(loader);
+        }
+        
         private setCurrent(path) {
             this._searchBoxInput.value = path;
             this._currentPropertyPath = path;
             this._queryObjectContent(this._currentPropertyPath);
+            this._empty();
             this._treeDiv.scrollTop = 0;
+            this._addLoader();            
         }
 
         private _queryObjectContent(objectPath: string) {
@@ -246,27 +257,14 @@
         }        
 
         private _generateButton(parentNode: HTMLElement, text: string, className: string, onClick: (button: HTMLElement) => void) {
-            var button = document.createElement("div");
-            button.innerHTML = text;
-            button.className = className;
+            var button = this._render("div", parentNode, className, text);
             button.addEventListener("click", () => onClick(button));
-            parentNode.appendChild(button);
             return button;
         }
 
-        private _generateTreeNode(parentNode: HTMLElement, receivedObject: ObjPropertyDescriptor, first = false): void {
-            var root = document.createElement("div");
-            parentNode.appendChild(root);
-            var nodeButton = null;
-            var container = document.createElement("div");
-            container.style.display = 'none';
-
-            var renderChilds = () => {
-                // Children
-                
-
-                if (receivedObject.contentFetched && receivedObject.content && receivedObject.content.length) {
-                    var nodes = receivedObject.content.sort(function (a, b) {
+        private _sortedList(list : ObjPropertyDescriptor[]){
+            if (list && list.length){
+                return list.sort(function (a, b) {
                         var lowerAName = a.name.toLowerCase();
                         var lowerBName = b.name.toLowerCase();
 
@@ -276,6 +274,31 @@
                             return -1;
                         return 0;
                     });
+            }
+            
+            return [];
+        }
+        
+        private _render(tagname: string, parentNode:HTMLElement, classname?:string, value?: string): HTMLElement {
+            var elt = document.createElement(tagname);
+            elt.className = classname || '';
+            if (value)
+                elt.innerHTML = value;
+            parentNode.appendChild(elt);
+            return elt;
+        }
+        
+        private _generateTreeNode(parentNode: HTMLElement, receivedObject: ObjPropertyDescriptor, first = false): void {
+            var root = this._render("div",parentNode);
+            var nodeButton = null;
+            var fetchingNode = false;
+            var label = this._render("div", root, 'labels');            
+            var container = this._render("div", root, 'childNodes');
+            container.style.display = 'none';
+            
+            var renderChilds = () => {
+                if (receivedObject.contentFetched && receivedObject.content && receivedObject.content.length) {
+                    var nodes = this._sortedList(receivedObject.content);
 
                     for (var index = 0, l=nodes.length; index < l; index++) {
                         this._generateTreeNode(container, nodes[index]);
@@ -285,31 +308,34 @@
             }            
             
             var toggleNode = (button) => {
-                if (!receivedObject.contentFetched) {
-                        this._contentCallbacks[receivedObject.fullpath] = (propertyData) => {
-                            this._contentCallbacks[receivedObject.fullpath] = null;
-                            receivedObject.contentFetched = true;
-                            receivedObject.content = propertyData.content;
-                            renderChilds();
-                        }
-
-                        Core.Messenger.sendRealtimeMessage(this.getID(), {
-                            type: "queryContent",
-                            path: receivedObject.fullpath
-                        }, RuntimeSide.Dashboard);
+                if (!fetchingNode && !receivedObject.contentFetched) {
+                    fetchingNode = true;
+                    var spinner = this._render("span", label, "loader", '&nbsp;<span class="fa fa-spinner fa-spin"></span>');
+                    this._contentCallbacks[receivedObject.fullpath] = (propertyData) => {
+                        label.removeChild(spinner);
+                        this._contentCallbacks[receivedObject.fullpath] = null;
+                        receivedObject.contentFetched = true;
+                        receivedObject.content = propertyData.content;
+                        renderChilds();
                     }
 
-                    if (container.style.display === "none") {
-                        container.style.display = "";
-                        button.innerHTML = "-";
-                    } else {
-                        container.style.display = "none";
-                        button.innerHTML = "+";
-                    }
+                    Core.Messenger.sendRealtimeMessage(this.getID(), {
+                        type: "queryContent",
+                        path: receivedObject.fullpath
+                    }, RuntimeSide.Dashboard);
+                }
+
+                if (container.style.display === "none") {
+                    container.style.display = "";
+                    button.innerHTML = "-";
+                } else {
+                    container.style.display = "none";
+                    button.innerHTML = "+";
+                }
             };
 
             if (receivedObject.type === 'object') {
-                nodeButton = this._generateButton(root, "+", "treeNodeButton",(button) => {
+                nodeButton = this._generateButton(label, "+", "treeNodeButton",(button) => {
                     toggleNode(nodeButton);
                 });
             }
@@ -318,21 +344,20 @@
             var linkText = null;
                         
             if (receivedObject.type === 'object') {
-                linkText = document.createElement("a");
+                linkText = this._render("a", label, "treeNodeHeader");
                 linkText.addEventListener("click",() => {
                     toggleNode(nodeButton);
                 });
                 linkText.href = "#";
-                linkText.className = "treeNodeHeader";
             } else {
-                linkText = document.createElement("span");
+                linkText = this._render("span", label);
             }
 
             this._generateColorfullLink(linkText, receivedObject);
-            root.appendChild(linkText);
+            label.appendChild(linkText);
 
             if (receivedObject.type === 'object') {
-                this._generateButton(root, "...", "attachNode",(button) => {
+                this._generateButton(label, "", "attachNode fa fa-reply",(button) => {
                     this.setCurrent(receivedObject.fullpath);
                 });
             }
@@ -340,17 +365,26 @@
             root.className = first ? "firstTreeNodeText" : "treeNodeText";
 
             renderChilds();
-
-            root.appendChild(container);
         }
 
-        public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-            if (receivedObject.type === 'query' || receivedObject.type === 'refresh') {
-                while (this._treeDiv.hasChildNodes()) {
+        private _empty(){
+            while (this._treeDiv.hasChildNodes()) {
                     this._treeDiv.removeChild(this._treeDiv.lastChild);
                 }
+        }
+        public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
+            if (receivedObject.type === 'query' || receivedObject.type === 'refresh') {
+                this._empty();
                 this._searchBoxInput.value = receivedObject.path;
-                this._generateTreeNode(this._treeDiv, receivedObject.property, true);
+                if (receivedObject.property.content && receivedObject.property.content.length){
+                    var nodes = this._sortedList(receivedObject.property.content);
+                    for (var index=0, length=nodes.length; index<length ; index++){
+                        this._generateTreeNode(this._treeDiv, nodes[index], true);    
+                    }
+                    
+                }else{
+                    this._generateTreeNode(this._treeDiv, receivedObject.property, true);    
+                }
             } else if (receivedObject.type === 'queryContent') {
                 var callback = this._contentCallbacks[receivedObject.path];
                 if (callback) {
