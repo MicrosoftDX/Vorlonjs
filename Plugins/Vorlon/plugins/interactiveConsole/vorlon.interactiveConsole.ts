@@ -79,7 +79,6 @@
             switch (receivedObject.type) {
                 case "eval":
                     try {
-                        console.log("Executing order: " + receivedObject.order);
                         eval(receivedObject.order);
                     } catch (e) {
                         console.error("Unable to execute order: " + e.message);
