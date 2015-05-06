@@ -329,7 +329,10 @@ export module VORLON {
                         if (receiveMessage.socketid === this.sessions[session].connectedClients[client].socket.id) {
                             this.sessions[session].connectedClients[client].opened = false;
                             this._log.info("PLUGIN : Send RefreshClients to Dashboard " + socket.id + " for session " + session + "(" + session + ") ", { type: "PLUGIN", session: session });
-                            this.dashboards[session].emit("refreshclients");
+                            if (this.dashboards[session])
+                            {
+                                this.dashboards[session].emit("refreshclients");
+                            }
                             this._log.info("PLUGIN : Client Close " + socket.id + " for session " + session + "(" + session + ") ", { type: "PLUGIN", session: session });
                         }
                     }
