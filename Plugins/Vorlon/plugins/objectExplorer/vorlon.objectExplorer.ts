@@ -405,6 +405,7 @@
             if (receivedObject.type === 'query' || receivedObject.type === 'refresh') {
                 this._empty();
                 this._searchBoxInput.value = receivedObject.path;
+                this._currentPropertyPath = receivedObject.path;
                 if (receivedObject.property.content && receivedObject.property.content.length){
                     var nodes = this._sortedList(receivedObject.property.content);
                     for (var index=0, length=nodes.length; index<length ; index++){
@@ -413,6 +414,7 @@
                 } else {
                     this._generateTreeNode(this._treeDiv, receivedObject.property, true);    
                 }
+                this.filter();
             } else if (receivedObject.type === 'queryContent') {
                 var callback = this._contentCallbacks[receivedObject.path];
                 if (callback) {
