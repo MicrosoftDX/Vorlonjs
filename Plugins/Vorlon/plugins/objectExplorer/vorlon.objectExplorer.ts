@@ -46,7 +46,6 @@
         private _getProperty(propertyPath: string): ObjPropertyDescriptor {
             var selectedObj = window;
             var tokens = [this.rootProperty];
-            console.log('get property for ' + (propertyPath || this.rootProperty));
 
             if (propertyPath && propertyPath !== this.rootProperty) {
                 tokens = propertyPath.split('.');
