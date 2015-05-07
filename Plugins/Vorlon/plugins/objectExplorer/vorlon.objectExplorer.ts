@@ -164,6 +164,7 @@
         // DASHBOARD
         private _containerDiv: HTMLElement;
         private _searchBoxInput: HTMLInputElement;
+        private _filterInput: HTMLInputElement;
         private _searchBtn: HTMLButtonElement;
         private _searchUpBtn: HTMLButtonElement;
         private _treeDiv: HTMLElement;
@@ -175,6 +176,7 @@
 
             this._insertHtmlContentAsync(this._dashboardDiv,(filledDiv) => {
                 this._containerDiv = filledDiv;
+                this._filterInput = <HTMLInputElement>this._containerDiv.querySelector("#txtFilter");
                 this._searchBoxInput = <HTMLInputElement>this._containerDiv.querySelector("#txtPropertyName");
                 this._searchBtn = <HTMLButtonElement>this._containerDiv.querySelector("#btnSearchProp");
                 this._searchUpBtn = <HTMLButtonElement>this._containerDiv.querySelector("#btnSearchUp");
@@ -202,10 +204,15 @@
                 this._searchBoxInput.addEventListener("keydown",(evt) => {
                     if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
                         var path = this._searchBoxInput.value;
-                        if (path) {
+                        if (path) {                            
                             this.setCurrent(path);
                         }
                     }
+                });
+                
+                this._filterInput.addEventListener("input",(evt) => {
+                    //setTimeout(function(){});
+                    this.filter();
                 });
                 
                 this._ready = true;
@@ -221,12 +228,33 @@
         }
         
         private setCurrent(path) {
+            if (path !== this._currentPropertyPath)
+                this._filterInput.value = '';
+                
             this._searchBoxInput.value = path;
             this._currentPropertyPath = path;
             this._queryObjectContent(this._currentPropertyPath);
             this._empty();
             this._treeDiv.scrollTop = 0;
-            this._addLoader();            
+            this._addLoader();                        
+        }
+        
+        private filter(){
+            var path = this._filterInput.value.toLowerCase();
+            var items = this._treeDiv.children;
+            for (var index=0, l=items.length ; index < l ; index++){
+                var node = <HTMLElement>items[index];
+                var propname = node.getAttribute('data-propname');
+                if (!propname || !path){
+                    node.style.display = '';
+                }else{
+                    if (propname.indexOf(path) >= 0){
+                        node.style.display = '';
+                    }else{
+                        node.style.display = 'none';
+                    }
+                }
+            }
         }
 
         private _queryObjectContent(objectPath: string) {
@@ -288,7 +316,8 @@
         }
         
         private _generateTreeNode(parentNode: HTMLElement, receivedObject: ObjPropertyDescriptor, first = false): void {
-            var root = this._render("div",parentNode);
+            var root = this._render("div", parentNode);
+            root.setAttribute('data-propname', receivedObject.name.toLowerCase());
             var nodeButton = null;
             var fetchingNode = false;
             var label = this._render("div", root, 'labels');            
@@ -376,6 +405,7 @@
             if (receivedObject.type === 'query' || receivedObject.type === 'refresh') {
                 this._empty();
                 this._searchBoxInput.value = receivedObject.path;
+                this._currentPropertyPath = receivedObject.path;
                 if (receivedObject.property.content && receivedObject.property.content.length){
                     var nodes = this._sortedList(receivedObject.property.content);
                     for (var index=0, length=nodes.length; index<length ; index++){
@@ -384,6 +414,7 @@
                 } else {
                     this._generateTreeNode(this._treeDiv, receivedObject.property, true);    
                 }
+                this.filter();
             } else if (receivedObject.type === 'queryContent') {
                 var callback = this._contentCallbacks[receivedObject.path];
                 if (callback) {
