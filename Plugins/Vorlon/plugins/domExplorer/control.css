@@ -41,6 +41,12 @@
 .plugin-dom-explorer .treeNodeButton[data-collapsed] ~ .nodeContentContainer {
   display: none;
 }
+.plugin-dom-explorer .treeNodeButton::-moz-focus-inner {
+  border: none;
+}
+.plugin-dom-explorer .treeNodeButton:focus {
+  outline: 1px dotted #000;
+}
 .plugin-dom-explorer .treeNodeHeader {
   text-decoration: none;
   color: #ccc;
