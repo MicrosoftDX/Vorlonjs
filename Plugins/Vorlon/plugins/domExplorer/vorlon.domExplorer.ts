@@ -128,7 +128,7 @@
 
             this._timeoutId = setTimeout(() => {
                 this.refresh();
-            }, 1000);
+            }, 10000);
         }
 
         public startClientSide(): void {

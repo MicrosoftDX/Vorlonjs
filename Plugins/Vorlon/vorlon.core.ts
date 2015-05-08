@@ -95,6 +95,7 @@
             div.style.textAlign = "center";
             div.style.color = "white";
             div.style.textShadow = "2px 2px 5px black";
+            div.style.zIndex = "100";
             div.innerHTML = message;
 
             document.body.appendChild(div);

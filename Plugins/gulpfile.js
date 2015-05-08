@@ -39,7 +39,7 @@ gulp.task('less-to-css', function() {
  * Concat all js files in order into one big js file and minify it.
  * Do not hesitate to update it if you need to add your own files.
  */
-gulp.task('scripts-noplugin', function() {
+gulp.task('scripts-noplugin', ['typescript-to-js'], function() {
     return gulp.src([
             'release/vorlon.tools.js',
             'release/vorlon.enums.js',
@@ -60,7 +60,7 @@ gulp.task('scripts-noplugin', function() {
  * Concat all js files in order into one big js file and minify it.
  * Do not hesitate to update it if you need to add your own files.
  */
-gulp.task('scripts', function () {
+gulp.task('scripts', ['typescript-to-js'], function () {
     return gulp.src([
             'release/vorlon.tools.js',
             'release/vorlon.enums.js',
@@ -117,15 +117,8 @@ gulp.task('copyDTS', function () {
 /**
  * The default task, call the tasks: scripts, scripts-noplugin, copy, copyPlugins
  */
-gulp.task('default', ['typescript', 'less-to-css'], function() {
+gulp.task('default', ['scripts', 'scripts-noplugin', 'less-to-css'], function() {
     gulp.start('copy', 'copyPlugins', 'copyDTS');
-});
-
-/**
- * The default typescript task, call the tasks: scripts, scripts-noplugin AFTER the task typescript-to-js
- */
-gulp.task('typescript', ['typescript-to-js'], function() {
-    gulp.start('scripts', 'scripts-noplugin');
 });
 
 /**
