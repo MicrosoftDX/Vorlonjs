@@ -1,3 +1,10 @@
+.plugin-dom-explorer [button-block] {
+  display: block;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+}
 .plugin-dom-explorer .dom-explorer-container {
   height: 100%;
   overflow: hidden !important;  
@@ -15,43 +22,79 @@
   padding: 15px;
 }
 .plugin-dom-explorer .treeNodeButton {
-  color: #444;
-  margin-left: -7px;
-  width: 20px;
-  text-align: center;
-  cursor: pointer;
   display: inline-block;
+  color: #444;
+  margin-left: -0.75em;
+  width: 1.5em;
+  text-align: center;
+  background: #fff;
+  cursor: pointer;
+}
+.plugin-dom-explorer .treeNodeButton:before {
+  content: "-";
+  outline: none;
+}
+.plugin-dom-explorer .treeNodeButton[data-collapsed]:before {
+  content: "+";
+  vertical-align: middle;
+}
+.plugin-dom-explorer .treeNodeButton[data-collapsed] ~ .nodeContentContainer {
+  display: none;
 }
 .plugin-dom-explorer .treeNodeHeader {
   text-decoration: none;
   color: #ccc;
+  font-weight: bold;
+}
+.plugin-dom-explorer .treeNodeHeader:focus {
+  outline: 1px dotted #000;
+}
+.plugin-dom-explorer .treeNodeHeader:before {
+  content: "<";
+  color: #000;
+}
+.plugin-dom-explorer .treeNodeHeader:after {
+  content: ">";
+  color: #000;
+}
+.plugin-dom-explorer .nodeContentContainer {
+  padding-left: 1em;
 }
 .plugin-dom-explorer .treeNodeSelected {
-  background: rgba(0,183,199,0.1);
+  background: yellow;
 }
 .plugin-dom-explorer .treeNodeTools {
-  color: #444;
+  color: #444; 
   float: right;
   text-decoration: none;
 }
 .plugin-dom-explorer .treeNodeText {
   text-decoration: none;
   border-left: 1px solid #eee;
-  padding-left: 10px;
 }
 .plugin-dom-explorer .firstTreeNodeText {
   text-decoration: none;
   padding-left: 0px;
 }
+.plugin-dom-explorer .nodeTextContent {
+  color: #555;
+}
 .plugin-dom-explorer .treeNodeClosingText {
-  border-left: 1px solid #eee;
-  padding-left: 13px;
+  margin-left: -1.25em;
+  padding-left: 1em;
+  font-weight: bold;
+  background: #fff;
+}
+.plugin-dom-explorer .treeNodeClosingText:before {
+  content: "</";
+  color: #000;
+}
+.plugin-dom-explorer .treeNodeClosingText:after {
+  content: ">";
+  color: #000;
 }
 .plugin-dom-explorer .nodeName {
-  color: #1d0c3d;
-}
-.plugin-dom-explorer .nodeTag {
-  color: #1d0c3d;
+  color: #6B2D81;
 }
 .plugin-dom-explorer .nodeAttribute {
   color: #ed2424;
@@ -83,7 +126,8 @@
   outline: 1px solid rgb(255, 20, 147);
 }
 .plugin-dom-explorer .styleButton {
-  max-width: 100px;
+  width: 80px;
+  max-width: 50%;
   margin: 10px auto 0;
   color: #444;
   text-align: center;
