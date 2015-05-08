@@ -27,7 +27,6 @@ module VORLON {
         // Start the clientside code
         public startClientSide(): void {
             //don't actually need to do anything at startup
-            console.log('Start client');
         }
 
         // Handle messages from the dashboard, on the client

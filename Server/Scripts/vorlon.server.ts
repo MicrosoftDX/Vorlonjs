@@ -153,12 +153,20 @@ export module VORLON {
             app.get("/vorlon.js/:idsession",(req: any, res: any) => {
                 this._sendVorlonJSFile("../public/vorlon/vorlon.js", req, res);
             });
+            
+            app.get("/vorlon.max.autostartdisabled.js/",(req: any, res: any) => {
+              this._sendVorlonJSFile("../public/vorlon/vorlon.max.js", req, res, false);
+            });
+            
+             app.get("/vorlon.autostartdisabled.js/",(req: any, res: any) => {
+              this._sendVorlonJSFile("../public/vorlon/vorlon.js", req, res, false);
+            });
 
             //DisplayLogs
             winstonDisplay(app, this._log);
         }
 
-        private _sendVorlonJSFile(filepath:string, req: any, res: any){
+        private _sendVorlonJSFile(filepath:string, req: any, res: any, autostart:boolean = true){
             //Read Socket.io file
                 var javascriptFile: string;
                 fs.readFile(path.join(__dirname, "../public/javascripts/socket.io-1.3.5.js"),(err, data) => {
@@ -166,7 +174,9 @@ export module VORLON {
                         this._log.error("ROUTE : Error reading JS File");
                         return;
                     }
+                    
                     javascriptFile = data.toString();
+                    
                     //Read Vorlon.js one file
                     fs.readFile(path.join(__dirname, filepath),(err, data) => {
                         if (err) {
@@ -176,7 +186,12 @@ export module VORLON {
                         var vorlonpluginfiles: string = data.toString();
                         vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"http://' + req.headers.host + '/vorlon/plugins"');
                         javascriptFile += "\r" + vorlonpluginfiles;
-                        javascriptFile += "\r (function() { VORLON.Core.Start('http://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
+                        
+                        if(autostart){
+                            javascriptFile += "\r (function() { VORLON.Core.Start('http://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
+                        }
+                        
+                        res.header('Content-Type', 'application/javascript');
                         res.send(javascriptFile);
                     });
                 });
@@ -328,7 +343,10 @@ export module VORLON {
                         if (receiveMessage.socketid === this.sessions[session].connectedClients[client].socket.id) {
                             this.sessions[session].connectedClients[client].opened = false;
                             this._log.info("PLUGIN : Send RefreshClients to Dashboard " + socket.id + " for session " + session + "(" + session + ") ", { type: "PLUGIN", session: session });
-                            this.dashboards[session].emit("refreshclients");
+                            if (this.dashboards[session])
+                            {
+                                this.dashboards[session].emit("refreshclients");
+                            }
                             this._log.info("PLUGIN : Client Close " + socket.id + " for session " + session + "(" + session + ") ", { type: "PLUGIN", session: session });
                         }
                     }

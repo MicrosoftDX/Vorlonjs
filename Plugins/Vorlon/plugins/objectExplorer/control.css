@@ -20,10 +20,27 @@
 .plugin-objexplorer .tree-view-wrapper #searchbox .dashboard-button {
   margin-left: 4px;
 }
-.plugin-objexplorer .tree-view-wrapper #searchbox #txtPropertyName {
-  display: block;
-  flex: 1;
+.plugin-objexplorer .tree-view-wrapper #searchbox .panel {
+  position: relative;
+}
+.plugin-objexplorer .tree-view-wrapper #searchbox .panel input {
   width: 100%;
+  padding-left: 30px;
+}
+.plugin-objexplorer .tree-view-wrapper #searchbox .panel i {
+  left: 10px;
+  top: 0;
+  line-height: 27px;
+  color: #CCC;
+  position: absolute;
+}
+.plugin-objexplorer .tree-view-wrapper #searchbox .searchPanel {
+  flex: 1;
+}
+.plugin-objexplorer .tree-view-wrapper #searchbox .filterPanel {
+  width: 20%;
+  min-width: 120px;
+  margin-left: 4px;
 }
 .plugin-objexplorer .tree-view-wrapper #treeViewObj {
   position: absolute;
