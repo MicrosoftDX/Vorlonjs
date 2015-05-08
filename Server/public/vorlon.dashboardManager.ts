@@ -109,6 +109,10 @@ module VORLON {
 
                         var clientlist = document.createElement("ul");
                         divClientsListPane.appendChild(clientlist);
+                        
+                        if(clients.length === 0){
+                            DashboardManager.ResetDashboard(false);
+                        }
 
                         for (var i = 0; i < clients.length; i++) {
                             var client = clients[i];
@@ -144,14 +148,16 @@ module VORLON {
         public identify(): void {
             Core.Messenger.sendRealtimeMessage("", { "_sessionid": DashboardManager.SessionId }, VORLON.RuntimeSide.Dashboard, "identify");
         }
-
-        public resetDashboard(): void {
+        
+        public static ResetDashboard(reload:boolean = true): void {
             var sessionid = DashboardManager.SessionId;
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        location.reload();
+                        if(reload){
+                            location.reload();
+                        }
                     }
                 }
             }
