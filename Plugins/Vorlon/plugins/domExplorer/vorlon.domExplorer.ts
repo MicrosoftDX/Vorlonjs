@@ -221,7 +221,7 @@
                 this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
                 
                 this._treeDiv.addEventListener('click', function(e){
-                    var button = e.target;
+                    var button = <HTMLElement>e.target;
                     if (button.className && button.className == 'treeNodeButton') {
                         button.hasAttribute('data-collapsed') ? button.removeAttribute('data-collapsed') : button.setAttribute('data-collapsed', '');
                     }
@@ -327,7 +327,7 @@
             // Append add style button
             this._generateButton(this._styleView, "+", "styleButton").addEventListener('click', (e) => {
                 this._generateStyle("property", "value", internalId, true);
-                this._styleView.appendChild(e.target);
+                this._styleView.appendChild(<HTMLElement>e.target);
             });
 
         }
