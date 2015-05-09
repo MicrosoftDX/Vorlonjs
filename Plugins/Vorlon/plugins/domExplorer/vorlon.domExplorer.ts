@@ -345,12 +345,16 @@
             
             if (receivedObject.id) {
                 this._appendSpan(link, "nodeAttribute", " id");
+                this._appendSpan(link, "nodeTag", "=\"");
                 this._appendSpan(link, "nodeValue", receivedObject.id);
+                this._appendSpan(link, "nodeTag", "\"");
             }
 
             if (receivedObject.classes) {
                 this._appendSpan(link, "nodeAttribute", " class");
+                this._appendSpan(link, "nodeTag", "=\"");
                 this._appendSpan(link, "nodeValue", receivedObject.classes);
+                this._appendSpan(link, "nodeTag", "\"");
             }
         }
           
@@ -442,9 +446,8 @@
     
                 // Children
                 var nodes = receivedObject.children;
-                var count = nodes.length;
-                if (count) {
-                    for (var index = 0; index < count; index++) {
+                if (nodes && nodes.length) {
+                    for (var index = 0; index < nodes.length; index++) {
                         var child = nodes[index];
                         if (child.nodeType != 3) this._generateTreeNode(container, child);
                     }

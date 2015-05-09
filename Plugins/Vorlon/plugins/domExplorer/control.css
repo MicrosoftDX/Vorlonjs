@@ -108,6 +108,9 @@
 .plugin-dom-explorer .nodeValue {
   color: #007ca7;
 }
+.plugin-dom-explorer .nodeTag {
+  color: #6B2D81;
+}
 .plugin-dom-explorer .styleLabel {
   display: inline-block;
   margin-right: 2px;
