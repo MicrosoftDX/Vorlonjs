@@ -376,11 +376,13 @@
                 if (this._spaceCheck.test(receivedObject.content)){
                     var textNode = document.createElement('span');
                     textNode.className = 'nodeTextContent';
-                    textNode.textContent = receivedObject.content;
+                    textNode.textContent = receivedObject.content.trim();
                     parentNode.appendChild(textNode);
                 }
             }
             else {
+                parentNode.setAttribute('data-has-children', '');
+                
                 var root = document.createElement("div");
                 parentNode.appendChild(root);
     

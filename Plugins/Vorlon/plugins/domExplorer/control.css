@@ -66,6 +66,15 @@
 .plugin-dom-explorer .nodeContentContainer {
   padding-left: 1em;
 }
+.plugin-dom-explorer .nodeContentContainer:not([data-has-children]),
+.plugin-dom-explorer .nodeContentContainer:not([data-has-children]) .treeNodeClosingText {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+.plugin-dom-explorer .nodeContentContainer:not([data-has-children]) .nodeTextContent {
+  padding: 0 0.25em;
+}
 .plugin-dom-explorer .treeNodeSelected {
   background: yellow;
 }
