@@ -34,6 +34,28 @@
                 this._cache.push(data);
             });
 
+            Tools.Hook(window.console, "debug", (message: string): void => {
+                var data = {
+                    message: message,
+                    type: "debug"
+                };
+
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+
+                this._cache.push(data);
+            });
+
+            Tools.Hook(window.console, "info", (message: string): void => {
+                var data = {
+                    message: message,
+                    type: "info"
+                };
+
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+
+                this._cache.push(data);
+            });
+
             Tools.Hook(window.console, "warn",(message: string): void => {
                 var data = {
                     message: message,
@@ -137,6 +159,14 @@
                 case "log":
                     messageDiv.innerHTML = receivedObject.message;
                     Tools.AddClass(messageDiv, "logMessage");
+                    break;
+                case "debug":
+                    messageDiv.innerHTML = receivedObject.message;
+                    Tools.AddClass(messageDiv, "logDebug");
+                    break;
+                case "info":
+                    messageDiv.innerHTML = receivedObject.message;
+                    Tools.AddClass(messageDiv, "logInfo");
                     break;
                 case "warn":
                     messageDiv.innerHTML = receivedObject.message;
