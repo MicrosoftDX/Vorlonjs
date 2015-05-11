@@ -6,7 +6,7 @@ module VORLON {
         private _internalId = 0;
         private _lastElementSelectedClientSide;
         private _timeoutId;
-		private _newAppliedStyles = {};
+	private _newAppliedStyles = {};
         constructor() {
             super("domExplorer", "control.html", "control.css");
             this._ready = false;
@@ -116,7 +116,7 @@ module VORLON {
 
         private _packageAndSendDOM() {
             this._internalId = 0;
-
+	    this._newAppliedStyles = {};
             var packagedObject = this._packageNode(document.body);
             this._packageDOM(document.body, packagedObject);
 
@@ -254,33 +254,32 @@ module VORLON {
             valueElement.contentEditable = "false";
             valueElement.innerHTML = value || "&nbsp;";
             valueElement.className = "styleValue";
-
             valueElement.addEventListener("keydown",(evt) => {
                 if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-					//Create the properties object of elements.
-					var propertyObject = {};
-					propertyObject.property = label.innerHTML;
-					propertyObject.newValue = valueElement.innerHTML;
-					if(this._newAppliedStyles[internalId] !== undefined){
-						var propsArr = this._newAppliedStyles[internalId];
-						//check the property exsists in array
-						for(var porp =0;porp<propsArr.length;porp0++){
-							var propObj = propsArr[porp];
-							if(propObj.property === propertyObject.property){
-								propObj.newValue =propertyObject.newValue;
-								propertyObject = propObj;
-								propsArr.pop(porp)
-								break;
-							}
-						}
-						propsArr.push(propertyObject);
-					}else{
-						var proArr = [];
-						proArr.push(propertyObject);
-						this._newAppliedStyles[internalId] = proArr;
+		//Create the properties object of elements.
+			var propertyObject = {};
+			propertyObject.property = label.innerHTML;
+			propertyObject.newValue = valueElement.innerHTML;
+			if(this._newAppliedStyles[internalId] !== undefined){
+				var propsArr = this._newAppliedStyles[internalId];
+				//check if property exists in array
+				for(var porp =0;porp<propsArr.length;porp0++){
+					var propObj = propsArr[porp];
+					if(propObj.property === propertyObject.property){
+						propObj.newValue =propertyObject.newValue;
+						propertyObject = propObj;
+						propsArr.pop(porp)
+						break;
 					}
-                   Core.Messenger.sendRealtimeMessage(this.getID(), {
-                        type: "ruleEdit",
+				}
+				propsArr.push(propertyObject);
+			}else{
+				var proArr = [];
+				proArr.push(propertyObject);
+				this._newAppliedStyles[internalId] = proArr;
+			}
+		    Core.Messenger.sendRealtimeMessage(this.getID(), {
+	                type: "ruleEdit",
                         property: label.innerHTML,
                         newValue: valueElement.innerHTML,
                         order: internalId
