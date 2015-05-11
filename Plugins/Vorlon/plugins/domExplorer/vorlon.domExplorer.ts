@@ -263,7 +263,7 @@ module VORLON {
 			if(this._newAppliedStyles[internalId] !== undefined){
 				var propsArr = this._newAppliedStyles[internalId];
 				//check if property exists in array
-				for(var porp =0;porp<propsArr.length;porp0++){
+				for(var porp =0;porp<propsArr.length;porp++){
 					var propObj = propsArr[porp];
 					if(propObj.property === propertyObject.property){
 						propObj.newValue =propertyObject.newValue;
