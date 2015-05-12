@@ -1,4 +1,4 @@
-﻿module VORLON {
+module VORLON {
     declare var $: any;
     export class DOMExplorer extends Plugin {
 
@@ -6,7 +6,7 @@
         private _internalId = 0;
         private _lastElementSelectedClientSide;
         private _timeoutId;
-
+	private _newAppliedStyles = {};
         constructor() {
             super("domExplorer", "control.html", "control.css");
             this._ready = false;
@@ -119,7 +119,7 @@
 
         private _packageAndSendDOM() {
             this._internalId = 0;
-
+	    this._newAppliedStyles = {};
             var packagedObject = this._packageNode(document.body);
             this._packageDOM(document.body, packagedObject);
 
@@ -257,11 +257,32 @@
             valueElement.contentEditable = "false";
             valueElement.innerHTML = value || "&nbsp;";
             valueElement.className = "styleValue";
-
             valueElement.addEventListener("keydown",(evt) => {
-                if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                    Core.Messenger.sendRealtimeMessage(this.getID(), {
-                        type: "ruleEdit",
+            if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+	          //Create the properties object of elements.
+    			var propertyObject:any = {};
+    			propertyObject.property = label.innerHTML;
+    			propertyObject.newValue = valueElement.innerHTML;
+    			if(this._newAppliedStyles[internalId] !== undefined) {
+    				var propsArr = this._newAppliedStyles[internalId];
+    				//check if property exists in array
+    				for(var index = 0; index < propsArr.length; index++) {
+    					var propObj = propsArr[index];
+    					if(propObj.property === propertyObject.property) {
+    						propObj.newValue = propertyObject.newValue;
+    						propertyObject = propObj;
+    						propsArr.splice(index, 1);
+    						break;
+    					}
+    				}
+    				propsArr.push(propertyObject);
+			} else {
+				var proArr = [];
+				proArr.push(propertyObject);
+				this._newAppliedStyles[internalId] = proArr;
+			}
+		    Core.Messenger.sendRealtimeMessage(this.getID(), {
+	                type: "ruleEdit",
                         property: label.innerHTML,
                         newValue: valueElement.innerHTML,
                         order: internalId
@@ -326,7 +347,13 @@
 
                 this._generateStyle(splits[0], splits[1], internalId);
             }
-
+			if(this._newAppliedStyles[internalId]){
+				var newProps = this._newAppliedStyles[internalId];
+				for(var index = 0;index<newProps.length;index++){
+					var currentObj = newProps[index];
+	                this._generateStyle(currentObj.property, currentObj.newValue, internalId);
+				}
+			}
             // Append add style button
             this._generateButton(this._styleView, "+", "styleButton").addEventListener('click', (e) => {
                 this._generateStyle("property", "value", internalId, true);
