@@ -255,25 +255,25 @@ module VORLON {
             valueElement.innerHTML = value || "&nbsp;";
             valueElement.className = "styleValue";
             valueElement.addEventListener("keydown",(evt) => {
-                if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-		//Create the properties object of elements.
-			var propertyObject = {};
-			propertyObject.property = label.innerHTML;
-			propertyObject.newValue = valueElement.innerHTML;
-			if(this._newAppliedStyles[internalId] !== undefined){
-				var propsArr = this._newAppliedStyles[internalId];
-				//check if property exists in array
-				for(var porp =0;porp<propsArr.length;porp++){
-					var propObj = propsArr[porp];
-					if(propObj.property === propertyObject.property){
-						propObj.newValue =propertyObject.newValue;
-						propertyObject = propObj;
-						propsArr.pop(porp)
-						break;
-					}
-				}
-				propsArr.push(propertyObject);
-			}else{
+            if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+	          //Create the properties object of elements.
+    			var propertyObject:any = {};
+    			propertyObject.property = label.innerHTML;
+    			propertyObject.newValue = valueElement.innerHTML;
+    			if(this._newAppliedStyles[internalId] !== undefined) {
+    				var propsArr = this._newAppliedStyles[internalId];
+    				//check if property exists in array
+    				for(var index = 0; index < propsArr.length; index++) {
+    					var propObj = propsArr[index];
+    					if(propObj.property === propertyObject.property) {
+    						propObj.newValue = propertyObject.newValue;
+    						propertyObject = propObj;
+    						propsArr.splice(index, 1);
+    						break;
+    					}
+    				}
+    				propsArr.push(propertyObject);
+			} else {
 				var proArr = [];
 				proArr.push(propertyObject);
 				this._newAppliedStyles[internalId] = proArr;
