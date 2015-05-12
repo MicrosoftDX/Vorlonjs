@@ -50,34 +50,26 @@ gulp.task('scripts-noplugin', ['typescript-to-js'], function() {
         .pipe(concat('vorlon-noplugin.max.js'))
         .pipe(gulp.dest('release/'))
         .pipe(rename('vorlon-noplugin.js'))
-        //.pipe(uglify({ outSourceMap: true })) //waiting for https://github.com/gulpjs/gulp/issues/356
         .pipe(uglify())
         .pipe(gulp.dest('release/'));
 
 });
 
 /**
- * Concat all js files in order into one big js file and minify it.
+ * Minify all plugins.
  * Do not hesitate to update it if you need to add your own files.
  */
 gulp.task('scripts', ['typescript-to-js'], function () {
     return gulp.src([
-            'release/vorlon.tools.js',
-            'release/vorlon.enums.js',
-            'release/vorlon.plugin.js',
-            'release/vorlon.clientMessenger.js',
-            'release/vorlon.core.js',
             'release/plugins/interactiveConsole/vorlon.interactiveConsole.js',
             'release/plugins/domExplorer/vorlon.domExplorer.js',
             'release/plugins/modernizrReport/vorlon.modernizrReport.js',
             'release/plugins/objectExplorer/vorlon.objectExplorer.js',
             'release/plugins/sample/sample.js'
         ])
-        .pipe(concat('vorlon.max.js'))
-        .pipe(gulp.dest('release/'))
-        .pipe(rename('vorlon.js'))
+        .pipe(rename({suffix:'.min'}))
         .pipe(uglify())
-        .pipe(gulp.dest('release/'));
+        .pipe(gulp.dest('release/plugins/'));
 
 });
 
@@ -87,8 +79,6 @@ gulp.task('scripts', ['typescript-to-js'], function () {
 gulp.task('copy', function () {
 
     gulp.src([
-            'release/vorlon.max.js',
-            'release/vorlon.js',
             'release/vorlon-noplugin.max.js',
             'release/vorlon-noplugin.js'
         ])
