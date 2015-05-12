@@ -178,7 +178,7 @@ module VORLON {
                 switch (receivedObject.type) {
                     case "unselect":
                         if(this._lastElementSelectedClientSide){
-                            this._lastElementSelectedClientSide.style.border = this._lastElementSelectedClientSide.__savedBorder;
+                            this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
                         }
                         break;
                 }
@@ -193,12 +193,12 @@ module VORLON {
 
             switch (receivedObject.type) {
                 case "select":
-                    element.__savedBorder = element.style.border;
-                    element.style.border = "2px solid red";
+                    element.__savedOutline = element.style.outline;
+                    element.style.outline = "2px solid red";
                     this._lastElementSelectedClientSide = element;
                     break;
                 case "unselect":
-                    element.style.border = element.__savedBorder;
+                    element.style.outline = element.__savedOutline;
                     break;
                 case "ruleEdit":
                     element.style[receivedObject.property] = receivedObject.newValue;
