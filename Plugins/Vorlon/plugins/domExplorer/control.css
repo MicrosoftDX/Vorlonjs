@@ -92,7 +92,7 @@
   padding-left: 0px;
 }
 .plugin-dom-explorer .nodeTextContent {
-  color: #555;
+  color: #777;
 }
 .plugin-dom-explorer .treeNodeClosingText {
   margin-left: -1.25em;
@@ -112,12 +112,20 @@
   color: #6B2D81;
 }
 .plugin-dom-explorer .nodeAttribute {
+  padding-left: 0.5em;
+}
+.plugin-dom-explorer .nodeAttribute span:first-child {
   color: #ed2424;
 }
-.plugin-dom-explorer .nodeValue {
+.plugin-dom-explorer .nodeAttribute span:first-child:after {
+  content: "=\"";
+  color: #6B2D81;
+}
+.plugin-dom-explorer .nodeAttribute span:last-child {
   color: #007ca7;
 }
-.plugin-dom-explorer .nodeTag {
+.plugin-dom-explorer .nodeAttribute span:last-child:after {
+  content: "\"";
   color: #6B2D81;
 }
 .plugin-dom-explorer .styleLabel {
