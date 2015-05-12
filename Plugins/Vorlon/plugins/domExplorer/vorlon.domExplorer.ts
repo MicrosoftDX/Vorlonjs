@@ -87,6 +87,9 @@ module VORLON {
                 name: node.localName,
                 classes: node.className,
                 content: node.textContent,
+                attributes: node.attributes ? Array.prototype.map.call(node.attributes, function(attr){
+                   return [attr.name, attr.value];
+                }) : [],
                 styles: this._getAppliedStyles(node),
                 internalId: this._internalId++
             };
@@ -175,7 +178,7 @@ module VORLON {
                 switch (receivedObject.type) {
                     case "unselect":
                         if(this._lastElementSelectedClientSide){
-                            this._lastElementSelectedClientSide.style.border = this._lastElementSelectedClientSide.__savedBorder;
+                            this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
                         }
                         break;
                 }
@@ -190,12 +193,12 @@ module VORLON {
 
             switch (receivedObject.type) {
                 case "select":
-                    element.__savedBorder = element.style.border;
-                    element.style.border = "2px solid red";
+                    element.__savedOutline = element.style.outline;
+                    element.style.outline = "2px solid red";
                     this._lastElementSelectedClientSide = element;
                     break;
                 case "unselect":
-                    element.style.border = element.__savedBorder;
+                    element.style.outline = element.__savedOutline;
                     break;
                 case "ruleEdit":
                     element.style[receivedObject.property] = receivedObject.newValue;
@@ -370,19 +373,12 @@ module VORLON {
         private _generateColorfullLink(link: HTMLAnchorElement, receivedObject: any): void {
             this._appendSpan(link, "nodeName", receivedObject.name);
             
-            if (receivedObject.id) {
-                this._appendSpan(link, "nodeAttribute", " id");
-                this._appendSpan(link, "nodeTag", "=\"");
-                this._appendSpan(link, "nodeValue", receivedObject.id);
-                this._appendSpan(link, "nodeTag", "\"");
-            }
-
-            if (receivedObject.classes) {
-                this._appendSpan(link, "nodeAttribute", " class");
-                this._appendSpan(link, "nodeTag", "=\"");
-                this._appendSpan(link, "nodeValue", receivedObject.classes);
-                this._appendSpan(link, "nodeTag", "\"");
-            }
+            receivedObject.attributes.forEach(function(attr){
+                var node = document.createElement('span');
+                node.className = 'nodeAttribute';
+                node.innerHTML = '<span>' + attr[0] + '</span><span>' + attr[1] + '</span>'; 
+                link.appendChild(node);
+            });
         }
           
         private _generateColorfullClosingLink(link: HTMLElement, receivedObject: any): void {
