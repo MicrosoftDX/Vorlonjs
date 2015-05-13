@@ -68,7 +68,7 @@ module VORLON {
                             }
 
                             var pluginscript = document.createElement("script");
-                            pluginscript.setAttribute("src", plugin.path);
+                            pluginscript.setAttribute("src", "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".min.js");
 
                             pluginscript.onload = (oError) => {
                                 pluginLoaded++;

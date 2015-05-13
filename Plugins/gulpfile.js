@@ -61,16 +61,18 @@ gulp.task('scripts-noplugin', ['typescript-to-js'], function() {
  */
 gulp.task('scripts', ['typescript-to-js'], function () {
     return gulp.src([
-            'release/plugins/interactiveConsole/vorlon.interactiveConsole.js',
-            'release/plugins/domExplorer/vorlon.domExplorer.js',
-            'release/plugins/modernizrReport/vorlon.modernizrReport.js',
-            'release/plugins/objectExplorer/vorlon.objectExplorer.js',
-            'release/plugins/sample/sample.js'
+            './**/vorlon.interactiveConsole.js',
+            './**/vorlon.domExplorer.js',
+            './**/vorlon.modernizrReport.js',
+            './**/objectExplorer/vorlon.objectExplorer.js',
+            './**/sample/sample.js'
         ])
-        .pipe(rename({suffix:'.min'}))
+        .pipe(rename(function (path) {
+                path.extname = ".min.js";
+              })
+            )
         .pipe(uglify())
-        .pipe(gulp.dest('release/plugins/'));
-
+        .pipe(gulp.dest('.'));
 });
 
 /**
