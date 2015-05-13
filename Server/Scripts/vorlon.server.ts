@@ -143,7 +143,7 @@ export module VORLON {
             });
 
             app.get("/vorlon.max.js/:idsession",(req: any, res: any) => {
-                this._sendVorlonJSFile("../public/vorlon/vorlon.max.js", req, res);
+                this._sendVorlonJSFile(false, req, res);
             });
 
             app.get("/vorlon.js/",(req: any, res: any) => {
@@ -151,50 +151,74 @@ export module VORLON {
             });
 
             app.get("/vorlon.js/:idsession",(req: any, res: any) => {
-                this._sendVorlonJSFile("../public/vorlon/vorlon.js", req, res);
+                this._sendVorlonJSFile(true, req, res);
             });
             
             app.get("/vorlon.max.autostartdisabled.js/",(req: any, res: any) => {
-              this._sendVorlonJSFile("../public/vorlon/vorlon.max.js", req, res, false);
+              this._sendVorlonJSFile(false, req, res, false);
             });
             
              app.get("/vorlon.autostartdisabled.js/",(req: any, res: any) => {
-              this._sendVorlonJSFile("../public/vorlon/vorlon.js", req, res, false);
+              this._sendVorlonJSFile(true, req, res, false);
             });
 
             //DisplayLogs
             winstonDisplay(app, this._log);
         }
 
-        private _sendVorlonJSFile(filepath:string, req: any, res: any, autostart:boolean = true){
+        private _sendVorlonJSFile(ismin: boolean, req: any, res: any, autostart:boolean = true){
             //Read Socket.io file
-                var javascriptFile: string;
-                fs.readFile(path.join(__dirname, "../public/javascripts/socket.io-1.3.5.js"),(err, data) => {
+            var javascriptFile: string;
+            
+            fs.readFile(path.join(__dirname, "../public/javascripts/socket.io-1.3.5.js"),(err, data) => {
+                if (err) {
+                    this._log.error("ROUTE : Error reading JS File");
+                    return;
+                }
+                
+                javascriptFile = data.toString();
+                            
+                fs.readFile(path.join(__dirname, "../public/catalog.json"), "utf8", (err, catalogdata) => {
                     if (err) {
-                        this._log.error("ROUTE : Error reading JS File");
+                        this._log.error("ROUTE : Error reading catalon.json file");
                         return;
                     }
+            
+                    var catalogstring = catalogdata.toString().replace(/^\uFEFF/, '');
+                    console.log(catalogstring);
+                    var catalog = JSON.parse(catalogstring);
+                    var vorlonpluginfiles: string = "";
                     
-                    javascriptFile = data.toString();
+                    if(ismin){
+                        vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/vorlon-noplugin.js"));
+                    }
+                    else{
+                        vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/vorlon-noplugin.max.js"));
+                    }
                     
-                    //Read Vorlon.js one file
-                    fs.readFile(path.join(__dirname, filepath),(err, data) => {
-                        if (err) {
-                            this._log.error("ROUTE : Error reading JS File");
-                            return;
-                        }
-                        var vorlonpluginfiles: string = data.toString();
-                        vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"http://' + req.headers.host + '/vorlon/plugins"');
-                        javascriptFile += "\r" + vorlonpluginfiles;
+                    for(var pluginid = 0; pluginid < catalog.plugins.length; pluginid++){
+                        var plugin = catalog.plugins[pluginid];
                         
-                        if(autostart){
-                            javascriptFile += "\r (function() { VORLON.Core.Start('http://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
+                        //Read Vorlon.js file
+                        if(ismin){
+                            vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public", plugin.minpath));
                         }
-                        
-                        res.header('Content-Type', 'application/javascript');
-                        res.send(javascriptFile);
-                    });
+                        else{
+                            vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public", plugin.path));
+                        }
+                    }
+                    
+                    vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"http://' + req.headers.host + '/vorlon/plugins"');
+                    javascriptFile += "\r" + vorlonpluginfiles;
+                    
+                    if(autostart){
+                        javascriptFile += "\r (function() { VORLON.Core.Start('http://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
+                    }
+                    
+                    res.header('Content-Type', 'application/javascript');
+                    res.send(javascriptFile);
                 });
+            });
         }
 
         public start(httpServer: http.Server): void {
