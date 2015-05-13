@@ -1,27 +1,27 @@
-.plugin-dom-explorer [button-block] {
+.plugin-dom [button-block] {
   display: block;
   padding: 0;
   margin: 0;
   border: none;
   background: none;
 }
-.plugin-dom-explorer .dom-explorer-container {
+.plugin-dom .dom-explorer-container {
   height: 100%;
   overflow: hidden !important;  
 }
-.plugin-dom-explorer .panel-left,
-.plugin-dom-explorer .panel-right {
+.plugin-dom .panel-left,
+.plugi.plugin-domn-dom-explorer .panel-right {
   height: 100%;
 }
-.plugin-dom-explorer .tree-view,
-.plugin-dom-explorer .style-view {
+.plugin-dom .tree-view,
+.plugin-dom .style-view {
   padding: 0;
 }
-.plugin-dom-explorer #treeView,
-.plugin-dom-explorer #styleView {
+.plugin-dom #treeView,
+.plugin-dom #styleView {
   padding: 15px;
 }
-.plugin-dom-explorer .treeNodeButton {
+.plugin-dom .treeNodeButton {
   display: inline-block;
   color: #444;
   margin-left: -0.75em;
@@ -30,106 +30,106 @@
   background: #fff;
   cursor: pointer;
 }
-.plugin-dom-explorer .treeNodeButton:before {
+.plugin-dom .treeNodeButton:before {
   content: "-";
   outline: none;
 }
-.plugin-dom-explorer .treeNodeButton[data-collapsed]:before {
+.plugin-dom .treeNodeButton[data-collapsed]:before {
   content: "+";
   vertical-align: middle;
 }
-.plugin-dom-explorer .treeNodeButton[data-collapsed] ~ .nodeContentContainer {
+.plugin-dom .treeNodeButton[data-collapsed] ~ .nodeContentContainer {
   display: none;
 }
-.plugin-dom-explorer .treeNodeButton::-moz-focus-inner {
+.plugin-dom .treeNodeButton::-moz-focus-inner {
   border: none;
 }
-.plugin-dom-explorer .treeNodeButton:focus {
+.plugin-dom .treeNodeButton:focus {
   outline: 1px dotted #000;
 }
-.plugin-dom-explorer .treeNodeHeader {
+.plugin-dom .treeNodeHeader {
   text-decoration: none;
   color: #ccc;
   font-weight: bold;
 }
-.plugin-dom-explorer .treeNodeHeader:focus {
+.plugin-dom .treeNodeHeader:focus {
   outline: 1px dotted #000;
 }
-.plugin-dom-explorer .treeNodeHeader:before {
+.plugin-dom .treeNodeHeader:before {
   content: "<";
   color: #000;
 }
-.plugin-dom-explorer .treeNodeHeader:after {
+.plugin-dom .treeNodeHeader:after {
   content: ">";
   color: #000;
 }
-.plugin-dom-explorer .nodeContentContainer {
+.plugin-dom .nodeContentContainer {
   padding-left: 1em;
 }
-.plugin-dom-explorer .nodeContentContainer:not([data-has-children]),
-.plugin-dom-explorer .nodeContentContainer:not([data-has-children]) .treeNodeClosingText {
+.plugin-dom .nodeContentContainer:not([data-has-children]),
+.plugin-dom .nodeContentContainer:not([data-has-children]) .treeNodeClosingText {
   display: inline;
   margin: 0;
   padding: 0;
 }
-.plugin-dom-explorer .nodeContentContainer:not([data-has-children]) .nodeTextContent {
+.plugin-dom .nodeContentContainer:not([data-has-children]) .nodeTextContent {
   padding: 0 0.25em;
 }
-.plugin-dom-explorer .treeNodeSelected {
+.plugin-dom .treeNodeSelected {
   background: yellow;
 }
-.plugin-dom-explorer .treeNodeTools {
+.plugin-dom .treeNodeTools {
   color: #444; 
   float: right;
   text-decoration: none;
 }
-.plugin-dom-explorer .treeNodeText {
+.plugin-dom .treeNodeText {
   text-decoration: none;
   border-left: 1px solid #eee;
 }
-.plugin-dom-explorer .firstTreeNodeText {
+.plugin-dom .firstTreeNodeText {
   text-decoration: none;
   padding-left: 0px;
 }
-.plugin-dom-explorer .nodeTextContent {
+.plugin-dom .nodeTextContent {
   color: #555;
 }
-.plugin-dom-explorer .treeNodeClosingText {
+.plugin-dom .treeNodeClosingText {
   margin-left: -1.25em;
   padding-left: 1em;
   font-weight: bold;
   background: #fff;
 }
-.plugin-dom-explorer .treeNodeClosingText:before {
+.plugin-dom .treeNodeClosingText:before {
   content: "</";
   color: #000;
 }
-.plugin-dom-explorer .treeNodeClosingText:after {
+.plugin-dom .treeNodeClosingText:after {
   content: ">";
   color: #000;
 }
-.plugin-dom-explorer .nodeName {
+.plugin-dom .nodeName {
   color: #6B2D81;
 }
-.plugin-dom-explorer .nodeAttribute {
+.plugin-dom .nodeAttribute {
   color: #ed2424;
 }
-.plugin-dom-explorer .nodeValue {
+.plugin-dom .nodeValue {
   color: #007ca7;
 }
-.plugin-dom-explorer .nodeTag {
+.plugin-dom .nodeTag {
   color: #6B2D81;
 }
-.plugin-dom-explorer .styleLabel {
+.plugin-dom .styleLabel {
   display: inline-block;
   margin-right: 2px;
   padding: 0 2px;
   color: #ed2424;
 }
-.plugin-dom-explorer .styleLabel:after {
+.plugin-dom .styleLabel:after {
   content: ":";
 }
-.plugin-dom-explorer .styleValue {
+.plugin-dom .styleValue {
   display: inline;
   margin-left: 2px;
   padding: 0 2px;
@@ -137,13 +137,13 @@
   word-wrap: break-word;
   vertical-align: top;
 }
-.plugin-dom-explorer .styleLabel.editable,
-.plugin-dom-explorer .styleValue.editable {
+.plugin-dom .styleLabel.editable,
+.plugin-dom .styleValue.editable {
   background-color: rgba(0,183,199,0.1);
   color: #666;
   outline: 1px solid rgb(255, 20, 147);
 }
-.plugin-dom-explorer .styleButton {
+.plugin-dom .styleButton {
   width: 80px;
   max-width: 50%;
   margin: 10px auto 0;
