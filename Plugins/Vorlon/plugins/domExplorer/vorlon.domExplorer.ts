@@ -232,24 +232,21 @@ module VORLON {
                 
                 this._treeDiv.addEventListener('mouseenter', (e) => {
                     var node = <HTMLElement>e.target;
-                    var parentNode = <HTMLElement>node.parentNode;
+                    var parent = node.parentElement;
                     var isHeader = node.className.match('treeNodeHeader');
-                    if (isHeader || parentNode.className.match('treeNodeClosingText')) {
-                        var parent = <HTMLElement>node.parentNode;
+                    if (isHeader || parent.className.match('treeNodeClosingText')) {
                         if (isHeader) {
                             parent.setAttribute('data-hovered-tag', '');
                         }
                         else {
-                            var parentofParentNode = <HTMLElement>parentNode.parentNode;
-                            parentofParentNode.setAttribute('data-hovered-tag', '');
+                            parent.parentElement.parentElement.setAttribute('data-hovered-tag', '');
                         }
                     }
                 }, true);
                 
                 this._treeDiv.addEventListener('mouseleave', (e) => {
                     var node = <HTMLElement>e.target;
-                    var parentNode = <HTMLElement>node.parentNode; 
-                    if (node.className.match('treeNodeHeader') || parentNode.className.match('treeNodeClosingText')) {
+                    if (node.className.match('treeNodeHeader') || node.parentElement.className.match('treeNodeClosingText')) {
                         var hovered = this._treeDiv.querySelector('[data-hovered-tag]')
                         if (hovered) hovered.removeAttribute('data-hovered-tag');
                     }
