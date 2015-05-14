@@ -75,8 +75,13 @@
 .plugin-dom-explorer .nodeContentContainer:not([data-has-children]) .nodeTextContent {
   padding: 0 0.25em;
 }
-.plugin-dom-explorer .treeNodeSelected {
-  background: yellow;
+.plugin-dom-explorer [data-hovered-tag] > .treeNodeHeader,
+.plugin-dom-explorer [data-hovered-tag] > .nodeContentContainer > .treeNodeClosingText .nodeName {
+  background: cyan;
+}
+.plugin-dom-explorer .treeNodeSelected,
+.plugin-dom-explorer .treeNodeSelected ~ .nodeContentContainer > .treeNodeClosingText .nodeName {
+  background: yellow !important;
 }
 .plugin-dom-explorer .treeNodeTools {
   color: #444; 
@@ -95,16 +100,16 @@
   color: #777;
 }
 .plugin-dom-explorer .treeNodeClosingText {
-  margin-left: -1.25em;
-  padding-left: 1em;
+  margin-left: -0.25em;
   font-weight: bold;
   background: #fff;
+  cursor: default;
 }
-.plugin-dom-explorer .treeNodeClosingText:before {
+.plugin-dom-explorer .treeNodeClosingText .nodeName:before {
   content: "</";
   color: #000;
 }
-.plugin-dom-explorer .treeNodeClosingText:after {
+.plugin-dom-explorer .treeNodeClosingText .nodeName:after {
   content: ">";
   color: #000;
 }
