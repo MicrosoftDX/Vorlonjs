@@ -225,10 +225,28 @@ module VORLON {
                 
                 this._treeDiv.addEventListener('click', function(e){
                     var button = <HTMLElement>e.target;
-                    if (button.className && button.className == 'treeNodeButton') {
+                    if (button.className.match('treeNodeButton')) {
                         button.hasAttribute('data-collapsed') ? button.removeAttribute('data-collapsed') : button.setAttribute('data-collapsed', '');
                     }
                 });
+                
+                this._treeDiv.addEventListener('mouseenter', (e) => {
+                    var node = <HTMLElement>e.target;
+                    var isHeader = node.className.match('treeNodeHeader');
+                    if (isHeader || node.parentNode.className.match('treeNodeClosingText')) {
+                        var parent = <HTMLElement>node.parentNode;
+                        if (isHeader) parent.setAttribute('data-hovered-tag', '');
+                        else parent.parentNode.parentNode.setAttribute('data-hovered-tag', '');
+                    }
+                }, true);
+                
+                this._treeDiv.addEventListener('mouseleave', (e) => {
+                    var node = <HTMLElement>e.target;
+                    if (node.className.match('treeNodeHeader') || node.parentNode.className.match('treeNodeClosingText')) {
+                        var hovered = this._treeDiv.querySelector('[data-hovered-tag]')
+                        if (hovered) hovered.removeAttribute('data-hovered-tag');
+                    }
+                }, true);
                 
                 $('.dom-explorer-container').split({
                     orientation: 'vertical',
