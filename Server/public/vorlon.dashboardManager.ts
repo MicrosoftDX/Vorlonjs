@@ -84,6 +84,22 @@ module VORLON {
                                 }
                             };
                             document.body.appendChild(pluginscript);
+                             
+                            $('#pluginsPaneTop').bind('keydown', function(e) {
+                                if(e.which == 9) {
+                                    if(event.preventDefault) {
+                                        event.preventDefault();
+                                    }
+                                }
+                            });
+                            
+                            $('#pluginsPaneBottom').bind('keydown', function(e) {
+                                if(e.which == 9) {
+                                    if(event.preventDefault) {
+                                        event.preventDefault();
+                                    }
+                                }
+                            });
                         }
 
                         DashboardManager.UpdateClientInfo();

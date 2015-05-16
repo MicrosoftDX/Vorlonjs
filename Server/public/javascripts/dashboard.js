@@ -4,7 +4,6 @@ jQuery(function($) {
     orientation: 'horizontal',
     limit: 38
   });
-  //$('.dom-explorer-container').split({orientation: 'vertical', limit: 50, position: '70%'});
 
   //Plugin tab navigation
   $('#pluginsPaneTop').on('click', '[data-plugin-target]', function (e) {
@@ -24,6 +23,4 @@ jQuery(function($) {
     $('#pluginsPaneBottom [data-plugin]').hide();
     $('#pluginsPaneBottom [data-plugin~=' + target + ']').show();
   });
-
- // $('#pluginsPaneTop [data-plugin-target]').first().click();
 });
