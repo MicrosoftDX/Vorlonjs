@@ -58,10 +58,16 @@ module VORLON {
                               plugintab.setAttribute('data-plugin-target', plugin.id);
                               
                               if(plugin.panel === "bottom"){
+                                if(divPluginsBottom.children.length === 1){
+                                    pluginmaindiv.classList.add("active");
+                                }
                                 divPluginsBottom.appendChild(pluginmaindiv);
                                 divPluginBottomTabs.appendChild(plugintab);
                               }
                               else {
+                                if(divPluginsTop.children.length === 1){
+                                    pluginmaindiv.classList.add("active");
+                                }
                                 divPluginsTop.appendChild(pluginmaindiv);
                                 divPluginTopTabs.appendChild(plugintab);
                               }
@@ -84,17 +90,6 @@ module VORLON {
                                 }
                             };
                             document.body.appendChild(pluginscript);
-                            
-                            var preventTab = function(e) {
-                                if(e.which == 9) {
-                                    if(event.preventDefault) {
-                                        event.preventDefault();
-                                    }
-                                }
-                            };
-                             
-                            $('#pluginsPaneTop').bind('keydown', preventTab);
-                            $('#pluginsPaneBottom').bind('keydown', preventTab);
                         }
 
                         DashboardManager.UpdateClientInfo();
@@ -154,7 +149,6 @@ module VORLON {
                             pluginlistelement.appendChild(pluginlistelementa);
 
                             DashboardManager.ClientList.push(client);
-
                             DashboardManager.UpdateClientWaitingInfo(client.clientid, client.waitingevents);
                         }
                     }
