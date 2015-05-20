@@ -65,7 +65,7 @@ gulp.task('scripts', ['typescript-to-js'], function () {
             './**/vorlon.domExplorer.js',
             './**/vorlon.modernizrReport.js',
             './**/objectExplorer/vorlon.objectExplorer.js',
-            './**/sample/sample.js'
+            './**/sample/vorlon.sample.js'
         ])
         .pipe(rename(function (path) {
                 path.extname = ".min.js";
@@ -96,7 +96,7 @@ gulp.task('copyPlugins', function () {
           'Vorlon/plugins/**/*.html',
           'release/plugins/**/*.js'
     ])
-        .pipe(gulp.dest('../Server/public/Vorlon/plugins'));
+        .pipe(gulp.dest('../Server/public/vorlon/plugins'));
 
 });
 
