@@ -14,10 +14,11 @@ To enable the sample plugin:
 ```json
 {
     "plugins": [
-        { "id": "CONSOLE", "name": "Interactive Console", "path" :  "/vorlon/plugins/interactiveConsole/vorlon.interactiveConsole.js" },
-        { "id": "DOM", "name": "Dom Explorer", "path" :  "/vorlon/plugins/domExplorer/vorlon.domExplorer.js" },
-        { "id": "MODERNIZR", "name": "Modernizr", "path" :  "/vorlon/plugins/modernizrReport/vorlon.modernizrReport.js" },
-        { "id": "SAMPLE", "name": "Sample", "path" :  "/vorlon/plugins/sample/sample.js" }
+        { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername" :  "interactiveConsole"},
+        { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername" : "domExplorer" },
+        { "id": "MODERNIZR", "name": "Modernizr","panel": "bottom", "foldername" : "modernizrReport" },
+        { "id" : "OBJEXPLORER", "name" : "Obj. Explorer","panel": "top", "foldername" :  "objectExplorer" },
+        { "id" : "SAMPLE", "name" : "Sample","panel": "top", "foldername" : "sample" }
     ]
 }
 ```
