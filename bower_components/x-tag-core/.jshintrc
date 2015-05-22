@@ -1,0 +1,8 @@
+{
+  "browser": true,
+  "proto": true,
+  "loopfunc": true,
+  "trailing": false,
+  "latedef": true,
+  "curly": false
+}

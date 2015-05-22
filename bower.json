@@ -1,0 +1,13 @@
+{
+  "name": "Vorlon",
+  "description": "",
+  "version": "0.1.0",
+  "main": [
+    "src/main.js",
+    "src/main.css"
+  ],
+  "dependencies": {
+    "x-tag-core": "*",
+    "x-tag-notify": "*"
+  }
+}
