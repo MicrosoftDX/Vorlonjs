@@ -37,7 +37,12 @@
     "gulp-util": "^2.2.14",
     "gulp-webserver": "^0.9.0",
     "merge2": "^0.3.5",
-    "through": "^2.3.4"
+    "through": "^2.3.4",
+    "bower": "~0.7.0",
+    "grunt": "~0.4.0",
+    "grunt-contrib-concat": "~0.4.0",
+    "grunt-smush-components": "~0.2.0",
+    "grunt-contrib-connect": "~0.7.0"
   },
   "scripts": {
     "build-server": "gulp --gulpfile=./Server/gulpfile.js --cwd=./Server",

@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+	<head>
+	<title>X-Tag: Event Tester</title>
+	<meta charset="UTF-8">
+	<script type="text/javascript" src="../lib/DOMTokenList.js"></script>
+	<script type="text/javascript" src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+	<script type="text/javascript" src="../lib/hand.base.min.js"></script>
+	<script type="text/javascript" src="../src/core.js"></script>
+			
+			
+		<style type="text/css">
+		  
+		body {
+			font-family: arial;
+		}
+		
+		body > * {
+			height: 250px;
+			width: 80%;
+			max-width: 400px;
+			margin: 40px;
+			padding: 0;
+			background: #eee;
+			border: 1px solid #aaa;
+			cursor: default;
+		}
+		
+		body > *:before, body > *:after {
+			content: " ";
+		}
+		
+		[test-name] {
+			margin: 40px;
+			background: #fff;
+			border: 1px solid royalblue;
+			text-align: center;
+			cursor: pointer;
+			-webkit-transition: background-color 1s ease;
+			-moz-transition: background-color 1s ease;
+			-ms-transition: background-color 1s ease;
+			transition: background-color 1s ease;
+		}
+
+		[test-name]:before {
+			display: block;
+			margin: 20px 0;
+			font-weight: bold;
+			content: attr(test-name);
+		}
+		
+		[test-name]:after {
+			display: block;
+			content: attr(test-directions);
+		}
+
+		[test-name][result="pass"] {
+			background-color: #66CD00;
+		}
+		
+		[test-name][result="fail"] {
+			background-color: #FF6A6A;
+		}
+		
+		[scrollable] {
+			overflow: auto;
+		}
+		
+		[scrollable]:after {
+			display: block;
+			height: 200%;
+		}
+		
+		/*** Test-specific CSS ***/
+		
+		
+		
+
+	  </style>
+	</head>
+
+	<body>
+	  	<ul scrollable>	
+			<li id="tap""
+				event-name="tap"
+		  		test-name="basic tap"
+				test-directions="hold down the mouse for at least 1 second, and do not move it or scroll the content"></li>
+		</ul>
+			
+		<div id="tapstart"
+				event-name="tapstart"
+				test-name="basic tapstart"
+				test-directions="tap the element and it should immediately register the event and pass"></div>
+				
+		<ul scrollable>	
+			<li id="tapend"
+				event-name="tapend"
+				test-name="basic tapend"></li>
+		</ul>
+		
+		<div id="tapmove"
+				event-name="tapmove"
+				test-name="basic tapmove"></div>
+				
+		<div id="move"
+				event-name="move"
+				test-name="basic move"></div>
+    
+    <div id="enter"
+				event-name="enter"
+				test-name="basic enter"></div>
+        
+    <div id="leave"
+				event-name="leave"
+				test-name="basic leave"></div>
+        
+    <div id="taphold"
+				event-name="taphold:duration(3000)"
+				test-name="tap that fires based after 3 seconds"></div>
+        
+        
+	</body>
+	
+	<script>
+		
+		var $ = document.getElementById.bind(document);
+		var addTest = function(id, fn){
+			var node = $(id);
+			xtag.addEvent(node, node.getAttribute('event-name'), fn);
+		};
+		var showResult = function(node, result){
+			node.setAttribute('result', result);
+			clearTimeout(node.__resultTimer__);
+			node.__resultTimer__ = setTimeout(function(){
+				node.removeAttribute('result')
+			}, 250);
+		};
+		
+		addTest('tap', function(){
+			showResult(this, 'pass')
+		});
+		
+		addTest('tapstart', function(){
+			showResult(this, 'pass')
+		});
+		
+		addTest('tapend', function(){
+			showResult(this, 'pass')
+		});
+		
+		addTest('tapmove', function(){
+			showResult(this, 'pass')
+		});
+		
+		addTest('move', function(){
+			showResult(this, 'pass')
+		});
+    
+    addTest('enter', function(){
+			showResult(this, 'pass')
+		});
+    
+    addTest('leave', function(){
+			showResult(this, 'pass')
+		});
+    
+    addTest('taphold', function(){
+			showResult(this, 'pass')
+		});
+		
+		
+	</script>
+</html>

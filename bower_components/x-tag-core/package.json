@@ -1,0 +1,26 @@
+{
+  "name": "x-tag-core",
+  "description": "X-Tags core library",
+  "version": "1.1.4",
+  "homepage": "http://www.x-tags.org",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/x-tag/core.git"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "grunt-cli": "0.1.13",
+    "grunt-contrib-jshint": "0.3.0",
+    "grunt-contrib-concat": "~0.1.2",
+    "grunt-contrib-uglify": "~0.1.1",
+    "grunt-contrib-connect": "~0.6.0",
+    "grunt-tagrelease": "~0.2.0",
+    "grunt-saucelabs": "~5.0.1",
+    "grunt-bumpup": "~0.2.0",
+    "async": "~0.2.9",
+    "watch": "~0.9.0"
+  }
+}

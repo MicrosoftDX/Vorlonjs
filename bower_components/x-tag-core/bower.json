@@ -1,0 +1,14 @@
+{
+  "name": "x-tag-core",
+  "description": "X-Tag core library for creating custom elements as defined by the w3c Web Components spec.",
+  "version": "1.1.4",
+  "keywords": [
+    "web-components",
+    "core",
+    "library",
+    "x-tag"
+  ],
+  "main": [
+    "dist/x-tag-core.js"
+  ]
+}

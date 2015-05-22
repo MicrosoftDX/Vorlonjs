@@ -1,0 +1,16 @@
+{
+  "name": "x-tag-transitions",
+  "description": "Easy-peasy transitioning for X-Tag components.",
+  "version": "0.1.9",
+  "keywords": [
+    "pseudo",
+    "web-components",
+    "x-tag"
+  ],
+  "main": [
+    "src/main.js"
+  ],
+  "dependencies": {
+    "x-tag-core": "*"
+  }
+}

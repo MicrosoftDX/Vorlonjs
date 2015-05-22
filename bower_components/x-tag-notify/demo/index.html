@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Stub Demo - X-Tag</title>
+    <link rel="stylesheet" type="text/css" href="x-tag-components.css"/>
+	<link rel="stylesheet" type="text/css" href="../src/main.css"/>
+
+    <script type="text/javascript" src="x-tag-components.js"></script> 
+    <script type="text/javascript" src="../src/main.js"></script>      
+	<style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    [hidden] {
+      display: none;
+    }
+</style>
+</head>
+
+<body>
+  <x-notify closable showing>Something something something</x-notify>
+	<x-notify type="success" closable>Whatever you did worked!</x-notify>
+  <x-notify type="error" duration="3000">Uh oh, that's all bad</x-notify>
+  <x-notify type="warning" duration="2000">Warning, danger Will Robinson</x-notify>
+</body>
+
+</html>

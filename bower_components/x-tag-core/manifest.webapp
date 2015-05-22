@@ -1,0 +1,13 @@
+{
+  "version": "0.1",
+  "name": "x-tag-core-tests",
+  "description": "FFOS Test",
+  "developer": {
+    "name": "Mozilla",
+    "url": "http://mozilla.org/"
+  },
+  "launch_path": "test/index.html",
+  "icons": {
+    "128": "test/icon-128.png"
+  }
+}

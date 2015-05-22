@@ -1,0 +1,26 @@
+{
+  "name": "x-notify",
+  "description": "",
+  "keywords": [
+    "web-components",
+    "x-tag"
+  ],
+  "main": [
+    "src/main.js",
+    "src/main.css"
+  ],
+  "dependencies": {
+    "x-tag-core": "*",
+    "x-tag-transitions": "*"
+  },
+  "homepage": "https://github.com/x-tag/notify",
+  "_release": "444f9b8ca5",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "444f9b8ca528e51a2657f71dca667707e08ac502"
+  },
+  "_source": "git://github.com/x-tag/notify.git",
+  "_target": "*",
+  "_originalSource": "x-tag-notify"
+}

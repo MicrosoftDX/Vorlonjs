@@ -1,0 +1,3 @@
+[submodule "lib/HTMLImports"]
+	path = lib/HTMLImports
+	url = https://github.com/Polymer/HTMLImports.git
