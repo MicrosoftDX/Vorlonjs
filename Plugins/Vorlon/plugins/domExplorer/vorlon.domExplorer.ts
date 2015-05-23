@@ -5,8 +5,8 @@ module VORLON {
         private _previousSelectedNode: HTMLElement;
         private _internalId = 0;
         private _lastElementSelectedClientSide;
-        private _timeoutId;
-	private _newAppliedStyles = {};
+        private _newAppliedStyles = {};
+        
         constructor() {
             super("domExplorer", "control.html", "control.css");
             this._ready = false;
@@ -119,7 +119,7 @@ module VORLON {
 
         private _packageAndSendDOM() {
             this._internalId = 0;
-	    this._newAppliedStyles = {};
+            this._newAppliedStyles = {};
             var packagedObject = this._packageNode(document.body);
             this._packageDOM(document.body, packagedObject);
 
@@ -127,29 +127,23 @@ module VORLON {
         }
 
         private _markForRefresh() {
-            if (this._timeoutId) {
-                clearTimeout(this._timeoutId);
-            }
-
-            this._timeoutId = setTimeout(() => {
-                this.refresh();
-            }, 10000);
+            this.refresh();
         }
 
         public startClientSide(): void {
-            document.addEventListener("DOMContentLoaded",() => {
-                if (Core.Messenger.isConnected) {
-                    document.addEventListener("DOMNodeInserted",() => {
-                        this._markForRefresh();
-                    });
-
-                    document.addEventListener("DOMNodeRemoved",() => {
-                        this._markForRefresh();
-                    });
-                }
-
-                this.refresh();
-            });
+//            document.addEventListener("DOMContentLoaded",() => {
+//                if (Core.Messenger.isConnected) {
+//                    document.addEventListener("DOMNodeInserted",() => {
+//                        this._markForRefresh();
+//                    });
+//
+//                    document.addEventListener("DOMNodeRemoved",() => {
+//                        this._markForRefresh();
+//                    });
+//                }
+//
+//                this.refresh();
+//            });
         }
 
         private _getElementByInternalId(internalId: string, node: any): any {
@@ -222,6 +216,8 @@ module VORLON {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
+                
+                this._containerDiv.addEventListener('refresh', this.refresh.bind(this));
                 
                 this._treeDiv.addEventListener('click', function(e){
                     var button = <HTMLElement>e.target;

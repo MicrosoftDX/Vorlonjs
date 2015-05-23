@@ -128,7 +128,7 @@
 
         private static _OnError(err: Error): void {
             var message = "<strong>Error while connecting to server. Server may be offline.</strong><BR>Error message: ";
-            console.log(Core._side);
+            
             if (Core._side == RuntimeSide.Dashboard) {
                 Core._errorNotifier.innerHTML = message + err.message;
                 Core._errorNotifier.show();

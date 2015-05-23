@@ -2730,6 +2730,36 @@ var HANDJS=HANDJS||{};!function(){function e(){b=!0,clearTimeout(M),M=setTimeout
 
 })();
 (function(){
+
+  function executeTarget(e){
+    var targets = xtag.query(document, this.target);
+    var method = this.method;
+    var event = this.event;
+    (targets[0] ? targets : [this]).forEach(function(target){
+      if (typeof target[method] === 'function'){
+        target[method]();
+      }
+      if (event) xtag.fireEvent(target, event);
+    });
+  }
+
+  xtag.register('x-action', {
+    events: {
+      'tap': executeTarget
+    },
+    accessors: {
+      target: { attribute: {}},
+      method: { attribute: {}},
+      event: { attribute: {}}
+    },
+    methods: {
+      execute: executeTarget
+    }
+  });
+
+})();
+
+(function(){
   var matchNum = /[1-9]/,
       replaceSpaces = / /g,
       captureTimes = /(\d|\d+?[.]?\d+?)(s|ms)(?!\w)/gi,
@@ -2864,6 +2894,33 @@ var HANDJS=HANDJS||{};!function(){function e(){b=!0,clearTimeout(M),M=setTimeout
       'hide:transition': function(){
         clearTimeout(this.xtag.timer);
         if (this.showing) this.showing = false;
+      }
+    }
+  });
+
+})();
+(function(){
+  
+  xtag.register('x-controlbar', {
+    lifecycle: {
+      
+    },
+    events: { 
+      
+    },
+    accessors: {
+      foo: {
+        attribute: {
+          boolean: true
+        },
+        set: function(val, old){
+          
+        }
+      }
+    }, 
+    methods: {
+      submit: function(){
+       
       }
     }
   });
