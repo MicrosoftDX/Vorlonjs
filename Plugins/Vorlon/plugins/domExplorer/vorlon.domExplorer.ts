@@ -6,6 +6,7 @@ module VORLON {
         private _internalId = 0;
         private _lastElementSelectedClientSide;
         private _newAppliedStyles = {};
+        private _lastContentState = '';
         
         constructor() {
             super("domExplorer", "control.html", "control.css");
@@ -121,8 +122,8 @@ module VORLON {
             this._internalId = 0;
             this._newAppliedStyles = {};
             var packagedObject = this._packageNode(document.body);
+            packagedObject.rootHTML = document.body.innerHTML;
             this._packageDOM(document.body, packagedObject);
-
             Core.Messenger.sendRealtimeMessage(this.getID(), packagedObject, RuntimeSide.Client);
         }
 
@@ -131,19 +132,7 @@ module VORLON {
         }
 
         public startClientSide(): void {
-//            document.addEventListener("DOMContentLoaded",() => {
-//                if (Core.Messenger.isConnected) {
-//                    document.addEventListener("DOMNodeInserted",() => {
-//                        this._markForRefresh();
-//                    });
-//
-//                    document.addEventListener("DOMNodeRemoved",() => {
-//                        this._markForRefresh();
-//                    });
-//                }
-//
-//                this.refresh();
-//            });
+            
         }
 
         private _getElementByInternalId(internalId: string, node: any): any {
@@ -174,6 +163,16 @@ module VORLON {
                         if(this._lastElementSelectedClientSide){
                             this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
                         }
+                        break; 
+                    case "dirtycheck":
+                        Core.Messenger.sendRealtimeMessage(this.getID(), {
+                            action: 'dirtycheck',
+                            rootHTML: document.body.innerHTML
+                        }, RuntimeSide.Client);
+                        break;
+                    case "refresh":
+                        this.refresh();
+                        this._lastContentState = document.body.innerHTML;
                         break;
                 }
                 return;
@@ -209,6 +208,8 @@ module VORLON {
         private _treeDiv: HTMLElement;
         private _styleView: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
+        private _refreshButton: Element;
+        
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
 
@@ -216,8 +217,21 @@ module VORLON {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
+                this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
                 
-                this._containerDiv.addEventListener('refresh', this.refresh.bind(this));
+                setInterval(() => {
+                    Core.Messenger.sendRealtimeMessage(this.getID(), {
+                        type: 'dirtycheck',
+                        order: null
+                    }, RuntimeSide.Dashboard);
+                }, 4000);
+                
+                this._containerDiv.addEventListener('refresh', () => {
+                    Core.Messenger.sendRealtimeMessage(this.getID(), {
+                        type: 'refresh',
+                        order: null
+                    }, RuntimeSide.Dashboard);
+                });
                 
                 this._treeDiv.addEventListener('click', function(e){
                     var button = <HTMLElement>e.target;
@@ -507,11 +521,24 @@ module VORLON {
         }
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-            while (this._treeDiv.hasChildNodes()) {
-                this._treeDiv.removeChild(this._treeDiv.lastChild);
+            if (receivedObject.action) {
+                switch(receivedObject.action){
+                    case "dirtycheck":
+                        if (this._lastContentState != receivedObject.rootHTML){
+                            this._refreshButton.setAttribute('changed', '');
+                        }
+                        else this._refreshButton.removeAttribute('changed');
+                        break;
+                }
             }
-
-            this._generateTreeNode(this._treeDiv, receivedObject, true);
+            else {
+                this._refreshButton.removeAttribute('changed');
+                this._lastContentState = receivedObject.rootHTML;
+                while (this._treeDiv.hasChildNodes()) {
+                    this._treeDiv.removeChild(this._treeDiv.lastChild);
+                }
+                this._generateTreeNode(this._treeDiv, receivedObject, true);
+            }
         }
     }
 

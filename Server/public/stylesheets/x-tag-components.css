@@ -113,6 +113,7 @@ x-controlbar > * {
   margin-left: 0.35em;
   padding: 0.25em 0.5em;
   border: 1px solid rgba(0,0,0, 0.1);
+  font: inherit;
 }
 
 x-controlbar > *:first-child {
@@ -133,5 +134,10 @@ x-controlbar > x-action,
 x-controlbar > input[type="submit"] {
   background: #ddd;
   cursor: pointer;
+}
+
+x-controlbar > input[type="text"],
+x-controlbar > input:not([type]) {
+  border: 1px solid rgba(0,0,0, 0.15);
 }
 

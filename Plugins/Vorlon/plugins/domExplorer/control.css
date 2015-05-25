@@ -174,3 +174,13 @@
   border-radius: 3px;
   cursor: pointer;
 }
+.plugin-dom x-action[event="refresh"]:before {
+  content: 	'\26AB';
+  margin-right: 0.1em;
+  color: #aaa;
+  background: none;
+}
+
+.plugin-dom x-action[event="refresh"][changed]:before {
+  color: red;
+}
