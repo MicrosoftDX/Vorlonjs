@@ -3,6 +3,7 @@
         { "id": "CONSOLE", "name": "Interactive Console", "path" :  "/vorlon/plugins/interactiveConsole/vorlon.interactiveConsole.js" },
         { "id": "DOM", "name": "Dom Explorer", "path" :  "/vorlon/plugins/domExplorer/vorlon.domExplorer.js" },
         { "id": "MODERNIZR", "name": "Modernizr", "path" :  "/vorlon/plugins/modernizrReport/vorlon.modernizrReport.js" },
-        { "id" : "OBJEXPLORER", "name" : "Obj. Explorer", "path": "/vorlon/plugins/objectExplorer/vorlon.objectExplorer.js" }
+        { "id" : "OBJEXPLORER", "name" : "Obj. Explorer", "path": "/vorlon/plugins/objectExplorer/vorlon.objectExplorer.js" },
+        { "id" : "NGEXPLORER", "name" : "Ng Explorer", "path": "/vorlon/plugins/ngExplorer/vorlon.ngExplorer.js" }
     ]
 }
