@@ -10,6 +10,7 @@ var VORLON;
         __extends(NgExplorerPlugin, _super);
         function NgExplorerPlugin() {
             _super.call(this, "ngExplorer", "control.html", "control.css");
+            this._scopePropertiesNames = ["$$applyAsyncQueue", "$$asyncQueue", "$$childHead", "$$ChildScope", "$$childTail", "$$destroyed", "$$isolateBindings", "$$listenerCount", "$$listeners", "$$nextSibling", "$$phase", "$$postDigest", "$$postDigestQueue", "$$prevSibling", "$$transcluded", "$$watchers", "$apply", "$applyAsync", "$broadcast", "$childTail", "$destroy", "$digest", "$emit", "$eval", "$evalAsync", "$even", "$first", "$index", "$last", "$middle", "$new", "$odd", "$on", "$parent", "$root", "$watch", "$watchCollection", "$watchGroup"];
             this._ready = true;
             console.log('Started ngExplorer');
         }
@@ -22,10 +23,43 @@ var VORLON;
         };
         // Client side
         NgExplorerPlugin.prototype.startClientSide = function () {
+            var rootScope = this._findRootScope(document.body);
+            VORLON.Core.Messenger.sendRealtimeMessage(this.getID(), rootScope, 0 /* Client */, "message", true);
         };
         // Handle messages from the dashboard, on the client
         NgExplorerPlugin.prototype.onRealtimeMessageReceivedFromDashboardSide = function (receivedObject) {
             VORLON.Core.Messenger.sendRealtimeMessage(this.getID(), {}, 0 /* Client */, "message", true);
+        };
+        NgExplorerPlugin.prototype._findRootScope = function (element) {
+            var rootScope = angular.element(element).scope();
+            if (rootScope) {
+                return rootScope;
+            }
+            for (var i = 0; i < element.childNodes.length; i++) {
+                var childNode = element.childNodes[i];
+                rootScope = angular.element(childNode).scope();
+                if (!!rootScope) {
+                    break;
+                }
+                else {
+                    rootScope = this._findRootScope(childNode);
+                }
+            }
+            return this._packageScope(rootScope);
+        };
+        NgExplorerPlugin.prototype._packageScope = function (scope) {
+            var scopePackaged = {};
+            var keys = Object.keys(scope);
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                if (this._scopePropertiesNames.indexOf(key) === -1) {
+                    scopePackaged[key] = scope[key];
+                }
+            }
+            if (scope.$parent !== null) {
+                scopePackaged.$parent = scope.$parent.$id;
+            }
+            return scopePackaged;
         };
         NgExplorerPlugin.prototype.startDashboardSide = function (div) {
             var _this = this;
@@ -43,6 +77,7 @@ var VORLON;
         };
         // When we get a message from the client, just show it
         NgExplorerPlugin.prototype.onRealtimeMessageReceivedFromClientSide = function (receivedObject) {
+            console.log(receivedObject);
         };
         return NgExplorerPlugin;
     })(VORLON.Plugin);

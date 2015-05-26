@@ -71,6 +71,7 @@ gulp.task('scripts', function () {
             'release/plugins/domExplorer/vorlon.domExplorer.js',
             'release/plugins/modernizrReport/vorlon.modernizrReport.js',
             'release/plugins/objectExplorer/vorlon.objectExplorer.js',
+            'release/plugins/ngExplorer/vorlon.ngExplorer.js',
             'release/plugins/sample/sample.js'
         ])
         .pipe(concat('vorlon.max.js'))
