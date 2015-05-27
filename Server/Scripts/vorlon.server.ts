@@ -184,7 +184,7 @@ export module VORLON {
                 
                 
                 //read the socket.io file if needed
-                if(catalog.IncludeSocketIO){
+                if(catalog.includeSocketIO){
                     javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.3.5.js"));
                 }
 
