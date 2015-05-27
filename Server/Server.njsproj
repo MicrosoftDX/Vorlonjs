@@ -79,6 +79,8 @@
     <Content Include="public\vorlon\plugins\interactiveConsole\control.html" />
     <Content Include="public\vorlon\plugins\modernizrReport\control.css" />
     <Content Include="public\vorlon\plugins\modernizrReport\control.html" />
+    <Content Include="public\vorlon\plugins\ngInspector\control.css" />
+    <Content Include="public\vorlon\plugins\ngInspector\control.html" />
     <Content Include="public\vorlon\plugins\objectExplorer\control.css" />
     <Content Include="public\vorlon\plugins\objectExplorer\control.html" />
     <Content Include="README.md" />
@@ -102,6 +104,7 @@
     <Folder Include="public\vorlon\plugins\domExplorer\" />
     <Folder Include="public\vorlon\plugins\interactiveConsole\" />
     <Folder Include="public\vorlon\plugins\modernizrReport\" />
+    <Folder Include="public\vorlon\plugins\ngInspector\" />
     <Folder Include="public\vorlon\plugins\objectExplorer\" />
     <Folder Include="Scripts\typings\vorlon\plugins\" />
     <Folder Include="Scripts\typings\vorlon\plugins\domExplorer\" />
@@ -140,6 +143,7 @@
     <Compile Include="public\vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.js" />
     <Compile Include="public\vorlon\plugins\modernizrReport\modernizr..js" />
     <Compile Include="public\vorlon\plugins\modernizrReport\vorlon.modernizrReport.js" />
+    <Compile Include="public\vorlon\plugins\ngInspector\vorlon.ngInspector.js" />
     <Compile Include="public\vorlon\plugins\objectExplorer\vorlon.objectExplorer.js" />
     <Compile Include="public\vorlon\vorlon-noplugin.js" />
     <Compile Include="public\vorlon\vorlon-noplugin.max.js" />

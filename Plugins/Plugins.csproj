@@ -72,9 +72,8 @@
     <Content Include="release\vorlon.js" />
     <Content Include="release\vorlon.max.js" />
     <Content Include="samples\andyet\index.html" />
-    <Content Include="Vorlon\plugins\ngExplorer\control.css.map">
-      <DependentUpon>control.css</DependentUpon>
-    </Content>
+    <Content Include="Vorlon\plugins\ngInspector\control.css" />
+    <Content Include="Vorlon\plugins\ngInspector\control.html" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -95,16 +94,8 @@
     <Content Include="Vorlon\plugins\modernizrReport\control.css" />
     <Content Include="Vorlon\plugins\modernizrReport\control.html" />
     <Content Include="Vorlon\plugins\modernizrReport\modernizr.js" />
-    <Content Include="Vorlon\plugins\ngExplorer\control.css">
-      <DependentUpon>control.less</DependentUpon>
-    </Content>
-    <Content Include="Vorlon\plugins\ngExplorer\control.min.css">
-      <DependentUpon>control.css</DependentUpon>
-    </Content>
     <Content Include="Vorlon\plugins\objectExplorer\control.css" />
     <Content Include="Vorlon\plugins\objectExplorer\control.html" />
-    <None Include="Vorlon\plugins\ngExplorer\control.less" />
-    <Content Include="Vorlon\plugins\ngExplorer\control.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -113,8 +104,8 @@
   <ItemGroup>
     <TypeScriptCompile Include="libs\node.d.ts" />
     <TypeScriptCompile Include="libs\socket.io.d.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\ngInspector\vorlon.ngInspector.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.ts" />
-    <TypeScriptCompile Include="Vorlon\plugins\ngExplorer\vorlon.ngExplorer.ts" />
     <TypeScriptCompile Include="Vorlon\vorlon.tools.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\domExplorer\vorlon.domExplorer.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.ts" />
@@ -131,8 +122,10 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <TypeScriptGeneratesDeclarations>True</TypeScriptGeneratesDeclarations>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
     <TypeScriptModuleKind>none</TypeScriptModuleKind>
+    <TypeScriptSourceMap>False</TypeScriptSourceMap>
+    <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

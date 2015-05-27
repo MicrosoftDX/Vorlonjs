@@ -4,6 +4,6 @@
         { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername" : "domExplorer" },
         { "id": "MODERNIZR", "name": "Modernizr","panel": "bottom", "foldername" : "modernizrReport" },
         { "id" : "OBJEXPLORER", "name" : "Obj. Explorer","panel": "top", "foldername" : "objectExplorer" },
-        { "id" : "NGEXPLORER", "name" : "Ng. Explorer", "panel": "top", "foldername" : "ngExplorer" }
+        { "id": "NGINSPECTOR", "name": "Ng. Inspector", "panel": "bottom", "foldername": "ngInspector" }
     ]
 }

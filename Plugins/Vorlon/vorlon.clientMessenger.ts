@@ -121,6 +121,10 @@
         }
 
         public sendRealtimeMessage(pluginID: string, objectToSend: any, side: RuntimeSide, messageType = "message", incrementVisualIndicator = false): void {
+            if (typeof (objectToSend) === "string") {
+                objectToSend = { message: objectToSend };
+            }
+
             objectToSend._pluginID = pluginID;
             objectToSend._side = side;
             objectToSend._sessionId = this._sessionId;
