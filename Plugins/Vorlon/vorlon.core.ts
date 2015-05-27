@@ -5,6 +5,7 @@
         static _sessionID: string;
         static _listenClientId: string;
         static _side: RuntimeSide;
+        static _socketIOWaitCount = 0;
 
         static _RetryTimeout = 1002;
 
@@ -31,6 +32,25 @@
 
             if (divMapper) {
                 Core._side = RuntimeSide.Dashboard;
+            }
+            
+            // Checking socket.io
+            if (Core._side !== RuntimeSide.Both) {
+                if ((<any>window).io === undefined) {
+                    
+                    if (this._socketIOWaitCount < 10) {
+                        this._socketIOWaitCount++;
+                        // Let's wait a bit just in case socket.io was loaded asynchronously
+                        setTimeout(function() {
+                            console.log("Vorlon.js: waiting for socket.io to load...");
+                            Core.Start(serverUrl, sessionId, listenClientId, divMapper);
+                        }, 1000);
+                    } else {
+                        console.log("Vorlon.js: please load socket.io before referencing vorlon.js or use includeSocketIO = true in your catalog.json file.");
+                        Core.ShowError("Vorlon.js: please load socket.io before referencing vorlon.js or use includeSocketIO = true in your catalog.json file.", 0);
+                    }
+                    return;
+                }   
             }
 
             // Cookie
@@ -104,28 +124,35 @@
                 document.body.removeChild(div);
             }, 4000);
         }
-
-        private static _OnError(err: Error): void {
+        
+        private static ShowError(message: string, timeout = 5000) {
             var divError = document.createElement("div");
             divError.style.position = "absolute";
             divError.style.top = "0";
             divError.style.left = "0";
             divError.style.width = "100%";
-            divError.style.height = "100px";
+            divError.style.height = "auto";
             divError.style.backgroundColor = "red";
             divError.style.textAlign = "center";
             divError.style.fontSize = "30px";
             divError.style.paddingTop = "20px";
+            divError.style.paddingBottom = "20px";
             divError.style.color = "white";
             divError.style.fontFamily = "consolas";
 
-            divError.innerHTML = "Error while connecting to server. Server may be offline.<BR>Error message: " + err.message;
+            divError.innerHTML = message;
 
             document.body.appendChild(divError);
 
-            setTimeout(() => {
-                document.body.removeChild(divError);
-            }, 5000);
+            if (timeout) {
+                setTimeout(() => {
+                    document.body.removeChild(divError);
+                }, timeout);
+            }
+        }
+
+        private static _OnError(err: Error): void {
+            Core.ShowError("Error while connecting to server. Server may be offline.<BR>Error message: " + err.message);
         }
 
         private static _OnIdentificationReceived(id: string): void {
