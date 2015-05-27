@@ -13,7 +13,7 @@
 
         public startClientSide(): void {
             // Overrides clear, log, error and warn
-            Tools.Hook(window.console, "clear",(): void => {
+            Tools.Hook(window.console, "clear", (): void => {
                 var data = {
                     type: "clear"
                 };
@@ -23,7 +23,7 @@
                 this._cache.push(data);
             });
 
-            Tools.Hook(window.console, "log",(message: string): void => {
+            Tools.Hook(window.console, "log", (message: string): void => {
                 var data = {
                     message: message,
                     type: "log"
@@ -34,7 +34,29 @@
                 this._cache.push(data);
             });
 
-            Tools.Hook(window.console, "warn",(message: string): void => {
+            Tools.Hook(window.console, "debug", (message: string): void => {
+                var data = {
+                    message: message,
+                    type: "debug"
+                };
+
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+
+                this._cache.push(data);
+            });
+
+            Tools.Hook(window.console, "info", (message: string): void => {
+                var data = {
+                    message: message,
+                    type: "info"
+                };
+
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+
+                this._cache.push(data);
+            });
+
+            Tools.Hook(window.console, "warn", (message: string): void => {
                 var data = {
                     message: message,
                     type: "warn"
@@ -45,7 +67,7 @@
                 this._cache.push(data);
             });
 
-            Tools.Hook(window.console, "error",(message: string): void => {
+            Tools.Hook(window.console, "error", (message: string): void => {
                 var data = {
                     message: message,
                     type: "error"
@@ -100,6 +122,9 @@
         // DASHBOARD
         private _containerDiv: HTMLElement;
         private _interactiveInput: HTMLInputElement;
+        private _commandIndex: number;
+        private _commandHistory = [];
+
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div, (filledDiv) => {
@@ -108,21 +133,42 @@
 
                 // Interactive console
                 this._interactiveInput = <HTMLInputElement>Tools.QuerySelectorById(div, "input");
-                this._interactiveInput.addEventListener("keydown",(evt) => {
+                this._interactiveInput.addEventListener("keydown", (evt) => {
                     if (evt.keyCode === 13) {
                         Core.Messenger.sendRealtimeMessage(this.getID(), {
                             order: this._interactiveInput.value,
                             type: "eval"
                         }, RuntimeSide.Dashboard);
 
+                        this._commandHistory.push(this._interactiveInput.value);
+                        this._commandIndex = null;
                         this._interactiveInput.value = "";
+                    } if (evt.keyCode === 38) { // up arrow
+
+                        if(this._commandIndex == null) this._commandIndex = this._commandHistory.length;
+
+                        if (this._commandHistory.length > 0 && this._commandIndex > 0) {
+                            this._commandIndex--;
+
+                            this._interactiveInput.value = this._commandHistory[this._commandIndex];
+                        }
+                    } else if (evt.keyCode === 40) { // down arrow
+                        if (this._commandHistory.length > 0 && this._commandIndex != null) {
+                            if (this._commandIndex < this._commandHistory.length - 1) {
+                                this._commandIndex++;
+                                this._interactiveInput.value = this._commandHistory[this._commandIndex];
+                            } else {
+                                this._interactiveInput.value = "";
+                                this._commandIndex = null;
+                            }
+                        }
                     }
                 });
 
                 this._ready = true;
             });
         }
-        
+
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
             if (receivedObject.type === "clear") {
                 while (this._containerDiv.hasChildNodes()) {
@@ -137,6 +183,14 @@
                 case "log":
                     messageDiv.innerHTML = receivedObject.message;
                     Tools.AddClass(messageDiv, "logMessage");
+                    break;
+                case "debug":
+                    messageDiv.innerHTML = receivedObject.message;
+                    Tools.AddClass(messageDiv, "logDebug");
+                    break;
+                case "info":
+                    messageDiv.innerHTML = receivedObject.message;
+                    Tools.AddClass(messageDiv, "logInfo");
                     break;
                 case "warn":
                     messageDiv.innerHTML = receivedObject.message;

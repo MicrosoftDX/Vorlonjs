@@ -4,17 +4,23 @@ jQuery(function($) {
     orientation: 'horizontal',
     limit: 38
   });
-  //$('.dom-explorer-container').split({orientation: 'vertical', limit: 50, position: '70%'});
 
   //Plugin tab navigation
-  $('#pluginsPane').on('click', '[data-plugin-target]', function (e) {
+  $('#pluginsPaneTop').on('click', '[data-plugin-target]', function (e) {
     var target = $(this).data('plugin-target');
 
-    $('#pluginsPane [data-plugin-target]').removeClass('active');
+    $('#pluginsPaneTop [data-plugin-target]').removeClass('active');
     $(this).addClass('active');
-    $('#pluginsPane [data-plugin]').hide();
-    $('#pluginsPane [data-plugin~=' + target + ']').show();
-  })
+    $('#pluginsPaneTop [data-plugin]').hide();
+    $('#pluginsPaneTop [data-plugin~=' + target + ']').show();
+  });
+  
+  $('#pluginsPaneBottom').on('click', '[data-plugin-target]', function (e) {
+    var target = $(this).data('plugin-target');
 
-  $('#pluginsPane [data-plugin-target]').first().click();
+    $('#pluginsPaneBottom [data-plugin-target]').removeClass('active');
+    $(this).addClass('active');
+    $('#pluginsPaneBottom [data-plugin]').hide();
+    $('#pluginsPaneBottom [data-plugin~=' + target + ']').show();
+  });
 });

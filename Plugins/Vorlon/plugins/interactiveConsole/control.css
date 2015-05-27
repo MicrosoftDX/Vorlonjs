@@ -27,6 +27,12 @@
 .plugin-console .logMessage {
   color: #444;
 }
+.plugin-console .logDebug {
+  color: #b200ff;
+}
+.plugin-console .logInfo {
+  color: #0026ff;
+}
 .plugin-console .logWarning {
   color: #ff9205;
 }

@@ -1,4 +1,4 @@
-﻿module VORLON {
+module VORLON {
     declare var $: any;
     export class DOMExplorer extends Plugin {
 
@@ -6,7 +6,7 @@
         private _internalId = 0;
         private _lastElementSelectedClientSide;
         private _timeoutId;
-
+	private _newAppliedStyles = {};
         constructor() {
             super("domExplorer", "control.html", "control.css");
             this._ready = false;
@@ -80,11 +80,16 @@
 
         private _packageNode(node: any): any {
             node.__internalId = this._internalId;
-
+            
             var packagedNode = {
                 id: node.id,
+                type: node.nodeType,
                 name: node.localName,
                 classes: node.className,
+                content: node.textContent,
+                attributes: node.attributes ? Array.prototype.map.call(node.attributes, function(attr){
+                   return [attr.name, attr.value];
+                }) : [],
                 styles: this._getAppliedStyles(node),
                 internalId: this._internalId++
             };
@@ -93,12 +98,12 @@
         }
 
         private _packageDOM(root: HTMLElement, packagedObject: any): void {
-            if (!root.children || root.children.length === 0) {
+            if (!root.childNodes || root.childNodes.length === 0) {
                 return;
             }
 
-            for (var index = 0; index < root.children.length; index++) {
-                var node = <HTMLElement>root.children[index];
+            for (var index = 0; index < root.childNodes.length; index++) {
+                var node = <HTMLElement>root.childNodes[index];
 
                 var packagedNode = this._packageNode(node);
 
@@ -114,7 +119,7 @@
 
         private _packageAndSendDOM() {
             this._internalId = 0;
-
+	    this._newAppliedStyles = {};
             var packagedObject = this._packageNode(document.body);
             this._packageDOM(document.body, packagedObject);
 
@@ -128,7 +133,7 @@
 
             this._timeoutId = setTimeout(() => {
                 this.refresh();
-            }, 1000);
+            }, 10000);
         }
 
         public startClientSide(): void {
@@ -173,7 +178,7 @@
                 switch (receivedObject.type) {
                     case "unselect":
                         if(this._lastElementSelectedClientSide){
-                            this._lastElementSelectedClientSide.style.border = this._lastElementSelectedClientSide.__savedBorder;
+                            this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
                         }
                         break;
                 }
@@ -188,12 +193,12 @@
 
             switch (receivedObject.type) {
                 case "select":
-                    element.__savedBorder = element.style.border;
-                    element.style.border = "2px solid red";
+                    element.__savedOutline = element.style.outline;
+                    element.style.outline = "2px solid red";
                     this._lastElementSelectedClientSide = element;
                     break;
                 case "unselect":
-                    element.style.border = element.__savedBorder;
+                    element.style.outline = element.__savedOutline;
                     break;
                 case "ruleEdit":
                     element.style[receivedObject.property] = receivedObject.newValue;
@@ -215,10 +220,38 @@
 
             this._insertHtmlContentAsync(this._dashboardDiv,(filledDiv) => {
                 this._containerDiv = filledDiv;
-
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
-
+                
+                this._treeDiv.addEventListener('click', function(e){
+                    var button = <HTMLElement>e.target;
+                    if (button.className.match('treeNodeButton')) {
+                        button.hasAttribute('data-collapsed') ? button.removeAttribute('data-collapsed') : button.setAttribute('data-collapsed', '');
+                    }
+                });
+                
+                this._treeDiv.addEventListener('mouseenter', (e) => {
+                    var node = <HTMLElement>e.target;
+                    var parent = node.parentElement;
+                    var isHeader = node.className.match('treeNodeHeader');
+                    if (isHeader || parent.className.match('treeNodeClosingText')) {
+                        if (isHeader) {
+                            parent.setAttribute('data-hovered-tag', '');
+                        }
+                        else {
+                            parent.parentElement.parentElement.setAttribute('data-hovered-tag', '');
+                        }
+                    }
+                }, true);
+                
+                this._treeDiv.addEventListener('mouseleave', (e) => {
+                    var node = <HTMLElement>e.target;
+                    if (node.className.match('treeNodeHeader') || node.parentElement.className.match('treeNodeClosingText')) {
+                        var hovered = this._treeDiv.querySelector('[data-hovered-tag]')
+                        if (hovered) hovered.removeAttribute('data-hovered-tag');
+                    }
+                }, true);
+                
                 $('.dom-explorer-container').split({
                     orientation: 'vertical',
                     limit: 50,
@@ -246,11 +279,32 @@
             valueElement.contentEditable = "false";
             valueElement.innerHTML = value || "&nbsp;";
             valueElement.className = "styleValue";
-
             valueElement.addEventListener("keydown",(evt) => {
-                if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                    Core.Messenger.sendRealtimeMessage(this.getID(), {
-                        type: "ruleEdit",
+            if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+	          //Create the properties object of elements.
+    			var propertyObject:any = {};
+    			propertyObject.property = label.innerHTML;
+    			propertyObject.newValue = valueElement.innerHTML;
+    			if(this._newAppliedStyles[internalId] !== undefined) {
+    				var propsArr = this._newAppliedStyles[internalId];
+    				//check if property exists in array
+    				for(var index = 0; index < propsArr.length; index++) {
+    					var propObj = propsArr[index];
+    					if(propObj.property === propertyObject.property) {
+    						propObj.newValue = propertyObject.newValue;
+    						propertyObject = propObj;
+    						propsArr.splice(index, 1);
+    						break;
+    					}
+    				}
+    				propsArr.push(propertyObject);
+			} else {
+				var proArr = [];
+				proArr.push(propertyObject);
+				this._newAppliedStyles[internalId] = proArr;
+			}
+		    Core.Messenger.sendRealtimeMessage(this.getID(), {
+	                type: "ruleEdit",
                         property: label.innerHTML,
                         newValue: valueElement.innerHTML,
                         order: internalId
@@ -315,12 +369,17 @@
 
                 this._generateStyle(splits[0], splits[1], internalId);
             }
-
+			if(this._newAppliedStyles[internalId]){
+				var newProps = this._newAppliedStyles[internalId];
+				for(var index = 0;index<newProps.length;index++){
+					var currentObj = newProps[index];
+	                this._generateStyle(currentObj.property, currentObj.newValue, internalId);
+				}
+			}
             // Append add style button
-            this._generateButton(this._styleView, "+", "styleButton",(button) => {
-                this._styleView.removeChild(button);
+            this._generateButton(this._styleView, "+", "styleButton").addEventListener('click', (e) => {
                 this._generateStyle("property", "value", internalId, true);
-                this._styleView.appendChild(button);
+                this._styleView.appendChild(<HTMLElement>e.target);
             });
 
         }
@@ -334,130 +393,121 @@
         }
 
         private _generateColorfullLink(link: HTMLAnchorElement, receivedObject: any): void {
-            this._appendSpan(link, "nodeTag", "&lt;");
             this._appendSpan(link, "nodeName", receivedObject.name);
-
-            if (receivedObject.id) {
-                this._appendSpan(link, "nodeAttribute", " id");
-                this._appendSpan(link, "nodeTag", "=\"");
-                this._appendSpan(link, "nodeValue", receivedObject.id);
-                this._appendSpan(link, "nodeTag", "\"");
-            }
-
-            if (receivedObject.classes) {
-                this._appendSpan(link, "nodeAttribute", " class");
-                this._appendSpan(link, "nodeTag", "=\"");
-                this._appendSpan(link, "nodeValue", receivedObject.classes);
-                this._appendSpan(link, "nodeTag", "\"");
-            }
-
-            this._appendSpan(link, "nodeTag", "&gt;");
+            
+            receivedObject.attributes.forEach(function(attr){
+                var node = document.createElement('span');
+                node.className = 'nodeAttribute';
+                node.innerHTML = '<span>' + attr[0] + '</span><span>' + attr[1] + '</span>'; 
+                link.appendChild(node);
+            });
         }
-
+          
         private _generateColorfullClosingLink(link: HTMLElement, receivedObject: any): void {
-            this._appendSpan(link, "nodeTag", "&lt;/");
             this._appendSpan(link, "nodeName", receivedObject.name);
-            this._appendSpan(link, "nodeTag", "&gt;");
         }
 
-        private _generateButton(parentNode: HTMLElement, text: string, className: string, onClick: (button: HTMLElement) => void) {
-            var button = document.createElement("div");
+        private _generateButton(parentNode: HTMLElement, text: string, className: string) {
+            var button = document.createElement("button");
             button.innerHTML = text;
             button.className = className;
-            button.addEventListener("click", () => onClick(button));
-            parentNode.appendChild(button);
+            button.setAttribute('button-block', '');
+            return parentNode.appendChild(button);
         }
-
+        
+        private _spaceCheck = /[^\t\n\r ]/;
         private _generateTreeNode(parentNode: HTMLElement, receivedObject: any, first = false): void {
-            var root = document.createElement("div");
-            parentNode.appendChild(root);
-
-            var container = document.createElement("div");
-
-            this._generateButton(root, "-", "treeNodeButton", (button) => {
-                if (container.style.display === "none") {
-                    container.style.display = "";
-                    button.innerHTML = "-";
-                } else {
-                    container.style.display = "none";
-                    button.innerHTML = "+";
+            if (receivedObject.type == 3) {
+                if (this._spaceCheck.test(receivedObject.content)){
+                    var textNode = document.createElement('span');
+                    textNode.className = 'nodeTextContent';
+                    textNode.textContent = receivedObject.content.trim();
+                    parentNode.appendChild(textNode);
                 }
-            });
-
-            // Main node
-            var linkText = document.createElement("a");
-            (<any>linkText).__targetInternalId = receivedObject.internalId;
-
-            this._generateColorfullLink(linkText, receivedObject);
-
-            linkText.addEventListener("click",() => {
-                if (this._previousSelectedNode) {
-                    Tools.RemoveClass(this._previousSelectedNode, "treeNodeSelected");
+            }
+            else {
+                parentNode.setAttribute('data-has-children', '');
+                
+                var root = document.createElement("div");
+                parentNode.appendChild(root);
+    
+                var container = document.createElement("div");
+                container.className = 'nodeContentContainer';
+                this._generateButton(root, "", "treeNodeButton");
+    
+                // Main node
+                var linkText = document.createElement("a");
+                (<any>linkText).__targetInternalId = receivedObject.internalId;
+    
+                this._generateColorfullLink(linkText, receivedObject);
+    
+                linkText.addEventListener("click",() => {
+                    if (this._previousSelectedNode) {
+                        Tools.RemoveClass(this._previousSelectedNode, "treeNodeSelected");
+                        Core.Messenger.sendRealtimeMessage(this.getID(), {
+                            type: "unselect",
+                            order: (<any>this._previousSelectedNode).__targetInternalId
+                        }, RuntimeSide.Dashboard);
+                    }
+                    else {
+                         Core.Messenger.sendRealtimeMessage(this.getID(), {
+                            type: "unselect",
+                            order: null
+                        }, RuntimeSide.Dashboard);
+                    }
+    
+                    Tools.AddClass(linkText, "treeNodeSelected");
                     Core.Messenger.sendRealtimeMessage(this.getID(), {
-                        type: "unselect",
-                        order: (<any>this._previousSelectedNode).__targetInternalId
+                        type: "select",
+                        order: receivedObject.internalId
                     }, RuntimeSide.Dashboard);
-                }
-                else {
-                     Core.Messenger.sendRealtimeMessage(this.getID(), {
-                        type: "unselect",
-                        order: null
-                    }, RuntimeSide.Dashboard);
-                }
-
-                Tools.AddClass(linkText, "treeNodeSelected");
-                Core.Messenger.sendRealtimeMessage(this.getID(), {
-                    type: "select",
-                    order: receivedObject.internalId
-                }, RuntimeSide.Dashboard);
-
-                this._generateStyles(receivedObject.styles, receivedObject.internalId);
-
-                this._previousSelectedNode = linkText;
-            });
-
-            linkText.href = "#";
-
-            linkText.className = "treeNodeHeader";
-
-            root.appendChild(linkText);
-            root.className = first ? "firstTreeNodeText" : "treeNodeText";
-
-            // Tools
-            if (receivedObject.id) {
-                var toolsLink = document.createElement("a");
-                toolsLink.innerHTML = "#";
-                toolsLink.className = "treeNodeTools";
-                toolsLink.href = "#";
-
-                toolsLink.addEventListener("click",() => {
-                    Core.Messenger.sendRealtimeMessage("CONSOLE", {
-                        type: "order",
-                        order: receivedObject.id
-                    }, RuntimeSide.Client, "protocol");
+    
+                    this._generateStyles(receivedObject.styles, receivedObject.internalId);
+    
+                    this._previousSelectedNode = linkText;
                 });
-
-                root.appendChild(toolsLink);
-            }
-
-            // Children
-            if (receivedObject.children) {
-                for (var index = 0; index < receivedObject.children.length; index++) {
-                    var childObject = receivedObject.children[index];
-
-                    this._generateTreeNode(container, childObject);
+    
+                linkText.href = "#";
+    
+                linkText.className = "treeNodeHeader";
+    
+                root.appendChild(linkText);
+                root.className = first ? "firstTreeNodeText" : "treeNodeText";
+    
+                // Tools
+                if (receivedObject.id) {
+                    var toolsLink = document.createElement("a");
+                    toolsLink.innerHTML = "#";
+                    toolsLink.className = "treeNodeTools";
+                    toolsLink.href = "#";
+    
+                    toolsLink.addEventListener("click",() => {
+                        Core.Messenger.sendRealtimeMessage("CONSOLE", {
+                            type: "order",
+                            order: receivedObject.id
+                        }, RuntimeSide.Client, "protocol");
+                    });
+    
+                    root.appendChild(toolsLink);
                 }
+    
+                // Children
+                var nodes = receivedObject.children;
+                if (nodes && nodes.length) {
+                    for (var index = 0; index < nodes.length; index++) {
+                        var child = nodes[index];
+                        if (child.nodeType != 3) this._generateTreeNode(container, child);
+                    }
+                }
+                if (receivedObject.name) {               
+                    var closingLink = document.createElement("div");
+                    closingLink.className = "treeNodeClosingText";
+                    this._generateColorfullClosingLink(closingLink, receivedObject);
+                    container.appendChild(closingLink);
+                }
+                
+                root.appendChild(container);
             }
-
-            if (receivedObject.name) {
-                var closingLink = document.createElement("div");
-                closingLink.className = "treeNodeClosingText";
-                this._generateColorfullClosingLink(closingLink, receivedObject);
-
-                container.appendChild(closingLink);
-            }
-
-            root.appendChild(container);
         }
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {

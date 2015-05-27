@@ -39,7 +39,7 @@ gulp.task('less-to-css', function() {
  * Concat all js files in order into one big js file and minify it.
  * Do not hesitate to update it if you need to add your own files.
  */
-gulp.task('scripts-noplugin', function() {
+gulp.task('scripts-noplugin', ['typescript-to-js'], function() {
     return gulp.src([
             'release/vorlon.tools.js',
             'release/vorlon.enums.js',
@@ -50,36 +50,30 @@ gulp.task('scripts-noplugin', function() {
         .pipe(concat('vorlon-noplugin.max.js'))
         .pipe(gulp.dest('release/'))
         .pipe(rename('vorlon-noplugin.js'))
-        //.pipe(uglify({ outSourceMap: true })) //waiting for https://github.com/gulpjs/gulp/issues/356
         .pipe(uglify())
         .pipe(gulp.dest('release/'));
 
 });
 
 /**
- * Concat all js files in order into one big js file and minify it.
+ * Minify all plugins.
  * Do not hesitate to update it if you need to add your own files.
  */
-gulp.task('scripts', function () {
+gulp.task('scripts', ['typescript-to-js'], function () {
     return gulp.src([
-            'release/vorlon.tools.js',
-            'release/vorlon.enums.js',
-            'release/vorlon.plugin.js',
-            'release/vorlon.clientMessenger.js',
-            'release/vorlon.core.js',
-            'release/plugins/interactiveConsole/vorlon.interactiveConsole.js',
-            'release/plugins/domExplorer/vorlon.domExplorer.js',
-            'release/plugins/modernizrReport/vorlon.modernizrReport.js',
-            'release/plugins/objectExplorer/vorlon.objectExplorer.js',
-            'release/plugins/ngExplorer/vorlon.ngExplorer.js',
-            'release/plugins/sample/sample.js'
+            './**/vorlon.interactiveConsole.js',
+            './**/vorlon.domExplorer.js',
+            './**/vorlon.modernizrReport.js',
+            './**/objectExplorer/vorlon.objectExplorer.js',
+            './**/ngExplorer/vorlon.ngExplorer.js',
+            './**/sample/vorlon.sample.js'
         ])
-        .pipe(concat('vorlon.max.js'))
-        .pipe(gulp.dest('release/'))
-        .pipe(rename('vorlon.js'))
+        .pipe(rename(function (path) {
+                path.extname = ".min.js";
+              })
+            )
         .pipe(uglify())
-        .pipe(gulp.dest('release/'));
-
+        .pipe(gulp.dest('.'));
 });
 
 /**
@@ -88,8 +82,6 @@ gulp.task('scripts', function () {
 gulp.task('copy', function () {
 
     gulp.src([
-            'release/vorlon.max.js',
-            'release/vorlon.js',
             'release/vorlon-noplugin.max.js',
             'release/vorlon-noplugin.js'
         ])
@@ -105,7 +97,7 @@ gulp.task('copyPlugins', function () {
           'Vorlon/plugins/**/*.html',
           'release/plugins/**/*.js'
     ])
-        .pipe(gulp.dest('../Server/public/Vorlon/plugins'));
+        .pipe(gulp.dest('../Server/public/vorlon/plugins'));
 
 });
 
@@ -118,15 +110,8 @@ gulp.task('copyDTS', function () {
 /**
  * The default task, call the tasks: scripts, scripts-noplugin, copy, copyPlugins
  */
-gulp.task('default', ['typescript', 'less-to-css'], function() {
+gulp.task('default', ['scripts', 'scripts-noplugin', 'less-to-css'], function() {
     gulp.start('copy', 'copyPlugins', 'copyDTS');
-});
-
-/**
- * The default typescript task, call the tasks: scripts, scripts-noplugin AFTER the task typescript-to-js
- */
-gulp.task('typescript', ['typescript-to-js'], function() {
-    gulp.start('scripts', 'scripts-noplugin');
 });
 
 /**

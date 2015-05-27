@@ -7,3 +7,5 @@ sync.bat
 *.suo
 /.vs/
 bin/
+GLE idées.txt
+sync.bat
