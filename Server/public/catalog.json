@@ -1,4 +1,5 @@
 ﻿{
+    "IncludeSocketIO": false,
     "plugins": [
         { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername" : "interactiveConsole"},
         { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername" : "domExplorer" },
