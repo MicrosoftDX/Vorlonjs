@@ -5,6 +5,8 @@
     interface Scope {
         $id: number;
         $parentId: number;
+        $children: Scope[];
+        $functions: string[];
     }
 
     export class NgInspector extends Plugin {
@@ -23,40 +25,89 @@
 
         public startClientSide(): void {
             document.addEventListener("DOMContentLoaded",() => {
-                this._packageAndSendScopes();
+                this.refresh();
             });
         }
 
-        private _packageAndSendScopes(): void {
-            this._findScopes();
+        private _timeoutId: NodeJS.Timer;
+        private _markForRefresh() {
+            if (this._timeoutId) {
+                clearTimeout(this._timeoutId);
+            }
 
-            Core.Messenger.sendRealtimeMessage(this.getID(), { scopes: this._scopes }, RuntimeSide.Client, "message");
+            this._timeoutId = setTimeout(() => {
+                this.refresh();
+            }, 2000);
         }
 
-        private _scopes: any = [];
+        private _packageAndSendScopes(): void {
+            this._rootScopes = [];
+            this._findRootScopes(document.body);
 
-        private _findScopes(): void {
-            this._scopes = [];
-            var scopedElements = document.getElementsByClassName("ng-scope");
+            Core.Messenger.sendRealtimeMessage(this.getID(), { scopes: this._rootScopes }, RuntimeSide.Client, "message");
+        }
 
-            for (var i = 0; i < scopedElements.length; i++) {
-                var scope = angular.element(scopedElements[i]).scope();
+        private _rootScopes: Scope[] = [];
 
-                var packagedScope = this._packageScope(scope);
-                this._scopes[packagedScope.$id] = packagedScope;
+        private _findRootScopes(element: Node) {
+            var rootScope = angular.element(element).scope();
+            if (!!rootScope) {
+                var cleanedRootScope = this._cleanScope(rootScope);
+                this._rootScopes.push(cleanedRootScope);
+
+                this._findChildrenScopes(element, cleanedRootScope);
+
+                this._listenScopeChanges(rootScope);
+            } else {
+                for (var i = 0; i < element.childNodes.length; i++) {
+                    this._findRootScopes(element.childNodes[i]);
+                }
             }
         }
 
-        private _scopePropertiesNames: string[] = ["$$applyAsyncQueue", "$$asyncQueue", "$$childHead", "$$ChildScope", "$$childTail", "$$destroyed", "$$isolateBindings", "$$listenerCount", "$$listeners", "$$nextSibling", "$$phase", "$$postDigest", "$$postDigestQueue", "$$prevSibling", "$$transcluded", "$$watchers", "$apply", "$applyAsync", "$broadcast", "$childTail", "$destroy", "$digest", "$emit", "$eval", "$evalAsync", "$even", "$first", "$index", "$last", "$middle", "$new", "$odd", "$on", "$parent", "$root", "$watch", "$watchCollection", "$watchGroup"];
-        private _packageScope(scope: any): Scope {
+        private _findChildrenScopes(element: Node, parentScope: Scope) {
+            for (var i = 0; i < element.childNodes.length; i++) {
+                var childNode = element.childNodes[i];
+                var childScope = angular.element(childNode).scope();
+                
+                if (!!childScope && childScope.$id !== parentScope.$id) {
+                    var cleanedChildScope = this._cleanScope(childScope);
+                    parentScope.$children.push(cleanedChildScope);
+
+                    this._findChildrenScopes(childNode, cleanedChildScope);
+                } else {
+                    this._findChildrenScopes(childNode, parentScope);
+                }
+            }
+        }
+
+        private _listenScopeChanges(scope: any) {
+            console.log("listen to scope " + scope.$id);
+
+            scope.$watch((newValue, oldValue) => {
+                this._markForRefresh();
+            });
+
+            scope.$on("$destroy", () => {
+                console.log(scope.$id + " has been destroyed");
+            });
+        }
+
+        private _scopePropertiesNamesToExclude: string[] = ["$$applyAsyncQueue", "$$asyncQueue", "$$childHead", "$$ChildScope", "$$childTail", "$$destroyed", "$$isolateBindings", "$$listenerCount", "$$listeners", "$$nextSibling", "$$phase", "$$postDigest", "$$postDigestQueue", "$$prevSibling", "$$transcluded", "$$watchers", "$apply", "$applyAsync", "$broadcast", "$childTail", "$destroy", "$digest", "$emit", "$eval", "$evalAsync", "$even", "$first", "$index", "$last", "$middle", "$new", "$odd", "$on", "$parent", "$root", "$watch", "$watchCollection", "$watchGroup"];
+
+        private _ngInspectorScopeProperties: string[] = ["$id", "$parentId", "$children", "$functions"];
+
+        private _cleanScope(scope: any): Scope {
             var scopePackaged: Scope = {
                 $id: null,
-                $parentId: null
+                $parentId: null,
+                $children: [],
+                $functions: []
             };
             var keys = Object.keys(scope);
             for (var i = 0; i < keys.length; i++) {
                 var key = keys[i];
-                if (this._scopePropertiesNames.indexOf(key) === -1) {
+                if (this._scopePropertiesNamesToExclude.indexOf(key) === -1) {
                     scopePackaged[key] = scope[key];
                 }
             }
