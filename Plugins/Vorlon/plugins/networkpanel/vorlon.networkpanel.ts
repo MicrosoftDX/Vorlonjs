@@ -1,4 +1,14 @@
 module VORLON {
+    interface NetworkEntry{
+        id: string;
+        url: string;
+        status : number;
+        statusText : string;
+        method: string;
+        responseType: string;
+        readyState: number;
+    }
+    
     export class NetworkPanel extends Plugin {
 
         //Do any setup you need, call super to configure
@@ -49,13 +59,13 @@ module VORLON {
             var XmlHttpRequestProxy = function() {
                 var xhr = new w.___XMLHttpRequest();
                 var data = {
-                    id: plugin.getID(),
+                    id: VORLON.Tools.CreateGUID(),
                     url: null,
                     status : null,
                     statusText : null,
                     method: null,
                     responseType: null,
-                    readyState: 0
+                    readyState: 0,
                 }
                 xhr.__open = xhr.open;
                 xhr.open = function(){
@@ -64,7 +74,7 @@ module VORLON {
                     if (debug) 
                         console.log('request for ' + data.url);
 
-                    Core.Messenger.sendRealtimeMessage(plugin.getID(), data, RuntimeSide.Client, "xhrcall", true);
+                    Core.Messenger.sendRealtimeMessage(plugin.getID(), { type:'xhr', message: data}, RuntimeSide.Client);
                     return xhr.__open.apply(xhr, arguments);
                 }
 
@@ -80,7 +90,7 @@ module VORLON {
                         if (debug) 
                             console.log('LOADED !!!');
                     }
-                    Core.Messenger.sendRealtimeMessage(plugin.getID(), data, RuntimeSide.Client, "xhrcall", true);
+                    Core.Messenger.sendRealtimeMessage(plugin.getID(), { type:'xhr', message: data}, RuntimeSide.Client);
                 });
 
                 return xhr;
@@ -88,42 +98,73 @@ module VORLON {
             w.XMLHttpRequest = XmlHttpRequestProxy;
         }
 
+        private _render(tagname: string, parentNode:HTMLElement, classname?:string, value?: string): HTMLElement {
+            var elt = document.createElement(tagname);
+            elt.className = classname || '';
+            if (value)
+                elt.innerHTML = value;
+            parentNode.appendChild(elt);
+            return elt;
+        }
         
+        private _mapAction(selector: string, onClick: (button: HTMLElement) => void) {
+            var button = <HTMLElement>this._dashboardDiv.querySelector(selector);
+            button.addEventListener("click", () => onClick(button));
+            return button;
+        }
 
         // This code will run on the dashboard //////////////////////
 
         // Start dashboard code
         // uses _insertHtmlContentAsync to insert the control.html content
         // into the dashboard
-        private _inputField: HTMLInputElement
-        private _outputDiv: HTMLElement
-
+        private _itemsContainer: HTMLElement
+        private _dashboardDiv: HTMLDivElement;
+        private _items: any;
+        
         public startDashboardSide(div: HTMLDivElement = null): void {
-            this._insertHtmlContentAsync(div, (filledDiv) => {
-                this._inputField = <HTMLInputElement>filledDiv.querySelector('#echoInput');
-                this._outputDiv = <HTMLElement>filledDiv.querySelector('#output');
-
-
-                // Send message to client when user types and hits return
-                this._inputField.addEventListener("keydown", (evt) => {
-                    if (evt.keyCode === 13) {
-                        Core.Messenger.sendRealtimeMessage(this.getID(), {
-                            message: this._inputField.value
-                        }, RuntimeSide.Dashboard);
-
-                        this._inputField.value = "";
-                    }
-                });
-            })
+            this._dashboardDiv = div;
+            this._items = {};
+            this._insertHtmlContentAsync(div, (filledDiv) => {                
+                this._itemsContainer = <HTMLElement>filledDiv.querySelector('.network-items');
+            });
         }
 
         // When we get a message from the client, just show it
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-            var message = document.createElement('p');
-            message.textContent = receivedObject.message;
-            this._outputDiv.appendChild(message);
+            if (receivedObject.type === 'xhr'){
+                var item = <NetworkEntry>receivedObject.message;
+                this.processNetworkItem(item);
+            }
+            console.log(receivedObject.message);
         }
+        
+        private processNetworkItem(item: NetworkEntry){
+            var storedItem = <NetworkItemCtrl>this._items[item.id];
+            if (!storedItem){
+                storedItem = new NetworkItemCtrl(this._itemsContainer, item);
+                this._items[item.id] = storedItem;
+            }
+            storedItem.update(item);
+        }
+        
+        
     }
+    
+    class NetworkItemCtrl {
+            element : HTMLElement;
+            
+            constructor(parent: HTMLElement, item: NetworkEntry){
+                this.element = document.createElement('DIV');
+                this.element.className = 'network-item';
+                this.element.innerText = item.url;
+                parent.appendChild(this.element);    
+            }
+            
+            update(item:NetworkEntry){
+                
+            }
+        }
 
     //Register the plugin with vorlon core
     Core.RegisterPlugin(new NetworkPanel());
