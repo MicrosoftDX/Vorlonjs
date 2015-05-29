@@ -65,6 +65,7 @@ gulp.task('scripts', ['typescript-to-js'], function () {
             './**/vorlon.domExplorer.js',
             './**/vorlon.modernizrReport.js',
             './**/objectExplorer/vorlon.objectExplorer.js',
+            './**/networkpanel/vorlon.networkpanel.js',
             './**/sample/vorlon.sample.js'
         ])
         .pipe(rename(function (path) {
@@ -127,7 +128,7 @@ gulp.task('watch', function() {
   gulp.watch([
     'Vorlon/**/*.ts',
     'Vorlon/**/*.less',
-    'Vorlon/plugins/**/*.*',
+    //'Vorlon/plugins/**/*.*',
   ], ['default']);
 });
 

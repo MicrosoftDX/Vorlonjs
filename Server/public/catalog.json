@@ -4,6 +4,7 @@
         { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername" : "interactiveConsole"},
         { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername" : "domExplorer" },
         { "id": "MODERNIZR", "name": "Modernizr","panel": "bottom", "foldername" : "modernizrReport" },
-        { "id" : "OBJEXPLORER", "name" : "Obj. Explorer","panel": "top", "foldername" : "objectExplorer" }
+        { "id" : "OBJEXPLORER", "name" : "Obj. Explorer","panel": "top", "foldername" : "objectExplorer" },
+        { "id" : "NETWORKPANEL", "name" : "Network","panel": "top", "foldername" : "networkpanel" }
     ]
 }
