@@ -1,11 +1,7 @@
-.plugin-console {
-  padding-bottom: 10px;  
-}
 .plugin-console .logs-container {
-  height: calc(100% - 40px);
-  padding: 15px;
-  padding-bottom: 0;
+  padding: 0.5em 0.5em 0px;
   overflow: auto;
+  height: calc(100% - 2.25em);
 }
 .plugin-console .logs-list {
   width: 100%;
@@ -43,6 +39,8 @@
   color: #ed2424;
 }
 .plugin-console .console-input {
-  width: calc(100% - 30px);  
-  margin: 10px 15px 0; 
+  display: block;
+  margin: 0px auto;
+  font-size: inherit;
+  width: calc(100% - 1em);
 }

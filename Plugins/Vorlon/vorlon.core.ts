@@ -7,6 +7,7 @@
         static _side: RuntimeSide;
         static _errorNotifier: any;
         static _messageNotifier: any;
+        static _socketIOWaitCount = 0;
 
         static _RetryTimeout = 1002;
 
@@ -46,6 +47,25 @@
                 
                 document.body.appendChild(Core._errorNotifier);
                 document.body.appendChild(Core._messageNotifier);
+            }
+            
+            // Checking socket.io
+            if (Core._side !== RuntimeSide.Both) {
+                if ((<any>window).io === undefined) {
+                    
+                    if (this._socketIOWaitCount < 10) {
+                        this._socketIOWaitCount++;
+                        // Let's wait a bit just in case socket.io was loaded asynchronously
+                        setTimeout(function() {
+                            console.log("Vorlon.js: waiting for socket.io to load...");
+                            Core.Start(serverUrl, sessionId, listenClientId, divMapper);
+                        }, 1000);
+                    } else {
+                        console.log("Vorlon.js: please load socket.io before referencing vorlon.js or use includeSocketIO = true in your catalog.json file.");
+                        Core.ShowError("Vorlon.js: please load socket.io before referencing vorlon.js or use includeSocketIO = true in your catalog.json file.", 0);
+                    }
+                    return;
+                }   
             }
 
             // Cookie
@@ -126,11 +146,11 @@
             }
         }
 
-        private static _OnError(err: Error): void {
-            var message = "<strong>Error while connecting to server. Server may be offline.</strong><BR>Error message: ";
+        private static ShowError(message: string, timeout = 5000) {
             
             if (Core._side == RuntimeSide.Dashboard) {
-                Core._errorNotifier.innerHTML = message + err.message;
+                Core._errorNotifier.innerHTML = message;
+                Core._errorNotifier.setAttribute('duration', timeout);
                 Core._errorNotifier.show();
             }
             else {
@@ -147,14 +167,20 @@
                 divError.style.color = "white";
                 divError.style.fontFamily = "consolas";
     
-                divError.innerHTML = message + err.message;
+                divError.innerHTML = message;
     
                 document.body.appendChild(divError);
     
-                setTimeout(() => {
-                    document.body.removeChild(divError);
-                }, 5000);
+                if (timeout) {
+                    setTimeout(() => {
+                        document.body.removeChild(divError);
+                    }, timeout);
+                }
             }
+        }
+
+        private static _OnError(err: Error): void {
+            Core.ShowError("Error while connecting to server. Server may be offline.<BR>Error message: " + err.message);
         }
 
         private static _OnIdentificationReceived(id: string): void {

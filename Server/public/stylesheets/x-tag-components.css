@@ -1,6 +1,61 @@
 x-action{display:inline-block}
 
 
+x-controlbar {
+  display:-webkit-box;
+  display:-moz-box;
+  display:-ms-flexbox;
+  display:-webkit-flex;
+  display:flex;
+  padding: 0.35em;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+x-controlbar > * {
+  -webkit-box-flex: 0;
+  -moz-box-flex: 0;
+  -webkit-flex: 0;
+  -ms-flex: 0;
+  box-flex: 0;
+  flex: 0;
+  margin-left: 0.35em;
+  padding: 0.25em 0.5em;
+  border: 1px solid rgba(0,0,0, 0.1);
+  font: inherit;
+}
+
+x-controlbar > *:first-child {
+  margin-left: 0; 
+}
+
+x-controlbar > [stretch] {
+  -webkit-box-flex:1;
+  -moz-box-flex:1;
+  -webkit-flex:1;
+  -ms-flex:1;
+  box-flex:1;
+  flex:1;
+}
+
+x-controlbar > button,
+x-controlbar > x-action,
+x-controlbar > input[type="submit"] {
+  background: #ddd;
+  cursor: pointer;
+}
+
+x-controlbar > input[type="text"],
+x-controlbar > input:not([type]) {
+  border: 1px solid rgba(0,0,0, 0.15);
+}
+
+
+
 [x-notify-parentnode] {
   position: relative;
   overflow: hidden;
@@ -88,56 +143,4 @@ x-notify[type="error"] {
   background-color: #e74c3c;
 }
 
-x-controlbar {
-  display:-webkit-box;
-  display:-moz-box;
-  display:-ms-flexbox;
-  display:-webkit-flex;
-  display:flex;
-  padding: 0.35em;
-  background: #fafafa;
-  border: 1px solid #ddd;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -ms-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-x-controlbar > * {
-  -webkit-box-flex: 0;
-  -moz-box-flex: 0;
-  -webkit-flex: 0;
-  -ms-flex: 0;
-  box-flex: 0;
-  flex: 0;
-  margin-left: 0.35em;
-  padding: 0.25em 0.5em;
-  border: 1px solid rgba(0,0,0, 0.1);
-  font: inherit;
-}
-
-x-controlbar > *:first-child {
-  margin-left: 0; 
-}
-
-x-controlbar > [stretch] {
-  -webkit-box-flex:1;
-  -moz-box-flex:1;
-  -webkit-flex:1;
-  -ms-flex:1;
-  box-flex:1;
-  flex:1;
-}
-
-x-controlbar > button,
-x-controlbar > x-action,
-x-controlbar > input[type="submit"] {
-  background: #ddd;
-  cursor: pointer;
-}
-
-x-controlbar > input[type="text"],
-x-controlbar > input:not([type]) {
-  border: 1px solid rgba(0,0,0, 0.15);
-}
 

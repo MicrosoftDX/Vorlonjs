@@ -169,55 +169,53 @@ export module VORLON {
         private _sendVorlonJSFile(ismin: boolean, req: any, res: any, autostart:boolean = true){
             //Read Socket.io file
             var javascriptFile: string;
-            
-            fs.readFile(path.join(__dirname, "../public/javascripts/socket.io-1.3.5.js"),(err, data) => {
+                            
+            fs.readFile(path.join(__dirname, "../public/catalog.json"), "utf8", (err, catalogdata) => {
                 if (err) {
-                    this._log.error("ROUTE : Error reading JS File");
+                    this._log.error("ROUTE : Error reading catalon.json file");
                     return;
                 }
-                
-                javascriptFile = data.toString();
-                            
-                fs.readFile(path.join(__dirname, "../public/catalog.json"), "utf8", (err, catalogdata) => {
-                    if (err) {
-                        this._log.error("ROUTE : Error reading catalon.json file");
-                        return;
-                    }
-            
-                    var catalogstring = catalogdata.toString().replace(/^\uFEFF/, '');
-                    console.log(catalogstring);
-                    var catalog = JSON.parse(catalogstring);
-                    var vorlonpluginfiles: string = "";
                     
+                var catalogstring = catalogdata.toString().replace(/^\uFEFF/, '');
+                console.log(catalogstring);
+                var catalog = JSON.parse(catalogstring);
+                var vorlonpluginfiles: string = "";
+                var javascriptFile: string = "";
+                
+                
+                //read the socket.io file if needed
+                if(catalog.includeSocketIO){
+                    javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.3.5.js"));
+                }
+
+                if(ismin){
+                    vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/vorlon-noplugin.js"));
+                }
+                else{
+                    vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/vorlon-noplugin.max.js"));
+                }
+                
+                for(var pluginid = 0; pluginid < catalog.plugins.length; pluginid++){
+                    var plugin = catalog.plugins[pluginid];
+                    
+                    //Read Vorlon.js file
                     if(ismin){
-                        vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/vorlon-noplugin.js"));
+                        vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".min.js"));
                     }
                     else{
-                        vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/vorlon-noplugin.max.js"));
+                        vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".js"));
                     }
-                    
-                    for(var pluginid = 0; pluginid < catalog.plugins.length; pluginid++){
-                        var plugin = catalog.plugins[pluginid];
-                        
-                        //Read Vorlon.js file
-                        if(ismin){
-                            vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".min.js"));
-                        }
-                        else{
-                            vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".js"));
-                        }
-                    }
-                    
-                    vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"http://' + req.headers.host + '/vorlon/plugins"');
-                    javascriptFile += "\r" + vorlonpluginfiles;
-                    
-                    if(autostart){
-                        javascriptFile += "\r (function() { VORLON.Core.Start('http://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
-                    }
-                    
-                    res.header('Content-Type', 'application/javascript');
-                    res.send(javascriptFile);
-                });
+                }
+                
+                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"http://' + req.headers.host + '/vorlon/plugins"');
+                javascriptFile += "\r" + vorlonpluginfiles;
+                
+                if(autostart){
+                    javascriptFile += "\r (function() { VORLON.Core.Start('http://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
+                }
+                
+                res.header('Content-Type', 'application/javascript');
+                res.send(javascriptFile);
             });
         }
 
