@@ -17,9 +17,6 @@
   border-bottom: 1px solid #EEE;
   display: flex;
 }
-.plugin-objexplorer .tree-view-wrapper #searchbox .dashboard-button {
-  margin-left: 4px;
-}
 .plugin-objexplorer .tree-view-wrapper #searchbox .panel {
   position: relative;
 }

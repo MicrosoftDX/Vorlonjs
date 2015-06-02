@@ -21,6 +21,14 @@
 .plugin-dom #styleView {
   padding: 15px;
 }
+.plugin-dom .tree-view-wrapper > x-controlbar {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+.plugin-dom .tree-view-wrapper > x-controlbar > * {
+  border-radius: 0.25em;
+}
 .plugin-dom .treeNodeButton {
   display: inline-block;
   color: #444;
@@ -165,4 +173,14 @@
   background: #eee;
   border-radius: 3px;
   cursor: pointer;
+}
+.plugin-dom x-action[event="refresh"]:before {
+  content: 	'\26AB';
+  margin-right: 0.1em;
+  color: #aaa;
+  background: none;
+}
+
+.plugin-dom x-action[event="refresh"][changed]:before {
+  color: red;
 }
