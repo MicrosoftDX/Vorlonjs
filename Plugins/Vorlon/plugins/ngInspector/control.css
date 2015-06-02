@@ -1,48 +1,5 @@
-.plugin-console {
-  padding-bottom: 10px;  
-}
-.plugin-console .logs-container {
-  height: calc(100% - 40px);
-  padding: 15px;
-  padding-bottom: 0;
-  overflow: auto;
-}
-.plugin-console .logs-list {
-  width: 100%;
-}
-.plugin-console .log {
-  margin-bottom: 3px;
-  margin-left: 30px;
-  position: relative;
-}
-.plugin-console .log:before {
-  content: '>';
-  position: absolute;
-  left: -30px;
-  top: 0;
-  font-size: 14px;
-  font-weight: 400;
-  color: #ccc;
-}
-.plugin-console .logMessage {
-  color: #444;
-}
-.plugin-console .logDebug {
-  color: #b200ff;
-}
-.plugin-console .logInfo {
-  color: #0026ff;
-}
-.plugin-console .logWarning {
-  color: #ff9205;
-}
-.plugin-console .logError {
-  color: #ed2424;
-}
-.plugin-console .logException {
-  color: #ed2424;
-}
-.plugin-console .console-input {
-  width: calc(100% - 30px);  
-  margin: 10px 15px 0; 
+.ng-inspector-container .scopes-treeview-wrapper ul.scopes-tree {
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }

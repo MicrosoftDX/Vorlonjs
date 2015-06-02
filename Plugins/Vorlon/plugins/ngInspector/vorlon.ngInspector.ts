@@ -42,43 +42,56 @@
 
         private _packageAndSendScopes(): void {
             this._rootScopes = [];
-            this._findRootScopes(document.body);
+            this._findScopeTrees();
 
             Core.Messenger.sendRealtimeMessage(this.getID(), { scopes: this._rootScopes }, RuntimeSide.Client, "message");
         }
 
         private _rootScopes: Scope[] = [];
+        private _allScopes: Scope[] = [];
 
-        private _findRootScopes(element: Node) {
-            var rootScope = angular.element(element).scope();
-            if (!!rootScope) {
-                var cleanedRootScope = this._cleanScope(rootScope);
-                this._rootScopes.push(cleanedRootScope);
+        private _findScopeTrees(): void {
+            this._allScopes = [];
+            this._rootScopes = [];
+            var appElements = this._getElementsByAttributeName("ng-app");
 
-                this._findChildrenScopes(element, cleanedRootScope);
+            for (var i = 0; i < appElements.length; i++) {
+                var scope = angular.element(appElements[i]).scope();
 
-                this._listenScopeChanges(rootScope);
-            } else {
-                for (var i = 0; i < element.childNodes.length; i++) {
-                    this._findRootScopes(element.childNodes[i]);
-                }
+                var packagedScope = this._cleanScope(scope);
+                packagedScope.$children = this._packageAndFindChildrenScopes(scope.$$childHead);
+                this._allScopes[packagedScope.$id] = packagedScope;
+                this._rootScopes.push(packagedScope);
             }
         }
 
-        private _findChildrenScopes(element: Node, parentScope: Scope) {
-            for (var i = 0; i < element.childNodes.length; i++) {
-                var childNode = element.childNodes[i];
-                var childScope = angular.element(childNode).scope();
-                
-                if (!!childScope && childScope.$id !== parentScope.$id) {
-                    var cleanedChildScope = this._cleanScope(childScope);
-                    parentScope.$children.push(cleanedChildScope);
+        private _packageAndFindChildrenScopes(scope: any): Scope[] {
+            var currentLevelScopes: Scope[] = [];
+            while (scope) {
+                var childrenScopes: Scope[] = this._packageAndFindChildrenScopes(scope.$$childHead);
+                var packagedScope = this._cleanScope(scope);
+                packagedScope.$children = childrenScopes;
+                this._allScopes[packagedScope.$id] = packagedScope;
+                currentLevelScopes.push(packagedScope);
+                scope = scope.$$nextSibling;
+            }
 
-                    this._findChildrenScopes(childNode, cleanedChildScope);
-                } else {
-                    this._findChildrenScopes(childNode, parentScope);
+            return currentLevelScopes;
+        }
+
+        private _getElementsByAttributeName(...attributes: string[]): HTMLScriptElement[] {
+            var matchingElements: HTMLScriptElement[] = [];
+            var allElements: HTMLScriptElement[] = <HTMLScriptElement[]><any>document.getElementsByTagName("*");
+            for (var i = 0; i < allElements.length; i++) {
+                for (var j = 0; j < attributes.length; j++) {
+                    if (allElements[i].getAttribute(attributes[j])) {
+                        matchingElements.push(allElements[i]);
+                        break;
+                    }
                 }
             }
+
+            return matchingElements;
         }
 
         private _listenScopeChanges(scope: any) {
@@ -93,8 +106,7 @@
             });
         }
 
-        private _scopePropertiesNamesToExclude: string[] = ["$$applyAsyncQueue", "$$asyncQueue", "$$childHead", "$$ChildScope", "$$childTail", "$$destroyed", "$$isolateBindings", "$$listenerCount", "$$listeners", "$$nextSibling", "$$phase", "$$postDigest", "$$postDigestQueue", "$$prevSibling", "$$transcluded", "$$watchers", "$apply", "$applyAsync", "$broadcast", "$childTail", "$destroy", "$digest", "$emit", "$eval", "$evalAsync", "$even", "$first", "$index", "$last", "$middle", "$new", "$odd", "$on", "$parent", "$root", "$watch", "$watchCollection", "$watchGroup"];
-
+        private _scopePropertiesNamesToExclude: string[] = ["$$applyAsyncQueue", "$$asyncQueue", "$$childHead", "$$ChildScope", "$$childTail", "$$destroyed", "$$isolateBindings", "$$listenerCount", "$$listeners", "$$nextSibling", "$$phase", "$$postDigest", "$$postDigestQueue", "$$prevSibling", "$$transcluded", "$$watchers", "$$watchersCount", "$apply", "$applyAsync", "$broadcast", "$childTail", "$destroy", "$digest", "$emit", "$eval", "$evalAsync", "$even", "$first", "$index", "$last", "$middle", "$new", "$odd", "$on", "$parent", "$root", "$watch", "$watchCollection", "$watchGroup"];
         private _ngInspectorScopeProperties: string[] = ["$id", "$parentId", "$children", "$functions"];
 
         private _cleanScope(scope: any): Scope {
@@ -124,13 +136,41 @@
         }
 
         public startDashboardSide(div: HTMLDivElement = null): void {
-            this._insertHtmlContentAsync(div,(filledDiv) => {
+            this._insertHtmlContentAsync(div, (filledDiv) => {
+                $('.ng-inspector-container').split({
+                    orientation: 'vertical',
+                    limit: 50,
+                    position: '70%'
+                });
+
                 this._ready = true;
             });
         }
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-            document.getElementById("ngInspectorContainer").innerText = JSON.stringify(receivedObject.scopes);
+            document.getElementById("ngInspectorContainer").innerHTML = this._renderScopes(receivedObject.scopes);
+        }
+
+        private _renderScopes(scopes: Scope[]): string {
+            var dom = '<ul class="scopes-tree">';
+
+            for (var i = 0; i < scopes.length; i++) {
+                dom += "<li>" + this._renderScope(scopes[i]) + "</li>";
+            }
+
+            dom += "</ul>";
+
+            return dom;
+        }
+
+        private _renderScope(scope: Scope): string {
+            var dom = '<span>scope : ' + scope.$id + '</span>';
+
+            if (scope.$children) {
+                dom += this._renderScopes(scope.$children);
+            }
+
+            return dom;
         }
     }
 

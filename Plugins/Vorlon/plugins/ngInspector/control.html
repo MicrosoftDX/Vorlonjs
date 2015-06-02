@@ -5,6 +5,26 @@
     <link href="control.css" rel="stylesheet" />
 </head>
 <body>
-  <div id="ngInspectorContainer"></div>
+    <div id="ngInspectorContainer" class="ng-inspector-container">
+        <div class="scopes-tree-wrapper panel-left">
+            <ul class="scopes-tree">
+                <li class="rootScope">
+                    <span>$rootScope</span>
+                    <ul class="scopes-tree">
+                        <li class="controllerScope">
+                            <span>MainCtrl</span>
+                            <ul class="scopes-tree">
+                                <li class="ngRepeatScope">
+                                    <span></span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="scope-details-wrapper panel-right">
+        </div>
+    </div>
 </body>
 </html>
