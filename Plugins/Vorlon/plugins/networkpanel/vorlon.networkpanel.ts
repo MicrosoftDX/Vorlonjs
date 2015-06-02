@@ -157,7 +157,7 @@ module VORLON {
             constructor(parent: HTMLElement, item: NetworkEntry){
                 this.element = document.createElement('DIV');
                 this.element.className = 'network-item';
-                this.element.innerText = item.url;
+                this.element.innerText = item.method.toUpperCase() + ' - ' + item.url;
                 parent.appendChild(this.element);    
             }
             
