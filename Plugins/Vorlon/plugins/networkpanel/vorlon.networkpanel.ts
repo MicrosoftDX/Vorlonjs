@@ -16,7 +16,7 @@ module VORLON {
         constructor() {
             //     name   ,  html for dash   css for dash
             super("networkpanel", "control.html", "control.css");
-            this._ready = true;
+            this._ready = false;
             console.log('Started');
         }
 
@@ -127,6 +127,7 @@ module VORLON {
             this._items = {};
             this._insertHtmlContentAsync(div, (filledDiv) => {                
                 this._itemsContainer = <HTMLElement>filledDiv.querySelector('.network-items');
+                this._ready = true;
             });
         }
 
