@@ -92,6 +92,8 @@
     <Content Include="Vorlon\plugins\modernizrReport\control.css" />
     <Content Include="Vorlon\plugins\modernizrReport\control.html" />
     <Content Include="Vorlon\plugins\modernizrReport\modernizr.js" />
+    <Content Include="Vorlon\plugins\networkMonitor\control.css" />
+    <Content Include="Vorlon\plugins\networkMonitor\control.html" />
     <Content Include="Vorlon\plugins\objectExplorer\control.css" />
     <Content Include="Vorlon\plugins\objectExplorer\control.html" />
     <Content Include="Web.config" />
@@ -102,6 +104,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="libs\node.d.ts" />
     <TypeScriptCompile Include="libs\socket.io.d.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\networkMonitor\vorlon.networkMonitor.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.ts" />
     <TypeScriptCompile Include="Vorlon\vorlon.tools.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\domExplorer\vorlon.domExplorer.ts" />

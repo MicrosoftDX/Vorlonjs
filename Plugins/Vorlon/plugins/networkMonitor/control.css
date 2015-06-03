@@ -1,0 +1,28 @@
+.plugin-network {
+    padding: 20px;
+}
+
+    .plugin-network .network-log-list {
+        width: 100%;
+        margin: 20px 0 30px;
+    }
+
+        .plugin-network .network-log-list th,
+        .plugin-network .network-log-list td {
+            padding: 5px 10px;
+            text-align: left;
+        }
+
+        .plugin-network .network-log-list th {
+            background: #f7f7f7;
+            border-bottom: 1px solid #ddd;
+            font-weight: 400;
+        }
+
+        .plugin-network .network-log-list td {
+            border-bottom: 1px solid #eee;
+        }
+
+        .plugin-network .network-log-list .network-log-list-right {
+            text-align: right;
+        }
