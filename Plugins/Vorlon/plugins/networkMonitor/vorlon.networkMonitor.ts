@@ -33,7 +33,7 @@
                 this.performanceItems.push({
                     "name": entries[i].name,
                     "duration": entries[i].duration,
-                    "type": entries[i].entryType
+                    "type": entries[i].initiatorType
                 });
             }
 
