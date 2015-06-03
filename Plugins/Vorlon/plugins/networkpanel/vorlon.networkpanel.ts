@@ -6,12 +6,13 @@ module VORLON {
         statusText : string;
         method: string;
         responseType: string;
+        responseHeaders : any;
+        requestHeaders: any[];
         readyState: number;
     }
     
     export class NetworkPanel extends Plugin {
         constructor() {
-            //     name   ,  html for dash   css for dash
             super("networkpanel", "control.html", "control.css");
             this._id = "NETWORKPANEL";
             this._ready = false;        
@@ -26,8 +27,7 @@ module VORLON {
             this.setupXMLHttpRequestHook(true);
         }
 
-        public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
-            
+        public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {            
         }
 
         public setupXMLHttpRequestHook(debug){
@@ -43,9 +43,17 @@ module VORLON {
                     statusText : null,
                     method: null,
                     responseType: null,
+                    responseHeaders : null,
+                    requestHeaders : [],
                     readyState: 0,
                 }
                 xhr.__open = xhr.open;
+                xhr.__send = xhr.send;
+                xhr.__setRequestHeader = xhr.setRequestHeader;
+                
+                //todo intercepter send pour chopper les données postées
+                //see https://msdn.microsoft.com/en-us/library/hh772834(v=vs.85).aspx
+                
                 xhr.open = function(){
                     data.method = arguments[0];
                     data.url = arguments[1];
@@ -53,6 +61,24 @@ module VORLON {
 
                     plugin.sendToDashboard({ type:'xhr', message: data});
                     return xhr.__open.apply(xhr, arguments);
+                }
+                
+                xhr.open = function(){
+                    data.method = arguments[0];
+                    data.url = arguments[1];
+                    plugin.trace('request for ' + data.url);
+
+                    plugin.sendToDashboard({ type:'xhr', message: data});
+                    return xhr.__open.apply(xhr, arguments);
+                }
+                
+                xhr.setRequestHeader = function(){
+                    var header = {
+                        name : arguments[0],
+                        value : arguments[1]
+                    }
+                    data.requestHeaders.push(header);
+                    return xhr.__setRequestHeader.apply(xhr, arguments);
                 }
 
                 xhr.addEventListener('readystatechange', function(){
@@ -62,7 +88,11 @@ module VORLON {
                     if (data.readyState === 4){
                         data.responseType = xhr.responseType;
                         data.status = xhr.status;    
-                        data.statusText = xhr.statusText;    
+                        data.statusText = xhr.statusText;
+                        
+                        if (xhr.getAllResponseHeaders)    
+                            data.responseHeaders = xhr.getAllResponseHeaders();
+                        
                         plugin.trace('LOADED !!!');
                     }
                     plugin.sendToDashboard({ type:'xhr', message: data});
