@@ -92,6 +92,7 @@ module VORLON {
 
         private _itemsContainer: HTMLElement
         private _dashboardDiv: HTMLDivElement;
+        private _clearButton: HTMLButtonElement;
         private _items: any;
         
         public startDashboardSide(div: HTMLDivElement = null): void {
@@ -99,6 +100,12 @@ module VORLON {
             this._items = {};
             this._insertHtmlContentAsync(div, (filledDiv) => {                
                 this._itemsContainer = <HTMLElement>filledDiv.querySelector('.network-items');
+                this._clearButton = <HTMLButtonElement>filledDiv.querySelector('x-action[event="clear"]');
+                this._clearButton.addEventListener('click', (arg) => {
+                    this.sendToClient({ type : 'clear' });
+                    this._itemsContainer.innerHTML = '';
+                    this._items = {};
+                });
                 this._ready = true;
             });
         }
@@ -125,8 +132,10 @@ module VORLON {
             element : HTMLElement;
             statusElt : HTMLElement;
             responseTypeElt : HTMLElement;
+            item: NetworkEntry;
             
             constructor(parent: HTMLElement, item: NetworkEntry){
+                this.item = item;
                 this.element = new VORLON.FluentDOM('DIV', 'network-item')
                     .append('DIV', 'description', (fdDesc) => {
                         fdDesc.append('DIV', 'status item smallitem', (fdStatus) => { 
@@ -152,6 +161,7 @@ module VORLON {
             }
             
             update(item:NetworkEntry){
+                this.item = item;
                 if (item.readyState === 4){
                     if (item.status !== 200){
                         this.element.classList.add('error');

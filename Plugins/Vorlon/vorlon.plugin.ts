@@ -53,11 +53,13 @@
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void { }
 
         public sendToClient(data: any){
-            Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard);
+            if (Core.Messenger)
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard);
         }
         
         public sendToDashboard(data: any){
-            Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client);
+            if (Core.Messenger)
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client);
         }
         
         public refresh(): void {
