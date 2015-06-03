@@ -7,7 +7,7 @@
 }
 .plugin-dom .dom-explorer-container {
   height: 100%;
-  overflow: hidden !important;
+  overflow: hidden !important;  
 }
 .plugin-dom .panel-left,
 .plugin-dom .panel-right {
@@ -92,7 +92,7 @@
   background: yellow !important;
 }
 .plugin-dom .treeNodeTools {
-  color: #444;
+  color: #444; 
   float: right;
   text-decoration: none;
 }
@@ -160,9 +160,9 @@
 }
 .plugin-dom .styleLabel.editable,
 .plugin-dom .styleValue.editable {
-  background-color: rgba(0, 183, 199, 0.1);
+  background-color: rgba(0,183,199,0.1);
   color: #666;
-  outline: 1px solid #ff1493;
+  outline: 1px solid rgb(255, 20, 147);
 }
 .plugin-dom .styleButton {
   width: 80px;
@@ -175,11 +175,12 @@
   cursor: pointer;
 }
 .plugin-dom x-action[event="refresh"]:before {
-  content: '\26AB';
+  content: 	'\26AB';
   margin-right: 0.1em;
   color: #aaa;
   background: none;
 }
+
 .plugin-dom x-action[event="refresh"][changed]:before {
   color: red;
 }

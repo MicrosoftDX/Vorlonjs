@@ -79,12 +79,6 @@
     <script type="text/javascript">
       function ajaxCall(){
         var oReq = new XMLHttpRequest();
-        oReq.onload = function(r){
-          console.log('### RECEIVED ');
-        };
-        oReq.onreadystatechange = function(r){
-          console.log('### STATE ' + this.readyState);
-        };
         oReq.open("get", "http://localhost:1338/index.html", true);
         oReq.send();
       }

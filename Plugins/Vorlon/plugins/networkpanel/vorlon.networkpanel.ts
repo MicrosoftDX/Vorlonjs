@@ -16,13 +16,9 @@ module VORLON {
         constructor() {
             //     name   ,  html for dash   css for dash
             super("networkpanel", "control.html", "control.css");
-            this._ready = false;
-            console.log('Started');
-        }
-
-        //Return unique id for your plugin
-        public getID(): string {
-            return "NETWORKPANEL";
+            this._id = "NETWORKPANEL";
+            this._ready = false; 
+            this.debug = true;           
         }
 
         public refresh(): void {
@@ -41,15 +37,7 @@ module VORLON {
 
         // Handle messages from the dashboard, on the client
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
-            console.log('Got message from sample plugin', receivedObject.message);
-            //The dashboard will send us an object like { message: 'hello' }
-            //Let's just return it, reversed
-            var data = {
-                message: receivedObject.message.split("").reverse().join("")
-            };
-
-            //Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "xhrcall", true);
-
+            
         }
 
         public setupXMLHttpRequestHook(debug){
@@ -71,26 +59,23 @@ module VORLON {
                 xhr.open = function(){
                     data.method = arguments[0];
                     data.url = arguments[1];
-                    if (debug) 
-                        console.log('request for ' + data.url);
+                    plugin.trace('request for ' + data.url);
 
-                    Core.Messenger.sendRealtimeMessage(plugin.getID(), { type:'xhr', message: data}, RuntimeSide.Client);
+                    plugin.sendToDashboard({ type:'xhr', message: data});
                     return xhr.__open.apply(xhr, arguments);
                 }
 
                 xhr.addEventListener('readystatechange', function(){
                     data.readyState = xhr.readyState;
-                    if (debug) 
-                        console.log('STATE CHANGED ' + data.readyState);
+                    plugin.trace('STATE CHANGED ' + data.readyState);
 
                     if (data.readyState === 4){
                         data.responseType = xhr.responseType;
                         data.status = xhr.status;    
                         data.statusText = xhr.statusText;    
-                        if (debug) 
-                            console.log('LOADED !!!');
+                        plugin.trace('LOADED !!!');
                     }
-                    Core.Messenger.sendRealtimeMessage(plugin.getID(), { type:'xhr', message: data}, RuntimeSide.Client);
+                    plugin.sendToDashboard({ type:'xhr', message: data});
                 });
 
                 return xhr;
@@ -137,7 +122,7 @@ module VORLON {
                 var item = <NetworkEntry>receivedObject.message;
                 this.processNetworkItem(item);
             }
-            console.log(receivedObject.message);
+            this.trace(receivedObject.message);
         }
         
         private processNetworkItem(item: NetworkEntry){
@@ -147,23 +132,47 @@ module VORLON {
                 this._items[item.id] = storedItem;
             }
             storedItem.update(item);
-        }
-        
-        
+        } 
     }
     
     class NetworkItemCtrl {
             element : HTMLElement;
+            statusElt : HTMLElement;
+            responseTypeElt : HTMLElement;
             
             constructor(parent: HTMLElement, item: NetworkEntry){
-                this.element = document.createElement('DIV');
-                this.element.className = 'network-item';
-                this.element.innerText = item.method.toUpperCase() + ' - ' + item.url;
+                this.element = new VORLON.FluentDOM('DIV', 'network-item')
+                    .append('DIV', 'description', (fdDesc) => {
+                        fdDesc.append('DIV', 'status item smallitem', (fdStatus) => { 
+                            this.statusElt = fdStatus.element;
+                            fdStatus.html('<i class="fa fa-spin fa-spinner"></i>'); 
+                        })
+                        .append('DIV', 'method item smallitem', (fdMethod) => { 
+                            fdMethod.text(item.method.toUpperCase()); 
+                        })
+                        .append('DIV', 'url item', (fdUrl) => { 
+                            fdUrl.text(item.url) 
+                        })                    
+                    })
+                    .append('DIV', 'details', (fdDesc) => {
+                        fdDesc.append('DIV', 'responsetype', (fdResponseType) => { 
+                            this.responseTypeElt = fdResponseType.element;
+                            fdResponseType.html('&nbsp;'); 
+                        })
+                    })
+                    
+                    .element;
                 parent.appendChild(this.element);    
             }
             
             update(item:NetworkEntry){
-                
+                if (item.readyState === 4){
+                    if (item.status !== 200){
+                        this.element.classList.add('error');
+                    }
+                    this.statusElt.innerText = item.status.toString();
+                    this.responseTypeElt.innerText = 'response type : ' + (item.responseType || 'text');
+                }
             }
         }
 
