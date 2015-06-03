@@ -10,9 +10,6 @@ module VORLON {
     }
     
     export class NetworkPanel extends Plugin {
-
-        //Do any setup you need, call super to configure
-        //the plugin with html and css for the dashboard
         constructor() {
             //     name   ,  html for dash   css for dash
             super("networkpanel", "control.html", "control.css");
@@ -21,20 +18,14 @@ module VORLON {
         }
 
         public refresh(): void {
-            //override this method with cleanup work that needs to happen
-            //as the user switches between clients on the dashboard
-
-            //we don't really need to do anything in this sample
         }
 
         // This code will run on the client //////////////////////
 
-        // Start the clientside code
         public startClientSide(): void {
             this.setupXMLHttpRequestHook(true);
         }
 
-        // Handle messages from the dashboard, on the client
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
             
         }
@@ -99,9 +90,6 @@ module VORLON {
 
         // This code will run on the dashboard //////////////////////
 
-        // Start dashboard code
-        // uses _insertHtmlContentAsync to insert the control.html content
-        // into the dashboard
         private _itemsContainer: HTMLElement
         private _dashboardDiv: HTMLDivElement;
         private _items: any;
@@ -115,7 +103,6 @@ module VORLON {
             });
         }
 
-        // When we get a message from the client, just show it
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
             if (receivedObject.type === 'xhr'){
                 var item = <NetworkEntry>receivedObject.message;
