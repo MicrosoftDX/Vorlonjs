@@ -17,8 +17,7 @@ module VORLON {
             //     name   ,  html for dash   css for dash
             super("networkpanel", "control.html", "control.css");
             this._id = "NETWORKPANEL";
-            this._ready = false; 
-            this.debug = true;           
+            this._ready = false;        
         }
 
         public refresh(): void {
