@@ -121,6 +121,7 @@
         }
 
         private static _OnIdentifyReceived(message: string): void {
+            //console.log('identify ' + message);
             if (Core._side == RuntimeSide.Dashboard) {
                 Core._messageNotifier.innerHTML = message;
                 Core._messageNotifier.show();
@@ -187,6 +188,7 @@
         }
 
         private static _OnIdentificationReceived(id: string): void {
+            //console.log('helo received ' + id);
             Core._listenClientId = id;
 
             if (Core._side === RuntimeSide.Client) {
@@ -209,14 +211,18 @@
             },  Core._RetryTimeout);
         }
 
-        private static _Dispatch(pluginID: string, receivedObject: any): void {
-            var side = receivedObject._side;
-            delete receivedObject._side;
+        private static _Dispatch(message: VorlonMessage): void {
+            if (!message.metadata) {
+                console.error('invalid message ' + JSON.stringify(message));
+                return;
+            }
+            //console.log('received message ' + JSON.stringify(message)); 
+            
             for (var index = 0,  length = Core._plugins.length; index < length; index++) {
                 var plugin = Core._plugins[index];
 
-                if (plugin.getID() === pluginID) {
-                    Core._DispatchPluginMessage(plugin, side, receivedObject);
+                if (plugin.getID() === message.metadata.pluginID) {
+                    Core._DispatchPluginMessage(plugin, message.metadata.side, message.data);
                     return;
                 }
             }

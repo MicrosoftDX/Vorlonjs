@@ -52,14 +52,14 @@
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void { }
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void { }
 
-        public sendToClient(data: any){
+        public sendToClient(data: any, incrementVisualIndicator:boolean = false){
             if (Core.Messenger)
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard);
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message", incrementVisualIndicator);
         }
         
-        public sendToDashboard(data: any){
+        public sendToDashboard(data: any, incrementVisualIndicator: boolean = false){
             if (Core.Messenger)
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client);
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator);
         }
         
         public refresh(): void {

@@ -21,28 +21,22 @@ var VORLON;
         DOMExplorer.prototype.getID = function () {
             return "DOM";
         };
-
         DOMExplorer.prototype._getAppliedStyles = function (node) {
             // Style sheets
             var styleNode = new Array();
             var sheets = document.styleSheets;
             var style;
             var appliedStyles = new Array();
-
             for (var c = 0; c < sheets.length; c++) {
                 var rules = sheets[c].rules || sheets[c].cssRules;
-
                 if (!rules) {
                     continue;
                 }
-
                 for (var r = 0; r < rules.length; r++) {
                     var rule = rules[r];
                     var selectorText = rule.selectorText;
-
-                    try  {
+                    try {
                         var matchedElts = document.querySelectorAll(selectorText);
-
                         for (var index = 0; index < matchedElts.length; index++) {
                             var element = matchedElts[index];
                             style = rule.style;
@@ -54,12 +48,11 @@ var VORLON;
                                 }
                             }
                         }
-                    } catch (e) {
-                        // Ignoring this rule - Angular.js, etc..
+                    }
+                    catch (e) {
                     }
                 }
             }
-
             // Local style
             style = node.style;
             if (style) {
@@ -69,7 +62,6 @@ var VORLON;
                     }
                 }
             }
-
             // Get effective styles
             var winObject = document.defaultView || window;
             for (index = 0; index < appliedStyles.length; index++) {
@@ -78,10 +70,8 @@ var VORLON;
                     styleNode.push(appliedStyle + ":" + winObject.getComputedStyle(node, "").getPropertyValue(appliedStyle));
                 }
             }
-
             return styleNode;
         };
-
         DOMExplorer.prototype._packageNode = function (node) {
             var packagedNode = {
                 id: node.id,
@@ -97,23 +87,21 @@ var VORLON;
             };
             if (node.__vorlon) {
                 packagedNode.internalId = node.__vorlon.internalId;
-            } else {
+            }
+            else {
                 node.__vorlon = {
                     internalId: packagedNode.internalId
                 };
             }
             return packagedNode;
         };
-
         DOMExplorer.prototype._packageDOM = function (root, packagedObject, withChildsNodes) {
-            if (typeof withChildsNodes === "undefined") { withChildsNodes = false; }
+            if (withChildsNodes === void 0) { withChildsNodes = false; }
             if (!root.childNodes || root.childNodes.length === 0) {
                 return;
             }
-
             for (var index = 0; index < root.childNodes.length; index++) {
                 var node = root.childNodes[index];
-
                 var packagedNode = this._packageNode(node);
                 if (withChildsNodes) {
                     this._packageDOM(node, packagedNode);
@@ -121,16 +109,13 @@ var VORLON;
                 if (node.childNodes && node.childNodes.length >= 0) {
                     packagedNode.hasChildnodes = true;
                 }
-
                 //this._packageDOM(node, packagedNode);
                 if (!packagedObject.children) {
                     packagedObject.children = [];
                 }
-
                 packagedObject.children.push(packagedNode);
             }
         };
-
         DOMExplorer.prototype._packageAndSendDOM = function (element) {
             this._internalId = 0;
             this._newAppliedStyles = {};
@@ -138,42 +123,35 @@ var VORLON;
                 var packagedObject = this._packageNode(document.body);
                 packagedObject.rootHTML = document.body.innerHTML;
                 this._packageDOM(document.body, packagedObject, false);
-            } else {
+            }
+            else {
                 var packagedObject = this._packageNode(element);
                 packagedObject.rootHTML = element.innerHTML;
                 this._packageDOM(element, packagedObject, false);
                 packagedObject.refreshbyId = true;
             }
-            VORLON.Core.Messenger.sendRealtimeMessage(this.getID(), packagedObject, 0 /* Client */);
+            this.sendToDashboard(packagedObject);
         };
-
         DOMExplorer.prototype._markForRefresh = function () {
             this.refresh();
         };
-
         DOMExplorer.prototype.startClientSide = function () {
         };
-
         DOMExplorer.prototype._getElementByInternalId = function (internalId, node) {
             if (node.__vorlon && node.__vorlon.internalId === internalId) {
                 return node;
             }
-
             if (!node.children) {
                 return null;
             }
-
             for (var index = 0; index < node.children.length; index++) {
                 var result = this._getElementByInternalId(internalId, node.children[index]);
-
                 if (result) {
                     return result;
                 }
             }
-
             return null;
         };
-
         DOMExplorer.prototype.onRealtimeMessageReceivedFromDashboardSide = function (receivedObject) {
             if (!receivedObject.order) {
                 switch (receivedObject.type) {
@@ -183,10 +161,10 @@ var VORLON;
                         }
                         break;
                     case "dirtycheck":
-                        VORLON.Core.Messenger.sendRealtimeMessage(this.getID(), {
+                        this.sendToDashboard({
                             action: 'dirtycheck',
                             rootHTML: document.body.innerHTML
-                        }, 0 /* Client */);
+                        });
                         break;
                     case "refresh":
                         this.refresh();
@@ -199,13 +177,10 @@ var VORLON;
                 }
                 return;
             }
-
             var element = this._getElementByInternalId(receivedObject.order, document.body);
-
             if (!element) {
                 return;
             }
-
             switch (receivedObject.type) {
                 case "select":
                     element.__savedOutline = element.style.outline;
@@ -220,7 +195,6 @@ var VORLON;
                     break;
             }
         };
-
         DOMExplorer.prototype.refresh = function () {
             this._packageAndSendDOM();
         };
@@ -228,38 +202,27 @@ var VORLON;
             if (internaID)
                 this._packageAndSendDOM(this._getElementByInternalId(internaID, document.body));
         };
-
         DOMExplorer.prototype.startDashboardSide = function (div) {
             var _this = this;
-            if (typeof div === "undefined") { div = null; }
+            if (div === void 0) { div = null; }
             this._dashboardDiv = div;
-
             this._insertHtmlContentAsync(this._dashboardDiv, function (filledDiv) {
                 _this._containerDiv = filledDiv;
                 _this._treeDiv = VORLON.Tools.QuerySelectorById(filledDiv, "treeView");
                 _this._styleView = VORLON.Tools.QuerySelectorById(filledDiv, "styleView");
                 _this._refreshButton = _this._containerDiv.querySelector('x-action[event="refresh"]');
-
-                //setInterval(() => {
-                //    Core.Messenger.sendRealtimeMessage(this.getID(), {
-                //        type: 'dirtycheck',
-                //        order: null
-                //    }, RuntimeSide.Dashboard);
-                //}, 4000);
                 _this._containerDiv.addEventListener('refresh', function () {
-                    VORLON.Core.Messenger.sendRealtimeMessage(_this.getID(), {
+                    _this.sendToClient({
                         type: 'refresh',
                         order: null
-                    }, 1 /* Dashboard */);
+                    });
                 });
-
                 _this._treeDiv.addEventListener('click', function (e) {
                     var button = e.target;
                     if (button.className.match('treeNodeButton')) {
                         button.hasAttribute('data-collapsed') ? button.removeAttribute('data-collapsed') : button.setAttribute('data-collapsed', '');
                     }
                 });
-
                 _this._treeDiv.addEventListener('mouseenter', function (e) {
                     var node = e.target;
                     var parent = node.parentElement;
@@ -267,12 +230,12 @@ var VORLON;
                     if (isHeader || parent.className.match('treeNodeClosingText')) {
                         if (isHeader) {
                             parent.setAttribute('data-hovered-tag', '');
-                        } else {
+                        }
+                        else {
                             parent.parentElement.parentElement.setAttribute('data-hovered-tag', '');
                         }
                     }
                 }, true);
-
                 _this._treeDiv.addEventListener('mouseleave', function (e) {
                     var node = e.target;
                     if (node.className.match('treeNodeHeader') || node.parentElement.className.match('treeNodeClosingText')) {
@@ -281,28 +244,23 @@ var VORLON;
                             hovered.removeAttribute('data-hovered-tag');
                     }
                 }, true);
-
                 $('.dom-explorer-container').split({
                     orientation: 'vertical',
                     limit: 50,
                     position: '70%'
                 });
-
                 _this._ready = true;
             });
         };
-
         DOMExplorer.prototype._makeEditable = function (element) {
             element.contentEditable = "true";
             element.focus();
             VORLON.Tools.AddClass(element, "editable");
-
             var range = document.createRange();
             range.setStart(element, 0);
             range.setEnd(element, 1);
             window.getSelection().addRange(range);
         };
-
         DOMExplorer.prototype._generateClickableValue = function (label, value, internalId) {
             var _this = this;
             // Value
@@ -318,7 +276,6 @@ var VORLON;
                     propertyObject.newValue = valueElement.innerHTML;
                     if (_this._newAppliedStyles[internalId] !== undefined) {
                         var propsArr = _this._newAppliedStyles[internalId];
-
                         for (var index = 0; index < propsArr.length; index++) {
                             var propObj = propsArr[index];
                             if (propObj.property === propertyObject.property) {
@@ -329,39 +286,34 @@ var VORLON;
                             }
                         }
                         propsArr.push(propertyObject);
-                    } else {
+                    }
+                    else {
                         var proArr = [];
                         proArr.push(propertyObject);
                         _this._newAppliedStyles[internalId] = proArr;
                     }
-                    VORLON.Core.Messenger.sendRealtimeMessage(_this.getID(), {
+                    _this.sendToClient({
                         type: "ruleEdit",
                         property: label.innerHTML,
                         newValue: valueElement.innerHTML,
                         order: internalId
-                    }, 1 /* Dashboard */);
+                    });
                     evt.preventDefault();
                     valueElement.contentEditable = "false";
                     VORLON.Tools.RemoveClass(valueElement, "editable");
                 }
             });
-
             valueElement.addEventListener("blur", function () {
                 valueElement.contentEditable = "false";
                 VORLON.Tools.RemoveClass(valueElement, "editable");
             });
-
-            valueElement.addEventListener("click", function () {
-                return _this._makeEditable(valueElement);
-            });
-
+            valueElement.addEventListener("click", function () { return _this._makeEditable(valueElement); });
             return valueElement;
         };
-
         // Generate styles for a selected node
         DOMExplorer.prototype._generateStyle = function (property, value, internalId, editableLabel) {
             var _this = this;
-            if (typeof editableLabel === "undefined") { editableLabel = false; }
+            if (editableLabel === void 0) { editableLabel = false; }
             var wrap = document.createElement("div");
             wrap.className = 'styleWrap';
             var label = document.createElement("div");
@@ -372,17 +324,14 @@ var VORLON;
             wrap.appendChild(label);
             wrap.appendChild(valueElement);
             this._styleView.appendChild(wrap);
-
             if (editableLabel) {
                 label.addEventListener("blur", function () {
                     label.contentEditable = "false";
                     VORLON.Tools.RemoveClass(label, "editable");
                 });
-
                 label.addEventListener("click", function () {
                     _this._makeEditable(label);
                 });
-
                 label.addEventListener("keydown", function (evt) {
                     if (evt.keyCode === 13 || evt.keyCode === 9) {
                         _this._makeEditable(valueElement);
@@ -391,17 +340,14 @@ var VORLON;
                 });
             }
         };
-
         DOMExplorer.prototype._generateStyles = function (styles, internalId) {
             var _this = this;
             while (this._styleView.hasChildNodes()) {
                 this._styleView.removeChild(this._styleView.lastChild);
             }
-
             for (var index = 0; index < styles.length; index++) {
                 var style = styles[index];
                 var splits = style.split(":");
-
                 this._generateStyle(splits[0], splits[1], internalId);
             }
             if (this._newAppliedStyles[internalId]) {
@@ -411,25 +357,20 @@ var VORLON;
                     this._generateStyle(currentObj.property, currentObj.newValue, internalId);
                 }
             }
-
             // Append add style button
             this._generateButton(this._styleView, "+", "styleButton").addEventListener('click', function (e) {
                 _this._generateStyle("property", "value", internalId, true);
                 _this._styleView.appendChild(e.target);
             });
         };
-
         DOMExplorer.prototype._appendSpan = function (parent, className, value) {
             var span = document.createElement("span");
             span.className = className;
             span.innerHTML = value;
-
             parent.appendChild(span);
         };
-
         DOMExplorer.prototype._generateColorfullLink = function (link, receivedObject) {
             this._appendSpan(link, "nodeName", receivedObject.name);
-
             receivedObject.attributes.forEach(function (attr) {
                 var node = document.createElement('span');
                 node.className = 'nodeAttribute';
@@ -437,11 +378,9 @@ var VORLON;
                 link.appendChild(node);
             });
         };
-
         DOMExplorer.prototype._generateColorfullClosingLink = function (link, receivedObject) {
             this._appendSpan(link, "nodeName", receivedObject.name);
         };
-
         DOMExplorer.prototype._generateButton = function (parentNode, text, className, attribute) {
             var button = document.createElement("button");
             button.innerHTML = text;
@@ -451,10 +390,9 @@ var VORLON;
             button.setAttribute('button-block', '');
             return parentNode.appendChild(button);
         };
-
         DOMExplorer.prototype._generateTreeNode = function (parentNode, receivedObject, first) {
             var _this = this;
-            if (typeof first === "undefined") { first = false; }
+            if (first === void 0) { first = false; }
             if (receivedObject.type == 3) {
                 if (this._spaceCheck.test(receivedObject.content)) {
                     var textNode = document.createElement('span');
@@ -462,12 +400,11 @@ var VORLON;
                     textNode.textContent = receivedObject.content.trim();
                     parentNode.appendChild(textNode);
                 }
-            } else {
+            }
+            else {
                 parentNode.setAttribute('data-has-children', '');
-
                 var root = document.createElement("div");
                 parentNode.appendChild(root);
-
                 var container = document.createElement("div");
                 container.className = 'nodeContentContainer';
                 var btnAttribute = null;
@@ -478,68 +415,56 @@ var VORLON;
                 this._generateButton(root, "", "treeNodeButton", btnAttribute).addEventListener("click", function () {
                     if (receivedObject.hasChildnodes) {
                         _this._clikedNodeID = receivedObject.internalId;
-                        VORLON.Core.Messenger.sendRealtimeMessage(_this.getID(), {
+                        _this.sendToClient({
                             type: "refreshbyid",
                             internalID: receivedObject.internalId
-                        }, 1 /* Dashboard */);
+                        });
                     }
                 });
-
                 // Main node
                 var linkText = document.createElement("a");
                 linkText.__targetInternalId = receivedObject.internalId;
-
                 this._generateColorfullLink(linkText, receivedObject);
-
                 linkText.addEventListener("click", function () {
                     if (_this._previousSelectedNode) {
                         VORLON.Tools.RemoveClass(_this._previousSelectedNode, "treeNodeSelected");
-                        VORLON.Core.Messenger.sendRealtimeMessage(_this.getID(), {
+                        _this.sendToClient({
                             type: "unselect",
                             order: _this._previousSelectedNode.__targetInternalId
-                        }, 1 /* Dashboard */);
-                    } else {
-                        VORLON.Core.Messenger.sendRealtimeMessage(_this.getID(), {
+                        });
+                    }
+                    else {
+                        _this.sendToClient({
                             type: "unselect",
                             order: null
-                        }, 1 /* Dashboard */);
+                        });
                     }
-
                     VORLON.Tools.AddClass(linkText, "treeNodeSelected");
-                    VORLON.Core.Messenger.sendRealtimeMessage(_this.getID(), {
+                    _this.sendToClient({
                         type: "select",
                         order: receivedObject.internalId
-                    }, 1 /* Dashboard */);
-
+                    });
                     _this._generateStyles(receivedObject.styles, receivedObject.internalId);
-
                     _this._previousSelectedNode = linkText;
                 });
-
                 linkText.href = "#";
-
                 linkText.className = "treeNodeHeader";
-
                 root.appendChild(linkText);
                 root.className = first ? "firstTreeNodeText" : "treeNodeText";
-
                 // Tools
                 if (receivedObject.id) {
                     var toolsLink = document.createElement("a");
                     toolsLink.innerHTML = "#";
                     toolsLink.className = "treeNodeTools";
                     toolsLink.href = "#";
-
                     toolsLink.addEventListener("click", function () {
                         VORLON.Core.Messenger.sendRealtimeMessage("CONSOLE", {
                             type: "order",
                             order: receivedObject.id
-                        }, 0 /* Client */, "protocol");
+                        }, VORLON.RuntimeSide.Client, "protocol");
                     });
-
                     root.appendChild(toolsLink);
                 }
-
                 // Children
                 var nodes = receivedObject.children;
                 if (nodes && nodes.length) {
@@ -555,7 +480,6 @@ var VORLON;
                     this._generateColorfullClosingLink(closingLink, receivedObject);
                     container.appendChild(closingLink);
                 }
-
                 root.appendChild(container);
             }
         };
@@ -567,7 +491,8 @@ var VORLON;
                 root = receivedObject;
                 root.hasChildnodes = false;
                 return root;
-            } else {
+            }
+            else {
                 if (root.children && root.children.length) {
                     for (var index = 0; index < root.children.length; index++) {
                         console.log(index);
@@ -586,11 +511,13 @@ var VORLON;
                     case "dirtycheck":
                         if (this._lastContentState != receivedObject.rootHTML) {
                             this._refreshButton.setAttribute('changed', '');
-                        } else
+                        }
+                        else
                             this._refreshButton.removeAttribute('changed');
                         break;
                 }
-            } else if (receivedObject.refreshbyId) {
+            }
+            else if (receivedObject.refreshbyId) {
                 this._refreshButton.removeAttribute('changed');
                 console.log("coucou");
                 var b = this._insertReceivedObject(receivedObject, this._lastReceivedObject);
@@ -599,7 +526,8 @@ var VORLON;
                     this._treeDiv.removeChild(this._treeDiv.lastChild);
                 }
                 this._generateTreeNode(this._treeDiv, this._lastReceivedObject, true);
-            } else {
+            }
+            else {
                 this._refreshButton.removeAttribute('changed');
                 this._lastContentState = receivedObject.rootHTML;
                 this._lastReceivedObject = receivedObject;
@@ -612,7 +540,6 @@ var VORLON;
         return DOMExplorer;
     })(VORLON.Plugin);
     VORLON.DOMExplorer = DOMExplorer;
-
     // Register
     VORLON.Core.RegisterPlugin(new DOMExplorer());
 })(VORLON || (VORLON = {}));

@@ -143,7 +143,7 @@ module VORLON {
                 this._packageDOM(element, packagedObject, false);
                 packagedObject.refreshbyId = true;
             }
-            Core.Messenger.sendRealtimeMessage(this.getID(), packagedObject, RuntimeSide.Client);
+            this.sendToDashboard(packagedObject);
         }
 
         private _markForRefresh() {
@@ -184,10 +184,10 @@ module VORLON {
                         }
                         break;
                     case "dirtycheck":
-                        Core.Messenger.sendRealtimeMessage(this.getID(), {
+                        this.sendToDashboard({
                             action: 'dirtycheck',
                             rootHTML: document.body.innerHTML
-                        }, RuntimeSide.Client);
+                        });
                         break;
                     case "refresh":
                         this.refresh();
@@ -243,20 +243,13 @@ module VORLON {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
-                this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
+                this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');                
 
-                //setInterval(() => {
-                //    Core.Messenger.sendRealtimeMessage(this.getID(), {
-                //        type: 'dirtycheck',
-                //        order: null
-                //    }, RuntimeSide.Dashboard);
-                //}, 4000);
-
-                this._containerDiv.addEventListener('refresh', () => {
-                    Core.Messenger.sendRealtimeMessage(this.getID(), {
+                this._containerDiv.addEventListener('refresh',() => {
+                    this.sendToClient({
                         type: 'refresh',
                         order: null
-                    }, RuntimeSide.Dashboard);
+                    });
                 });
 
                 this._treeDiv.addEventListener('click', function (e) {
@@ -339,12 +332,12 @@ module VORLON {
                         proArr.push(propertyObject);
                         this._newAppliedStyles[internalId] = proArr;
                     }
-                    Core.Messenger.sendRealtimeMessage(this.getID(), {
+                    this.sendToClient({
                         type: "ruleEdit",
                         property: label.innerHTML,
                         newValue: valueElement.innerHTML,
                         order: internalId
-                    }, RuntimeSide.Dashboard);
+                    });
                     evt.preventDefault();
                     valueElement.contentEditable = "false";
                     Tools.RemoveClass(valueElement, "editable");
@@ -479,10 +472,10 @@ module VORLON {
                 this._generateButton(root, "", "treeNodeButton", btnAttribute).addEventListener("click", () => {
                     if (receivedObject.hasChildnodes) {
                         this._clikedNodeID = receivedObject.internalId;
-                        Core.Messenger.sendRealtimeMessage(this.getID(), {
+                        this.sendToClient({
                             type: "refreshbyid",
                             internalID: receivedObject.internalId
-                        }, RuntimeSide.Dashboard);
+                        });
                     }
                 });
 
@@ -495,23 +488,23 @@ module VORLON {
                 linkText.addEventListener("click", () => {
                     if (this._previousSelectedNode) {
                         Tools.RemoveClass(this._previousSelectedNode, "treeNodeSelected");
-                        Core.Messenger.sendRealtimeMessage(this.getID(), {
+                        this.sendToClient({
                             type: "unselect",
                             order: (<any>this._previousSelectedNode).__targetInternalId
-                        }, RuntimeSide.Dashboard);
+                        });
                     }
                     else {
-                        Core.Messenger.sendRealtimeMessage(this.getID(), {
+                        this.sendToClient({
                             type: "unselect",
                             order: null
-                        }, RuntimeSide.Dashboard);
+                        });
                     }
 
                     Tools.AddClass(linkText, "treeNodeSelected");
-                    Core.Messenger.sendRealtimeMessage(this.getID(), {
+                    this.sendToClient({
                         type: "select",
                         order: receivedObject.internalId
-                    }, RuntimeSide.Dashboard);
+                    });
 
                     this._generateStyles(receivedObject.styles, receivedObject.internalId);
 
