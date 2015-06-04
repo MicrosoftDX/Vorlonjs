@@ -34,7 +34,7 @@
 .plugin-modernizr .modernizr-features-list .modernizrFeatureUnsupported {
   color: #ed2424;
 }
-#css_feature_filter {
+.plugin-modernizr #css_feature_filter {
   display: block;
   width: 100%;
   max-width: 225px;
@@ -43,42 +43,39 @@
   border: 1px solid #ddd;
   border-radius: 3px;
 }
-  #css_feature_filter::-webkit-input-placeholder {  
-    font-size: 80%;
-    font-style: italic;
-  }
-  #css_feature_filter:-moz-placeholder {  
-    font-size: 80%;
-    font-style: italic;
-  }
-  #css_feature_filter::-moz-placeholder {  
-    font-size: 80%;
-    font-style: italic;
-  }
-  #css_feature_filter:-ms-input-placeholder {  
-    font-size: 80%;
-    font-style: italic;
-  }
-  #css_feature_filter::placeholder {  
-    font-size: 80%;
-    font-style: italic;
-  }
-
-#css_feature_filter:invalid {
+.plugin-modernizr #css_feature_filter::-webkit-input-placeholder {
+  font-size: 80%;
+  font-style: italic;
+}
+.plugin-modernizr #css_feature_filter:-moz-placeholder {
+  font-size: 80%;
+  font-style: italic;
+}
+.plugin-modernizr #css_feature_filter::-moz-placeholder {
+  font-size: 80%;
+  font-style: italic;
+}
+.plugin-modernizr #css_feature_filter:-ms-input-placeholder {
+  font-size: 80%;
+  font-style: italic;
+}
+.plugin-modernizr #css_feature_filter::placeholder {
+  font-size: 80%;
+  font-style: italic;
+}
+.plugin-modernizr #css_feature_filter:invalid {
   outline: none;
   -webkit-box-shadow: none;
   -ms-box-shadow: none;
   box-shadow: none;
 }
-
-#css_feature_filter:valid ~ table {
+.plugin-modernizr #css_feature_filter:valid ~ table {
   margin: 0;
 }
-
-#css_feature_filter:valid ~ h1, #css_feature_filter:valid ~ table th {
+.plugin-modernizr #css_feature_filter:valid ~ h1,
+.plugin-modernizr #css_feature_filter:valid ~ table th {
   display: none;
 }
-
 .plugin-modernizr .modernizr-features-list [data-feature-visibility="hidden"] {
   display: none;
 }

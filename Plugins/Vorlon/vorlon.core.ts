@@ -96,20 +96,23 @@
             // Launch plugins
             for (var index = 0; index < Core._plugins.length; index++) {
                 var plugin = Core._plugins[index];
-
-                if (Core._side === RuntimeSide.Both || Core._side === RuntimeSide.Client) {
-                    plugin.startClientSide();
-                }
-
-                if (Core._side === RuntimeSide.Both || Core._side === RuntimeSide.Dashboard) {
-                    plugin.startDashboardSide(divMapper ? divMapper(plugin.getID()) : null);
-                }
+                Core._startPlugin(Core._plugins[index], divMapper);  
             }
 
             if (Core._side === RuntimeSide.Client) { // handle client disconnection
                 window.addEventListener("beforeunload", function () {
                     Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
                 }, false);
+            }
+        }
+        
+        private static _startPlugin(plugin : Plugin,  divMapper: (string) => HTMLDivElement = null){
+            if (Core._side === RuntimeSide.Both || Core._side === RuntimeSide.Client) {
+                plugin.startClientSide();
+            }
+
+            if (Core._side === RuntimeSide.Both || Core._side === RuntimeSide.Dashboard) {
+                plugin.startDashboardSide(divMapper ? divMapper(plugin.getID()) : null);
             }
         }
 
@@ -209,22 +212,26 @@
         private static _Dispatch(pluginID: string, receivedObject: any): void {
             var side = receivedObject._side;
             delete receivedObject._side;
-            for (var index = 0; index < Core._plugins.length; index++) {
+            for (var index = 0,  length = Core._plugins.length; index < length; index++) {
                 var plugin = Core._plugins[index];
 
                 if (plugin.getID() === pluginID) {
-                    if (side === RuntimeSide.Client) {
-                        if (!plugin.isReady()) { // Plugin is not ready, let's try again later
-                            Core._RetrySendingRealtimeMessage(plugin, receivedObject);
-                        } else {
-                            plugin.onRealtimeMessageReceivedFromClientSide(receivedObject);
-                        }
-                    } else {
-                        plugin.onRealtimeMessageReceivedFromDashboardSide(receivedObject);
-                    }
+                    Core._DispatchPluginMessage(plugin, side, receivedObject);
                     return;
                 }
             }
+        }
+        
+        private static _DispatchPluginMessage(plugin: Plugin, side: any, receivedObject: any): void {
+            if (side === RuntimeSide.Client) {
+                if (!plugin.isReady()) { // Plugin is not ready, let's try again later
+                    Core._RetrySendingRealtimeMessage(plugin, receivedObject);
+                } else {
+                     plugin.onRealtimeMessageReceivedFromClientSide(receivedObject);
+                }
+            } else {
+                plugin.onRealtimeMessageReceivedFromDashboardSide(receivedObject);
+            }            
         }
     }
 }

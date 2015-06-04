@@ -17,7 +17,7 @@
         public onIdentifyReceived: (id: string) => void;
         public onWaitingEventsReceived: (id: string, waitingevents: number) => void;
         public onStopListenReceived: () => void;
-        public onRefreshClients: () => void;
+        public onRefreshClients: () => void;        
 
         public onError: (err: Error) => void;
 

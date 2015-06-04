@@ -7,20 +7,40 @@
         public name;
 
         public _ready = true;
+        protected _id = "";
+        private _debug: boolean;
         public _type = PluginType.OneOne;
+        public trace : (msg) => void;
+        private traceLog = function(msg){ console.log(msg); };
+        private traceNoop = function(msg){  };
+        //public trace = function(msg){}
 
         constructor(name: string, htmlFragmentUrl: string, cssStyleSheetUrl: string) {
             this.name = name;
             this.htmlFragmentUrl = htmlFragmentUrl;
             this.cssStyleSheetUrl = cssStyleSheetUrl;
+            this.debug = false;
         }
 
         public get Type(): PluginType {
             return this._type;
         }
+        
+        public get debug(): boolean {
+            return this._debug;
+        }
+        
+        public set debug(val: boolean) {
+            this._debug = val;
+            if (val){
+                this.trace = this.traceLog;
+            }else{
+                this.trace = this.traceNoop;
+            }
+        }
 
         public getID(): string {
-            return "";
+            return this._id;
         }
 
         public isReady() {
@@ -32,6 +52,16 @@
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void { }
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void { }
 
+        public sendToClient(data: any){
+            if (Core.Messenger)
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard);
+        }
+        
+        public sendToDashboard(data: any){
+            if (Core.Messenger)
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client);
+        }
+        
         public refresh(): void {
             console.error("Please override plugin.refresh()");
         }
