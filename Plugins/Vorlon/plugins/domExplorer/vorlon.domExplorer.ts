@@ -132,7 +132,6 @@ module VORLON {
         private _packageAndSendDOM(element?: HTMLElement) {
             this._internalId = 0;
             this._newAppliedStyles = {};
-
             if (!element) {
                 var packagedObject = this._packageNode(document.body);
                 packagedObject.rootHTML = document.body.innerHTML;
