@@ -319,7 +319,7 @@ export module VORLON {
             });
 
             socket.on("message",(message: string) => {
-                //this._log.warn("CLIENT message " + message);
+                this._log.warn("CLIENT message " + message);
                 var receiveMessage = <VorlonMessage>JSON.parse(message);
                 var dashboard = this.dashboards[receiveMessage.metadata.sessionId];
                 if (dashboard != null) {
@@ -478,7 +478,7 @@ export module VORLON {
             });
 
             socket.on("message",(message: string) => {
-                //this._log.warn("DASHBOARD message " + message);
+                this._log.warn("DASHBOARD message " + message);
                 var receiveMessage = <VorlonMessage>JSON.parse(message);
                 var metadata = receiveMessage.metadata;
                 var arrayClients = this.sessions[metadata.sessionId];
@@ -553,6 +553,7 @@ export module VORLON {
 
     export interface VorlonMessage {
         metadata: VorlonMessageMetadata;
+        command?: string;
         data?: any
     }
 }

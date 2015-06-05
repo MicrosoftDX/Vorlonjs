@@ -12,7 +12,10 @@
         public _type = PluginType.OneOne;
         public trace : (msg) => void;
         private traceLog = function(msg){ console.log(msg); };
-        private traceNoop = function(msg){  };
+        private traceNoop = function (msg) { };
+        public ClientCommands: any;
+        public DashboardCommands: any;
+
         //public trace = function(msg){}
 
         constructor(name: string, htmlFragmentUrl: string, cssStyleSheetUrl: string) {
@@ -56,12 +59,26 @@
             if (Core.Messenger)
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message", incrementVisualIndicator);
         }
+
+        public sendCommandToClient(command: string, data: any, incrementVisualIndicator: boolean = false) {
+            if (Core.Messenger) {
+                console.log('send to client command ' + command);
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message", incrementVisualIndicator, command);
+            }
+        }
         
         public sendToDashboard(data: any, incrementVisualIndicator: boolean = false){
             if (Core.Messenger)
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator);
         }
         
+        public sendCommandToDashboard(command: string, data: any, incrementVisualIndicator: boolean = false) {
+            if (Core.Messenger) {
+                console.log('send to dashboard command ' + command);
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator, command);
+            }
+        }
+
         public refresh(): void {
             console.error("Please override plugin.refresh()");
         }

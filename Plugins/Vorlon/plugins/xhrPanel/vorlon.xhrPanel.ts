@@ -11,13 +11,13 @@ module VORLON {
         readyState: number;
     }
     
-    export class NetworkPanel extends Plugin {
+    export class XHRPanel extends Plugin {
         constructor() {
-            super("networkpanel", "control.html", "control.css");
-            this._id = "NETWORKPANEL";
+            super("xhrPanel", "control.html", "control.css");
+            this._id = "XHRPANEL";
             this._ready = false;        
         }
-
+            
         public refresh(): void {
         }
 
@@ -25,6 +25,9 @@ module VORLON {
 
         public startClientSide(): void {
             this.setupXMLHttpRequestHook(true);
+            console.log('send ping');
+            
+            this.sendCommandToDashboard('ping', { message: 'ping' });
         }
 
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {            
@@ -51,7 +54,7 @@ module VORLON {
                 xhr.__send = xhr.send;
                 xhr.__setRequestHeader = xhr.setRequestHeader;
                 
-                //todo intercepter send pour chopper les données postées
+                //todo catch send to get posted data
                 //see https://msdn.microsoft.com/en-us/library/hh772834(v=vs.85).aspx
                 
                 xhr.open = function(){
@@ -59,17 +62,10 @@ module VORLON {
                     data.url = arguments[1];
                     plugin.trace('request for ' + data.url);
 
-                    plugin.sendToDashboard({ type:'xhr', message: data});
-                    return xhr.__open.apply(xhr, arguments);
-                }
-                
-                xhr.open = function(){
-                    data.method = arguments[0];
-                    data.url = arguments[1];
-                    plugin.trace('request for ' + data.url);
-
-                    plugin.sendToDashboard({ type:'xhr', message: data});
-                    return xhr.__open.apply(xhr, arguments);
+                    plugin.sendCommandToDashboard('ping', { message: 'ping' });
+                    plugin.sendToDashboard({ type: 'xhr', message: data });
+                    console.log('send to dashboard....');
+                     xhr.__open.apply(xhr, arguments);
                 }
                 
                 xhr.setRequestHeader = function(){
@@ -119,7 +115,7 @@ module VORLON {
         }
 
         // This code will run on the dashboard //////////////////////
-
+        
         private _itemsContainer: HTMLElement
         private _dashboardDiv: HTMLDivElement;
         private _clearButton: HTMLButtonElement;
@@ -131,7 +127,8 @@ module VORLON {
             this._insertHtmlContentAsync(div, (filledDiv) => {                
                 this._itemsContainer = <HTMLElement>filledDiv.querySelector('.network-items');
                 this._clearButton = <HTMLButtonElement>filledDiv.querySelector('x-action[event="clear"]');
-                this._clearButton.addEventListener('click', (arg) => {
+                this._clearButton.addEventListener('click',(arg) => {
+                    this.sendCommandToClient('ping', { message: 'ping' });
                     this.sendToClient({ type : 'clear' });
                     this._itemsContainer.innerHTML = '';
                     this._items = {};
@@ -157,6 +154,30 @@ module VORLON {
             storedItem.update(item);
         } 
     }
+
+    XHRPanel.prototype.ClientCommands = {
+        ping: function (data: any) {
+            var plugin = <XHRPanel>this;
+            console.log('client ping');
+            plugin.sendCommandToDashboard('pong', { message: 'Pong' });
+        },
+        pong: function (data: any) {
+            var plugin = <XHRPanel>this;
+            console.log('receive pong in client : ' + JSON.stringify(data));
+        }
+    };
+
+    XHRPanel.prototype.DashboardCommands = {
+        ping: function (data: any) {
+            var plugin = <XHRPanel>this;
+            console.log('dash ping');
+            plugin.sendCommandToClient('pong', { message: 'Pong' });
+        },
+        pong: function (data: any) {
+            var plugin = <XHRPanel>this;
+            console.log('receive pong in dash : ' + JSON.stringify(data));
+        }
+    };
     
     class NetworkItemCtrl {
             element : HTMLElement;
@@ -203,5 +224,5 @@ module VORLON {
         }
 
     //Register the plugin with vorlon core
-    Core.RegisterPlugin(new NetworkPanel());
+    Core.RegisterPlugin(new XHRPanel());
 }

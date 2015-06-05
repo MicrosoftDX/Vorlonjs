@@ -200,14 +200,14 @@
             }
         }
 
-        private static _RetrySendingRealtimeMessage(plugin: Plugin, receivedObject: any) {
+        private static _RetrySendingRealtimeMessage(plugin: Plugin, message: VorlonMessage) {
             setTimeout(() => {
                 if (plugin.isReady()) {
-                    plugin.onRealtimeMessageReceivedFromClientSide(receivedObject);
+                    Core._DispatchFromClientPluginMessage(plugin, message);
                     return;
                 }
 
-                Core._RetrySendingRealtimeMessage(plugin, receivedObject);
+                Core._RetrySendingRealtimeMessage(plugin, message);
             },  Core._RetryTimeout);
         }
 
@@ -222,22 +222,59 @@
                 var plugin = Core._plugins[index];
 
                 if (plugin.getID() === message.metadata.pluginID) {
-                    Core._DispatchPluginMessage(plugin, message.metadata.side, message.data);
+                    Core._DispatchPluginMessage(plugin, message);
                     return;
                 }
             }
         }
-        
-        private static _DispatchPluginMessage(plugin: Plugin, side: any, receivedObject: any): void {
-            if (side === RuntimeSide.Client) {
+
+        private static _DispatchPluginMessage(plugin: Plugin, message: VorlonMessage): void {
+            //console.log('received ' + JSON.stringify(message));
+            if (message.metadata.side === RuntimeSide.Client) {
                 if (!plugin.isReady()) { // Plugin is not ready, let's try again later
-                    Core._RetrySendingRealtimeMessage(plugin, receivedObject);
+                    Core._RetrySendingRealtimeMessage(plugin, message);
                 } else {
-                     plugin.onRealtimeMessageReceivedFromClientSide(receivedObject);
+                    Core._DispatchFromClientPluginMessage(plugin, message);
                 }
             } else {
-                plugin.onRealtimeMessageReceivedFromDashboardSide(receivedObject);
+                Core._DispatchFromDashboardPluginMessage(plugin, message);
             }            
+        }
+
+        private static _DispatchFromClientPluginMessage(plugin: Plugin, message: VorlonMessage): void {
+            //debugger;
+            if (message)
+                console.log('from client received ' + JSON.stringify(message));
+            else {
+                console.error('WTF ?');
+            }
+
+            if (message.command && plugin.DashboardCommands) {
+             //   console.log('client message has command ' + message.command);
+                var command = plugin.DashboardCommands[message.command];
+                if (command) {
+                    console.log('from client received data ' + JSON.stringify(message.data));
+                    command.apply(plugin, [message.data]);
+                    return;
+                }
+            }
+            plugin.onRealtimeMessageReceivedFromClientSide(message.data);
+        }
+
+        private static _DispatchFromDashboardPluginMessage(plugin: Plugin, message: VorlonMessage): void {
+            //debugger;
+            //console.log('dash received ' + JSON.stringify(message));
+
+            if (message.command && plugin.ClientCommands) {
+                //console.log('dash message has command ' + message.command);
+                var command = plugin.ClientCommands[message.command];
+                if (command) {
+                    //console.log('find command !!!!' + message.command);
+                    command.apply(plugin, [message.data]);
+                    return;
+                }
+            }
+            plugin.onRealtimeMessageReceivedFromDashboardSide(message.data);
         }
     }
 }
