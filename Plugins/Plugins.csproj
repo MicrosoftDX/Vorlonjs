@@ -72,7 +72,7 @@
     <Content Include="release\vorlon.js" />
     <Content Include="release\vorlon.max.js" />
     <Content Include="samples\andyet\index.html" />
-    <Content Include="Vorlon\plugins\networkpanel\control.less" />
+    <Content Include="Vorlon\plugins\xhrPanel\control.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -93,12 +93,9 @@
     <Content Include="Vorlon\plugins\modernizrReport\control.css" />
     <Content Include="Vorlon\plugins\modernizrReport\control.html" />
     <Content Include="Vorlon\plugins\modernizrReport\modernizr.js" />
-    <Content Include="Vorlon\plugins\networkpanel\control.css" />
-    <Content Include="Vorlon\plugins\networkpanel\control.html" />
-    <Content Include="Vorlon\plugins\networkpanel\vorlon.networkpanel.js" />
-    <Content Include="Vorlon\plugins\networkpanel\vorlon.networkpanel.min.js" />
     <Content Include="Vorlon\plugins\objectExplorer\control.css" />
     <Content Include="Vorlon\plugins\objectExplorer\control.html" />
+    <Content Include="Vorlon\plugins\xhrPanel\control.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -107,8 +104,8 @@
   <ItemGroup>
     <TypeScriptCompile Include="libs\node.d.ts" />
     <TypeScriptCompile Include="libs\socket.io.d.ts" />
-    <TypeScriptCompile Include="Vorlon\plugins\networkpanel\vorlon.networkpanel.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.ts" />
     <TypeScriptCompile Include="Vorlon\vorlon.tools.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\domExplorer\vorlon.domExplorer.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.ts" />
