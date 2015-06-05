@@ -64,35 +64,21 @@ module VORLON {
         public startClientSide(): void {
 
         }
-        private _getNodeByInternalId(internalId: string, node: any): any {
+
+        private _getElementByInternalId(internalId: string, node: any, getNode: boolean= false): any {
             if (node.__vorlon && node.__vorlon.internalId === internalId) {
                 return node;
             }
-            if (!node.children) {
+            var children = 'chidlren';
+            if (getNode) {
+                children = 'childNodes'
+            }
+            if (!node[children]) {
                 return null;
             }
 
-            for (var index = 0; index < node.childNodes.length; index++) {
-                var result = this._getNodeByInternalId(internalId, node.childNodes[index]);
-
-                if (result) {
-                    return result;
-                }
-            }
-
-            return null;
-        }
-        private _getElementByInternalId(internalId: string, node: any): any {
-            if (node.__vorlon && node.__vorlon.internalId === internalId) {
-                return node;
-            }
-
-            if (!node.children) {
-                return null;
-            }
-
-            for (var index = 0; index < node.children.length; index++) {
-                var result = this._getElementByInternalId(internalId, node.children[index]);
+            for (var index = 0; index < node[children].length; index++) {
+                var result = this._getElementByInternalId(internalId, node[children][index], getNode);
 
                 if (result) {
                     return result;
@@ -129,7 +115,7 @@ module VORLON {
                 return;
             }
             if (receivedObject.type === "valueEdit") {
-                var element = this._getNodeByInternalId(receivedObject.order, document.body);
+                var element = this._getElementByInternalId(receivedObject.order, document.body, true);
 
                 if (!element) {
                     return;
@@ -674,14 +660,6 @@ module VORLON {
             return styleNode;
         }
 
-    }
-    class NodeDom {
-        node: any;
-        packagedNode: PackagedNode
-
-    constructor() {
-
-        }
     }
     // Register
     Core.RegisterPlugin(new DOMExplorer());
