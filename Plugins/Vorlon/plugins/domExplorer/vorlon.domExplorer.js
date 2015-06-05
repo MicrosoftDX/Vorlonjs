@@ -125,9 +125,7 @@ var VORLON;
                 if (!packagedObject.children) {
                     packagedObject.children = [];
                 }
-
-                if (packagedNode.name)
-                    packagedObject.children.push(packagedNode);
+                packagedObject.children.push(packagedNode);
             }
         };
 
@@ -455,20 +453,6 @@ var VORLON;
                 node.className = 'nodeAttribute';
                 node.innerHTML = '<span>' + attr[0] + '</span><span>' + attr[1] + '</span>';
 
-                //node.contentEditable = "false";
-                //node.addEventListener("blur", () => {
-                //    this.sendToClient({
-                //        type: "attributesValueEdit",
-                //        newValue: node.innerHTML,
-                //        order: receivedObject.internalId
-                //    });
-                //    node.contentEditable = "false";
-                //    Tools.RemoveClass(node, "editable");
-                //});
-                //node.addEventListener("click", () => {
-                //    alert('toto');
-                //    this._makeEditable(node);
-                //});
                 link.appendChild(node);
             });
         };
@@ -508,6 +492,9 @@ var VORLON;
                         });
                         textNode.contentEditable = "false";
                         VORLON.Tools.RemoveClass(textNode, "editable");
+                    });
+                    textNode.addEventListener("click", function () {
+                        _this._makeEditable(textNode);
                     });
                 }
             } else {
