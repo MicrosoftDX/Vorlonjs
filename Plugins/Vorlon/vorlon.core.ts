@@ -203,7 +203,7 @@
         private static _RetrySendingRealtimeMessage(plugin: Plugin, message: VorlonMessage) {
             setTimeout(() => {
                 if (plugin.isReady()) {
-                    Core._DispatchClientPluginMessage(plugin, message);
+                    Core._DispatchFromClientPluginMessage(plugin, message);
                     return;
                 }
 
@@ -229,33 +229,48 @@
         }
 
         private static _DispatchPluginMessage(plugin: Plugin, message: VorlonMessage): void {
+            //console.log('received ' + JSON.stringify(message));
             if (message.metadata.side === RuntimeSide.Client) {
                 if (!plugin.isReady()) { // Plugin is not ready, let's try again later
                     Core._RetrySendingRealtimeMessage(plugin, message);
                 } else {
-                    Core._DispatchClientPluginMessage(plugin, message);
+                    Core._DispatchFromClientPluginMessage(plugin, message);
                 }
             } else {
-                Core._DispatchDashboardPluginMessage(plugin, message);
+                Core._DispatchFromDashboardPluginMessage(plugin, message);
             }            
         }
 
-        private static _DispatchClientPluginMessage(plugin: Plugin, message: VorlonMessage): void {
-            if (message.command && plugin.ClientCommands) {
-                var command = plugin.ClientCommands[message.command];
+        private static _DispatchFromClientPluginMessage(plugin: Plugin, message: VorlonMessage): void {
+            //debugger;
+            if (message)
+                console.log('from client received ' + JSON.stringify(message));
+            else {
+                console.error('WTF ?');
+            }
+
+            if (message.command && plugin.DashboardCommands) {
+             //   console.log('client message has command ' + message.command);
+                var command = plugin.DashboardCommands[message.command];
                 if (command) {
-                    command.apply(plugin, message.data);
+                    console.log('from client received data ' + JSON.stringify(message.data));
+                    command.apply(plugin, [message.data]);
                     return;
                 }
             }
             plugin.onRealtimeMessageReceivedFromClientSide(message.data);
         }
 
-        private static _DispatchDashboardPluginMessage(plugin: Plugin, message: VorlonMessage): void {
-            if (message.command && plugin.DashboardCommands) {
-                var command = plugin.DashboardCommands[message.command];
+        private static _DispatchFromDashboardPluginMessage(plugin: Plugin, message: VorlonMessage): void {
+            //debugger;
+            //console.log('dash received ' + JSON.stringify(message));
+
+            if (message.command && plugin.ClientCommands) {
+                //console.log('dash message has command ' + message.command);
+                var command = plugin.ClientCommands[message.command];
                 if (command) {
-                    command.apply(plugin, message.data);
+                    //console.log('find command !!!!' + message.command);
+                    command.apply(plugin, [message.data]);
                     return;
                 }
             }

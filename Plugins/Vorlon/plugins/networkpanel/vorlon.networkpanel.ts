@@ -26,6 +26,7 @@ module VORLON {
         public startClientSide(): void {
             this.setupXMLHttpRequestHook(true);
             console.log('send ping');
+            
             this.sendCommandToDashboard('ping', { message: 'ping' });
         }
 
@@ -61,8 +62,10 @@ module VORLON {
                     data.url = arguments[1];
                     plugin.trace('request for ' + data.url);
 
-                    plugin.sendToDashboard({ type:'xhr', message: data});
-                    return xhr.__open.apply(xhr, arguments);
+                    plugin.sendCommandToDashboard('ping', { message: 'ping' });
+                    plugin.sendToDashboard({ type: 'xhr', message: data });
+                    console.log('send to dashboard....');
+                     xhr.__open.apply(xhr, arguments);
                 }
                 
                 xhr.open = function(){
@@ -133,7 +136,8 @@ module VORLON {
             this._insertHtmlContentAsync(div, (filledDiv) => {                
                 this._itemsContainer = <HTMLElement>filledDiv.querySelector('.network-items');
                 this._clearButton = <HTMLButtonElement>filledDiv.querySelector('x-action[event="clear"]');
-                this._clearButton.addEventListener('click', (arg) => {
+                this._clearButton.addEventListener('click',(arg) => {
+                    this.sendCommandToClient('ping', { message: 'ping' });
                     this.sendToClient({ type : 'clear' });
                     this._itemsContainer.innerHTML = '';
                     this._items = {};
@@ -161,17 +165,26 @@ module VORLON {
     }
 
     NetworkPanel.prototype.ClientCommands = {
+        ping: function (data: any) {
+            var plugin = <NetworkPanel>this;
+            console.log('client ping');
+            plugin.sendCommandToDashboard('pong', { message: 'Pong' });
+        },
         pong: function (data: any) {
             var plugin = <NetworkPanel>this;
-            console.log('receive pong : ' + JSON.stringify(data));
+            console.log('receive pong in client : ' + JSON.stringify(data));
         }
     };
 
     NetworkPanel.prototype.DashboardCommands = {
         ping: function (data: any) {
             var plugin = <NetworkPanel>this;
-            console.log('ping');
+            console.log('dash ping');
             plugin.sendCommandToClient('pong', { message: 'Pong' });
+        },
+        pong: function (data: any) {
+            var plugin = <NetworkPanel>this;
+            console.log('receive pong in dash : ' + JSON.stringify(data));
         }
     };
     

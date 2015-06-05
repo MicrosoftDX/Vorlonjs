@@ -61,8 +61,10 @@
         }
 
         public sendCommandToClient(command: string, data: any, incrementVisualIndicator: boolean = false) {
-            if (Core.Messenger)
+            if (Core.Messenger) {
+                console.log('send to client command ' + command);
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message", incrementVisualIndicator, command);
+            }
         }
         
         public sendToDashboard(data: any, incrementVisualIndicator: boolean = false){
@@ -71,8 +73,10 @@
         }
         
         public sendCommandToDashboard(command: string, data: any, incrementVisualIndicator: boolean = false) {
-            if (Core.Messenger)
+            if (Core.Messenger) {
+                console.log('send to dashboard command ' + command);
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator, command);
+            }
         }
 
         public refresh(): void {
