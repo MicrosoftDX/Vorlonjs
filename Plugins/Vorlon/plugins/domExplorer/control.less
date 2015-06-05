@@ -1,237 +1,233 @@
 .plugin-dom {
-    [button-block] {
-        display: block;
-        padding: 0;
-        margin: 0;
-        border: none;
-        background: none;
+  [button-block] {
+    display: block;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+  }
+  
+  .dom-explorer-container {
+    height: 100%;
+    overflow: hidden !important;  
+  }
+  
+  .panel-left,
+  .panel-right {
+    height: 100%;
+  }
+  
+  .tree-view,
+  .style-view {
+    padding: 0;
+  }
+  
+  #treeView,
+  #styleView {
+    padding: 15px;
+  }
+  
+  .tree-view-wrapper {
+     > x-controlbar {
+      border-top: none;
+      border-left: none;
+      border-right: none;
+       
+       > * {
+        border-radius: 0.25em;
+      }
     }
-
-    .dom-explorer-container {
-        height: 100%;
-        overflow: hidden !important;
+  }
+  
+  .treeNodeButton {
+    display: inline-block;
+    color: #444;
+    margin-left: -0.75em;
+    width: 1.5em;
+    text-align: center;
+    background: #fff;
+    cursor: pointer;
+    
+    
+    &:before {
+      content: "-";
+      outline: none;
     }
-
-    .panel-left,
-    .panel-right {
-        height: 100%;
+    
+    &[data-collapsed]:before {
+      content: "+";
+      vertical-align: middle;
     }
-
-    .tree-view,
-    .style-view {
-        padding: 0;
+    
+    &[data-collapsed] ~ .nodeContentContainer {
+      display: none;
     }
-
-    #treeView,
-    #styleView, #attribiutesView {
-        padding: 15px;
+    
+    &::-moz-focus-inner {
+      border: none;
     }
-
-    .tree-view-wrapper {
-        > x-controlbar {
-            border-top: none;
-            border-left: none;
-            border-right: none;
-
-            > * {
-                border-radius: 0.25em;
-            }
-        }
+    
+    &:focus {
+      outline: 1px dotted #000;
     }
-
-    .treeNodeButton {
-        display: inline-block;
-        color: #444;
-        margin-left: -0.75em;
-        width: 1.5em;
-        text-align: center;
-        background: #fff;
-        cursor: pointer;
-
-
-        &:before {
-            content: "-";
-            outline: none;
-        }
-
-        &[data-collapsed]:before {
-            content: "+";
-            vertical-align: middle;
-        }
-
-        &[data-collapsed] ~ .nodeContentContainer {
-            display: none;
-        }
-
-        &::-moz-focus-inner {
-            border: none;
-        }
-
-        &:focus {
-            outline: 1px dotted #000;
-        }
+  }  
+  
+  .treeNodeHeader {
+    text-decoration: none;
+    color: #ccc;
+    font-weight: bold;
+    
+    &:focus {
+      outline: 1px dotted #000;
     }
-
-    .treeNodeHeader {
-        text-decoration: none;
-        color: #ccc;
-        font-weight: bold;
-
-        &:focus {
-            outline: 1px dotted #000;
-        }
-
-        &:before {
-            content: "<";
-            color: #000;
-        }
-
-        &:after {
-            content: ">";
-            color: #000;
-        }
+    
+    &:before {
+      content: "<";
+      color: #000;
     }
-
-    .nodeContentContainer {
-        padding-left: 1em;
-
-        &:not([data-has-children]),
-        &:not([data-has-children]) .treeNodeClosingText {
-            display: inline;
-            margin: 0;
-            padding: 0;
-        }
-
-        &:not([data-has-children]) .nodeTextContent {
-            padding: 0 0.25em;
-
-            &.editable {
-                border-bottom: 1px dashed red;
-            }
-        }
+    
+    &:after {
+      content: ">";
+      color: #000;
     }
-
-
-
-    [data-hovered-tag] > .treeNodeHeader,
-    [data-hovered-tag] > .nodeContentContainer > .treeNodeClosingText .nodeName {
-        background: cyan;
+  }
+  
+  .nodeContentContainer {
+    padding-left: 1em;
+    
+    &:not([data-has-children]),
+    &:not([data-has-children]) .treeNodeClosingText {
+      display: inline;
+      margin: 0;
+      padding: 0;
     }
-
-    .treeNodeSelected,
-    .treeNodeSelected ~ .nodeContentContainer > .treeNodeClosingText .nodeName {
-        background: yellow !important;
+    
+    &:not([data-has-children]) .nodeTextContent {
+      padding: 0 0.25em;
     }
-
-    .treeNodeTools {
-        color: #444;
-        float: right;
-        text-decoration: none;
+  }
+  
+  
+  
+  [data-hovered-tag] > .treeNodeHeader,
+  [data-hovered-tag] > .nodeContentContainer > .treeNodeClosingText .nodeName {
+    background: cyan;
+  }
+  
+  .treeNodeSelected,
+  .treeNodeSelected ~ .nodeContentContainer > .treeNodeClosingText .nodeName {
+    background: yellow !important;
+  }
+  
+  .treeNodeTools {
+    color: #444; 
+    float: right;
+    text-decoration: none;
+  }
+  
+  .treeNodeText {
+    text-decoration: none;
+    border-left: 1px solid #eee;
+  }
+  
+  .firstTreeNodeText {
+    text-decoration: none;
+    padding-left: 0px;
+  }
+  
+  .nodeTextContent {
+    color: #777;
+  }
+  
+  .treeNodeClosingText {
+    margin-left: -0.25em;
+    font-weight: bold;
+    background: #fff;
+    cursor: default;
+    
+    .nodeName:before {
+      content: "</";
+      color: #000;
     }
-
-    .treeNodeText {
-        text-decoration: none;
-        border-left: 1px solid #eee;
+    
+    .nodeName:after {
+      content: ">";
+      color: #000;
     }
-
-    .firstTreeNodeText {
-        text-decoration: none;
-        padding-left: 0px;
-    }
-
-    .nodeTextContent {
-        color: #777;
-    }
-
-    .treeNodeClosingText {
-        margin-left: -0.25em;
-        font-weight: bold;
-        background: #fff;
-        cursor: default;
-
-        .nodeName:before {
-            content: "</";
-            color: #000;
-        }
-
-        .nodeName:after {
-            content: ">";
-            color: #000;
-        }
-    }
-
-    .nodeName {
+  }
+  
+  .nodeName {
+    color: #6B2D81;
+  }
+  
+  .nodeAttribute {
+    padding-left: 0.5em;
+    
+    span:first-child {
+      color: #ed2424;
+      
+      &:after {
+        content: "=\"";
         color: #6B2D81;
+      }
     }
-
-    .nodeAttribute {
-        padding-left: 0.5em;
-
-        span:first-child {
-            color: #ed2424;
-
-            &:after {
-                content: "=\"";
-                color: #6B2D81;
-            }
-        }
-
-        span:last-child {
-            color: #007ca7;
-
-            &:after {
-                content: "\"";
-                color: #6B2D81;
-            }
-        }
+    
+    span:last-child {
+      color: #007ca7;
+      
+      &:after {
+        content: "\"";
+        color: #6B2D81;
+      }
     }
-
-    .styleLabel ,.attributeName{
-        display: inline-block;
-        margin-right: 2px;
-        padding: 0 2px;
-        color: #ed2424;
-
-        &:after {
-            content: ":";
-        }
+  }
+  
+  .styleLabel {
+    display: inline-block;
+    margin-right: 2px;
+    padding: 0 2px;
+    color: #ed2424;
+    
+    &:after {
+      content: ":";
     }
+  }
+  
+  .styleValue {
+    display: inline;
+    margin-left: 2px;
+    padding: 0 2px;
+    color: #444;
+    word-wrap: break-word;
+    vertical-align: top;
+  }
+  
+  .styleLabel.editable,
+  .styleValue.editable {
+    background-color: rgba(0,183,199,0.1);
+    color: #666;
+    outline: 1px solid rgb(255, 20, 147);
+  }
+  
+  .styleButton {
+    width: 80px;
+    max-width: 50%;
+    margin: 10px auto 0;
+    color: #444;
+    text-align: center;
+    background: #eee;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  x-action[event="refresh"]:before {
+    content: 	'\26AB';
+    margin-right: 0.1em;
+    color: #aaa;
+    background: none;
+  }
 
-    .styleValue ,.attributeValue{
-        display: inline;
-        margin-left: 2px;
-        padding: 0 2px;
-        color: #444;
-        word-wrap: break-word;
-        vertical-align: top;
-    }
-
-    .styleLabel.editable,.attributeName.editable,
-    .styleValue.editable ,.attributeValue.editable{
-        background-color: rgba(0,183,199,0.1);
-        color: #666;
-        outline: 1px solid rgb(255, 20, 147);
-    }
-
-    .styleButton {
-        width: 80px;
-        max-width: 50%;
-        margin: 10px auto 0;
-        color: #444;
-        text-align: center;
-        background: #eee;
-        border-radius: 3px;
-        cursor: pointer;
-    }
-
-    x-action[event="refresh"]:before {
-        content: '\26AB';
-        margin-right: 0.1em;
-        color: #aaa;
-        background: none;
-    }
-
-    x-action[event="refresh"][changed]:before {
-        color: red;
-    }
+  x-action[event="refresh"][changed]:before {
+    color: red;
+  }
 }

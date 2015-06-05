@@ -6,7 +6,6 @@ module VORLON {
         private _internalId = 0;
         private _lastElementSelectedClientSide;
         private _newAppliedStyles = {};
-        private _newAppliedAttributes = {};
         private _lastContentState = '';
         private _lastReceivedObject = null;
         private _clikedNodeID = null;
@@ -40,7 +39,6 @@ module VORLON {
         private _packageAndSendDOM(element?: HTMLElement) {
             this._internalId = 0;
             this._newAppliedStyles = {};
-            this._newAppliedAttributes = {};
             if (!element) {
                 var packagedObject = new PackagedNode(document.body);
                 packagedObject.rootHTML = document.body.innerHTML;
@@ -155,7 +153,6 @@ module VORLON {
         private _containerDiv: HTMLElement;
         private _treeDiv: HTMLElement;
         private _styleView: HTMLElement;
-        private _attribiutesView: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
         private _refreshButton: Element;
 
@@ -166,7 +163,6 @@ module VORLON {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
-                this._attribiutesView = Tools.QuerySelectorById(filledDiv, "attribiutesView");
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
 
                 this._containerDiv.addEventListener('refresh', () => {
@@ -210,11 +206,6 @@ module VORLON {
                     limit: 50,
                     position: '70%'
                 });
-                $('.style-view-wrapper').split({
-                    orientation: 'vertical',
-                    limit: 50,
-                    position: '50%'
-                });
 
                 this._ready = true;
             });
@@ -229,58 +220,6 @@ module VORLON {
             range.setStart(element, 0);
             range.setEnd(element, 1);
             window.getSelection().addRange(range);
-        }
-        private _generateClickableAttributeValue(label: HTMLElement, value: string, internalId: string): HTMLElement {
-            // Value
-            var valueElement = document.createElement("div");
-            valueElement.contentEditable = "false";
-            valueElement.innerHTML = value || "&nbsp;";
-            valueElement.className = "attributeValue";
-            valueElement.addEventListener("keydown", (evt) => {
-                if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                    //Create the properties object of elements.
-                    var propertyObject: any = {};
-                    propertyObject.property = label.innerHTML;
-                    propertyObject.newValue = valueElement.innerHTML;
-                    if (this._newAppliedAttributes[internalId] !== undefined) {
-                        var propsArr = this._newAppliedAttributes[internalId];
-                        //check if property exists in array
-                        for (var index = 0; index < propsArr.length; index++) {
-                            var propObj = propsArr[index];
-                            if (propObj.property === propertyObject.property) {
-                                propObj.newValue = propertyObject.newValue;
-                                propertyObject = propObj;
-                                propsArr.splice(index, 1);
-                                break;
-                            }
-                        }
-                        propsArr.push(propertyObject);
-                    } else {
-                        var proArr = [];
-                        proArr.push(propertyObject);
-                        this._newAppliedAttributes[internalId] = proArr;
-                    }
-                    this.sendToClient({
-                        type: "attributeEdit",
-                        attributeName: label.innerHTML,
-                        attributeValue: valueElement.innerHTML,
-                        order: internalId
-                    });
-                    evt.preventDefault();
-                    valueElement.contentEditable = "false";
-                    Tools.RemoveClass(valueElement, "editable");
-                }
-            });
-
-            valueElement.addEventListener("blur", () => {
-                valueElement.contentEditable = "false";
-                Tools.RemoveClass(valueElement, "editable");
-            });
-
-
-            valueElement.addEventListener("click", () => this._makeEditable(valueElement));
-
-            return valueElement;
         }
 
         private _generateClickableValue(label: HTMLElement, value: string, internalId: string): HTMLElement {
@@ -330,42 +269,11 @@ module VORLON {
                 Tools.RemoveClass(valueElement, "editable");
             });
 
-
             valueElement.addEventListener("click", () => this._makeEditable(valueElement));
 
             return valueElement;
         }
-        // Generate styles for a selected node
-        private _generateAttribute(attributeName: string, value: string, internalId: string, editableLabel = false): void {
-            var wrap = document.createElement("div");
-            wrap.className = 'attributeWrap';
-            var label = document.createElement("div");
-            label.innerHTML = attributeName;
-            label.className = "attributeName";
-            label.contentEditable = "false";
-            var valueElement = this._generateClickableAttributeValue(label, value, internalId);
-            wrap.appendChild(label);
-            wrap.appendChild(valueElement);
-            this._attribiutesView.appendChild(wrap);
 
-            if (editableLabel) {
-                label.addEventListener("blur", () => {
-                    label.contentEditable = "false";
-                    Tools.RemoveClass(label, "editable");
-                });
-
-                label.addEventListener("click", () => {
-                    this._makeEditable(label);
-                });
-
-                label.addEventListener("keydown", (evt) => {
-                    if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                        this._makeEditable(valueElement);
-                        evt.preventDefault();
-                    }
-                });
-            }
-        }
         // Generate styles for a selected node
         private _generateStyle(property: string, value: string, internalId: string, editableLabel = false): void {
             var wrap = document.createElement("div");
@@ -422,31 +330,9 @@ module VORLON {
                 this._generateStyle("property", "value", internalId, true);
                 this._styleView.appendChild(<HTMLElement>e.target);
             });
+
         }
 
-        private _generateAttributes(attributes: string[], internalId: string): void {
-            while (this._attribiutesView.hasChildNodes()) {
-                this._attribiutesView.removeChild(this._attribiutesView.lastChild);
-            }
-
-            // Current styles
-            for (var index = 0; index < attributes.length; index++) {
-                var att = attributes[index];
-                this._generateAttribute(att[0], att[1], internalId);
-            }
-            if (this._newAppliedAttributes[internalId]) {
-                var newProps = this._newAppliedAttributes[internalId];
-                for (var index = 0; index < newProps.length; index++) {
-                    var currentObj = newProps[index];
-                    this._generateAttribute(currentObj.property, currentObj.newValue, internalId);
-                }
-            }
-            // Append add style button
-            this._generateButton(this._attribiutesView, "+", "styleButton").addEventListener('click', (e) => {
-                this._generateAttribute("property", "value", internalId, true);
-                this._attribiutesView.appendChild(<HTMLElement>e.target);
-            });
-        }
         private _appendSpan(parent: HTMLElement, className: string, value: string): void {
             var span = document.createElement("span");
             span.className = className;
@@ -468,17 +354,17 @@ module VORLON {
                 nodeValue.innerHTML = attr[1];
                 node.appendChild(nodeName);
                 node.appendChild(nodeValue);
-                //nodeValue.addEventListener("blur", () => {
-                //    that.sendToClient({
-                //        type: "attributeEdit",
-                //        attributeName: attr[0],
-                //        attributeValue: nodeValue.innerHTML,
-                //        order: receivedObject.internalId
-                //    });
+                nodeValue.addEventListener("blur", () => {
+                    that.sendToClient({
+                        type: "attributeEdit",
+                        attributeName: attr[0],
+                        attributeValue: nodeValue.innerHTML,
+                        order: receivedObject.internalId
+                    });
 
-                //    nodeValue.contentEditable = "false";
-                //    Tools.RemoveClass(nodeValue, "editable");
-                //});
+                    nodeValue.contentEditable = "false";
+                    Tools.RemoveClass(nodeValue, "editable");
+                });
 
                 nodeValue.addEventListener("click", () => that._makeEditable(nodeValue));
                 link.appendChild(node);
@@ -572,7 +458,7 @@ module VORLON {
                         type: "select",
                         order: receivedObject.internalId
                     });
-                    this._generateAttributes(receivedObject.attributes, receivedObject.internalId);
+
                     this._generateStyles(receivedObject.styles, receivedObject.internalId);
 
                     this._previousSelectedNode = linkText;

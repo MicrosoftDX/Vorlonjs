@@ -18,8 +18,7 @@
   padding: 0;
 }
 .plugin-dom #treeView,
-.plugin-dom #styleView,
-.plugin-dom #attribiutesView {
+.plugin-dom #styleView {
   padding: 15px;
 }
 .plugin-dom .tree-view-wrapper > x-controlbar {
@@ -84,9 +83,6 @@
 .plugin-dom .nodeContentContainer:not([data-has-children]) .nodeTextContent {
   padding: 0 0.25em;
 }
-.plugin-dom .nodeContentContainer:not([data-has-children]) .nodeTextContent.editable {
-  border-bottom: 1px dashed red;
-}
 .plugin-dom [data-hovered-tag] > .treeNodeHeader,
 .plugin-dom [data-hovered-tag] > .nodeContentContainer > .treeNodeClosingText .nodeName {
   background: cyan;
@@ -145,19 +141,16 @@
   content: "\"";
   color: #6B2D81;
 }
-.plugin-dom .styleLabel,
-.plugin-dom .attributeName {
+.plugin-dom .styleLabel {
   display: inline-block;
   margin-right: 2px;
   padding: 0 2px;
   color: #ed2424;
 }
-.plugin-dom .styleLabel:after,
-.plugin-dom .attributeName:after {
+.plugin-dom .styleLabel:after {
   content: ":";
 }
-.plugin-dom .styleValue,
-.plugin-dom .attributeValue {
+.plugin-dom .styleValue {
   display: inline;
   margin-left: 2px;
   padding: 0 2px;
@@ -166,9 +159,7 @@
   vertical-align: top;
 }
 .plugin-dom .styleLabel.editable,
-.plugin-dom .attributeName.editable,
-.plugin-dom .styleValue.editable,
-.plugin-dom .attributeValue.editable {
+.plugin-dom .styleValue.editable {
   background-color: rgba(0, 183, 199, 0.1);
   color: #666;
   outline: 1px solid #ff1493;
