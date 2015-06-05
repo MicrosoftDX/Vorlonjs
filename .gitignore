@@ -7,8 +7,8 @@ sync.bat
 *.suo
 /.vs/
 bin/
-GLE idées.txt
+GLE idï¿½es.txt
 sync.bat
 Plugins/Vorlon/plugins/remoteDebugging.zip
 *.js
-*.js
+*.min.js
