@@ -17,7 +17,7 @@ module VORLON {
         public getID(): string {
             return "DOM";
         }
-        private _packageDOM(root: HTMLElement, packagedObject: any, withChildsNodes: boolean = false): void {
+        private _packageDOM(root: HTMLElement, packagedObject: PackagedNode, withChildsNodes: boolean = false): void {
             if (!root.childNodes || root.childNodes.length === 0) {
                 return;
             }
@@ -31,10 +31,6 @@ module VORLON {
                 }
                 if (node.childNodes && node.childNodes.length >= 0) {
                     packagedNode.hasChildnodes = true;
-                }
-
-                if (!packagedObject.children) {
-                    packagedObject.children = [];
                 }
                 packagedObject.children.push(packagedNode);
             }
@@ -79,14 +75,11 @@ module VORLON {
 
             for (var index = 0; index < node[children].length; index++) {
                 var result = this._getElementByInternalId(internalId, node[children][index], getNode);
-
                 if (result) {
                     return result;
                 }
             }
-
             return null;
-
         }
 
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
@@ -580,6 +573,7 @@ module VORLON {
         internalId: string;
         hasChildnodes: boolean;
         rootHTML: any;
+        children: Array<any>;
         refreshbyId: boolean;
         constructor(node: any) {
             this.id = node.id;
@@ -597,6 +591,7 @@ module VORLON {
                 };
             }
             this.internalId = node.__vorlon.internalId;
+            this.children = [];
         }
         private _getAppliedStyles(node: HTMLElement): string[] {
             // Style sheets
