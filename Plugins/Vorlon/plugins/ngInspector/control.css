@@ -1,5 +1,11 @@
+.ng-inspector-container {
+  height: 100%;
+}
 .ng-inspector-container .scopes-treeview-wrapper ul.scopes-tree {
   padding: 0;
   margin: 0;
   list-style: none;
+}
+.ng-inspector-container .scopes-treeview-wrapper ul.scopes-tree ul.scopes-tree {
+  padding-left: 20px;
 }
