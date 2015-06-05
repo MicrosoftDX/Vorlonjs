@@ -155,7 +155,7 @@ module VORLON {
         private _containerDiv: HTMLElement;
         private _treeDiv: HTMLElement;
         private _styleView: HTMLElement;
-        private _attribiutesView: HTMLElement;
+        private _attributesView: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
         private _refreshButton: Element;
 
@@ -166,7 +166,7 @@ module VORLON {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
-                this._attribiutesView = Tools.QuerySelectorById(filledDiv, "attribiutesView");
+                this._attributesView = Tools.QuerySelectorById(filledDiv, "attributesView");
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
 
                 this._containerDiv.addEventListener('refresh', () => {
@@ -210,7 +210,8 @@ module VORLON {
                     limit: 50,
                     position: '70%'
                 });
-                $('.style-view-wrapper').split({
+
+                $('#tabs').tabs({
                     orientation: 'vertical',
                     limit: 50,
                     position: '50%'
@@ -346,7 +347,7 @@ module VORLON {
             var valueElement = this._generateClickableAttributeValue(label, value, internalId);
             wrap.appendChild(label);
             wrap.appendChild(valueElement);
-            this._attribiutesView.appendChild(wrap);
+            this._attributesView.appendChild(wrap);
 
             if (editableLabel) {
                 label.addEventListener("blur", () => {
@@ -425,8 +426,8 @@ module VORLON {
         }
 
         private _generateAttributes(attributes: string[], internalId: string): void {
-            while (this._attribiutesView.hasChildNodes()) {
-                this._attribiutesView.removeChild(this._attribiutesView.lastChild);
+            while (this._attributesView.hasChildNodes()) {
+                this._attributesView.removeChild(this._attributesView.lastChild);
             }
 
             // Current styles
@@ -442,9 +443,9 @@ module VORLON {
                 }
             }
             // Append add style button
-            this._generateButton(this._attribiutesView, "+", "styleButton").addEventListener('click', (e) => {
+            this._generateButton(this._attributesView, "+", "styleButton").addEventListener('click', (e) => {
                 this._generateAttribute("property", "value", internalId, true);
-                this._attribiutesView.appendChild(<HTMLElement>e.target);
+                this._attributesView.appendChild(<HTMLElement>e.target);
             });
         }
         private _appendSpan(parent: HTMLElement, className: string, value: string): void {
