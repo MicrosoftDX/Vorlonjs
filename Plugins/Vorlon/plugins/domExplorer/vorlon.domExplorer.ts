@@ -480,7 +480,7 @@ module VORLON {
                 //    Tools.RemoveClass(nodeValue, "editable");
                 //});
 
-                nodeValue.addEventListener("click", () => that._makeEditable(nodeValue));
+                //nodeValue.addEventListener("click", () => that._makeEditable(nodeValue));
                 link.appendChild(node);
             });
         }
