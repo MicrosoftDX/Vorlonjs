@@ -11,10 +11,10 @@ module VORLON {
         readyState: number;
     }
     
-    export class NetworkPanel extends Plugin {
+    export class XHRPanel extends Plugin {
         constructor() {
-            super("networkpanel", "control.html", "control.css");
-            this._id = "NETWORKPANEL";
+            super("xhrPanel", "control.html", "control.css");
+            this._id = "XHRPANEL";
             this._ready = false;        
         }
 
@@ -51,7 +51,7 @@ module VORLON {
                 xhr.__send = xhr.send;
                 xhr.__setRequestHeader = xhr.setRequestHeader;
                 
-                //todo intercepter send pour chopper les données postées
+                //todo catch send to get posted data
                 //see https://msdn.microsoft.com/en-us/library/hh772834(v=vs.85).aspx
                 
                 xhr.open = function(){
@@ -203,5 +203,5 @@ module VORLON {
         }
 
     //Register the plugin with vorlon core
-    Core.RegisterPlugin(new NetworkPanel());
+    Core.RegisterPlugin(new XHRPanel());
 }
