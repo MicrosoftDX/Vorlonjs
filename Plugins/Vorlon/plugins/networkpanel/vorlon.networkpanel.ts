@@ -17,7 +17,7 @@ module VORLON {
             this._id = "NETWORKPANEL";
             this._ready = false;        
         }
-
+            
         public refresh(): void {
         }
 
@@ -25,6 +25,8 @@ module VORLON {
 
         public startClientSide(): void {
             this.setupXMLHttpRequestHook(true);
+            console.log('send ping');
+            this.sendCommandToDashboard('ping', { message: 'ping' });
         }
 
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {            
@@ -119,7 +121,7 @@ module VORLON {
         }
 
         // This code will run on the dashboard //////////////////////
-
+        
         private _itemsContainer: HTMLElement
         private _dashboardDiv: HTMLDivElement;
         private _clearButton: HTMLButtonElement;
@@ -157,6 +159,21 @@ module VORLON {
             storedItem.update(item);
         } 
     }
+
+    NetworkPanel.prototype.ClientCommands = {
+        pong: function (data: any) {
+            var plugin = <NetworkPanel>this;
+            console.log('receive pong : ' + JSON.stringify(data));
+        }
+    };
+
+    NetworkPanel.prototype.DashboardCommands = {
+        ping: function (data: any) {
+            var plugin = <NetworkPanel>this;
+            console.log('ping');
+            plugin.sendCommandToClient('pong', { message: 'Pong' });
+        }
+    };
     
     class NetworkItemCtrl {
             element : HTMLElement;
