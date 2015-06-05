@@ -94,8 +94,8 @@
 
                     var message: any = {};
                     message.features = this.supportedFeatures;
-                    
-                    Core.Messenger.sendRealtimeMessage(this.getID(), message, RuntimeSide.Client, "message");
+
+                    this.sendToDashboard(message);
                 }
             });
         }
@@ -103,7 +103,7 @@
         public refresh(): void {
             var message: any = {};
             message.features = this.supportedFeatures;
-            Core.Messenger.sendRealtimeMessage(this.getID(), message, RuntimeSide.Client, "message");
+            this.sendToDashboard(message);
         }
 
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {

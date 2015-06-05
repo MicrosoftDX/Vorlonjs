@@ -115,6 +115,7 @@ module VORLON {
                         DashboardManager.ClientList = new Array<any>();
                         
                         var clients = JSON.parse(xhr.responseText);
+                        //console.log("dashboard clients ", clients);
                         
                         var divClientsListPane = <HTMLDivElement> document.getElementById("clientsListPaneContent");
 

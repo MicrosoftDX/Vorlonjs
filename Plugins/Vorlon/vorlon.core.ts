@@ -96,14 +96,7 @@
             // Launch plugins
             for (var index = 0; index < Core._plugins.length; index++) {
                 var plugin = Core._plugins[index];
-
-                if (Core._side === RuntimeSide.Both || Core._side === RuntimeSide.Client) {
-                    plugin.startClientSide();
-                }
-
-                if (Core._side === RuntimeSide.Both || Core._side === RuntimeSide.Dashboard) {
-                    plugin.startDashboardSide(divMapper ? divMapper(plugin.getID()) : null);
-                }
+                Core._startPlugin(Core._plugins[index], divMapper);  
             }
 
             if (Core._side === RuntimeSide.Client) { // handle client disconnection
@@ -112,12 +105,23 @@
                 }, false);
             }
         }
+        
+        private static _startPlugin(plugin : Plugin,  divMapper: (string) => HTMLDivElement = null){
+            if (Core._side === RuntimeSide.Both || Core._side === RuntimeSide.Client) {
+                plugin.startClientSide();
+            }
+
+            if (Core._side === RuntimeSide.Both || Core._side === RuntimeSide.Dashboard) {
+                plugin.startDashboardSide(divMapper ? divMapper(plugin.getID()) : null);
+            }
+        }
 
         private static _OnStopListenReceived(): void {
             Core._listenClientId = "";
         }
 
         private static _OnIdentifyReceived(message: string): void {
+            //console.log('identify ' + message);
             if (Core._side == RuntimeSide.Dashboard) {
                 Core._messageNotifier.innerHTML = message;
                 Core._messageNotifier.show();
@@ -184,6 +188,7 @@
         }
 
         private static _OnIdentificationReceived(id: string): void {
+            //console.log('helo received ' + id);
             Core._listenClientId = id;
 
             if (Core._side === RuntimeSide.Client) {
@@ -206,25 +211,33 @@
             },  Core._RetryTimeout);
         }
 
-        private static _Dispatch(pluginID: string, receivedObject: any): void {
-            var side = receivedObject._side;
-            delete receivedObject._side;
-            for (var index = 0; index < Core._plugins.length; index++) {
+        private static _Dispatch(message: VorlonMessage): void {
+            if (!message.metadata) {
+                console.error('invalid message ' + JSON.stringify(message));
+                return;
+            }
+            //console.log('received message ' + JSON.stringify(message)); 
+            
+            for (var index = 0,  length = Core._plugins.length; index < length; index++) {
                 var plugin = Core._plugins[index];
 
-                if (plugin.getID() === pluginID) {
-                    if (side === RuntimeSide.Client) {
-                        if (!plugin.isReady()) { // Plugin is not ready, let's try again later
-                            Core._RetrySendingRealtimeMessage(plugin, receivedObject);
-                        } else {
-                            plugin.onRealtimeMessageReceivedFromClientSide(receivedObject);
-                        }
-                    } else {
-                        plugin.onRealtimeMessageReceivedFromDashboardSide(receivedObject);
-                    }
+                if (plugin.getID() === message.metadata.pluginID) {
+                    Core._DispatchPluginMessage(plugin, message.metadata.side, message.data);
                     return;
                 }
             }
+        }
+        
+        private static _DispatchPluginMessage(plugin: Plugin, side: any, receivedObject: any): void {
+            if (side === RuntimeSide.Client) {
+                if (!plugin.isReady()) { // Plugin is not ready, let's try again later
+                    Core._RetrySendingRealtimeMessage(plugin, receivedObject);
+                } else {
+                     plugin.onRealtimeMessageReceivedFromClientSide(receivedObject);
+                }
+            } else {
+                plugin.onRealtimeMessageReceivedFromDashboardSide(receivedObject);
+            }            
         }
     }
 }
