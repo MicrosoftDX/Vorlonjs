@@ -119,13 +119,13 @@ module VORLON {
                 if (node.childNodes && node.childNodes.length >= 0) {
                     packagedNode.hasChildnodes = true;
                 }
-                //this._packageDOM(node, packagedNode);
 
                 if (!packagedObject.children) {
                     packagedObject.children = [];
                 }
 
-                packagedObject.children.push(packagedNode);
+                if (packagedNode.name)
+                    packagedObject.children.push(packagedNode);
             }
         }
 
@@ -222,7 +222,8 @@ module VORLON {
 
                 if (!element) {
                     return;
-                }  }
+                }
+            }
             else {
                 var element = this._getElementByInternalId(receivedObject.order, document.body);
 
@@ -454,6 +455,20 @@ module VORLON {
                 var node = document.createElement('span');
                 node.className = 'nodeAttribute';
                 node.innerHTML = '<span>' + attr[0] + '</span><span>' + attr[1] + '</span>';
+                //node.contentEditable = "false";
+                //node.addEventListener("blur", () => {
+                //    this.sendToClient({
+                //        type: "attributesValueEdit",
+                //        newValue: node.innerHTML,
+                //        order: receivedObject.internalId
+                //    });
+                //    node.contentEditable = "false";
+                //    Tools.RemoveClass(node, "editable");
+                //});
+                //node.addEventListener("click", () => {
+                //    alert('toto');
+                //    this._makeEditable(node);
+                //});
                 link.appendChild(node);
             });
         }
@@ -480,30 +495,17 @@ module VORLON {
                     textNode.className = 'nodeTextContent';
                     textNode.textContent = receivedObject.content.trim();
                     parentNode.appendChild(textNode);
-                    //textNode.addEventListener("click", () => {
-
-                    //});
                     textNode.contentEditable = "false";
-                    //var valueElement = this._generateClickableValue(textNode, textNode.textContent, receivedObject.internalId);
-
                     textNode.addEventListener("click", () => this._makeEditable(textNode));
-
-
                     textNode.addEventListener("blur", () => {
                         this.sendToClient({
                             type: "valueEdit",
                             newValue: textNode.innerHTML,
                             order: receivedObject.internalId
                         });
-
                         textNode.contentEditable = "false";
                         Tools.RemoveClass(textNode, "editable");
                     });
-
-                    textNode.addEventListener("click", () => {
-                        this._makeEditable(textNode);
-                    });
-
                 }
             }
             else {
