@@ -1,4 +1,5 @@
 release/*
 obj/*
 *.csproj.*
-
+*.js
+*.min.js
