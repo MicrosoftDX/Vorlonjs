@@ -69,7 +69,7 @@ module VORLON {
             if (node.__vorlon && node.__vorlon.internalId === internalId) {
                 return node;
             }
-            var children = 'chidlren';
+            var children = 'children';
             if (getNode) {
                 children = 'childNodes'
             }
