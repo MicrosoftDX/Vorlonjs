@@ -239,6 +239,10 @@ var VORLON;
                 case "ruleEdit":
                     element.style[receivedObject.property] = receivedObject.newValue;
                     break;
+                case "attributeEdit":
+                    //element.removeAttribute(receivedObject.attributeName);
+                    element.setAttribute(receivedObject.attributeName, receivedObject.attributeValue);
+                    break;
                 case "valueEdit":
                     element.parentNode.innerHTML = receivedObject.newValue;
                     break;
@@ -447,12 +451,32 @@ var VORLON;
 
         DOMExplorer.prototype._generateColorfullLink = function (link, receivedObject) {
             this._appendSpan(link, "nodeName", receivedObject.name);
-
+            var that = this;
             receivedObject.attributes.forEach(function (attr) {
                 var node = document.createElement('span');
                 node.className = 'nodeAttribute';
-                node.innerHTML = '<span>' + attr[0] + '</span><span>' + attr[1] + '</span>';
+                var nodeName = document.createElement('span');
+                nodeName.innerHTML = attr[0];
 
+                var nodeValue = document.createElement('span');
+                nodeValue.innerHTML = attr[1];
+                node.appendChild(nodeName);
+                node.appendChild(nodeValue);
+                nodeValue.addEventListener("blur", function () {
+                    that.sendToClient({
+                        type: "attributeEdit",
+                        attributeName: attr[0],
+                        attributeValue: nodeValue.innerHTML,
+                        order: receivedObject.internalId
+                    });
+
+                    nodeValue.contentEditable = "false";
+                    VORLON.Tools.RemoveClass(nodeValue, "editable");
+                });
+
+                nodeValue.addEventListener("click", function () {
+                    return that._makeEditable(nodeValue);
+                });
                 link.appendChild(node);
             });
         };
@@ -627,9 +651,7 @@ var VORLON;
                 }
             } else if (receivedObject.refreshbyId) {
                 this._refreshButton.removeAttribute('changed');
-                console.log("coucou");
                 var b = this._insertReceivedObject(receivedObject, this._lastReceivedObject);
-                console.log("coucou2", this._lastReceivedObject);
                 while (this._treeDiv.hasChildNodes()) {
                     this._treeDiv.removeChild(this._treeDiv.lastChild);
                 }
