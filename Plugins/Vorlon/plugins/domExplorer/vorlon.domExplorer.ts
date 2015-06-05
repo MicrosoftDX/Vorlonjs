@@ -17,93 +17,6 @@ module VORLON {
         public getID(): string {
             return "DOM";
         }
-
-        private _getAppliedStyles(node: HTMLElement): string[] {
-            // Style sheets
-            var styleNode = new Array<string>();
-            var sheets = <any>document.styleSheets;
-            var style: CSSStyleDeclaration;
-            var appliedStyles = new Array<string>();
-
-            for (var c = 0; c < sheets.length; c++) {
-
-                var rules = sheets[c].rules || sheets[c].cssRules;
-
-                if (!rules) {
-                    continue;
-                }
-
-                for (var r = 0; r < rules.length; r++) {
-                    var rule = rules[r];
-                    var selectorText = rule.selectorText;
-
-                    try {
-                        var matchedElts = document.querySelectorAll(selectorText);
-
-                        for (var index = 0; index < matchedElts.length; index++) {
-                            var element = matchedElts[index];
-                            style = rule.style;
-                            if (element === node) {
-                                for (var i = 0; i < style.length; i++) {
-                                    if (appliedStyles.indexOf(style[i]) === -1) {
-                                        appliedStyles.push(style[i]);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch (e) {
-                        // Ignoring this rule - Angular.js, etc..
-                    }
-                }
-            }
-
-            // Local style
-            style = node.style;
-            if (style) {
-                for (index = 0; index < style.length; index++) {
-                    if (appliedStyles.indexOf(style[index]) === -1) {
-                        appliedStyles.push(style[index]);
-                    }
-                }
-            }
-
-            // Get effective styles
-            var winObject = document.defaultView || window;
-            for (index = 0; index < appliedStyles.length; index++) {
-                var appliedStyle = appliedStyles[index];
-                if (winObject.getComputedStyle) {
-                    styleNode.push(appliedStyle + ":" + winObject.getComputedStyle(node, "").getPropertyValue(appliedStyle));
-                }
-            }
-
-            return styleNode;
-        }
-
-        private _packageNode(node: any): any {
-            var packagedNode = {
-                id: node.id,
-                type: node.nodeType,
-                name: node.localName,
-                classes: node.className,
-                content: node.textContent,
-                attributes: node.attributes ? Array.prototype.map.call(node.attributes, function (attr) {
-                    return [attr.name, attr.value];
-                }) : [],
-                styles: this._getAppliedStyles(node),
-                internalId: VORLON.Tools.CreateGUID()
-            };
-            if (node.__vorlon) {
-                packagedNode.internalId = node.__vorlon.internalId;
-            }
-            else {
-                node.__vorlon = <any>{
-                    internalId: packagedNode.internalId
-                };
-            }
-            return packagedNode;
-        }
-
         private _packageDOM(root: HTMLElement, packagedObject: any, withChildsNodes: boolean = false): void {
             if (!root.childNodes || root.childNodes.length === 0) {
                 return;
@@ -112,7 +25,7 @@ module VORLON {
             for (var index = 0; index < root.childNodes.length; index++) {
                 var node = <HTMLElement>root.childNodes[index];
 
-                var packagedNode = this._packageNode(node);
+                var packagedNode = new PackagedNode(node);
                 if (withChildsNodes) {
                     this._packageDOM(node, packagedNode);
                 }
@@ -131,12 +44,12 @@ module VORLON {
             this._internalId = 0;
             this._newAppliedStyles = {};
             if (!element) {
-                var packagedObject = this._packageNode(document.body);
+                var packagedObject = new PackagedNode(document.body);
                 packagedObject.rootHTML = document.body.innerHTML;
                 this._packageDOM(document.body, packagedObject, false);
             }
             else {
-                var packagedObject = this._packageNode(element);
+                var packagedObject = new PackagedNode(element);
                 packagedObject.rootHTML = element.innerHTML;
                 this._packageDOM(element, packagedObject, false);
                 packagedObject.refreshbyId = true;
@@ -666,8 +579,110 @@ module VORLON {
                 this._generateTreeNode(this._treeDiv, receivedObject, true);
             }
         }
+
+
     }
 
+    class PackagedNode {
+        id: String;
+        type: String;
+        name: String;
+        classes: String;
+        content: String;
+        attributes: Array<any>;
+        styles: any;
+        internalId: string;
+        hasChildnodes: boolean;
+        rootHTML: any;
+        refreshbyId: boolean;
+        constructor(node: any) {
+            this.id = node.id;
+            this.type = node.nodeType;
+            this.name = node.localName;
+            this.classes = node.className;
+            this.content = node.textContent;
+            this.attributes = node.attributes ? Array.prototype.map.call(node.attributes, function (attr) {
+                return [attr.name, attr.value];
+            }) : [];
+            this.styles = this._getAppliedStyles(node);
+            if (!node.__vorlon) {
+                node.__vorlon = <any>{
+                    internalId: VORLON.Tools.CreateGUID()
+                };
+            }
+            this.internalId = node.__vorlon.internalId;
+        }
+        private _getAppliedStyles(node: HTMLElement): string[] {
+            // Style sheets
+            var styleNode = new Array<string>();
+            var sheets = <any>document.styleSheets;
+            var style: CSSStyleDeclaration;
+            var appliedStyles = new Array<string>();
+
+            for (var c = 0; c < sheets.length; c++) {
+
+                var rules = sheets[c].rules || sheets[c].cssRules;
+
+                if (!rules) {
+                    continue;
+                }
+
+                for (var r = 0; r < rules.length; r++) {
+                    var rule = rules[r];
+                    var selectorText = rule.selectorText;
+
+                    try {
+                        var matchedElts = document.querySelectorAll(selectorText);
+
+                        for (var index = 0; index < matchedElts.length; index++) {
+                            var element = matchedElts[index];
+                            style = rule.style;
+                            if (element === node) {
+                                for (var i = 0; i < style.length; i++) {
+                                    if (appliedStyles.indexOf(style[i]) === -1) {
+                                        appliedStyles.push(style[i]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (e) {
+                        // Ignoring this rule - Angular.js, etc..
+                    }
+                }
+            }
+
+            // Local style
+            style = node.style;
+            if (style) {
+                for (index = 0; index < style.length; index++) {
+                    if (appliedStyles.indexOf(style[index]) === -1) {
+                        appliedStyles.push(style[index]);
+                    }
+                }
+            }
+
+            // Get effective styles
+            var winObject = document.defaultView || window;
+            for (index = 0; index < appliedStyles.length; index++) {
+                var appliedStyle = appliedStyles[index];
+                if (winObject.getComputedStyle) {
+                    styleNode.push(appliedStyle + ":" + winObject.getComputedStyle(node, "").getPropertyValue(appliedStyle));
+                }
+            }
+
+            return styleNode;
+        }
+
+    }
+    class NodeDom {
+        node: any;
+        packagedNode: PackagedNode
+
+    constructor() {
+
+        }
+    }
     // Register
     Core.RegisterPlugin(new DOMExplorer());
 }
