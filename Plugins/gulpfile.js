@@ -72,7 +72,7 @@ gulp.task('scripts', ['typescript-to-js'], function () {
                 path.extname = ".min.js";
               })
             )
-        .pipe(uglify())
+/*   .pipe(uglify())*/
         .pipe(gulp.dest('.'));
 });
 

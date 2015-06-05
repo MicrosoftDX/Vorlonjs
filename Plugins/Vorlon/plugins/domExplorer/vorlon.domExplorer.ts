@@ -119,12 +119,10 @@ module VORLON {
                 if (node.childNodes && node.childNodes.length >= 0) {
                     packagedNode.hasChildnodes = true;
                 }
-                //this._packageDOM(node, packagedNode);
 
                 if (!packagedObject.children) {
                     packagedObject.children = [];
                 }
-
                 packagedObject.children.push(packagedNode);
             }
         }
@@ -153,7 +151,24 @@ module VORLON {
         public startClientSide(): void {
 
         }
+        private _getNodeByInternalId(internalId: string, node: any): any {
+            if (node.__vorlon && node.__vorlon.internalId === internalId) {
+                return node;
+            }
+            if (!node.children) {
+                return null;
+            }
 
+            for (var index = 0; index < node.childNodes.length; index++) {
+                var result = this._getNodeByInternalId(internalId, node.childNodes[index]);
+
+                if (result) {
+                    return result;
+                }
+            }
+
+            return null;
+        }
         private _getElementByInternalId(internalId: string, node: any): any {
             if (node.__vorlon && node.__vorlon.internalId === internalId) {
                 return node;
@@ -200,13 +215,20 @@ module VORLON {
                 }
                 return;
             }
+            if (receivedObject.type === "valueEdit") {
+                var element = this._getNodeByInternalId(receivedObject.order, document.body);
 
-            var element = this._getElementByInternalId(receivedObject.order, document.body);
-
-            if (!element) {
-                return;
+                if (!element) {
+                    return;
+                }
             }
+            else {
+                var element = this._getElementByInternalId(receivedObject.order, document.body);
 
+                if (!element) {
+                    return;
+                }
+            }
             switch (receivedObject.type) {
                 case "select":
                     element.__savedOutline = element.style.outline;
@@ -218,6 +240,9 @@ module VORLON {
                     break;
                 case "ruleEdit":
                     element.style[receivedObject.property] = receivedObject.newValue;
+                    break;
+                case "valueEdit":
+                    element.parentNode.innerHTML = receivedObject.newValue;
                     break;
             }
         }
@@ -243,9 +268,9 @@ module VORLON {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
-                this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');                
+                this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
 
-                this._containerDiv.addEventListener('refresh',() => {
+                this._containerDiv.addEventListener('refresh', () => {
                     this.sendToClient({
                         type: 'refresh',
                         order: null
@@ -428,6 +453,7 @@ module VORLON {
                 var node = document.createElement('span');
                 node.className = 'nodeAttribute';
                 node.innerHTML = '<span>' + attr[0] + '</span><span>' + attr[1] + '</span>';
+
                 link.appendChild(node);
             });
         }
@@ -454,6 +480,20 @@ module VORLON {
                     textNode.className = 'nodeTextContent';
                     textNode.textContent = receivedObject.content.trim();
                     parentNode.appendChild(textNode);
+                    textNode.contentEditable = "false";
+                    textNode.addEventListener("click", () => this._makeEditable(textNode));
+                    textNode.addEventListener("blur", () => {
+                        this.sendToClient({
+                            type: "valueEdit",
+                            newValue: textNode.innerHTML,
+                            order: receivedObject.internalId
+                        });
+                        textNode.contentEditable = "false";
+                        Tools.RemoveClass(textNode, "editable");
+                    });
+                    textNode.addEventListener("click", () => {
+                        this._makeEditable(textNode);
+                    });
                 }
             }
             else {
