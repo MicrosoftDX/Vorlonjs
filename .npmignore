@@ -1,6 +1,6 @@
 *.ts
 Plugins
-.sln
-.njsproj
+*.sln
+*.njsproj
 server/web.config
 *.njsproj
