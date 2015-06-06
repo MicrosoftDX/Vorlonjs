@@ -7,7 +7,8 @@
         $parentId: number;
         $children: Scope[];
         $functions: string[];
-        $isNgRepeat: boolean;
+        $type: ScopeType;
+        $name: string;
     }
 
     export class NgInspector extends Plugin {
@@ -53,7 +54,7 @@
         private _findRootScopes(element: Node) {
             var rootScope = angular.element(element).scope();
             if (!!rootScope) {
-                var cleanedRootScope = this._cleanScope(rootScope);
+                var cleanedRootScope = this._cleanScope(rootScope, true);
                 this._rootScopes.push(cleanedRootScope);
 
                 //cleanedRootScope.$element = element;
@@ -80,7 +81,7 @@
                         childNode.attributes["x-ng-repeat"] ||
                         childNode.attributes["ng_repeat"] ||
                         childNode.attributes["ng:repeat"]) {
-                        cleanedChildScope.$isNgRepeat = true;
+                        cleanedChildScope.$type = ScopeType.NgRepeat;
                     }
 
                     //cleanedChildScope.$element = childNode;
@@ -129,16 +130,21 @@
         }
 
         private _scopePropertiesNamesToExclude: string[] = ["$$applyAsyncQueue", "$$asyncQueue", "$$childHead", "$$ChildScope", "$$childTail", "$$destroyed", "$$isolateBindings", "$$listenerCount", "$$listeners", "$$nextSibling", "$$phase", "$$postDigest", "$$postDigestQueue", "$$prevSibling", "$$transcluded", "$$watchers", "$$watchersCount", "$apply", "$applyAsync", "$broadcast", "$childTail", "$destroy", "$digest", "$emit", "$eval", "$evalAsync", "$even", "$first", "$index", "$last", "$middle", "$new", "$odd", "$on", "$parent", "$root", "$watch", "$watchCollection", "$watchGroup"];
-        private _ngInspectorScopeProperties: string[] = ["$id", "$parentId", "$children", "$functions"];
+        private _ngInspectorScopeProperties: string[] = ["$id", "$parentId", "$children", "$functions", "$type", "$name"];
 
-        private _cleanScope(scope: any): Scope {
+        private _cleanScope(scope: any, isRoot: boolean = false): Scope {
             var scopePackaged: Scope = {
                 $id: null,
                 $parentId: null,
                 $children: [],
                 $functions: [],
-                $isNgRepeat: false
+                $type: ScopeType.Controller,
+                $name: ""
             };
+            if (isRoot) {
+                scope = scope.$root;
+            }
+
             var keys = Object.keys(scope);
             for (var i = 0; i < keys.length; i++) {
                 var key = keys[i];
@@ -149,6 +155,8 @@
 
             if (scope.$parent !== null) {
                 scopePackaged.$parentId = scope.$parent.$id;
+            } else {
+                scopePackaged.$type = ScopeType.RootScope;
             }
 
             return scopePackaged;
@@ -163,7 +171,7 @@
                 $('.ng-inspector-container').split({
                     orientation: 'vertical',
                     limit: 50,
-                    position: '70%'
+                    position: '35%'
                 });
 
                 this._ready = true;
@@ -176,8 +184,11 @@
 
             var nodes = document.getElementById("scopes-tree-wrapper").addEventListener("click",(e) => {
                 var target = <HTMLElement>e.target;
-                if (target.classList.contains("ng-scope")) {
-                    var scopeId = parseInt(target.attributes["data-scope-id"].value);
+                if (target.classList.contains("ng-scope") ||
+                    target.parentElement.classList.contains("ng-scope")) {
+                    var dataAttribute = target.attributes["data-scope-id"] ||
+                        target.parentElement.attributes["data-scope-id"];
+                    var scopeId = parseInt(dataAttribute.value);
                     this.showScopeDetail(scopeId);
                 }
             });
@@ -185,21 +196,35 @@
 
         private _renderScopes(scopes: Scope[]): string {
             var dom = '<ul class="scopes-tree">';
-
             for (var i = 0; i < scopes.length; i++) {
                 dom += "<li>" + this._renderScope(scopes[i]) + "</li>";
             }
 
             dom += "</ul>";
-
             return dom;
         }
 
         private _renderScope(scope: Scope): string {
-            if (scope.$isNgRepeat) {
-                var dom = '<a class="ng-repeat ng-scope" data-scope-id="' + scope.$id + '">scope : ' + scope.$id + '</a>';
+            var dom = "";
+            if (scope.$type === ScopeType.NgRepeat) {
+                dom = '<a class="ng-repeat ng-scope" data-scope-id="'
+                + scope.$id + '">'
+                + this._getScopeTreeIcon(scope)
+                + '<span class="scope-name">ng-repeat</span> <span class="scope-id">('
+                + scope.$id + ')</span></a>';
+            } else if (scope.$type === ScopeType.RootScope) {
+                dom = '<a class="ng-scope root-scope" data-scope-id="' + scope.$id + '">'
+                + this._getScopeTreeIcon(scope)
+                + '<span class="scope-name">$rootScope</span> <span class="scope-id">('
+                + scope.$id
+                + ')</span></a>';
             } else {
-                var dom = '<a class="ng-scope" data-scope-id="' + scope.$id + '">scope : ' + scope.$id + '</a>';
+                dom = '<a class="ng-scope controller-scope" data-scope-id="'
+                + scope.$id + '">'
+                + this._getScopeTreeIcon(scope)
+                + '<span class="scope-name">'
+                + scope.$name + '</span> <span class="scope-id">('
+                + scope.$id + ')</span></a>';
             }
 
             if (scope.$children) {
@@ -207,6 +232,123 @@
             }
 
             return dom;
+        }
+
+        private _iconTemplate: string = '<span class="fa-stack fa"><i class="fa fa-square-o fa-stack-2x"></i><i class="fa ICONNAME fa-stack-1x">TEXTTOREPLACE</i></span>';
+
+        private _renderScopeDetail(scope: Scope): string {
+            var elem = '<div class="scope-details"><ul class="scope-properties">';
+            var keys = Object.keys(scope);
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                if (this._ngInspectorScopeProperties.indexOf(key) === -1) {
+                    elem += this._renderScopeProperty(scope[key], key);
+                }
+            }
+
+            elem += '</ul></div>';
+            return elem;
+        }
+
+        private _renderScopeProperty(prop: any, key: string): string {
+            var elem
+                = '<li><a class="ng-property">'
+                + this._getScopePropertyIcon(prop)
+                + '<span class="ng-property-name">'
+                + key
+                + ' : </span>'
+                + '<span class="ng-property-value">PROPVALUE</span></a>';
+
+
+            if (typeof (prop) === "object") {
+                if (prop !== null) {
+                    elem += this._renderScopeSubLevelDetail(prop);
+                }
+
+                if (prop === null) {
+                    prop = "null";
+                }
+                else if (prop instanceof Array) {
+                    prop = "[...]";
+                } else {
+                    prop = "{...}";
+                }
+            }
+
+            elem += '</li>';
+            return elem.replace("PROPVALUE", prop);
+        }
+
+        private _renderScopeSubLevelDetail(prop: any): string {
+            var elem = '<ul class="scope-properties">';
+            if (prop instanceof Array) {
+                for (var i = 0; i < prop.length; i++) {
+                    elem += this._renderScopeProperty(prop[i], key);
+                }
+            }
+            else {
+                var keys = Object.keys(prop);
+                for (var i = 0; i < keys.length; i++) {
+                    var key = keys[i];
+                    if (this._ngInspectorScopeProperties.indexOf(key) === -1) {
+                        elem += this._renderScopeProperty(prop[key], key);
+                    }
+                }
+            }
+
+            elem += '</ul>';
+            return elem;
+        }
+
+        private _getScopeTreeIcon(scope: Scope): string {
+            var iconName: string = "";
+            var text: string = "";
+
+            switch (scope.$type) {
+                case ScopeType.RootScope:
+                    iconName = "fa-arrows-alt";
+                    break;
+                case ScopeType.NgRepeat:
+                    iconName = "fa-repeat";
+                    break;
+                case ScopeType.Directive:
+                    iconName = "caret-square-o-down";
+                    break;
+                case ScopeType.Controller:
+                    iconName = "fa-crosshairs";
+                    break;
+            }
+
+            return this._iconTemplate.replace("ICONNAME", iconName).replace("TEXTTOREPLACE", text);
+        }
+
+        private _getScopePropertyIcon(prop: any): string {
+            var iconName: string = "";
+            var text: string = "";
+
+            switch (typeof (prop)) {
+                case "object":
+                    if (prop == null) {
+                        iconName = "fa-ban";
+                    }
+                    else if (prop instanceof Array) {
+                        text = "[ ]";
+                    } else {
+                        text = "{ }";
+                    }
+                    break;
+                case "number":
+                    text = "#";
+                    break;
+                case "string":
+                    iconName = "fa-font";
+                    break;
+                case "boolean":
+                    iconName = "fa-check";
+                    break;
+            }
+
+            return this._iconTemplate.replace("ICONNAME", iconName).replace("TEXTTOREPLACE", text);
         }
 
         private _findScopeById(scopes: Scope[], scopeId: number): Scope {
@@ -228,11 +370,9 @@
 
             document.getElementById("scope-details-wrapper").innerHTML = this._renderScopeDetail(scope);
         }
-
-        private _renderScopeDetail(scope: Scope): string {
-            return "<p>" + scope.$id.toString() + "</p>";
-        }
     }
+
+    enum ScopeType { NgRepeat, RootScope, Controller, Directive };
 
     // Register
     Core.RegisterPlugin(new NgInspector());

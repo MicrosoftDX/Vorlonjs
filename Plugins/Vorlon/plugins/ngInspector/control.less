@@ -1,15 +1,72 @@
 ﻿.ng-inspector-container {
     height: 100%;
 
-    .scopes-treeview-wrapper {
+    .panel-left,
+    .panel-right {
+        height: 100%;
+    }
+
+    .scopes-tree-wrapper, .scope-details-wrapper {
+        .fa-stack-1x {
+            margin-top: -1px;
+            display: block;
+        }
+
+        .fa-stack {
+            font-size: 0.9em;
+        }
+
         ul.scopes-tree {
             padding: 0;
             margin: 0;
             list-style: none;
 
-             ul.scopes-tree {
-                 padding-left: 20px;
-             }
+            ul.scopes-tree {
+                padding-left: 20px;
+            }
+
+            a.ng-scope {
+                display: block;
+                cursor: pointer;
+                padding: 3px;
+                color: #00b7c7;
+
+                &.ng-repeat {
+                    color: #6b2d81;
+                }
+
+                &.root-scope {
+                    color: #333;
+                }
+
+                &:hover {
+                    opacity: 0.8;
+                    font-weight: bold;
+                }
+
+                .scope-name {
+                    padding-left: 4px;
+                }
+
+                .scope-id {
+                    font-size: 0.7em;
+                }
+            }
+        }
+
+        ul.scope-properties {
+            padding-left: 20px;
+
+            .ng-property {
+                display: block;
+                cursor: pointer;
+                padding: 3px;
+                color: #00b7c7;
+
+                .ng-property-name {
+                    padding-left: 4px;
+                }
+            }
         }
     }
 }
