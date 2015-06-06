@@ -69,7 +69,6 @@
                     message: message,
                     type: "error"
                 };
-                //Core.Messenger.sendMonitoringMessage(this.getID(), data.message);
                 this.sendToDashboard(data, true);
 
                 this._cache.push(data);
