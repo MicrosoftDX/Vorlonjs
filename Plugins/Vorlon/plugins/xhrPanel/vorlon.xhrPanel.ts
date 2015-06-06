@@ -14,19 +14,26 @@ module VORLON {
     export class XHRPanel extends Plugin {
         public hooked: boolean = false;
         public cache: Array<NetworkEntry> = [];
+
         constructor() {
             super("xhrPanel", "control.html", "control.css");
-            this.debug = true;
             this._id = "XHRPANEL";
             this._ready = false;        
         }
             
         public refresh(): void {
             this.sendStateToDashboard();
+            this.sendCacheToDashboard();
         }
 
         public sendStateToDashboard() {
             this.sendCommandToDashboard('state', { hooked: this.hooked });
+        }
+
+        public sendCacheToDashboard() {
+            for (var i = 0, l = this.cache.length; i < l; i++) {
+                this.sendCommandToDashboard('xhr', this.cache[i]);
+            }
         }
 
         // This code will run on the client //////////////////////
@@ -177,12 +184,7 @@ module VORLON {
             });
         }
 
-        public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-            if (receivedObject.type === 'xhr'){
-                var item = <NetworkEntry>receivedObject.message;
-                this.processNetworkItem(item);
-            }
-            this.trace(receivedObject.message);
+        public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {            
         }
         
         public processNetworkItem(item: NetworkEntry){
