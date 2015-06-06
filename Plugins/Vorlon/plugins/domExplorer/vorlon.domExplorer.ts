@@ -216,11 +216,8 @@ module VORLON {
                     limit: 50,
                     position: '70%'
                 });
-
-                $('#tabs').tabs({
-                    orientation: 'vertical',
-                    limit: 50,
-                    position: '50%'
+                $('#accordion').accordion({
+                    heightStyle: "content"
                 });
 
                 this._ready = true;
