@@ -137,6 +137,12 @@ module VORLON {
                     break;
                 case "attributeEdit":
                     element.setAttribute(receivedObject.attributeName, receivedObject.attributeValue);
+                    if (receivedObject.attributeName && receivedObject.attributeName.indexOf('on') === 0) {
+                        element[receivedObject.attributeName] = function () {
+                            try { eval(receivedObject.attributeValue); }
+                            catch (e) { console.error(e); }
+                        };
+                    }
                     break;
                 case "valueEdit":
                     element.parentNode.innerHTML = receivedObject.newValue;
