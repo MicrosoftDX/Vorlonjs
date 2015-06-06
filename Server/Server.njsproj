@@ -72,6 +72,7 @@
     <Content Include="public\javascripts\jquery-1.10.2.min.map" />
     <Content Include="public\stylesheets\bootstrap.css" />
     <Content Include="public\stylesheets\bootstrap.min.css" />
+    <Content Include="public\stylesheets\jquery-ui.css" />
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="public\vorlon\plugins\domExplorer\control.css" />
     <Content Include="public\vorlon\plugins\domExplorer\control.html" />
