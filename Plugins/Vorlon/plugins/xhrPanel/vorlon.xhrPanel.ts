@@ -1,5 +1,5 @@
 module VORLON {
-    interface NetworkEntry{
+    export interface NetworkEntry{
         id: string;
         url: string;
         status : number;
@@ -16,6 +16,7 @@ module VORLON {
         public cache: Array<NetworkEntry> = [];
         constructor() {
             super("xhrPanel", "control.html", "control.css");
+            this.debug = true;
             this._id = "XHRPANEL";
             this._ready = false;        
         }

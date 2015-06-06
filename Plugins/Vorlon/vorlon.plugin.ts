@@ -62,7 +62,7 @@
 
         public sendCommandToClient(command: string, data: any = null, incrementVisualIndicator: boolean = false) {
             if (Core.Messenger) {
-                this.trace(this.getID + ' send command to client ' + command);
+                //this.trace(this.getID + ' send command to client ' + command);
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message", incrementVisualIndicator, command);
             }
         }
@@ -74,7 +74,7 @@
         
         public sendCommandToDashboard(command: string, data: any = null, incrementVisualIndicator: boolean = false) {
             if (Core.Messenger) {
-                this.trace(this.getID + ' send command to dashboard ' + command);
+                //this.trace(this.getID + ' send command to dashboard ' + command);
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator, command);
             }
         }
