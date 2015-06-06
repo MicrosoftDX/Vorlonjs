@@ -9,7 +9,7 @@ Learn more at [VorlonJS](http://vorlonjs.com).
 
 Install and run the Vorlon.JS server from npm:
 
-```
+```console
 $ npm i -g vorlon
 $ vorlon
 With the server is running, open http://localhost:1337 in your browser to see the Vorlon.JS dashboard.
@@ -17,7 +17,7 @@ With the server is running, open http://localhost:1337 in your browser to see th
 
 The last step is to enable Vorlon.JS by adding this to your app:
 
-```
+```html
 <script src="http://localhost:1337/vorlon.js"></script>
 ```
 
@@ -53,8 +53,8 @@ You can also run the gulp commands individually. This is useful if you wish to w
 
 If you want to run `gulp` commands from command line, you will need to first install gulp globally on your system with:
 
-```
-npm install -g gulp
+```console
+$ npm install -g gulp
 ```
 
 You can now run `gulp watch` from the `Server` or `Plugin` directories to have gulp compile typescript to javascript automatically.

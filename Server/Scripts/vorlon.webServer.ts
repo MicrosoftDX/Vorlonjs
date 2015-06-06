@@ -78,7 +78,7 @@ export module VORLON {
             });
 
             this._httpServer = http.createServer(app).listen(app.get('port'),() => {
-                console.log('Express server listening on port ' + app.get('port'));
+                console.log('Vorlon listening on port ' + app.get('port'));
             });
 
             for (var id in this._components) {

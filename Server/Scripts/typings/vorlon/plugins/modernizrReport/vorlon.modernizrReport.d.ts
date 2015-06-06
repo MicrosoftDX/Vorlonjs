@@ -11,6 +11,7 @@ declare module VORLON {
         startClientSide(): void;
         refresh(): void;
         onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void;
+        private _filterList;
         private _cssFeaturesListTable;
         private _htmlFeaturesListTable;
         private _miscFeaturesListTable;

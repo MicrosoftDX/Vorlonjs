@@ -29,8 +29,10 @@ module VORLON {
 
         public loadPlugins(): void {
             var xhr = new XMLHttpRequest();
-            var divPlugins = <HTMLDivElement> document.getElementById("pluginsPane");
-            var divPluginTabs = <HTMLDivElement> document.getElementById("pluginsListPaneContent");
+            var divPluginsBottom = <HTMLDivElement> document.getElementById("pluginsPaneBottom");
+            var divPluginsTop = <HTMLDivElement> document.getElementById("pluginsPaneTop");
+            var divPluginBottomTabs = <HTMLDivElement> document.getElementById("pluginsListPaneBottom");
+            var divPluginTopTabs = <HTMLDivElement> document.getElementById("pluginsListPaneTop");
             var coreLoaded = false;
 
             xhr.onreadystatechange = () => {
@@ -49,17 +51,30 @@ module VORLON {
                               pluginmaindiv.classList.add('plugin');
                               pluginmaindiv.classList.add('plugin-' + plugin.id.toLowerCase());
                               pluginmaindiv.setAttribute('data-plugin', plugin.id);
-                              divPlugins.appendChild(pluginmaindiv);
 
                               var plugintab = document.createElement('div');
                               plugintab.classList.add('tab');
                               plugintab.textContent = plugin.name;
                               plugintab.setAttribute('data-plugin-target', plugin.id);
-                              divPluginTabs.appendChild(plugintab);
+                              
+                              if(plugin.panel === "bottom"){
+                                if(divPluginsBottom.children.length === 1){
+                                    pluginmaindiv.classList.add("active");
+                                }
+                                divPluginsBottom.appendChild(pluginmaindiv);
+                                divPluginBottomTabs.appendChild(plugintab);
+                              }
+                              else {
+                                if(divPluginsTop.children.length === 1){
+                                    pluginmaindiv.classList.add("active");
+                                }
+                                divPluginsTop.appendChild(pluginmaindiv);
+                                divPluginTopTabs.appendChild(plugintab);
+                              }
                             }
 
                             var pluginscript = document.createElement("script");
-                            pluginscript.setAttribute("src", plugin.path);
+                            pluginscript.setAttribute("src", "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".min.js");
 
                             pluginscript.onload = (oError) => {
                                 pluginLoaded++;
@@ -100,6 +115,7 @@ module VORLON {
                         DashboardManager.ClientList = new Array<any>();
                         
                         var clients = JSON.parse(xhr.responseText);
+                        //console.log("dashboard clients ", clients);
                         
                         var divClientsListPane = <HTMLDivElement> document.getElementById("clientsListPaneContent");
 
@@ -134,7 +150,6 @@ module VORLON {
                             pluginlistelement.appendChild(pluginlistelementa);
 
                             DashboardManager.ClientList.push(client);
-
                             DashboardManager.UpdateClientWaitingInfo(client.clientid, client.waitingevents);
                         }
                     }

@@ -5,31 +5,28 @@
         constructor() {
             super("interactiveConsole", "control.html", "control.css");
             this._ready = false;
-        }
-
-        public getID(): string {
-            return "CONSOLE";
+            this._id = "CONSOLE";
         }
 
         public startClientSide(): void {
             // Overrides clear, log, error and warn
-            Tools.Hook(window.console, "clear",(): void => {
+            Tools.Hook(window.console, "clear", (): void => {
                 var data = {
                     type: "clear"
                 };
 
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
             });
 
-            Tools.Hook(window.console, "log",(message: string): void => {
+            Tools.Hook(window.console, "log", (message: string): void => {
                 var data = {
                     message: message,
                     type: "log"
                 };
 
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
             });
@@ -40,7 +37,7 @@
                     type: "debug"
                 };
 
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
             });
@@ -51,29 +48,29 @@
                     type: "info"
                 };
 
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
             });
 
-            Tools.Hook(window.console, "warn",(message: string): void => {
+            Tools.Hook(window.console, "warn", (message: string): void => {
                 var data = {
                     message: message,
                     type: "warn"
                 };
 
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
             });
 
-            Tools.Hook(window.console, "error",(message: string): void => {
+            Tools.Hook(window.console, "error", (message: string): void => {
                 var data = {
                     message: message,
                     type: "error"
                 };
                 //Core.Messenger.sendMonitoringMessage(this.getID(), data.message);
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
             });
@@ -89,7 +86,7 @@
                     type: "exception"
                 };
 
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
 
@@ -110,18 +107,21 @@
         }
 
         public refresh(): void {
-            Core.Messenger.sendRealtimeMessage(this.getID(), {
+            this.sendToDashboard({
                 type: "clear"
-            }, RuntimeSide.Client);
+            });
 
             for (var index = 0; index < this._cache.length; index++) {
-                Core.Messenger.sendRealtimeMessage(this.getID(), this._cache[index], RuntimeSide.Client, "message", true);
+                this.sendToDashboard(this._cache[index], true);
             }
         }
 
         // DASHBOARD
         private _containerDiv: HTMLElement;
         private _interactiveInput: HTMLInputElement;
+        private _commandIndex: number;
+        private _commandHistory = [];
+
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div, (filledDiv) => {
@@ -130,21 +130,42 @@
 
                 // Interactive console
                 this._interactiveInput = <HTMLInputElement>Tools.QuerySelectorById(div, "input");
-                this._interactiveInput.addEventListener("keydown",(evt) => {
-                    if (evt.keyCode === 13) {
-                        Core.Messenger.sendRealtimeMessage(this.getID(), {
+                this._interactiveInput.addEventListener("keydown", (evt) => {
+                    if (evt.keyCode === 13) { //enter
+                        this.sendToClient({
                             order: this._interactiveInput.value,
                             type: "eval"
-                        }, RuntimeSide.Dashboard);
+                        });
 
+                        this._commandHistory.push(this._interactiveInput.value);
+                        this._commandIndex = null;
                         this._interactiveInput.value = "";
+                    } if (evt.keyCode === 38) { // up arrow
+
+                        if(this._commandIndex == null) this._commandIndex = this._commandHistory.length;
+
+                        if (this._commandHistory.length > 0 && this._commandIndex > 0) {
+                            this._commandIndex--;
+
+                            this._interactiveInput.value = this._commandHistory[this._commandIndex];
+                        }
+                    } else if (evt.keyCode === 40) { // down arrow
+                        if (this._commandHistory.length > 0 && this._commandIndex != null) {
+                            if (this._commandIndex < this._commandHistory.length - 1) {
+                                this._commandIndex++;
+                                this._interactiveInput.value = this._commandHistory[this._commandIndex];
+                            } else {
+                                this._interactiveInput.value = "";
+                                this._commandIndex = null;
+                            }
+                        }
                     }
                 });
 
                 this._ready = true;
             });
         }
-        
+
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
             if (receivedObject.type === "clear") {
                 while (this._containerDiv.hasChildNodes()) {

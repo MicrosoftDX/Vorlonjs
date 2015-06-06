@@ -18,13 +18,11 @@
 
         constructor() {
             super("objectExplorer", "control.html", "control.css");
+            this._id = "OBJEXPLORER";
             this._ready = false;
             this._contentCallbacks = {};
         }
-
-        public getID(): string {
-            return "OBJEXPLORER";
-        }
+        
         private STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
         private ARGUMENT_NAMES = /([^\s,]+)/g;
         private rootProperty = 'window';
@@ -112,7 +110,7 @@
         private _packageAndSendObjectProperty(type: string, path?: string) {
             path = path || this._currentPropertyPath;
             var packagedObject = this._getProperty(path);
-            Core.Messenger.sendRealtimeMessage(this.getID(), { type: type, path: packagedObject.fullpath, property: packagedObject }, RuntimeSide.Client);
+            this.sendToDashboard({ type: type, path: packagedObject.fullpath, property: packagedObject });
         }
 
         private _markForRefresh() {
@@ -258,9 +256,7 @@
         }
 
         private _queryObjectContent(objectPath: string) {
-            Core.Messenger.sendRealtimeMessage(this.getID(), {
-                type: "query",
-                path: objectPath }, RuntimeSide.Dashboard);
+            this.sendToClient({ type: "query", path: objectPath });
         }
     
         private _appendSpan(parent: HTMLElement, className: string, value: string): void {
@@ -347,10 +343,10 @@
                         renderChilds();
                     }
 
-                    Core.Messenger.sendRealtimeMessage(this.getID(), {
+                    this.sendToClient({
                         type: "queryContent",
                         path: receivedObject.fullpath
-                    }, RuntimeSide.Dashboard);
+                    });
                 }
 
                 if (container.style.display === "none") {
