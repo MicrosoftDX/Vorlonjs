@@ -12,6 +12,8 @@ module VORLON {
     }
     
     export class XHRPanel extends Plugin {
+        public hooked: boolean = false;
+        public cache: Array<NetworkEntry> = [];
         constructor() {
             super("xhrPanel", "control.html", "control.css");
             this._id = "XHRPANEL";
@@ -24,17 +26,18 @@ module VORLON {
         // This code will run on the client //////////////////////
 
         public startClientSide(): void {
-            this.setupXMLHttpRequestHook(true);
-            console.log('send ping');
-            
-            this.sendCommandToDashboard('ping', { message: 'ping' });
+            //this.setupXMLHttpRequestHook();
         }
 
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {            
         }
 
-        public setupXMLHttpRequestHook(debug){
+        public setupXMLHttpRequestHook(){
             var plugin = this;
+            if (plugin.hooked)
+                return;
+
+            plugin.trace('xhrPanel setup hook');
             var w = <any>window;
             w.___XMLHttpRequest = w.XMLHttpRequest;
             var XmlHttpRequestProxy = function() {
@@ -50,6 +53,7 @@ module VORLON {
                     requestHeaders : [],
                     readyState: 0,
                 }
+                plugin.cache.push(data);
                 xhr.__open = xhr.open;
                 xhr.__send = xhr.send;
                 xhr.__setRequestHeader = xhr.setRequestHeader;
@@ -62,9 +66,8 @@ module VORLON {
                     data.url = arguments[1];
                     plugin.trace('request for ' + data.url);
 
-                    plugin.sendCommandToDashboard('ping', { message: 'ping' });
-                    plugin.sendToDashboard({ type: 'xhr', message: data });
-                    console.log('send to dashboard....');
+                    plugin.sendCommandToDashboard('xhr', data);
+                    
                      xhr.__open.apply(xhr, arguments);
                 }
                 
@@ -91,12 +94,22 @@ module VORLON {
                         
                         plugin.trace('LOADED !!!');
                     }
-                    plugin.sendToDashboard({ type:'xhr', message: data});
+                    plugin.sendCommandToDashboard('xhr', data);
                 });
 
                 return xhr;
             }
             w.XMLHttpRequest = XmlHttpRequestProxy;
+            plugin.hooked = true;
+        }
+
+        public removeXMLHttpRequestHook() {
+            if (this.hooked) {
+                this.trace('xhrPanel remove hook');
+                var w = <any>window;
+                w.XMLHttpRequest = w.___XMLHttpRequest;
+                this.hooked = false;
+            }
         }
 
         private _render(tagname: string, parentNode:HTMLElement, classname?:string, value?: string): HTMLElement {
@@ -128,8 +141,7 @@ module VORLON {
                 this._itemsContainer = <HTMLElement>filledDiv.querySelector('.network-items');
                 this._clearButton = <HTMLButtonElement>filledDiv.querySelector('x-action[event="clear"]');
                 this._clearButton.addEventListener('click',(arg) => {
-                    this.sendCommandToClient('ping', { message: 'ping' });
-                    this.sendToClient({ type : 'clear' });
+                    this.sendCommandToClient('clear');
                     this._itemsContainer.innerHTML = '';
                     this._items = {};
                 });
@@ -145,7 +157,7 @@ module VORLON {
             this.trace(receivedObject.message);
         }
         
-        private processNetworkItem(item: NetworkEntry){
+        public processNetworkItem(item: NetworkEntry){
             var storedItem = <NetworkItemCtrl>this._items[item.id];
             if (!storedItem){
                 storedItem = new NetworkItemCtrl(this._itemsContainer, item);
@@ -156,26 +168,32 @@ module VORLON {
     }
 
     XHRPanel.prototype.ClientCommands = {
-        ping: function (data: any) {
+        start: function (data: any) {
             var plugin = <XHRPanel>this;
-            console.log('client ping');
-            plugin.sendCommandToDashboard('pong', { message: 'Pong' });
+            plugin.setupXMLHttpRequestHook();
         },
-        pong: function (data: any) {
+        stop: function (data: any) {
             var plugin = <XHRPanel>this;
-            console.log('receive pong in client : ' + JSON.stringify(data));
+            plugin.removeXMLHttpRequestHook();
+        },
+        getState: function (data: any) {
+            var plugin = <XHRPanel>this;
+            plugin.sendCommandToDashboard('state', { hooked: plugin.hooked });
+        },
+        clear: function (data: any) {
+            var plugin = <XHRPanel>this;
+            plugin.cache = [];
         }
     };
 
     XHRPanel.prototype.DashboardCommands = {
-        ping: function (data: any) {
+        state: function (data: any) {
             var plugin = <XHRPanel>this;
-            console.log('dash ping');
-            plugin.sendCommandToClient('pong', { message: 'Pong' });
+            plugin.hooked = data.hooked;
         },
-        pong: function (data: any) {
+        xhr: function (data: any) {
             var plugin = <XHRPanel>this;
-            console.log('receive pong in dash : ' + JSON.stringify(data));
+            plugin.processNetworkItem(<NetworkEntry>data);
         }
     };
     

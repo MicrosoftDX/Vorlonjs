@@ -60,9 +60,9 @@
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message", incrementVisualIndicator);
         }
 
-        public sendCommandToClient(command: string, data: any, incrementVisualIndicator: boolean = false) {
+        public sendCommandToClient(command: string, data: any = null, incrementVisualIndicator: boolean = false) {
             if (Core.Messenger) {
-                console.log('send to client command ' + command);
+                this.trace(this.getID + ' send command to client ' + command);
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message", incrementVisualIndicator, command);
             }
         }
@@ -72,9 +72,9 @@
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator);
         }
         
-        public sendCommandToDashboard(command: string, data: any, incrementVisualIndicator: boolean = false) {
+        public sendCommandToDashboard(command: string, data: any = null, incrementVisualIndicator: boolean = false) {
             if (Core.Messenger) {
-                console.log('send to dashboard command ' + command);
+                this.trace(this.getID + ' send command to dashboard ' + command);
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator, command);
             }
         }

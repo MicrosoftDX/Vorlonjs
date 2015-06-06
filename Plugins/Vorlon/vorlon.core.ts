@@ -216,7 +216,6 @@
                 console.error('invalid message ' + JSON.stringify(message));
                 return;
             }
-            //console.log('received message ' + JSON.stringify(message)); 
             
             for (var index = 0,  length = Core._plugins.length; index < length; index++) {
                 var plugin = Core._plugins[index];
@@ -229,7 +228,6 @@
         }
 
         private static _DispatchPluginMessage(plugin: Plugin, message: VorlonMessage): void {
-            //console.log('received ' + JSON.stringify(message));
             if (message.metadata.side === RuntimeSide.Client) {
                 if (!plugin.isReady()) { // Plugin is not ready, let's try again later
                     Core._RetrySendingRealtimeMessage(plugin, message);
@@ -242,19 +240,10 @@
         }
 
         private static _DispatchFromClientPluginMessage(plugin: Plugin, message: VorlonMessage): void {
-            //debugger;
-            if (message)
-                console.log('from client received ' + JSON.stringify(message));
-            else {
-                console.error('WTF ?');
-            }
-
             if (message.command && plugin.DashboardCommands) {
-             //   console.log('client message has command ' + message.command);
                 var command = plugin.DashboardCommands[message.command];
                 if (command) {
-                    console.log('from client received data ' + JSON.stringify(message.data));
-                    command.apply(plugin, [message.data]);
+                    command.call(plugin, message.data);
                     return;
                 }
             }
@@ -262,15 +251,10 @@
         }
 
         private static _DispatchFromDashboardPluginMessage(plugin: Plugin, message: VorlonMessage): void {
-            //debugger;
-            //console.log('dash received ' + JSON.stringify(message));
-
             if (message.command && plugin.ClientCommands) {
-                //console.log('dash message has command ' + message.command);
                 var command = plugin.ClientCommands[message.command];
                 if (command) {
-                    //console.log('find command !!!!' + message.command);
-                    command.apply(plugin, [message.data]);
+                    command.call(plugin, message.data);
                     return;
                 }
             }
