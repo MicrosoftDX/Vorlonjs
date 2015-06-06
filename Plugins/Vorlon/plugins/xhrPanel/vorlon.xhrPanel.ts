@@ -22,6 +22,11 @@ module VORLON {
         }
             
         public refresh(): void {
+            this.sendStateToDashboard();
+        }
+
+        public sendStateToDashboard() {
+            this.sendCommandToDashboard('state', { hooked: this.hooked });
         }
 
         // This code will run on the client //////////////////////
@@ -102,6 +107,7 @@ module VORLON {
             }
             w.XMLHttpRequest = XmlHttpRequestProxy;
             plugin.hooked = true;
+            plugin.sendStateToDashboard();
         }
 
         public removeXMLHttpRequestHook() {
@@ -110,6 +116,7 @@ module VORLON {
                 var w = <any>window;
                 w.XMLHttpRequest = w.___XMLHttpRequest;
                 this.hooked = false;
+                this.sendStateToDashboard();
             }
         }
 
@@ -130,21 +137,41 @@ module VORLON {
 
         // This code will run on the dashboard //////////////////////
         
-        private _itemsContainer: HTMLElement
-        private _dashboardDiv: HTMLDivElement;
-        private _clearButton: HTMLButtonElement;
-        private _items: any;
+        public _itemsContainer: HTMLElement
+        public _dashboardDiv: HTMLDivElement;
+        public _clearButton: HTMLButtonElement;
+        public _startStopButton: HTMLButtonElement;
+        public _startStopButtonState: HTMLElement;
+        public _dashboardItems: any;
         
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
-            this._items = {};
+            this._dashboardItems = {};
             this._insertHtmlContentAsync(div, (filledDiv) => {                
                 this._itemsContainer = <HTMLElement>filledDiv.querySelector('.network-items');
                 this._clearButton = <HTMLButtonElement>filledDiv.querySelector('x-action[event="clear"]');
+                this._startStopButton = <HTMLButtonElement>filledDiv.querySelector('x-action[event="toggleState"]');
+                this._startStopButtonState = <HTMLElement>filledDiv.querySelector('x-action[event="toggleState"]>i');
                 this._clearButton.addEventListener('click',(arg) => {
                     this.sendCommandToClient('clear');
                     this._itemsContainer.innerHTML = '';
-                    this._items = {};
+                    this._dashboardItems = {};
+                });
+
+                this._startStopButton.addEventListener('click',(arg) => {
+                    if (!this._startStopButtonState.classList.contains('fa-spin')) {
+                        this._startStopButtonState.classList.remove('fa-play');
+                        this._startStopButtonState.classList.remove('fa-stop');
+                        this._startStopButtonState.classList.remove('no-anim');
+
+                        this._startStopButtonState.classList.add('fa-spin');
+                        this._startStopButtonState.classList.add('fa-spinner');
+                        if (this.hooked) {
+                            this.sendCommandToClient('stop');
+                        } else {
+                            this.sendCommandToClient('start');
+                        }
+                    }
                 });
                 this._ready = true;
             });
@@ -159,10 +186,10 @@ module VORLON {
         }
         
         public processNetworkItem(item: NetworkEntry){
-            var storedItem = <NetworkItemCtrl>this._items[item.id];
+            var storedItem = <NetworkItemCtrl>this._dashboardItems[item.id];
             if (!storedItem){
                 storedItem = new NetworkItemCtrl(this._itemsContainer, item);
-                this._items[item.id] = storedItem;
+                this._dashboardItems[item.id] = storedItem;
             }
             storedItem.update(item);
         } 
@@ -191,6 +218,17 @@ module VORLON {
         state: function (data: any) {
             var plugin = <XHRPanel>this;
             plugin.hooked = data.hooked;
+            plugin._startStopButtonState.classList.remove('fa-spin');
+            plugin._startStopButtonState.classList.remove('fa-spinner');
+            if (plugin.hooked) {
+                plugin._startStopButtonState.classList.remove('fa-play');
+                plugin._startStopButtonState.classList.add('fa-stop'); 
+                plugin._startStopButtonState.classList.add('no-anim');
+            } else {
+                plugin._startStopButtonState.classList.remove('fa-stop');
+                plugin._startStopButtonState.classList.add('fa-play');
+                plugin._startStopButtonState.classList.add('no-anim');
+            }
         },
         xhr: function (data: any) {
             var plugin = <XHRPanel>this;

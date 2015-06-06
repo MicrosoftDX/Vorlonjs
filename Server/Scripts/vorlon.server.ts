@@ -332,7 +332,7 @@ export module VORLON {
                     }
                     else {
                         //Send message if _clientID = clientID selected by dashboard
-                        if (receiveMessage.metadata.clientId === session.currentClientId) {
+                        if (session && receiveMessage.metadata.clientId === session.currentClientId) {
                             dashboard.emit("message", message);
                             //this._log.info("PLUGIN : " + receiveMessage._pluginID + " message receive from clientid " + receiveMessage._clientId + " send to dashboard for session id :" + receiveMessage._sessionId, { type: "PLUGIN", session: receiveMessage._sessionId });
                         }

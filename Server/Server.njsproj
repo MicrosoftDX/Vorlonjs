@@ -65,6 +65,14 @@
     <TypeScriptCompile Include="server.ts" />
     <Content Include="package.json" />
     <Content Include="public\catalog.json" />
+    <Content Include="public\fonts\fontawesome\css\font-awesome.css" />
+    <Content Include="public\fonts\fontawesome\css\font-awesome.min.css" />
+    <Content Include="public\fonts\fontawesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="public\fonts\fontawesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="public\fonts\fontawesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="public\fonts\fontawesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="public\fonts\fontawesome\fonts\fontawesome-webfont.woff2" />
+    <Content Include="public\fonts\fontawesome\fonts\FontAwesome.otf" />
     <Content Include="public\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="public\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="public\fonts\glyphicons-halflings-regular.ttf" />
@@ -99,6 +107,9 @@
   <ItemGroup>
     <Folder Include="bin\" />
     <Folder Include="config\" />
+    <Folder Include="public\fonts\fontawesome\" />
+    <Folder Include="public\fonts\fontawesome\css\" />
+    <Folder Include="public\fonts\fontawesome\fonts\" />
     <Folder Include="public\vorlon\plugins\" />
     <Folder Include="public\vorlon\plugins\domExplorer\" />
     <Folder Include="public\vorlon\plugins\interactiveConsole\" />
