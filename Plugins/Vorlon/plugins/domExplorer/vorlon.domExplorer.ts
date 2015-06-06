@@ -87,7 +87,7 @@ module VORLON {
                 name: node.localName,
                 classes: node.className,
                 content: node.textContent,
-                attributes: node.attributes ? Array.prototype.map.call(node.attributes, function (attr) {
+                attributes: node.attributes ? Array.prototype.map.call(node.attributes, (attr) => {
                     return [attr.name, attr.value];
                 }) : [],
                 styles: this._getAppliedStyles(node),
@@ -205,6 +205,9 @@ module VORLON {
                         });
                         break;
                     case "refresh":
+                        if (this._lastElementSelectedClientSide) {
+                            this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
+                        }
                         this.refresh();
                         this._lastContentState = document.body.innerHTML;
                         break;
@@ -264,7 +267,7 @@ module VORLON {
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
 
-            this._insertHtmlContentAsync(this._dashboardDiv, (filledDiv) => {
+            this._insertHtmlContentAsync(this._dashboardDiv, (filledDiv: HTMLElement) => {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
@@ -277,14 +280,14 @@ module VORLON {
                     });
                 });
 
-                this._treeDiv.addEventListener('click', function (e) {
+                this._treeDiv.addEventListener('click', (e: Event) => {
                     var button = <HTMLElement>e.target;
                     if (button.className.match('treeNodeButton')) {
                         button.hasAttribute('data-collapsed') ? button.removeAttribute('data-collapsed') : button.setAttribute('data-collapsed', '');
                     }
                 });
 
-                this._treeDiv.addEventListener('mouseenter', (e) => {
+                this._treeDiv.addEventListener('mouseenter', (e: Event) => {
                     var node = <HTMLElement>e.target;
                     var parent = node.parentElement;
                     var isHeader = node.className.match('treeNodeHeader');
@@ -298,7 +301,7 @@ module VORLON {
                     }
                 }, true);
 
-                this._treeDiv.addEventListener('mouseleave', (e) => {
+                this._treeDiv.addEventListener('mouseleave', (e: Event) => {
                     var node = <HTMLElement>e.target;
                     if (node.className.match('treeNodeHeader') || node.parentElement.className.match('treeNodeClosingText')) {
                         var hovered = this._treeDiv.querySelector('[data-hovered-tag]')
@@ -449,7 +452,7 @@ module VORLON {
         private _generateColorfullLink(link: HTMLAnchorElement, receivedObject: any): void {
             this._appendSpan(link, "nodeName", receivedObject.name);
 
-            receivedObject.attributes.forEach(function (attr) {
+            receivedObject.attributes.forEach((attr) => {
                 var node = document.createElement('span');
                 node.className = 'nodeAttribute';
                 node.innerHTML = '<span>' + attr[0] + '</span><span>' + attr[1] + '</span>';

@@ -11,8 +11,8 @@
         private _debug: boolean;
         public _type = PluginType.OneOne;
         public trace : (msg) => void;
-        private traceLog = function(msg){ console.log(msg); };
-        private traceNoop = function(msg){  };
+        private traceLog = (msg) => { console.log(msg); };
+        private traceNoop = (msg) => {};
         //public trace = function(msg){}
 
         constructor(name: string, htmlFragmentUrl: string, cssStyleSheetUrl: string) {
@@ -52,9 +52,9 @@
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void { }
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void { }
 
-        public sendToClient(data: any, incrementVisualIndicator:boolean = false){
+        public sendToClient(data: any){
             if (Core.Messenger)
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message", incrementVisualIndicator);
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message");
         }
         
         public sendToDashboard(data: any, incrementVisualIndicator: boolean = false){
