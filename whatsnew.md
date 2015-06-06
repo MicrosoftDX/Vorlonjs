@@ -1,4 +1,4 @@
-## 0.0.15
+## 0.0.15 [Work in progress]
 
 - Plugins
 	- New plugin: XHR Panel to track xhr calls
