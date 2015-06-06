@@ -36,6 +36,10 @@ module VORLON {
             }
         }
 
+        public clearClientCache() {
+            this.cache = [];
+        }
+
         // This code will run on the client //////////////////////
 
         public startClientSide(): void {
@@ -208,11 +212,11 @@ module VORLON {
         },
         getState: function (data: any) {
             var plugin = <XHRPanel>this;
-            plugin.sendCommandToDashboard('state', { hooked: plugin.hooked });
+            plugin.sendStateToDashboard();
         },
         clear: function (data: any) {
             var plugin = <XHRPanel>this;
-            plugin.cache = [];
+            plugin.clearClientCache();
         }
     };
 

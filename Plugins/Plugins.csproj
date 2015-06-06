@@ -73,6 +73,7 @@
     <Content Include="release\vorlon.max.js" />
     <Content Include="samples\andyet\index.html" />
     <Content Include="Vorlon\plugins\xhrPanel\control.less" />
+    <Content Include="Vorlon\plugins\domExplorer\control.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

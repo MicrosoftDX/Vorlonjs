@@ -22,7 +22,7 @@
             this.name = name;
             this.htmlFragmentUrl = htmlFragmentUrl;
             this.cssStyleSheetUrl = cssStyleSheetUrl;
-            this.debug = false;
+            this.debug = Core.debug;
         }
 
         public get Type(): PluginType {
