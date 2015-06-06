@@ -8,8 +8,9 @@
 	- Command history for console plugin
 	- Huge improvements for DOM Explorer
 		- Loaded on demand
-		- Direct text edit
-		- Attributes support
+		- Direct inner text edit
+		- Attributes display
+		- Hover coloration
 - Core
 	- New option to remove socket.io from vorlon.js 
 - Bugs
