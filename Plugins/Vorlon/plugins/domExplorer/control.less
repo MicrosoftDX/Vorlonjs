@@ -22,8 +22,18 @@
         padding: 0;
     }
 
-    .ui-widget-content {
-        border: none;
+    #accordion {
+        height: 100%;
+
+        &.ui-accordion {
+            .ui-accordion-header {
+                font-family: "Menlo","Consolas","Lucida Console",Courier,monospace;
+            }
+
+            .ui-accordion-content {
+                padding: 0;
+            }
+        }
     }
 
     #treeView,
