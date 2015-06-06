@@ -1,6 +1,7 @@
 ﻿module VORLON {
     export class InteractiveConsole extends Plugin {
         _cache = [];
+        private _clearButton: Element;
 
         constructor() {
             super("interactiveConsole", "control.html", "control.css");
@@ -122,12 +123,17 @@
         private _commandIndex: number;
         private _commandHistory = [];
 
-
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div, (filledDiv) => {
                 // Log container
                 this._containerDiv = Tools.QuerySelectorById(filledDiv, "logs");
+                this._clearButton = Tools.QuerySelectorById(filledDiv, 'clear');
 
+                this._clearButton.addEventListener('clear', () => {
+                    while (this._containerDiv.hasChildNodes()) {
+                        this._containerDiv.removeChild(this._containerDiv.lastChild);
+                    }
+                });
                 // Interactive console
                 this._interactiveInput = <HTMLInputElement>Tools.QuerySelectorById(div, "input");
                 this._interactiveInput.addEventListener("keydown", (evt) => {
@@ -142,7 +148,7 @@
                         this._interactiveInput.value = "";
                     } if (evt.keyCode === 38) { // up arrow
 
-                        if(this._commandIndex == null) this._commandIndex = this._commandHistory.length;
+                        if (this._commandIndex == null) this._commandIndex = this._commandHistory.length;
 
                         if (this._commandHistory.length > 0 && this._commandIndex > 0) {
                             this._commandIndex--;
