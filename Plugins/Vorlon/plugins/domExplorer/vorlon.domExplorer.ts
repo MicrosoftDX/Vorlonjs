@@ -627,8 +627,6 @@ module VORLON {
         private _insertReceivedObject(receivedObject: any, root: any) {
             if (root.internalId === this._clikedNodeID) {
                 this._clikedNodeID = null;
-                console.log('object inered root', root);
-                console.log('object inered receivedObject', receivedObject);
                 root = receivedObject;
                 root.hasChildnodes = false;
                 return root;
@@ -636,7 +634,6 @@ module VORLON {
             else {
                 if (root.children && root.children.length) {
                     for (var index = 0; index < root.children.length; index++) {
-                        console.log(index);
                         var res = this._insertReceivedObject(receivedObject, root.children[index])
                         if (res) {
                             root.children[index] = res;

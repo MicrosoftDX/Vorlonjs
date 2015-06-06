@@ -20,8 +20,29 @@
 .plugin-dom #accordion {
   height: 100%;
 }
+.plugin-dom #accordion .ui-state-default,
+.plugin-dom #accordion .ui-widget-content .ui-state-default,
+.plugin-dom #accordion .ui-widget-header .ui-state-default {
+  background: #eee;
+}
+.plugin-dom #accordion .ui-state-active,
+.plugin-dom #accordion .ui-widget-content .ui-state-active,
+.plugin-dom #accordion .ui-widget-header .ui-state-active {
+  background: #CCC;
+}
+.plugin-dom #accordion .ui-corner-all,
+.plugin-dom #accordion .ui-corner-bottom,
+.plugin-dom #accordion .ui-corner-right,
+.plugin-dom #accordion .ui-corner-br,
+.plugin-dom #accordion .ui-corner-all,
+.plugin-dom #accordion .ui-corner-top,
+.plugin-dom #accordion .ui-corner-right,
+.plugin-dom #accordion .ui-corner-tr {
+  border-radius: 0;
+}
 .plugin-dom #accordion.ui-accordion .ui-accordion-header {
   font-family: "Menlo", "Consolas", "Lucida Console", Courier, monospace;
+  border: none;
 }
 .plugin-dom #accordion.ui-accordion .ui-accordion-content {
   padding: 0;

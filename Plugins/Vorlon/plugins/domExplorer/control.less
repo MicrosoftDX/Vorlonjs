@@ -25,9 +25,23 @@
     #accordion {
         height: 100%;
 
+        .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+            background: #eee;
+        }
+
+        .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
+            background: #CCC;
+        }
+
+        .ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br,
+        .ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr {
+            border-radius: 0;
+        }
+
         &.ui-accordion {
             .ui-accordion-header {
                 font-family: "Menlo","Consolas","Lucida Console",Courier,monospace;
+                border: none;
             }
 
             .ui-accordion-content {
