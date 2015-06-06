@@ -17,9 +17,12 @@
 .plugin-dom .style-view {
   padding: 0;
 }
+.plugin-dom .ui-widget-content {
+  border: none;
+}
 .plugin-dom #treeView,
 .plugin-dom #styleView,
-.plugin-dom #attribiutesView {
+.plugin-dom #attributesView {
   padding: 15px;
 }
 .plugin-dom .tree-view-wrapper > x-controlbar {
