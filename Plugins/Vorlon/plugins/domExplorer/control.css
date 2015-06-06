@@ -117,6 +117,9 @@
 .plugin-dom .nodeContentContainer:not([data-has-children]) .nodeTextContent.editable {
   border-bottom: 1px dashed red;
 }
+.plugin-dom .treeNodeButton[data-collapsed] ~ .treeNodeHeader .nodeAttribute {
+  display: none;
+}
 .plugin-dom [data-hovered-tag] > .treeNodeHeader,
 .plugin-dom [data-hovered-tag] > .nodeContentContainer > .treeNodeClosingText .nodeName {
   background: cyan;

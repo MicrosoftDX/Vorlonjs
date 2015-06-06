@@ -138,8 +138,9 @@
             }
         }
     }
-
-
+    .treeNodeButton[data-collapsed] ~ .treeNodeHeader .nodeAttribute{
+        display: none;
+    }
 
     [data-hovered-tag] > .treeNodeHeader,
     [data-hovered-tag] > .nodeContentContainer > .treeNodeClosingText .nodeName {
@@ -191,7 +192,6 @@
     .nodeName {
         color: #6B2D81;
     }
-
     .nodeAttribute {
         padding-left: 0.5em;
 
