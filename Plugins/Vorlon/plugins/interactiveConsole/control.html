@@ -5,9 +5,12 @@
     <link href="control.css" rel="stylesheet" />
 </head>
 <body>
-  <div id="logsContainer" class='logs-container'>
-      <div id="logs" class='logs-list code-text'></div>
-  </div>
-  <input type="text" id="input" class='console-input code-text dashboard-input'/>
+    <div id="logsContainer" class='logs-container'>
+        <x-controlbar>
+            <x-action id="clear" event="clear" tabindex="0">Clear</x-action>
+        </x-controlbar>
+        <div id="logs" class='logs-list code-text'></div>
+    </div>
+    <input type="text" id="input" class='console-input code-text dashboard-input' />
 </body>
 </html>
