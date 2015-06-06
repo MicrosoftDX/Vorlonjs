@@ -553,7 +553,6 @@ export module VORLON {
 
     export interface VorlonMessage {
         metadata: VorlonMessageMetadata;
-        command?: string;
         data?: any
     }
 }

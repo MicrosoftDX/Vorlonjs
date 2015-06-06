@@ -61,7 +61,6 @@
     <TypeScriptCompile Include="Scripts\typings\winston\winston.d.ts" />
     <TypeScriptCompile Include="Scripts\vorlon.dashboard.ts" />
     <TypeScriptCompile Include="Scripts\vorlon.IWebServerComponent.ts" />
-    <TypeScriptCompile Include="Scripts\vorlon.tools.ts" />
     <TypeScriptCompile Include="Scripts\vorlon.webServer.ts" />
     <TypeScriptCompile Include="server.ts" />
     <Content Include="package.json" />
