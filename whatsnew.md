@@ -12,6 +12,7 @@
 		- Attributes display
 		- Hover coloration
 - Core
-	- New option to remove socket.io from vorlon.js 
+	- New option to remove socket.io from vorlon.js in catalog.json file
+	- Simplified plugin description in catalog.json file
 - Bugs
 	- Fixing bug preventing tab between plugins
