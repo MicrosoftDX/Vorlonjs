@@ -4,7 +4,7 @@
 
     .plugin-network .network-log-list {
         width: 100%;
-        margin: 20px 0 30px;
+        margin: 0px 0 30px;
     }
 
         .plugin-network .network-log-list th,
@@ -25,4 +25,9 @@
 
         .plugin-network .network-log-list .network-log-list-right {
             text-align: right;
+        }
+
+        .plugin-network .network-log-list td .chart-bar {
+            position: absolute;
+            height: 10px;
         }
