@@ -66,6 +66,7 @@ gulp.task('scripts', ['typescript-to-js'], function () {
             './**/vorlon.modernizrReport.js',
             './**/objectExplorer/vorlon.objectExplorer.js',
             './**/xhrPanel/vorlon.xhrPanel.js',
+            './**/networkMonitor/vorlon.networkMonitor.js',
             './**/sample/vorlon.sample.js'
         ])
         .pipe(rename(function (path) {
