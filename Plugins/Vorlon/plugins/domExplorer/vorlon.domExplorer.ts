@@ -103,7 +103,7 @@ module VORLON {
                         this.refresh();
                         this._lastContentState = document.body.innerHTML;
                         break;
-                    case ReceivedObjectClientSideType.valueEdit:
+                    case ReceivedObjectClientSideType.refreshbyid:
                         this.refreshbyId(obj.internalID);
                         this._lastContentState = document.body.innerHTML;
                         break;
