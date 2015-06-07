@@ -19,10 +19,10 @@ x-controlbar {
 x-controlbar > * {
   -webkit-box-flex: 0;
   -moz-box-flex: 0;
-  -webkit-flex: 0;
-  -ms-flex: 0;
+  -webkit-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
   box-flex: 0;
-  flex: 0;
+  flex: 0 0 auto;
   margin-left: 0.35em;
   padding: 0.25em 0.5em;
   border: 1px solid rgba(0,0,0, 0.1);
@@ -142,5 +142,3 @@ x-notify[type="warning"] {
 x-notify[type="error"] {
   background-color: #e74c3c;
 }
-
-

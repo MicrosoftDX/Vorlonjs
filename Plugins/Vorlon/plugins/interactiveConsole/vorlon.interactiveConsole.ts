@@ -5,10 +5,7 @@
         constructor() {
             super("interactiveConsole", "control.html", "control.css");
             this._ready = false;
-        }
-
-        public getID(): string {
-            return "CONSOLE";
+            this._id = "CONSOLE";
         }
 
         public startClientSide(): void {
@@ -18,7 +15,7 @@
                     type: "clear"
                 };
 
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
             });
@@ -29,7 +26,7 @@
                     type: "log"
                 };
 
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
             });
@@ -40,7 +37,7 @@
                     type: "debug"
                 };
 
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
             });
@@ -51,7 +48,7 @@
                     type: "info"
                 };
 
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
             });
@@ -62,7 +59,7 @@
                     type: "warn"
                 };
 
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
             });
@@ -72,8 +69,7 @@
                     message: message,
                     type: "error"
                 };
-                //Core.Messenger.sendMonitoringMessage(this.getID(), data.message);
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
             });
@@ -89,7 +85,7 @@
                     type: "exception"
                 };
 
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
+                this.sendToDashboard(data, true);
 
                 this._cache.push(data);
 
@@ -110,12 +106,12 @@
         }
 
         public refresh(): void {
-            Core.Messenger.sendRealtimeMessage(this.getID(), {
+            this.sendToDashboard({
                 type: "clear"
-            }, RuntimeSide.Client);
+            });
 
             for (var index = 0; index < this._cache.length; index++) {
-                Core.Messenger.sendRealtimeMessage(this.getID(), this._cache[index], RuntimeSide.Client, "message", true);
+                this.sendToDashboard(this._cache[index], true);
             }
         }
 
@@ -134,11 +130,11 @@
                 // Interactive console
                 this._interactiveInput = <HTMLInputElement>Tools.QuerySelectorById(div, "input");
                 this._interactiveInput.addEventListener("keydown", (evt) => {
-                    if (evt.keyCode === 13) {
-                        Core.Messenger.sendRealtimeMessage(this.getID(), {
+                    if (evt.keyCode === 13) { //enter
+                        this.sendToClient({
                             order: this._interactiveInput.value,
                             type: "eval"
-                        }, RuntimeSide.Dashboard);
+                        });
 
                         this._commandHistory.push(this._interactiveInput.value);
                         this._commandIndex = null;
