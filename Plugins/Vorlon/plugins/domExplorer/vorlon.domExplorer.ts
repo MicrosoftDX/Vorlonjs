@@ -85,67 +85,68 @@ module VORLON {
         }
 
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
-            if (!receivedObject.order) {
-                switch (receivedObject.type) {
-                    case "unselect":
+            var obj = <ReceivedObjectClientSide>receivedObject;
+            if (!obj.order) {
+                switch (obj.type) {
+                    case ReceivedObjectClientSideType.unselect:
                         if (this._lastElementSelectedClientSide) {
                             this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
                         }
                         break;
-                    case "dirtycheck":
+                    case ReceivedObjectClientSideType.dirtycheck:
                         this.sendToDashboard({
                             action: 'dirtycheck',
                             rootHTML: document.body.innerHTML
                         });
                         break;
-                    case "refresh":
+                    case ReceivedObjectClientSideType.refresh:
                         this.refresh();
                         this._lastContentState = document.body.innerHTML;
                         break;
-                    case "refreshbyid":
-                        this.refreshbyId(receivedObject.internalID);
+                    case ReceivedObjectClientSideType.refreshbyid:
+                        this.refreshbyId(obj.internalID);
                         this._lastContentState = document.body.innerHTML;
                         break;
                 }
                 return;
             }
-            if (receivedObject.type === "valueEdit") {
-                var element = this._getElementByInternalId(receivedObject.order, document.body, true);
+            if (obj.type === ReceivedObjectClientSideType.valueEdit) {
+                var element = this._getElementByInternalId(obj.order, document.body, true);
 
                 if (!element) {
                     return;
                 }
             }
             else {
-                var element = this._getElementByInternalId(receivedObject.order, document.body);
+                var element = this._getElementByInternalId(obj.order, document.body);
 
                 if (!element) {
                     return;
                 }
             }
-            switch (receivedObject.type) {
-                case "select":
+            switch (obj.type) {
+                case ReceivedObjectClientSideType.select:
                     element.__savedOutline = element.style.outline;
                     element.style.outline = "2px solid red";
                     this._lastElementSelectedClientSide = element;
                     break;
-                case "unselect":
+                case ReceivedObjectClientSideType.unselect:
                     element.style.outline = element.__savedOutline;
                     break;
-                case "ruleEdit":
-                    element.style[receivedObject.property] = receivedObject.newValue;
+                case ReceivedObjectClientSideType.ruleEdit:
+                    element.style[obj.property] = obj.newValue;
                     break;
-                case "attributeEdit":
-                    element.setAttribute(receivedObject.attributeName, receivedObject.attributeValue);
-                    if (receivedObject.attributeName && receivedObject.attributeName.indexOf('on') === 0) {
-                        element[receivedObject.attributeName] = function () {
-                            try { eval(receivedObject.attributeValue); }
+                case ReceivedObjectClientSideType.attributeEdit:
+                    element.setAttribute(obj.attributeName, obj.attributeValue);
+                    if (obj.attributeName && obj.attributeName.indexOf('on') === 0) {
+                        element[obj.attributeName] = function () {
+                            try { eval(obj.attributeValue); }
                             catch (e) { console.error(e); }
                         };
                     }
                     break;
-                case "valueEdit":
-                    element.parentNode.innerHTML = receivedObject.newValue;
+                case ReceivedObjectClientSideType.valueEdit:
+                    element.parentNode.innerHTML = obj.newValue;
                     break;
             }
         }
@@ -177,7 +178,7 @@ module VORLON {
 
                 this._containerDiv.addEventListener('refresh', () => {
                     this.sendToClient({
-                        type: 'refresh',
+                        type: ReceivedObjectClientSideType.refresh,
                         order: null
                     });
                 });
@@ -223,7 +224,6 @@ module VORLON {
                 this._ready = true;
             });
         }
-
         private _makeEditable(element: HTMLElement): void {
             element.contentEditable = "true";
             element.focus();
@@ -265,7 +265,7 @@ module VORLON {
                         this._newAppliedAttributes[internalId] = proArr;
                     }
                     this.sendToClient({
-                        type: "attributeEdit",
+                        type: ReceivedObjectClientSideType.attributeEdit,
                         attributeName: label.innerHTML,
                         attributeValue: valueElement.innerHTML,
                         order: internalId
@@ -286,7 +286,6 @@ module VORLON {
 
             return valueElement;
         }
-
         private _generateClickableValue(label: HTMLElement, value: string, internalId: string): HTMLElement {
             // Value
             var valueElement = document.createElement("div");
@@ -318,7 +317,7 @@ module VORLON {
                         this._newAppliedStyles[internalId] = proArr;
                     }
                     this.sendToClient({
-                        type: "ruleEdit",
+                        type: ReceivedObjectClientSideType.ruleEdit,
                         property: label.innerHTML,
                         newValue: valueElement.innerHTML,
                         order: internalId
@@ -401,7 +400,6 @@ module VORLON {
                 });
             }
         }
-
         private _generateStyles(styles: string[], internalId: string): void {
             while (this._styleView.hasChildNodes()) {
                 this._styleView.removeChild(this._styleView.lastChild);
@@ -427,7 +425,6 @@ module VORLON {
                 this._styleView.appendChild(<HTMLElement>e.target);
             });
         }
-
         private _generateAttributes(attributes: string[], internalId: string): void {
             while (this._attributesView.hasChildNodes()) {
                 this._attributesView.removeChild(this._attributesView.lastChild);
@@ -458,7 +455,6 @@ module VORLON {
 
             parent.appendChild(span);
         }
-
         private _generateColorfullLink(link: HTMLAnchorElement, receivedObject: any): void {
             this._appendSpan(link, "nodeName", receivedObject.name);
             var that = this;
@@ -472,27 +468,12 @@ module VORLON {
                 nodeValue.innerHTML = attr[1];
                 node.appendChild(nodeName);
                 node.appendChild(nodeValue);
-                //nodeValue.addEventListener("blur", () => {
-                //    that.sendToClient({
-                //        type: "attributeEdit",
-                //        attributeName: attr[0],
-                //        attributeValue: nodeValue.innerHTML,
-                //        order: receivedObject.internalId
-                //    });
-
-                //    nodeValue.contentEditable = "false";
-                //    Tools.RemoveClass(nodeValue, "editable");
-                //});
-
-                //nodeValue.addEventListener("click", () => that._makeEditable(nodeValue));
                 link.appendChild(node);
             });
         }
-
         private _generateColorfullClosingLink(link: HTMLElement, receivedObject: any): void {
             this._appendSpan(link, "nodeName", receivedObject.name);
         }
-
         private _generateButton(parentNode: HTMLElement, text: string, className: string, attribute?: any) {
             var button = document.createElement("button");
             button.innerHTML = text;
@@ -502,7 +483,6 @@ module VORLON {
             button.setAttribute('button-block', '');
             return parentNode.appendChild(button);
         }
-
         private _spaceCheck = /[^\t\n\r ]/;
         private _generateTreeNode(parentNode: HTMLElement, receivedObject: any, first = false): void {
             if (receivedObject.type == 3) {
@@ -513,14 +493,23 @@ module VORLON {
                     parentNode.appendChild(textNode);
                     textNode.contentEditable = "false";
                     textNode.addEventListener("click", () => this._makeEditable(textNode));
-                    textNode.addEventListener("blur", () => {
+                    var sendTextToClient = function () {
                         this.sendToClient({
-                            type: "valueEdit",
+                            type: ReceivedObjectClientSideType.valueEdit,
                             newValue: textNode.innerHTML,
                             order: receivedObject.internalId
                         });
                         textNode.contentEditable = "false";
                         Tools.RemoveClass(textNode, "editable");
+                    }
+                    textNode.addEventListener("blur", () => {
+                        sendTextToClient.bind(this)();
+                    });
+                    
+                    textNode.addEventListener("keydown", (evt) => {
+                        if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+                            sendTextToClient.bind(this)();
+                        }
                     });
                     textNode.addEventListener("click", () => {
                         this._makeEditable(textNode);
@@ -544,7 +533,7 @@ module VORLON {
                     if (receivedObject.hasChildnodes) {
                         this._clikedNodeID = receivedObject.internalId;
                         this.sendToClient({
-                            type: "refreshbyid",
+                            type: ReceivedObjectClientSideType.refreshbyid,
                             internalID: receivedObject.internalId
                         });
                     }
@@ -560,20 +549,20 @@ module VORLON {
                     if (this._previousSelectedNode) {
                         Tools.RemoveClass(this._previousSelectedNode, "treeNodeSelected");
                         this.sendToClient({
-                            type: "unselect",
+                            type: ReceivedObjectClientSideType.unselect,
                             order: (<any>this._previousSelectedNode).__targetInternalId
                         });
                     }
                     else {
                         this.sendToClient({
-                            type: "unselect",
+                            type: ReceivedObjectClientSideType.unselect,
                             order: null
                         });
                     }
 
                     Tools.AddClass(linkText, "treeNodeSelected");
                     this.sendToClient({
-                        type: "select",
+                        type: ReceivedObjectClientSideType.select,
                         order: receivedObject.internalId
                     });
                     this._generateAttributes(receivedObject.attributes, receivedObject.internalId);
@@ -673,8 +662,26 @@ module VORLON {
                 this._generateTreeNode(this._treeDiv, receivedObject, true);
             }
         }
-
-
+    }
+    enum ReceivedObjectClientSideType {
+        unselect,
+        select,
+        dirtycheck,
+        refresh,
+        refreshbyid,
+        valueEdit,
+        ruleEdit,
+        attributeEdit
+    }
+    class ReceivedObjectClientSide {
+        public order: string;
+        public type: ReceivedObjectClientSideType;
+        public newValue: string;
+        public attributeValue: string;
+        public attributeName: string;
+        public internalID: string;
+        public property: string;
+        constructor() { }
     }
 
     class PackagedNode {
