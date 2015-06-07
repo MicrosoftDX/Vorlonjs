@@ -493,7 +493,7 @@ module VORLON {
                     parentNode.appendChild(textNode);
                     textNode.contentEditable = "false";
                     textNode.addEventListener("click", () => this._makeEditable(textNode));
-                    textNode.addEventListener("blur", () => {
+                    var sendTextToClient = function () {
                         this.sendToClient({
                             type: ReceivedObjectClientSideType.valueEdit,
                             newValue: textNode.innerHTML,
@@ -501,6 +501,15 @@ module VORLON {
                         });
                         textNode.contentEditable = "false";
                         Tools.RemoveClass(textNode, "editable");
+                    }
+                    textNode.addEventListener("blur", () => {
+                        sendTextToClient.bind(this)();
+                    });
+                    
+                    textNode.addEventListener("keydown", (evt) => {
+                        if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+                            sendTextToClient.bind(this)();
+                        }
                     });
                     textNode.addEventListener("click", () => {
                         this._makeEditable(textNode);
