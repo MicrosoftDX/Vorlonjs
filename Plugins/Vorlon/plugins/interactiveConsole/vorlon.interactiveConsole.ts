@@ -13,12 +13,12 @@
 
     export interface ConsoleEntry {
         type: any;
-        messages : Array<any>;
+        messages: Array<any>;
     }
 
     export class InteractiveConsole extends Plugin {
         _cache = [];
-        _pendingEntries: ConsoleEntry[] = [];        
+        _pendingEntries: ConsoleEntry[] = [];
         private _clearButton: Element;
         private _objPrototype = Object.getPrototypeOf({});
         private _hooks = {
@@ -67,15 +67,15 @@
                 } else if (propertyType === 'object') {
                     res.properties.push({ name: p, val: this.inspect(obj[p]) });
                 } else {
-                    var val = 
-                    res.properties.push({ name: p, val: obj[p].toString() });
+                    var val =
+                        res.properties.push({ name: p, val: obj[p].toString() });
                 }
             }
 
             return res;
         }
 
-        private getMessages(messages: IArguments): Array<any>{
+        private getMessages(messages: IArguments): Array<any> {
             var resmessages = [];
             for (var i = 0, l = messages.length; i < l; i++) {
                 var msg = messages[i];
@@ -129,7 +129,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.info = Tools.Hook(window.console, "info", (message: string): void => {
+            this._hooks.info = Tools.Hook(window.console, "info",(message: string): void => {
                 var data = {
                     messages: this.getMessages(arguments[0]),
                     type: "info"
@@ -138,7 +138,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.warn = Tools.Hook(window.console, "warn", (message: string): void => {
+            this._hooks.warn = Tools.Hook(window.console, "warn",(message: string): void => {
                 var data = {
                     messages: this.getMessages(arguments[0]),
                     type: "warn"
@@ -147,7 +147,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.error = Tools.Hook(window.console, "error", (message: string): void => {
+            this._hooks.error = Tools.Hook(window.console, "error",(message: string): void => {
                 var data = {
                     messages: this.getMessages(arguments[0]),
                     type: "error"
@@ -195,24 +195,24 @@
 
         // DASHBOARD
         private _containerDiv: HTMLElement;
-        public  _interactiveInput: HTMLInputElement;
+        public _interactiveInput: HTMLInputElement;
         private _commandIndex: number;
         private _commandHistory = [];
 
         public startDashboardSide(div: HTMLDivElement = null): void {
-            this._insertHtmlContentAsync(div, (filledDiv) => {
+            this._insertHtmlContentAsync(div,(filledDiv) => {
                 // Log container
                 this._containerDiv = Tools.QuerySelectorById(filledDiv, "logs");
                 this._clearButton = Tools.QuerySelectorById(filledDiv, 'clear');
 
-                this._clearButton.addEventListener('clear', () => {
+                this._clearButton.addEventListener('clear',() => {
                     while (this._containerDiv.hasChildNodes()) {
                         this._containerDiv.removeChild(this._containerDiv.lastChild);
                     }
                 });
                 // Interactive console
                 this._interactiveInput = <HTMLInputElement>Tools.QuerySelectorById(div, "input");
-                this._interactiveInput.addEventListener("keydown", (evt) => {
+                this._interactiveInput.addEventListener("keydown",(evt) => {
                     if (evt.keyCode === 13) { //enter
                         this.sendCommandToClient('order', {
                             order: this._interactiveInput.value
@@ -293,7 +293,7 @@
     class InteractiveConsoleEntry {
         element: HTMLDivElement;
         entry: ConsoleEntry;
-        objects: InteractiveConsoleObject[] = []; 
+        objects: InteractiveConsoleObject[] = [];
 
         constructor(parent: HTMLElement, entry: ConsoleEntry) {
             this.entry = entry;
@@ -307,14 +307,14 @@
         }
 
         private addMessage(msg: any) {
-           if (typeof msg === 'string' || typeof msg === 'number') {
-               var elt = document.createElement('DIV');
-               elt.className = 'log-message text-message';
-               this.element.appendChild(elt);
+            if (typeof msg === 'string' || typeof msg === 'number') {
+                var elt = document.createElement('DIV');
+                elt.className = 'log-message text-message';
+                this.element.appendChild(elt);
                 elt.innerHTML = msg;
-           } else {
-               var obj = new InteractiveConsoleObject(this.element, <ObjectDescriptor>msg, true);
-               this.objects.push(obj);
+            } else {
+                var obj = new InteractiveConsoleObject(this.element, <ObjectDescriptor>msg, true);
+                this.objects.push(obj);
             }
         }
 
@@ -360,14 +360,25 @@
             this.element = new FluentDOM('DIV', 'object-description collapsed', parent).element;
             if (addToggle) {
                 var toggle = new FluentDOM('A', 'object-toggle obj-link', this.element);
+                var toggleState = toggle.createChild('SPAN', 'toggle-state').text("+");
+                toggle.createChild('SPAN', '').html('[Object]');
+
                 toggle.click(() => {
                     this.toggleView();
+                    if (this.expanded()) {
+                        toggleState.text('-');
+                    } else {
+                        toggleState.text('+');
+                    }
                 });
-                toggle.html('[Object]');
                 this.toggle = toggle.element;
             }
 
-            this.content = new FluentDOM('DIV', 'object-content', this.element).element;            
+            this.content = new FluentDOM('DIV', 'object-content', this.element).element;
+        }
+
+        public expanded() {
+            return !this.element.className.match('collapsed');
         }
 
         public toggleView() {
@@ -381,8 +392,18 @@
 
             if (this.obj.proto) {
                 this.protoElt = new FluentDOM('DIV', 'obj-proto', this.content).append('A', 'label obj-link',(protolabel) => {
-                    protolabel.html('[Prototype]').click(() => {
-                        if (this.proto) this.proto.toggleView();
+                    var toggleState = protolabel.createChild('SPAN', 'toggle-state').text("+");
+                    protolabel.createChild('SPAN', '').html('[Prototype]');
+
+                    protolabel.click(() => {
+                        if (this.proto) {
+                            this.proto.toggleView();
+                            if (this.proto.expanded()) {
+                                toggleState.text("-");
+                            } else {
+                                toggleState.text("+");
+                            }
+                        }
                     });
                 }).element;
 
@@ -390,12 +411,24 @@
             }
 
             if (this.obj.functions && this.obj.functions.length) {
-                new FluentDOM('DIV', 'obj-functions', this.content).append('A', 'label obj-link',(functionslabel) => {
-                    functionslabel.html('[Methods]').click(() => {
+                this.functionsElt = new FluentDOM('DIV', 'obj-functions collapsed', this.content).append('A', 'label obj-link',(functionslabel) => {
+                    var toggleState =  functionslabel.createChild('SPAN', 'toggle-state').text("+");
+                    functionslabel.createChild('SPAN', '').html('[Methods]');
+                    functionslabel.click(() => {
                         Tools.ToggleClass(this.functionsElt, 'collapsed');
+                        if (this.functionsElt.className.match('collapsed')) {
+                            toggleState.text("+");
+                        } else {
+                            toggleState.text("-");
+                        }
                     });
+
+                    //functionslabel.html('<span class="toggle-state open"></span> [Methods]').click(() => {
+                    //    Tools.ToggleClass(this.functionsElt, 'collapsed');
+
+                    //});
                 }).append('DIV', 'content collapsed',(functionscontent) => {
-                    this.functionsElt = functionscontent.element;
+                    functionscontent.element;
                     for (var i = 0, l = this.obj.functions.length; i < l; i++) {
                         functionscontent.append('DIV', 'func',(objfunc) => {
                             objfunc.html(this.obj.functions[i]);
@@ -410,11 +443,23 @@
                     propcontent.append('DIV', 'prop',(prop) => {
                         if (typeof p.val === 'object') {
                             var obj: InteractiveConsoleObject = null;
+
+
                             prop.append('A', 'prop-name obj-link',(propname) => {
+                                var toggleState = propname.createChild('SPAN', 'toggle-state').text("+");
+                                propname.createChild('SPAN', '').html('<span class="prop-title">' + p.name + '</span>:<span class="prop-value">[Object]</span>');
+
                                 propname.click(() => {
-                                    if (obj) obj.toggleView();
+                                    if (obj) {
+                                        obj.toggleView();
+                                        if (obj.expanded()) {
+                                            toggleState.text("-");
+                                        } else {
+                                            toggleState.text("+");
+                                        }
+                                    }
                                 });
-                                propname.html('<span class="prop-title">' + p.name + '</span>:<span class="prop-value">[Object]</span>');
+                                //propname.html('<span class="toggle-state open"></span> <span class="prop-title">' + p.name + '</span>:<span class="prop-value">[Object]</span>');
                             }).append('DIV', 'prop-obj',(propobj) => {
                                 obj = new InteractiveConsoleObject(propobj.element, p.val);
                             });

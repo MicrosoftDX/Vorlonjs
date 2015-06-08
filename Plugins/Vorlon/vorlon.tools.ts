@@ -261,7 +261,12 @@
 				callback(child);
 			}
 			return this;
-		}
+        }
+
+        createChild(nodeType: string, className?: string) {
+            var child = new FluentDOM(nodeType, className, this.element, this);            
+            return child;
+        }
         
         click(callback : (EventTarget) => void){
             this.element.addEventListener('click', callback);
