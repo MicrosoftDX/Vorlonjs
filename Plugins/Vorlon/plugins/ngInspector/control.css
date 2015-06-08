@@ -31,8 +31,8 @@
   padding: 3px;
   color: #00b7c7;
 }
-.ng-inspector-container .scopes-tree-wrapper ul.scopes-tree a.ng-scope.ng-repeat,
-.ng-inspector-container .scope-details-wrapper ul.scopes-tree a.ng-scope.ng-repeat {
+.ng-inspector-container .scopes-tree-wrapper ul.scopes-tree a.ng-scope.ng-repeat-scope,
+.ng-inspector-container .scope-details-wrapper ul.scopes-tree a.ng-scope.ng-repeat-scope {
   color: #6b2d81;
 }
 .ng-inspector-container .scopes-tree-wrapper ul.scopes-tree a.ng-scope.root-scope,
