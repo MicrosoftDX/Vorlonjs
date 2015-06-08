@@ -59,15 +59,19 @@
                 cursor: pointer;
             }
 
-            .toggle-state{
+            .toggle-state, .blank-state {
                 display: inline-block;
                 width: 14px;
                 height: 14px;
                 line-height: 12px;
                 vertical-align: middle;
-                border: 1px solid #CCC;
                 text-align:center;     
-                margin-right: 4px;                     
+                margin-right: 4px; 
+                box-sizing:border-box;                    
+            }
+
+            .toggle-state{                
+                border: 1px solid #CCC;                   
             }
 
             > .object-toggle {
@@ -99,6 +103,10 @@
                 > .object-content {
                     display: none;
                 }
+            }
+
+            .prop-value{
+                font-weight: bold;
             }
         }
     }

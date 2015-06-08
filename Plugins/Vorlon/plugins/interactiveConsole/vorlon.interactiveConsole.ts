@@ -72,6 +72,28 @@
                 }
             }
 
+            res.functions = res.functions.sort(function (a, b) {
+                var lowerAName = a.toLowerCase();
+                var lowerBName = b.toLowerCase();
+
+                if (lowerAName > lowerBName)
+                    return 1;
+                if (lowerAName < lowerBName)
+                    return -1;
+                return 0;
+            });
+
+            res.properties = res.properties.sort(function (a, b) {
+                var lowerAName = a.name.toLowerCase();
+                var lowerBName = b.name.toLowerCase();
+
+                if (lowerAName > lowerBName)
+                    return 1;
+                if (lowerAName < lowerBName)
+                    return -1;
+                return 0;
+            });
+
             return res;
         }
 
@@ -447,7 +469,7 @@
 
                             prop.append('A', 'prop-name obj-link',(propname) => {
                                 var toggleState = propname.createChild('SPAN', 'toggle-state').text("+");
-                                propname.createChild('SPAN', '').html('<span class="prop-title">' + p.name + '</span>:<span class="prop-value">[Object]</span>');
+                                propname.createChild('SPAN', '').html('<span class="prop-title">' + p.name + '</span>: <span>[Object]</span>');
 
                                 propname.click(() => {
                                     if (obj) {
@@ -465,7 +487,7 @@
                             });
                         } else {
                             prop.append('DIV', 'prop-name',(propname) => {
-                                propname.html('<span class="prop-title">' + p.name + '</span>:<span class="prop-value">' + p.val + '</span>');
+                                propname.html('<span class="blank-state"></span><span class="prop-title">' + p.name + '</span>: <span class="prop-value">' + p.val + '</span>');
                             });
                         }
                     });
