@@ -181,8 +181,7 @@ export module VORLON {
                 var catalog = JSON.parse(catalogstring);
                 var vorlonpluginfiles: string = "";
                 var javascriptFile: string = "";
-                
-                
+                                
                 //read the socket.io file if needed
                 if(catalog.includeSocketIO){
                     javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.3.5.js"));
