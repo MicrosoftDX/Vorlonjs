@@ -14,6 +14,8 @@ x-controlbar {
   -moz-box-sizing: border-box;
   -ms-box-sizing: border-box;
   box-sizing: border-box;
+  height: 36px;
+  font-size: 0.8rem;
 }
 
 x-controlbar > * {
@@ -24,9 +26,9 @@ x-controlbar > * {
   box-flex: 0;
   flex: 0 0 auto;
   margin-left: 0.35em;
-  padding: 0.25em 0.5em;
+  padding: 0.35em 0.7em;
   border: 1px solid rgba(0,0,0, 0.1);
-  font: inherit;
+  font: inherit;  
 }
 
 x-controlbar > *:first-child {
@@ -47,7 +49,7 @@ x-controlbar > x-action,
 x-controlbar > input[type="submit"] {
   background: #ddd;
   cursor: pointer;
-  line-height: 1em;
+  line-height: 0.9rem;
 }
 
 x-controlbar > input[type="text"],

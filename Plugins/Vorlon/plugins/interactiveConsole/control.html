@@ -7,17 +7,20 @@
 <body>
     <div id="logsContainer" class='logs-container'>
         <x-controlbar>
-            <!--<x-action id="filterall" event="filter" filter="all" tabindex="0">All</x-action>
-            <x-action id="filterdebug" event="filter" filter="debug" tabindex="0">Debug</x-action>
-            <x-action id="filterlog" event="filter" filter="log" tabindex="0">Log</x-action>
-            <x-action id="filterinfo" event="filter" filter="info" tabindex="0">Info</x-action>
-            <x-action id="filterwarn" event="filter" filter="warn" tabindex="0">Warn</x-action>
-            <x-action id="filtererror" event="filter" filter="error" tabindex="0">Error</x-action>-->
+            <x-action id="filterall" event="filter" filter="all" tabindex="0">All</x-action>
+            <x-action id="filterdebug" event="filter" filter="debug" tabindex="1">Debug</x-action>
+            <x-action id="filterlog" event="filter" filter="log" tabindex="2">Log</x-action>
+            <x-action id="filterinfo" event="filter" filter="info" tabindex="3">Info</x-action>
+            <x-action id="filterwarn" event="filter" filter="warn" tabindex="4">Warn</x-action>
+            <x-action id="filtererror" event="filter" filter="error" tabindex="5">Error</x-action>
 
-            <x-action id="clear" event="clear" tabindex="0">Clear</x-action>
+            <x-action id="clear" event="clear" tabindex="6">Clear</x-action>
         </x-controlbar>
         <div id="logs" class='logs-list code-text'></div>
+        <x-controlbar class="footer">
+            <input type="text" id="input" class='console-input code-text dashboard-input' />
+        </x-controlbar>
     </div>
-    <input type="text" id="input" class='console-input code-text dashboard-input' />
+
 </body>
 </html>
