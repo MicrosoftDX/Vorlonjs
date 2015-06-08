@@ -158,6 +158,7 @@
     <Compile Include="public\javascripts\bootstrap.min.js" />
     <Compile Include="public\javascripts\jquery-1.10.2.js" />
     <Compile Include="public\javascripts\jquery-1.10.2.min.js" />
+    <Compile Include="public\javascripts\jquery-2.1.1.min.js" />
     <Compile Include="public\javascripts\modernizr-2.6.2.js" />
     <Compile Include="public\javascripts\respond.js" />
     <Compile Include="public\javascripts\respond.min.js" />
