@@ -67,3 +67,45 @@
 .ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property .ng-property-name {
   padding-left: 4px;
 }
+.ng-inspector-container .scopes-tree-wrapper ul.scope-properties .ng-property .ng-sub-properties-length,
+.ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property .ng-sub-properties-length {
+  display: none;
+}
+.ng-inspector-container .scopes-tree-wrapper ul.scope-properties .ng-property.ng-property-array,
+.ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property.ng-property-array {
+  color: #6b2d81;
+}
+.ng-inspector-container .scopes-tree-wrapper ul.scope-properties .ng-property.ng-property-array .ng-sub-properties-length,
+.ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property.ng-property-array .ng-sub-properties-length {
+  display: initial;
+}
+.ng-inspector-container .scopes-tree-wrapper ul.scope-properties .ng-property.ng-property-object,
+.ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property.ng-property-object {
+  color: #00b7c7;
+}
+.ng-inspector-container .scopes-tree-wrapper ul.scope-properties .ng-property.ng-property-object .ng-sub-properties-length,
+.ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property.ng-property-object .ng-sub-properties-length {
+  display: initial;
+}
+.ng-inspector-container .scopes-tree-wrapper ul.scope-properties .ng-property.ng-property-null,
+.ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property.ng-property-null {
+  color: #ff0000;
+}
+.ng-inspector-container .scopes-tree-wrapper ul.scope-properties .ng-property.ng-property-number,
+.ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property.ng-property-number {
+  color: #ffd800;
+}
+.ng-inspector-container .scopes-tree-wrapper ul.scope-properties .ng-property.ng-property-string,
+.ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property.ng-property-string {
+  color: #333333;
+}
+.ng-inspector-container .scopes-tree-wrapper ul.scope-properties .ng-property.ng-property-string .ng-property-value:before,
+.ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property.ng-property-string .ng-property-value:before,
+.ng-inspector-container .scopes-tree-wrapper ul.scope-properties .ng-property.ng-property-string .ng-property-value:after,
+.ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property.ng-property-string .ng-property-value:after {
+  content: '"';
+}
+.ng-inspector-container .scopes-tree-wrapper ul.scope-properties .ng-property.ng-property-boolean,
+.ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property.ng-property-boolean {
+  color: #ffd800;
+}
