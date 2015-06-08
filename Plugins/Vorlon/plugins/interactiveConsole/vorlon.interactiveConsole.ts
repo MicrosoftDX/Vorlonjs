@@ -264,9 +264,7 @@
                 this._clearButton = Tools.QuerySelectorById(filledDiv, 'clear');
 
                 this._clearButton.addEventListener('clear',() => {
-                    while (this._containerDiv.hasChildNodes()) {
-                        this._containerDiv.removeChild(this._containerDiv.lastChild);
-                    }
+                    this.sendCommandToClient('clear');
                 });
                 // Interactive console
                 this._interactiveInput = <HTMLInputElement>Tools.QuerySelectorById(div, "input");
