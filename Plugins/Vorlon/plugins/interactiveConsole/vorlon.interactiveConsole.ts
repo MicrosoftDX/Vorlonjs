@@ -142,12 +142,16 @@
         }
 
         private batchSend(items: InteractiveConsoleEntry[]) {
-            var current = 0;
-            while (current < this._cache.length) {
-                var batch = items.slice(current, this._maxBatchSize);
-                this.sendCommandToDashboard('entries', { entries: batch });
-                current += batch.length;
-            };
+            var batch = [];
+            for (var i = 0, l = items.length; i < l; i++) {
+                if (batch.length < this._maxBatchSize) {
+                    batch.push(items[i]);
+                } else {
+                    this.sendCommandToDashboard('entries', { entries: batch });
+                    batch = [];
+                }
+            }
+            this.sendCommandToDashboard('entries', { entries: batch });
         }
 
         public startClientSide(): void {
@@ -251,6 +255,7 @@
         public _interactiveInput: HTMLInputElement;
         private _commandIndex: number;
         private _commandHistory = [];
+        private _logEntries: InteractiveConsoleEntry[] = [];
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div,(filledDiv) => {
@@ -308,6 +313,7 @@
 
         public addDashboardEntry(entry: ConsoleEntry) {
             var ctrl = new InteractiveConsoleEntry(this._containerDiv, entry);
+            this._logEntries.push(ctrl);
         }
 
         public clearDashboard() {
