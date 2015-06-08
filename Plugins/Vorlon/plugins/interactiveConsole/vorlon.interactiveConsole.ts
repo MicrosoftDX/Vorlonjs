@@ -19,6 +19,9 @@
     export class InteractiveConsole extends Plugin {
         _cache = [];
         _pendingEntries: ConsoleEntry[] = [];
+        private _maxBatchSize = 50;
+        private _maxBatchTimeout = 200;
+        private _pendingEntriesTimeout: any;
         private _clearButton: Element;
         private _objPrototype = Object.getPrototypeOf({});
         private _hooks = {
@@ -111,9 +114,40 @@
         }
 
         private addEntry(entry: ConsoleEntry) {
-            //debugger;
-            this.sendCommandToDashboard('entries', { entries: [entry] });
             this._cache.push(entry);
+            //non batch send
+            //this.sendCommandToDashboard('entries', { entries: [entry] });
+            
+            this._pendingEntries.push(entry);
+            if (this._pendingEntries.length > this._maxBatchSize) {
+                this.sendPendings();
+            } else {
+                this.checkPendings();
+            }
+        }
+
+        private checkPendings() {
+            if (!this._pendingEntriesTimeout) {
+                this._pendingEntriesTimeout = setTimeout(() => {
+                    this._pendingEntriesTimeout = null;
+                    this.sendPendings();
+                }, this._maxBatchTimeout);
+            }
+        }
+
+        private sendPendings() {
+            var currentPendings = this._pendingEntries;
+            this._pendingEntries = [];
+            this.sendCommandToDashboard('entries', { entries: currentPendings });
+        }
+
+        private batchSend(items: InteractiveConsoleEntry[]) {
+            var current = 0;
+            while (current < this._cache.length) {
+                var batch = items.slice(current, this._maxBatchSize);
+                this.sendCommandToDashboard('entries', { entries: batch });
+                current += batch.length;
+            };
         }
 
         public startClientSide(): void {
@@ -209,10 +243,7 @@
 
         public refresh(): void {
             this.sendCommandToDashboard("clear");
-
-            for (var index = 0; index < this._cache.length; index++) {
-                this.sendCommandToDashboard("entries", { entries: [this._cache[index]] }, true);
-            }
+            this.batchSend(this._cache);
         }
 
         // DASHBOARD

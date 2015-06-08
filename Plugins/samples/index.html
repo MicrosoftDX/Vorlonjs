@@ -55,6 +55,7 @@
     <button onclick="console.info('This is a', 'info', 'message !')">console.info()</button>
     <button onclick="console.warn('This is a', 'warn', 'message !')">console.warn()</button>
     <button onclick="console.error('This is a', 'error', 'message !')">console.error()</button>
+    <button onclick="intenseLog()">intense console log</button>
     <button onclick="console.dir(window.samplePageObjectTest)">console.dir()</button>
 
     <h2>Dom Explorer</h2>
@@ -93,6 +94,11 @@
 
     <script type="text/javascript">
         console.log('The sample page has loaded!');
+        function intenseLog() {
+            for (var i = 0 ; i < 500 ; i++) {
+                console.log('hey ' + i + ' !');
+            }
+        }
         var SampleObjBase = function () {
 
         }
