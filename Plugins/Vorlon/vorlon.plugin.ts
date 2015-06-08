@@ -11,7 +11,7 @@
         private _debug: boolean;
         public _type = PluginType.OneOne;
         public trace : (msg) => void;
-        private traceLog = function(msg){ console.log(msg); };
+        protected traceLog = function(msg){ console.log(msg); };
         private traceNoop = function (msg) { };
         public ClientCommands: any;
         public DashboardCommands: any;
@@ -66,6 +66,13 @@
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message", incrementVisualIndicator, command);
             }
         }
+
+        public sendCommandToPluginClient(pluginId: string, command: string, data: any = null, incrementVisualIndicator: boolean = false) {
+            if (Core.Messenger) {
+                this.trace(this.getID() + ' send command to plugin client ' + command);
+                Core.Messenger.sendRealtimeMessage(pluginId, data, RuntimeSide.Dashboard, "protocol", incrementVisualIndicator, command);
+            }
+        }
         
         public sendToDashboard(data: any, incrementVisualIndicator: boolean = false){
             if (Core.Messenger)
@@ -76,6 +83,13 @@
             if (Core.Messenger) {
                 this.trace(this.getID() + ' send command to dashboard ' + command);
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator, command);
+            }
+        }
+
+        public sendCommandToPluginDashboard(pluginId : string, command: string, data: any = null, incrementVisualIndicator: boolean = false) {
+            if (Core.Messenger) {
+                this.trace(this.getID() + ' send command to plugin dashboard ' + command);
+                Core.Messenger.sendRealtimeMessage(pluginId, data, RuntimeSide.Client, "protocol", incrementVisualIndicator, command);
             }
         }
 

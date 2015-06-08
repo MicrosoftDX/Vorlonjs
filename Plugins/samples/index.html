@@ -42,18 +42,20 @@
     </style>
   </head>
   <body>
-    <h1>Vorlon.JS Test Page</h1>
+    <h1 id="mainTitle">Vorlon.JS Test Page</h1>
     <p>
       This test page includes the vorlon client script. Ensure you are running the Vorlon.JS server, as explained <a href="http://vorlonjs.com/documentation">in the Vorlon.JS docs</a>. Then open the <a href="http://localhost:1337/dashboard">Vorlon.JS dashboard</a> and refresh this page.
     </p>
 
     <h2>Console Logging</h2>
     <p>Console messages get logged to the Vorlon.JS dashboard. Try it!</p>
-    <button onclick="console.log('This is a log message!')">console.log()</button>
-    <button onclick="console.debug('This is a debug message!')">console.debug()</button>
-    <button onclick="console.info('This is an info message!')">console.info()</button>
-    <button onclick="console.warn('This is a warning!')">console.warn()</button>
-    <button onclick="console.error('This is an error!')">console.error()</button>
+    <button onclick="console.log('This is a simple log message !')">simple console.log()</button>
+    <button onclick="console.log('This is a', 'log', 'message !', window.samplePageObjectTest)">complex console.log()</button>
+    <button onclick="console.debug('This is a', 'debug', 'message !')">console.debug()</button>
+    <button onclick="console.info('This is a', 'info', 'message !')">console.info()</button>
+    <button onclick="console.warn('This is a', 'warn', 'message !')">console.warn()</button>
+    <button onclick="console.error('This is a', 'error', 'message !')">console.error()</button>
+    <button onclick="console.dir(window.samplePageObjectTest)">console.dir()</button>
 
     <h2>Dom Explorer</h2>
     <p>You can inspect the DOM of this page from the Vorlon.JS dashboard. Here is some html with inline styles, and css styles applied.
@@ -89,8 +91,27 @@
       Learn more about <a href="http://vorlonjs.com">Vorlon.JS</a> or find the source at <a href="http://github.com/MicrosoftDX/Vorlonjs">GitHub</a>.
     </div>
 
-    <script>
-      console.log('The sample page has loaded!');
+    <script type="text/javascript">
+        console.log('The sample page has loaded!');
+        var SampleObjBase = function () {
+
+        }
+        SampleObjBase.prototype.someFunction = function (dummy) {
+
+        }
+
+        var SampleObj = function (name) {
+            this.objname = name;
+        }
+        SampleObj.prototype = new SampleObjBase();
+
+        SampleObj.prototype.anotherFunction = function (dummy) {
+
+        }
+
+        window.samplePageObjectTest = new SampleObj('a test for object description');
+        window.samplePageObjectTest.captainAge = 42;
+        window.samplePageObjectTest.child = new SampleObj('another test for nested objects');
     </script>
   </body>
 </html>

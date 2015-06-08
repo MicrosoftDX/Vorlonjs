@@ -1,58 +1,96 @@
 .plugin-console {
-  .logs-container {
-    padding: 0.5em 0.5em 0px;
-    overflow: auto;
-    height: ~"calc(100% - 2.25em)";
-  }
-  
-  .logs-list {
-    width: 100%;
-  }
-  
-  .log {
-    margin-bottom: 3px;
-    margin-left: 30px;
-    position: relative;
-  }
-  
-  .log:before {
-    content: '>';
-    position: absolute;
-    left: -30px;
-    top: 0;
-    font-size: 14px;
-    font-weight: 400;
-    color: #ccc;
-  }
-  
-  .logMessage {
-    color: #444;
-  }
-  
-  .logDebug {
-    color: #b200ff;
-  }
-  
-  .logInfo {
-    color: #0026ff;
-  }
-  
-  .logWarning {
-    color: #ff9205;
-  }
-  
-  .logError {
-    color: #ed2424;
-  }
-  
-  .logException {
-    color: #ed2424;
-  }
-  
-  .console-input {
-    display: block;
-    margin: 0px auto;
-    font-size: inherit;
-    width: ~"calc(100% - 1em)";
-  }
+    .logs-container {
+        padding: 0.5em 0.5em 0px;
+        overflow: auto;
+        height: ~"calc(100% - 2.25em)";
+    }
+
+    .logs-list {
+        width: 100%;
+    }
+
+    .log-entry {
+        margin-bottom: 3px;
+        margin-left: 30px;
+        position: relative;
+
+        &:before {
+            content: '>';
+            position: absolute;
+            left: -30px;
+            top: 0;
+            font-size: 14px;
+            font-weight: 400;
+            color: #ccc;
+        }
+
+        &.logMessage {
+            color: #444;
+        }
+
+        &.logDebug {
+            color: #b200ff;
+        }
+
+        &.logInfo {
+            color: #0026ff;
+        }
+
+        &.logWarning {
+            color: #ff9205;
+        }
+
+        &.logError {
+            color: #ed2424;
+        }
+
+        &.logException {
+            color: #ed2424;
+        }
+
+        .text-message {
+            display: inline-block;
+            margin-right: 1em;
+        }
+
+        .object-description {
+            
+            >.object-toggle{
+                display: block;
+            }
+
+            >.object-content {
+                border-left : 1px solid #DDD;
+                padding-left: 15px;
+                margin-left: 5px;
+
+                >.obj-proto, >.obj-functions{
+                    >.content{
+                        border-left : 1px solid #DDD;
+                        padding-left : 15px;
+                        margin-left: 5px;
+
+                        &.collapsed{
+                            display: none;
+                        }
+                    }
+                }
+            }
+
+            &.collapsed {
+                >.object-content {
+                    display: none;
+                }
+            }
+        }
+    }
+
+
+
+    .console-input {
+        display: block;
+        margin: 0px auto;
+        font-size: inherit;
+        width: ~"calc(100% - 1em)";
+    }
 }

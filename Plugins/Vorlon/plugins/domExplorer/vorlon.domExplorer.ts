@@ -585,11 +585,10 @@ module VORLON {
                     toolsLink.className = "treeNodeTools";
                     toolsLink.href = "#";
 
-                    toolsLink.addEventListener("click", () => {
-                        Core.Messenger.sendRealtimeMessage("CONSOLE", {
-                            type: "order",
+                    toolsLink.addEventListener("click",() => {
+                        this.sendCommandToPluginDashboard("CONSOLE", "setorder", {
                             order: receivedObject.id
-                        }, RuntimeSide.Client, "protocol");
+                        });
                     });
 
                     root.appendChild(toolsLink);

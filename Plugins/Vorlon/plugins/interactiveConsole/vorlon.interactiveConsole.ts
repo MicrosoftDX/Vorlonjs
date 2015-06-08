@@ -1,79 +1,158 @@
 ﻿module VORLON {
+
+    export interface ObjectPropertyDescriptor {
+        name: string;
+        val: any;
+    }
+
+    export interface ObjectDescriptor {
+        proto?: ObjectDescriptor;
+        functions: Array<string>;
+        properties: Array<ObjectPropertyDescriptor>;
+    }
+
+    export interface ConsoleEntry {
+        type: any;
+        messages : Array<any>;
+    }
+
     export class InteractiveConsole extends Plugin {
         _cache = [];
+        _pendingEntries: ConsoleEntry[] = [];        
         private _clearButton: Element;
+        private _objPrototype = Object.getPrototypeOf({});
+        private _hooks = {
+            clear: null,
+            dir: null,
+            log: null,
+            debug: null,
+            error: null,
+            warn: null,
+            info: null
+        };
 
         constructor() {
             super("interactiveConsole", "control.html", "control.css");
             this._ready = false;
             this._id = "CONSOLE";
+            this.traceLog = (msg) => {
+                if (this._hooks && this._hooks.log) {
+                    this._hooks.log.call(console, msg);
+                } else {
+                    console.log(msg);
+                }
+            }
+            this.debug = true;
+        }
+
+        private inspect(obj: any): ObjectDescriptor {
+            if (!obj)
+                return null;
+
+            var objProperties = Object.getOwnPropertyNames(obj);
+            var proto = Object.getPrototypeOf(obj);
+            var res = <ObjectDescriptor>{
+                functions: [],
+                properties: []
+            };
+
+            if (proto && proto != this._objPrototype)
+                res.proto = this.inspect(proto);
+
+            for (var i = 0, l = objProperties.length; i < l; i++) {
+                var p = objProperties[i];
+                var propertyType = typeof obj[p]
+                if (propertyType === 'function') {
+                    res.functions.push(p);
+                } else if (propertyType === 'object') {
+                    res.properties.push({ name: p, val: this.inspect(obj[p]) });
+                } else {
+                    var val = 
+                    res.properties.push({ name: p, val: obj[p].toString() });
+                }
+            }
+
+            return res;
+        }
+
+        private getMessages(messages: IArguments): Array<any>{
+            var resmessages = [];
+            for (var i = 0, l = messages.length; i < l; i++) {
+                var msg = messages[i];
+                if (typeof msg === 'string' || typeof msg === 'number') {
+                    resmessages.push(msg);
+                } else {
+                    resmessages.push(this.inspect(msg));
+                }
+            }
+            return resmessages;
+        }
+
+        private addEntry(entry: ConsoleEntry) {
+            //debugger;
+            this.sendCommandToDashboard('entries', { entries: [entry] });
+            this._cache.push(entry);
         }
 
         public startClientSide(): void {
             // Overrides clear, log, error and warn
-            Tools.Hook(window.console, "clear", (): void => {
-                var data = {
-                    type: "clear"
-                };
-
-                this.sendToDashboard(data, true);
-
-                this._cache.push(data);
+            this._hooks.clear = Tools.Hook(window.console, "clear",(): void => {
+                this.clearClientConsole();
             });
 
-            Tools.Hook(window.console, "log", (message: string): void => {
+            this._hooks.dir = Tools.Hook(window.console, "dir",(message: string): void => {
+                var messages = arguments;
                 var data = {
-                    message: message,
+                    messages: this.getMessages(arguments[0]),
+                    type: "dir"
+                };
+
+                this.addEntry(data);
+            });
+
+            this._hooks.log = Tools.Hook(window.console, "log",(message: string): void => {
+                var messages = arguments;
+                var data = {
+                    messages: this.getMessages(arguments[0]),
                     type: "log"
                 };
 
-                this.sendToDashboard(data, true);
-
-                this._cache.push(data);
+                this.addEntry(data);
             });
 
-            Tools.Hook(window.console, "debug", (message: string): void => {
+            this._hooks.debug = Tools.Hook(window.console, "debug",(message: string): void => {
                 var data = {
-                    message: message,
+                    messages: this.getMessages(arguments[0]),
                     type: "debug"
                 };
 
-                this.sendToDashboard(data, true);
-
-                this._cache.push(data);
+                this.addEntry(data);
             });
 
-            Tools.Hook(window.console, "info", (message: string): void => {
+            this._hooks.info = Tools.Hook(window.console, "info", (message: string): void => {
                 var data = {
-                    message: message,
+                    messages: this.getMessages(arguments[0]),
                     type: "info"
                 };
 
-                this.sendToDashboard(data, true);
-
-                this._cache.push(data);
+                this.addEntry(data);
             });
 
-            Tools.Hook(window.console, "warn", (message: string): void => {
+            this._hooks.warn = Tools.Hook(window.console, "warn", (message: string): void => {
                 var data = {
-                    message: message,
+                    messages: this.getMessages(arguments[0]),
                     type: "warn"
                 };
 
-                this.sendToDashboard(data, true);
-
-                this._cache.push(data);
+                this.addEntry(data);
             });
 
-            Tools.Hook(window.console, "error", (message: string): void => {
+            this._hooks.error = Tools.Hook(window.console, "error", (message: string): void => {
                 var data = {
-                    message: message,
+                    messages: this.getMessages(arguments[0]),
                     type: "error"
                 };
-                //Core.Messenger.sendMonitoringMessage(this.getID(), data.message);
-                this.sendToDashboard(data, true);
-
-                this._cache.push(data);
+                this.addEntry(data);
             });
 
             // Override Error constructor
@@ -83,43 +162,40 @@
                 var error = new previousError(message);
 
                 var data = {
-                    message: message,
+                    messages: [message],
                     type: "exception"
                 };
 
-                this.sendToDashboard(data, true);
-
-                this._cache.push(data);
+                this.addEntry(data);
 
                 return error;
             });
         }
 
-        public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
-            switch (receivedObject.type) {
-                case "eval":
-                    try {
-                        eval(receivedObject.order);
-                    } catch (e) {
-                        console.error("Unable to execute order: " + e.message);
-                    }
-                    break;
+        public clearClientConsole() {
+            this.sendCommandToDashboard('clear');
+            this._cache = [];
+        }
+
+        public evalOrderFromDashboard(order: string) {
+            try {
+                eval(order);
+            } catch (e) {
+                console.error("Unable to execute order: " + e.message);
             }
         }
 
         public refresh(): void {
-            this.sendToDashboard({
-                type: "clear"
-            });
+            this.sendCommandToDashboard("clear");
 
             for (var index = 0; index < this._cache.length; index++) {
-                this.sendToDashboard(this._cache[index], true);
+                this.sendCommandToDashboard("entries", { entries: [this._cache[index]] }, true);
             }
         }
 
         // DASHBOARD
         private _containerDiv: HTMLElement;
-        private _interactiveInput: HTMLInputElement;
+        public  _interactiveInput: HTMLInputElement;
         private _commandIndex: number;
         private _commandHistory = [];
 
@@ -138,9 +214,8 @@
                 this._interactiveInput = <HTMLInputElement>Tools.QuerySelectorById(div, "input");
                 this._interactiveInput.addEventListener("keydown", (evt) => {
                     if (evt.keyCode === 13) { //enter
-                        this.sendToClient({
-                            order: this._interactiveInput.value,
-                            type: "eval"
+                        this.sendCommandToClient('order', {
+                            order: this._interactiveInput.value
                         });
 
                         this._commandHistory.push(this._interactiveInput.value);
@@ -172,50 +247,189 @@
             });
         }
 
-        public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-            if (receivedObject.type === "clear") {
-                while (this._containerDiv.hasChildNodes()) {
-                    this._containerDiv.removeChild(this._containerDiv.lastChild);
-                }
-                return;
+        public addDashboardEntries(entries: ConsoleEntry[]) {
+            for (var i = 0, l = entries.length; i < l; i++) {
+                this.addDashboardEntry(entries[i]);
             }
+        }
 
-            var messageDiv = document.createElement("div");
-            Tools.AddClass(messageDiv, "log");
-            switch (receivedObject.type) {
-                case "log":
-                    messageDiv.innerHTML = receivedObject.message;
-                    Tools.AddClass(messageDiv, "logMessage");
-                    break;
-                case "debug":
-                    messageDiv.innerHTML = receivedObject.message;
-                    Tools.AddClass(messageDiv, "logDebug");
-                    break;
-                case "info":
-                    messageDiv.innerHTML = receivedObject.message;
-                    Tools.AddClass(messageDiv, "logInfo");
-                    break;
-                case "warn":
-                    messageDiv.innerHTML = receivedObject.message;
-                    Tools.AddClass(messageDiv, "logWarning");
-                    break;
-                case "error":
-                    messageDiv.innerHTML = receivedObject.message;
-                    Tools.AddClass(messageDiv, "logError");
-                    break;
-                case "exception":
-                    messageDiv.innerHTML = receivedObject.message;
-                    Tools.AddClass(messageDiv, "logException");
-                    break;
-                case "order":
-                    this._interactiveInput.value = "document.getElementById(\"" + receivedObject.order + "\")";
-                    return;
-            }
+        public addDashboardEntry(entry: ConsoleEntry) {
+            var ctrl = new InteractiveConsoleEntry(this._containerDiv, entry);
+        }
 
-            this._containerDiv.insertBefore(messageDiv, this._containerDiv.childNodes.length > 0 ? this._containerDiv.childNodes[0] : null);
+        public clearDashboard() {
+            this._containerDiv.innerHTML = '';
         }
     }
 
+    InteractiveConsole.prototype.ClientCommands = {
+        order: function (data: any) {
+            var plugin = <InteractiveConsole>this;
+            plugin.evalOrderFromDashboard(data.order);
+        },
+        clear: function (data: any) {
+            var plugin = <InteractiveConsole>this;
+            console.clear();
+        }
+    };
+
+    InteractiveConsole.prototype.DashboardCommands = {
+        entries: function (data: any) {
+            var plugin = <InteractiveConsole>this;
+            plugin.addDashboardEntries(<ConsoleEntry[]>data.entries);
+        },
+        clear: function (data: any) {
+            var plugin = <InteractiveConsole>this;
+            plugin.clearDashboard();
+        },
+
+        setorder: function (data: any) {
+            var plugin = <InteractiveConsole>this;
+            plugin._interactiveInput.value = "document.getElementById(\"" + data.order + "\")";
+        }
+    };
+
+
+    class InteractiveConsoleEntry {
+        element: HTMLDivElement;
+        entry: ConsoleEntry;
+        objects: InteractiveConsoleObject[] = []; 
+
+        constructor(parent: HTMLElement, entry: ConsoleEntry) {
+            this.entry = entry;
+            this.element = document.createElement("div");
+            this.element.className = 'log-entry ' + this.getTypeClass();
+            parent.insertBefore(this.element, parent.childNodes.length > 0 ? parent.childNodes[0] : null);
+
+            for (var i = 0, l = entry.messages.length; i < l; i++) {
+                this.addMessage(entry.messages[i]);
+            }
+        }
+
+        private addMessage(msg: any) {
+           if (typeof msg === 'string' || typeof msg === 'number') {
+               var elt = document.createElement('DIV');
+               elt.className = 'log-message text-message';
+               this.element.appendChild(elt);
+                elt.innerHTML = msg;
+           } else {
+               var obj = new InteractiveConsoleObject(this.element, <ObjectDescriptor>msg, true);
+               this.objects.push(obj);
+            }
+        }
+
+        private getTypeClass(): string {
+            switch (this.entry.type) {
+                case "log":
+                    return "logMessage";
+                    break;
+                case "debug":
+                    return "logDebug";
+                    break;
+                case "info":
+                    return "logInfo";
+                    break;
+                case "warn":
+                    return "logWarning";
+                    break;
+                case "error":
+                    return "logError";
+                    break;
+                case "exception":
+                    return "logException";
+                    break;
+                default:
+                    return "logMessage";
+            }
+        }
+    }
+
+    class InteractiveConsoleObject {
+        obj: ObjectDescriptor;
+        element: HTMLElement;
+        toggle: HTMLElement;
+        content: HTMLElement;
+        propertiesElt: HTMLElement;
+        functionsElt: HTMLElement;
+        protoElt: HTMLElement;
+        proto: InteractiveConsoleObject;
+        contentRendered: boolean = false;
+        constructor(parent: HTMLElement, obj: ObjectDescriptor, addToggle: boolean = false) {
+            console.log('rendering object');
+            this.obj = obj;
+            this.element = new FluentDOM('DIV', 'object-description collapsed', parent).element;
+            if (addToggle) {
+                var toggle = new FluentDOM('A', 'object-toggle obj-link', this.element);
+                toggle.click(() => {
+                    this.toggleView();
+                });
+                toggle.html('[Object]');
+                this.toggle = toggle.element;
+            }
+
+            this.content = new FluentDOM('DIV', 'object-content', this.element).element;            
+        }
+
+        public toggleView() {
+            this.renderContent();
+            Tools.ToggleClass(this.element, 'collapsed');
+        }
+
+        public renderContent() {
+            if (this.contentRendered)
+                return;
+
+            if (this.obj.proto) {
+                this.protoElt = new FluentDOM('DIV', 'obj-proto', this.content).append('A', 'label obj-link',(protolabel) => {
+                    protolabel.html('[Prototype]').click(() => {
+                        if (this.proto) this.proto.toggleView();
+                    });
+                }).element;
+
+                this.proto = new InteractiveConsoleObject(this.protoElt, this.obj.proto);
+            }
+
+            if (this.obj.functions && this.obj.functions.length) {
+                new FluentDOM('DIV', 'obj-functions', this.content).append('A', 'label obj-link',(functionslabel) => {
+                    functionslabel.html('[Methods]').click(() => {
+                        Tools.ToggleClass(this.functionsElt, 'collapsed');
+                    });
+                }).append('DIV', 'content collapsed',(functionscontent) => {
+                    this.functionsElt = functionscontent.element;
+                    for (var i = 0, l = this.obj.functions.length; i < l; i++) {
+                        functionscontent.append('DIV', 'func',(objfunc) => {
+                            objfunc.html(this.obj.functions[i]);
+                        });
+                    }
+                }).element;
+            }
+
+            this.propertiesElt = new FluentDOM('DIV', 'obj-properties', this.content).append('DIV', 'content',(propcontent) => {
+                for (var i = 0, l = this.obj.properties.length; i < l; i++) {
+                    var p = this.obj.properties[i];
+                    propcontent.append('DIV', 'prop',(prop) => {
+                        if (typeof p.val === 'object') {
+                            var obj: InteractiveConsoleObject = null;
+                            prop.append('A', 'prop-name obj-link',(propname) => {
+                                propname.click(() => {
+                                    if (obj) obj.toggleView();
+                                });
+                                propname.html('<span class="prop-title">' + p.name + '</span>:<span class="prop-value">[Object]</span>');
+                            }).append('DIV', 'prop-obj',(propobj) => {
+                                obj = new InteractiveConsoleObject(propobj.element, p.val);
+                            });
+                        } else {
+                            prop.append('DIV', 'prop-name',(propname) => {
+                                propname.html('<span class="prop-title">' + p.name + '</span>:<span class="prop-value">' + p.val + '</span>');
+                            });
+                        }
+                    });
+                }
+            }).element;
+            this.contentRendered = true;
+        }
+    }
+    
     // Register
     Core.RegisterPlugin(new InteractiveConsole());
 }

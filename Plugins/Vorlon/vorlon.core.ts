@@ -230,8 +230,8 @@
         }
 
         private _DispatchPluginMessage(plugin: Plugin, message: VorlonMessage): void {
-            if (message.metadata.side === RuntimeSide.Client) {
-                //plugin.trace('received ' + JSON.stringify(message));
+            plugin.trace('received ' + JSON.stringify(message));
+            if (message.metadata.side === RuntimeSide.Client) {                
                 if (!plugin.isReady()) { // Plugin is not ready, let's try again later
                     Core._RetrySendingRealtimeMessage(plugin, message);
                 } else {

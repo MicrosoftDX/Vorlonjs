@@ -24,6 +24,7 @@
                 hookingFunction(optionalParams);
                 previousFunction.apply(rootObject, optionalParams);
             }
+            return previousFunction;
         }
 
         public static CreateCookie(name: string, value: string, days: number): void {
@@ -170,7 +171,15 @@
                 return e;
             }
         }
-    }
+
+        public static ToggleClass(e: HTMLElement, name: string) {
+            if (e.className.match(name)) {
+                Tools.RemoveClass(e, name);
+            } else {
+                Tools.AddClass(e, name);
+            }
+        }
+    }    
     
     export class FluentDOM {
 		public element: HTMLElement;
