@@ -11,11 +11,10 @@
         private _debug: boolean;
         public _type = PluginType.OneOne;
         public trace : (msg) => void;
-        protected traceLog = function(msg){ console.log(msg); };
-        private traceNoop = function (msg) { };
+        protected traceLog = (msg) => { console.log(msg); };
+        private traceNoop = (msg) => { };
         public ClientCommands: any;
         public DashboardCommands: any;
-
         //public trace = function(msg){}
 
         constructor(name: string, htmlFragmentUrl: string, cssStyleSheetUrl: string) {
@@ -55,9 +54,9 @@
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void { }
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void { }
 
-        public sendToClient(data: any, incrementVisualIndicator:boolean = false){
+        public sendToClient(data: any){
             if (Core.Messenger)
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message", incrementVisualIndicator);
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message");
         }
 
         public sendCommandToClient(command: string, data: any = null, incrementVisualIndicator: boolean = false) {

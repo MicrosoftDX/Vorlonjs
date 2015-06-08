@@ -18,7 +18,94 @@ module VORLON {
         public getID(): string {
             return "DOM";
         }
-        private _packageDOM(root: HTMLElement, packagedObject: PackagedNode, withChildsNodes: boolean = false): void {
+
+        private _getAppliedStyles(node: HTMLElement): string[] {
+            // Style sheets
+            var styleNode = new Array<string>();
+            var sheets = <any>document.styleSheets;
+            var style: CSSStyleDeclaration;
+            var appliedStyles = new Array<string>();
+
+            for (var c = 0; c < sheets.length; c++) {
+
+                var rules = sheets[c].rules || sheets[c].cssRules;
+
+                if (!rules) {
+                    continue;
+                }
+
+                for (var r = 0; r < rules.length; r++) {
+                    var rule = rules[r];
+                    var selectorText = rule.selectorText;
+
+                    try {
+                        var matchedElts = document.querySelectorAll(selectorText);
+
+                        for (var index = 0; index < matchedElts.length; index++) {
+                            var element = matchedElts[index];
+                            style = rule.style;
+                            if (element === node) {
+                                for (var i = 0; i < style.length; i++) {
+                                    if (appliedStyles.indexOf(style[i]) === -1) {
+                                        appliedStyles.push(style[i]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (e) {
+                        // Ignoring this rule - Angular.js, etc..
+                    }
+                }
+            }
+
+            // Local style
+            style = node.style;
+            if (style) {
+                for (index = 0; index < style.length; index++) {
+                    if (appliedStyles.indexOf(style[index]) === -1) {
+                        appliedStyles.push(style[index]);
+                    }
+                }
+            }
+
+            // Get effective styles
+            var winObject = document.defaultView || window;
+            for (index = 0; index < appliedStyles.length; index++) {
+                var appliedStyle = appliedStyles[index];
+                if (winObject.getComputedStyle) {
+                    styleNode.push(appliedStyle + ":" + winObject.getComputedStyle(node, "").getPropertyValue(appliedStyle));
+                }
+            }
+
+            return styleNode;
+        }
+
+        private _packageNode(node: any): any {
+            var packagedNode = {
+                id: node.id,
+                type: node.nodeType,
+                name: node.localName,
+                classes: node.className,
+                content: node.textContent,
+                attributes: node.attributes ? Array.prototype.map.call(node.attributes, (attr) => {
+                    return [attr.name, attr.value];
+                }) : [],
+                styles: this._getAppliedStyles(node),
+                internalId: VORLON.Tools.CreateGUID()
+            };
+            if (node.__vorlon) {
+                packagedNode.internalId = node.__vorlon.internalId;
+            }
+            else {
+                node.__vorlon = <any>{
+                    internalId: packagedNode.internalId
+                };
+            }
+            return packagedNode;
+        }
+
+        private _packageDOM(root: HTMLElement, packagedObject: any, withChildsNodes: boolean = false): void {
             if (!root.childNodes || root.childNodes.length === 0) {
                 return;
             }
@@ -100,6 +187,10 @@ module VORLON {
                         });
                         break;
                     case ReceivedObjectClientSideType.refresh:
+                        if (this._lastElementSelectedClientSide) {
+                            this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
+                        }
+
                         this.refresh();
                         this._lastContentState = document.body.innerHTML;
                         break;
@@ -169,7 +260,7 @@ module VORLON {
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
 
-            this._insertHtmlContentAsync(this._dashboardDiv, (filledDiv) => {
+            this._insertHtmlContentAsync(this._dashboardDiv, (filledDiv: HTMLElement) => {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
@@ -183,14 +274,14 @@ module VORLON {
                     });
                 });
 
-                this._treeDiv.addEventListener('click', function (e) {
+                this._treeDiv.addEventListener('click', (e: Event) => {
                     var button = <HTMLElement>e.target;
                     if (button.className.match('treeNodeButton')) {
                         button.hasAttribute('data-collapsed') ? button.removeAttribute('data-collapsed') : button.setAttribute('data-collapsed', '');
                     }
                 });
 
-                this._treeDiv.addEventListener('mouseenter', (e) => {
+                this._treeDiv.addEventListener('mouseenter', (e: Event) => {
                     var node = <HTMLElement>e.target;
                     var parent = node.parentElement;
                     var isHeader = node.className.match('treeNodeHeader');
@@ -204,7 +295,7 @@ module VORLON {
                     }
                 }, true);
 
-                this._treeDiv.addEventListener('mouseleave', (e) => {
+                this._treeDiv.addEventListener('mouseleave', (e: Event) => {
                     var node = <HTMLElement>e.target;
                     if (node.className.match('treeNodeHeader') || node.parentElement.className.match('treeNodeClosingText')) {
                         var hovered = this._treeDiv.querySelector('[data-hovered-tag]')
@@ -448,6 +539,7 @@ module VORLON {
                 this._attributesView.appendChild(<HTMLElement>e.target);
             });
         }
+
         private _appendSpan(parent: HTMLElement, className: string, value: string): void {
             var span = document.createElement("span");
             span.className = className;
@@ -455,10 +547,11 @@ module VORLON {
 
             parent.appendChild(span);
         }
+
         private _generateColorfullLink(link: HTMLAnchorElement, receivedObject: any): void {
             this._appendSpan(link, "nodeName", receivedObject.name);
-            var that = this;
-            receivedObject.attributes.forEach(function (attr) {
+
+            receivedObject.attributes.forEach((attr) => {
                 var node = document.createElement('span');
                 node.className = 'nodeAttribute';
                 var nodeName = document.createElement('span');
@@ -471,9 +564,11 @@ module VORLON {
                 link.appendChild(node);
             });
         }
+
         private _generateColorfullClosingLink(link: HTMLElement, receivedObject: any): void {
             this._appendSpan(link, "nodeName", receivedObject.name);
         }
+
         private _generateButton(parentNode: HTMLElement, text: string, className: string, attribute?: any) {
             var button = document.createElement("button");
             button.innerHTML = text;

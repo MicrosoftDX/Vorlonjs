@@ -126,8 +126,9 @@
                 this._nonCoreFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "nonCoreFeaturesList");
                 
                 var list = this._filterList;
-                document.getElementById('css_feature_filter').addEventListener('input', function(e){
-                    var value = this.value;
+                var filter = <HTMLInputElement>document.getElementById('css_feature_filter');
+                filter.addEventListener('input', () => {
+                    var value = filter.value;
                     for (var z in list) {
                         list[z].setAttribute('data-feature-visibility', z.indexOf(value) > -1 ? '' : 'hidden');
                     }
@@ -170,9 +171,9 @@
                     cellSupported.innerHTML = "×";
                 }
             }
-            Array.prototype.slice.call(document.querySelectorAll('.modernizr-features-list td:first-child'), 0).forEach(function(node){
+            Array.prototype.slice.call(document.querySelectorAll('.modernizr-features-list td:first-child'), 0).forEach((node) => {
                 this._filterList[node.textContent.toLowerCase()] = node.parentNode;
-            }, this);
+            });
         }
     }
 

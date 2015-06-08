@@ -212,6 +212,7 @@
                     messages: this.getMessages(arguments[0]),
                     type: "error"
                 };
+
                 this.addEntry(data);
             });
 
