@@ -50,6 +50,13 @@ x-controlbar > input[type="submit"] {
   background: #ddd;
   cursor: pointer;
   line-height: 0.9rem;
+  text-align:center;
+}
+
+x-controlbar > button:hover,
+x-controlbar > x-action:hover,
+x-controlbar > input[type="submit"]:hover {
+  background: #BBB;
 }
 
 x-controlbar > input[type="text"],

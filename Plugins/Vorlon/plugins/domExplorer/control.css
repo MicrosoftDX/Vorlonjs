@@ -47,6 +47,11 @@
 .plugin-dom #accordion.ui-accordion .ui-accordion-content {
   padding: 0;
 }
+.plugin-dom #treeView {
+  height: calc(100% - 36px);
+  overflow-x: none;
+  overflow-y: auto;
+}
 .plugin-dom #treeView,
 .plugin-dom #styleView,
 .plugin-dom #attributesView {

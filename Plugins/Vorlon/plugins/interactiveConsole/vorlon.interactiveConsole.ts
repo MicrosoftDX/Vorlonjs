@@ -253,6 +253,7 @@
 
         // DASHBOARD
         private _containerDiv: HTMLElement;
+        public _textFilter: HTMLInputElement;
         public _interactiveInput: HTMLInputElement;
         private _commandIndex: number;
         private _commandHistory = [];
@@ -267,6 +268,8 @@
                 this._clearButton.addEventListener('clear',() => {
                     this.sendCommandToClient('clear');
                 });
+                
+
                 // Interactive console
                 this._interactiveInput = <HTMLInputElement>Tools.QuerySelectorById(div, "input");
                 this._interactiveInput.addEventListener("keydown",(evt) => {
@@ -300,6 +303,47 @@
                     }
                 });
 
+                var filterAllBtn = <HTMLElement>filledDiv.querySelector('#filterall');
+                var filterButtons = filledDiv.querySelectorAll('.filter-btn');
+                var applyFilters = () => {
+                    var filters = [];
+                    withFilterButton((btn) => {
+                        if (btn.id !== 'filterall' && btn.className.match('selected')) {
+                            filters.push(btn.getAttribute('filter'));
+                        }
+                    });
+                    this.applyFilter(filters, this._textFilter.value);
+                }
+                var filterButtonClick = (arg) => {
+                    Tools.RemoveClass(filterAllBtn, 'selected');
+                    Tools.ToggleClass(arg.currentTarget, 'selected');
+                    applyFilters();
+                }
+                var withFilterButton = (callback: (HTMLElement) => void) => {
+                    for (var i = 0, l = filterButtons.length; i < l; i++) {
+                        callback(filterButtons[i]);
+                    }
+                }
+
+                withFilterButton((btn) => {                    
+                    btn.onclick = filterButtonClick;
+                });
+
+                filterAllBtn.onclick = () => {
+                    withFilterButton((btn) => {
+                        Tools.RemoveClass(btn, 'selected');
+                    });
+                    Tools.AddClass(filterAllBtn, 'selected');
+                    applyFilters();
+                }
+
+                this._textFilter = <HTMLInputElement>Tools.QuerySelectorById(div, "filterInput");
+                this._textFilter.addEventListener("keydown",(evt) => {
+                    if (evt.keyCode === 13) { //enter
+                        applyFilters();
+                    }
+                });
+
                 this._ready = true;
             });
         }
@@ -317,6 +361,10 @@
 
         public clearDashboard() {
             this._containerDiv.innerHTML = '';
+        }
+
+        public applyFilter(filters: string[], text: string) {
+            console.log('apply filters ' + JSON.stringify(filters));
         }
     }
 
@@ -412,7 +460,7 @@
         protoElt: HTMLElement;
         proto: InteractiveConsoleObject;
         contentRendered: boolean = false;
-        constructor(parent: HTMLElement, obj: ObjectDescriptor, addToggle: boolean = false) {            
+        constructor(parent: HTMLElement, obj: ObjectDescriptor, addToggle: boolean = false) {
             this.obj = obj;
             this.element = new FluentDOM('DIV', 'object-description collapsed', parent).element;
             if (addToggle) {
@@ -469,7 +517,7 @@
 
             if (this.obj.functions && this.obj.functions.length) {
                 this.functionsElt = new FluentDOM('DIV', 'obj-functions collapsed', this.content).append('A', 'label obj-link',(functionslabel) => {
-                    var toggleState =  functionslabel.createChild('SPAN', 'toggle-state').text("+");
+                    var toggleState = functionslabel.createChild('SPAN', 'toggle-state').text("+");
                     functionslabel.createChild('SPAN', '').html('[Methods]');
                     functionslabel.click(() => {
                         Tools.ToggleClass(this.functionsElt, 'collapsed');

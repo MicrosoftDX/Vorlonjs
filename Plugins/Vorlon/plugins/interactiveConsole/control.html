@@ -7,14 +7,14 @@
 <body>
     <div id="logsContainer" class='logs-container'>
         <x-controlbar>
-            <x-action id="filterall" event="filter" filter="all" tabindex="0">All</x-action>
-            <x-action id="filterdebug" event="filter" filter="debug" tabindex="1">Debug</x-action>
-            <x-action id="filterlog" event="filter" filter="log" tabindex="2">Log</x-action>
-            <x-action id="filterinfo" event="filter" filter="info" tabindex="3">Info</x-action>
-            <x-action id="filterwarn" event="filter" filter="warn" tabindex="4">Warn</x-action>
-            <x-action id="filtererror" event="filter" filter="error" tabindex="5">Error</x-action>
-
-            <x-action id="clear" event="clear" tabindex="6">Clear</x-action>
+            <x-action id="filterall" class="filter-btn selected" event="filter" filter="all" tabindex="0" title="show all entries"><i class="fa fa-list"></i></x-action>
+            <x-action id="filterdebug" class="filter-btn" event="filter" filter="debug" tabindex="1" title="show/hide debug entries"><i class="fa fa-cogs"></i></x-action>
+            <x-action id="filterlog" class="filter-btn" event="filter" filter="log" tabindex="2" title="show/hide log entries"><i class="fa fa-comments-o"></i></x-action>
+            <x-action id="filterinfo" class="filter-btn" event="filter" filter="info" tabindex="3" title="show/hide info entries"><i class="fa fa-info"></i></x-action>
+            <x-action id="filterwarn" class="filter-btn" event="filter" filter="warn" tabindex="4" title="show/hide warn entries"><i class="fa fa-warning"></i></x-action>
+            <x-action id="filtererror" class="filter-btn" event="filter" filter="error" tabindex="5" title="show/hide error entries"><i class="fa fa-bug"></i></x-action>
+            <input type="text" stretch id="filterInput" placeholder="enter a filter for console entries" />
+            <x-action id="clear" title="clear console entries" event="clear" tabindex="6"><i class="fa fa-close"></i></x-action>
         </x-controlbar>
         <div id="logs" class='logs-list code-text'></div>
         <x-controlbar class="footer">
