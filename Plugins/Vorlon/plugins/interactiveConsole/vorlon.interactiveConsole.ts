@@ -411,8 +411,7 @@
         protoElt: HTMLElement;
         proto: InteractiveConsoleObject;
         contentRendered: boolean = false;
-        constructor(parent: HTMLElement, obj: ObjectDescriptor, addToggle: boolean = false) {
-            console.log('rendering object');
+        constructor(parent: HTMLElement, obj: ObjectDescriptor, addToggle: boolean = false) {            
             this.obj = obj;
             this.element = new FluentDOM('DIV', 'object-description collapsed', parent).element;
             if (addToggle) {
