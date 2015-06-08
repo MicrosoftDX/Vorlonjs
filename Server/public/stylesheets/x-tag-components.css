@@ -47,6 +47,7 @@ x-controlbar > x-action,
 x-controlbar > input[type="submit"] {
   background: #ddd;
   cursor: pointer;
+  line-height: 1em;
 }
 
 x-controlbar > input[type="text"],
