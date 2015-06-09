@@ -66,13 +66,20 @@
   border-radius: 0.25em;
 }
 .plugin-dom .treeNodeButton {
-  display: inline-block;
   color: #444;
   margin-left: -0.75em;
-  width: 1.5em;
-  text-align: center;
   background: #fff;
   cursor: pointer;
+  border: 1px solid #CCC;
+  /*media screen*/
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  line-height: 12px;
+  vertical-align: middle;
+  text-align: center;
+  margin-right: 4px;
+  box-sizing: border-box;
 }
 .plugin-dom .treeNodeButton:before {
   content: "-";
@@ -96,18 +103,13 @@
   color: #ccc;
   font-weight: bold;
 }
-.plugin-dom .treeNodeHeader .addAttribute {
-  border-radius: 20%;
-  border: 1px solid #bbb;
+.plugin-dom .treeNodeHeader .fa-plus-circle {
+  color: #555;
   margin-left: 5px;
-  padding-left: 2px;
-  padding-right: 2px;
+  margin-right: 5px;
 }
 .plugin-dom .treeNodeHeader .editable {
-  border-bottom: 1px dashed red;
-}
-.plugin-dom .treeNodeHeader .editable::selection {
-  background-color: transparent;
+  border-bottom: 2px dashed red;
 }
 .plugin-dom .treeNodeHeader:focus {
   outline: 1px dotted #000;
@@ -133,9 +135,10 @@
   padding: 0 0.25em;
 }
 .plugin-dom .nodeContentContainer:not([data-has-children]) .nodeTextContent.editable {
-  border-bottom: 1px dashed red;
+  border-bottom: 2px dashed red;
 }
-.plugin-dom .treeNodeButton[data-collapsed] ~ .treeNodeHeader .nodeAttribute {
+.plugin-dom .treeNodeButton[data-collapsed] ~ .treeNodeHeader .nodeAttribute,
+.plugin-dom .treeNodeButton[data-collapsed] ~ .treeNodeHeader .fa-plus-circle {
   display: none;
 }
 .plugin-dom [data-hovered-tag] > .treeNodeHeader,

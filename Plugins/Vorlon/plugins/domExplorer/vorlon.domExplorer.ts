@@ -217,17 +217,19 @@ module VORLON {
                     element.style[obj.property] = obj.newValue;
                     break;
                 case ReceivedObjectClientSideType.attributeEdit:
-                    try {
-                        element.removeAttribute(obj.attributeOldName);
-                    }
-                    catch (e) { }
-                    if (obj.attributeName)
-                        element.setAttribute(obj.attributeName, obj.attributeValue);
-                    if (obj.attributeName && obj.attributeName.indexOf('on') === 0) {
-                        element[obj.attributeName] = function () {
-                            try { eval(obj.attributeValue); }
-                            catch (e) { console.error(e); }
-                        };
+                    if (obj.attributeName !== "attributeName") {
+                        try {
+                            element.removeAttribute(obj.attributeOldName);
+                        }
+                        catch (e) { }
+                        if (obj.attributeName)
+                            element.setAttribute(obj.attributeName, obj.attributeValue);
+                        if (obj.attributeName && obj.attributeName.indexOf('on') === 0) {
+                            element[obj.attributeName] = function () {
+                                try { eval(obj.attributeValue); }
+                                catch (e) { console.error(e); }
+                            };
+                        }
                     }
                     break;
                 case ReceivedObjectClientSideType.valueEdit:
@@ -316,13 +318,13 @@ module VORLON {
         }
         private _makeEditable(element: HTMLElement): void {
             element.contentEditable = "true";
-            element.focus();
             Tools.AddClass(element, "editable");
-
-            var range = document.createRange();
-            range.setStart(element, 0);
-            range.setEnd(element, 1);
-            window.getSelection().addRange(range);
+            //var range = document.createRange();
+            //range.setStart(element, 0);
+            ////range.collapse(true);
+            //window.getSelection().removeAllRanges();
+            //window.getSelection().addRange(range);
+            //element.focus();
         }
         private _generateClickableValue(label: HTMLElement, value: string, internalId: string): HTMLElement {
             // Value
@@ -447,6 +449,9 @@ module VORLON {
             var eventNode = function (nodeName, nodeValue) {
                 var oldNodeName = nodeName.innerHTML;
                 var sendTextToClient = function (attributeName, attributeValue, nodeEditable) {
+                    if (sendedValue)
+                        return;
+                    sendedValue = true;
                     this.sendToClient({
                         type: ReceivedObjectClientSideType.attributeEdit,
                         attributeName: nodeName.innerHTML,
@@ -462,9 +467,15 @@ module VORLON {
                     nodeEditable.contentEditable = "false";
                     Tools.RemoveClass(nodeEditable, "editable");
                 }
-                nodeValue.addEventListener("click", () => this._makeEditable(nodeValue));
-                nodeName.addEventListener("click", () => this._makeEditable(nodeName));
-
+                               var sendedValue = false;
+                nodeValue.addEventListener("click", () => {
+                    this._makeEditable(nodeValue);
+                    sendedValue = false;
+                });
+                nodeName.addEventListener("click", () => {
+                    this._makeEditable(nodeName);
+                    sendedValue = false;
+                });
                 nodeValue.addEventListener("blur", () => {
                     sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
                 });
@@ -485,15 +496,14 @@ module VORLON {
                 });
             }
             var addnode = document.createElement('span');
-            addnode.innerHTML = "+";
-            addnode.className = "addAttribute";
+            addnode.className = "fa fa-plus-circle";
             link.appendChild(addnode);
 
             addnode.addEventListener("click", () => {
                 var node = document.createElement('span');
                 node.className = 'nodeAttribute';
                 var nodeName = document.createElement('span');
-                nodeName.innerHTML = "AttributeName"
+                nodeName.innerHTML = "attributeName"
 
                 var nodeValue = document.createElement('span');
                 nodeValue.innerHTML = "value"
@@ -589,6 +599,7 @@ module VORLON {
 
                 // Main node
                 var linkText = document.createElement("a");
+                linkText.draggable = false;
                 (<any>linkText).__targetInternalId = receivedObject.internalId;
 
                 this._generateColorfullLink(linkText, receivedObject);
@@ -628,6 +639,7 @@ module VORLON {
                 // Tools
                 if (receivedObject.id) {
                     var toolsLink = document.createElement("a");
+                    toolsLink.draggable = false;
                     toolsLink.innerHTML = "#";
                     toolsLink.className = "treeNodeTools";
                     toolsLink.href = "#";
