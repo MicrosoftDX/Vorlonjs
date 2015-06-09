@@ -191,7 +191,6 @@ module VORLON {
                         break;
                     case ReceivedObjectClientSideType.refreshbyid:
                         this.refreshbyId(obj.internalID);
-                        console.log(obj.internalID);
                         this._lastContentState = document.body.innerHTML;
                         break;
                 }
@@ -266,7 +265,7 @@ module VORLON {
                 setInterval(() => {
                     this.sendToClient({
                         type: ReceivedObjectClientSideType.dirtycheck,
-                        order: null
+                        order: nullp
                     });
                 }, 4000);
 
