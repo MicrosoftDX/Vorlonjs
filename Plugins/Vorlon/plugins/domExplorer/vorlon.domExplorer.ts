@@ -191,19 +191,12 @@ module VORLON {
                         break;
                     case ReceivedObjectClientSideType.refreshbyid:
                         this.refreshbyId(obj.internalID);
-                        console.log(obj.internalID);
                         this._lastContentState = document.body.innerHTML;
                         break;
                 }
                 return;
             }
-            if (obj.type === ReceivedObjectClientSideType.valueEdit) {
-                var element = this._getElementByInternalId(obj.order, document.body);
-
-                if (!element) {
-                    return;
-                }
-            }
+         
             else {
                 var element = this._getElementByInternalId(obj.order, document.body);
 
@@ -264,10 +257,10 @@ module VORLON {
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
 
                 setInterval(() => {
-                    Core.Messenger.sendRealtimeMessage(this.getID(), {
-                        type: 'dirtycheck',
-                        order: null
-                    }, RuntimeSide.Dashboard);
+                    this.sendToClient({
+                        type: ReceivedObjectClientSideType.dirtycheck,
+                        order: nullp
+                    });
                 }, 4000);
 
                 this._containerDiv.addEventListener('refresh', () => {
