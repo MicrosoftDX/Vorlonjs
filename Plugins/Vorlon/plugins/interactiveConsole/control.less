@@ -1,7 +1,7 @@
 .plugin-console {
     .logs-container {
         width: 100%;
-        height : 100%;
+        height: 100%;
     }
 
     .logs-list {
@@ -11,16 +11,17 @@
         height: ~"calc(100% - 80px)";
     }
 
-    .filter-btn{
+    .filter-btn {
         border-radius: 0;
         background-color: transparent;
         width: 32px;
-        text-align:center;
+        text-align: center;
         margin-left: 2px;
-        #filterall{
-            margin-right : 4px;
+
+        #filterall {
+            margin-right: 4px;
         }
-        &.selected{
+        &.selected {
             background-color: #333;
             color: white;
         }
@@ -30,6 +31,10 @@
         margin-bottom: 3px;
         margin-left: 30px;
         position: relative;
+
+        &.hide {
+            display: none !important;
+        }
 
         &:before {
             content: '>';
@@ -71,7 +76,7 @@
         }
 
         .object-description {
-            .obj-link{
+            .obj-link {
                 color: inherit;
                 cursor: pointer;
             }
@@ -82,13 +87,13 @@
                 height: 14px;
                 line-height: 12px;
                 vertical-align: middle;
-                text-align:center;     
-                margin-right: 4px; 
-                box-sizing:border-box;                    
+                text-align: center;
+                margin-right: 4px;
+                box-sizing: border-box;
             }
 
-            .toggle-state{                
-                border: 1px solid #CCC;                   
+            .toggle-state {
+                border: 1px solid #CCC;
             }
 
             > .object-toggle {
@@ -122,12 +127,12 @@
                 }
             }
 
-            .prop-value{
+            .prop-value {
                 font-weight: bold;
             }
         }
     }
-    
+
     .console-input {
         display: block;
         margin: 0;

@@ -1,0 +1,111 @@
+.plugin-console .logs-container {
+  width: 100%;
+  height: 100%;
+}
+.plugin-console .logs-list {
+  overflow: auto;
+  padding: 0.5em 0.5em 0px;
+  width: 100%;
+  height: calc(100% - 80px);
+}
+.plugin-console .filter-btn {
+  border-radius: 0;
+  background-color: transparent;
+  width: 32px;
+  text-align: center;
+  margin-left: 2px;
+}
+.plugin-console .filter-btn #filterall {
+  margin-right: 4px;
+}
+.plugin-console .filter-btn.selected {
+  background-color: #333;
+  color: white;
+}
+.plugin-console .log-entry {
+  margin-bottom: 3px;
+  margin-left: 30px;
+  position: relative;
+}
+.plugin-console .log-entry.hide {
+  display: none !important;
+}
+.plugin-console .log-entry:before {
+  content: '>';
+  position: absolute;
+  left: -30px;
+  top: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #ccc;
+}
+.plugin-console .log-entry.logMessage {
+  color: #444;
+}
+.plugin-console .log-entry.logDebug {
+  color: #b200ff;
+}
+.plugin-console .log-entry.logInfo {
+  color: #0026ff;
+}
+.plugin-console .log-entry.logWarning {
+  color: #ff9205;
+}
+.plugin-console .log-entry.logError {
+  color: #ed2424;
+}
+.plugin-console .log-entry.logException {
+  color: #ed2424;
+}
+.plugin-console .log-entry .text-message {
+  display: inline-block;
+  margin-right: 1em;
+}
+.plugin-console .log-entry .object-description .obj-link {
+  color: inherit;
+  cursor: pointer;
+}
+.plugin-console .log-entry .object-description .toggle-state,
+.plugin-console .log-entry .object-description .blank-state {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  line-height: 12px;
+  vertical-align: middle;
+  text-align: center;
+  margin-right: 4px;
+  box-sizing: border-box;
+}
+.plugin-console .log-entry .object-description .toggle-state {
+  border: 1px solid #CCC;
+}
+.plugin-console .log-entry .object-description > .object-toggle {
+  display: block;
+}
+.plugin-console .log-entry .object-description > .object-content {
+  border-left: 1px solid #DDD;
+  padding-left: 15px;
+  margin-left: 7px;
+}
+.plugin-console .log-entry .object-description > .object-content > .obj-proto > .content,
+.plugin-console .log-entry .object-description > .object-content > .obj-functions > .content {
+  border-left: 1px solid #DDD;
+  padding-left: 15px;
+  margin-left: 7px;
+}
+.plugin-console .log-entry .object-description > .object-content > .obj-proto.collapsed > .content,
+.plugin-console .log-entry .object-description > .object-content > .obj-functions.collapsed > .content {
+  display: none;
+}
+.plugin-console .log-entry .object-description.collapsed > .object-content {
+  display: none;
+}
+.plugin-console .log-entry .object-description .prop-value {
+  font-weight: bold;
+}
+.plugin-console .console-input {
+  display: block;
+  margin: 0;
+  font-size: inherit;
+  width: 100%;
+}

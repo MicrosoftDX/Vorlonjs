@@ -75,9 +75,19 @@
     <Content Include="Vorlon\plugins\domExplorer\control.min.css">
       <DependentUpon>control.css</DependentUpon>
     </Content>
+    <Content Include="Vorlon\plugins\interactiveConsole\control.css">
+      <DependentUpon>control.less</DependentUpon>
+    </Content>
+    <Content Include="Vorlon\plugins\interactiveConsole\control.min.css">
+      <DependentUpon>control.css</DependentUpon>
+    </Content>
     <Content Include="Vorlon\plugins\xhrPanel\control.less" />
     <Content Include="Vorlon\plugins\domExplorer\control.less" />
     <Content Include="Vorlon\plugins\domExplorer\control.css.map">
+      <DependentUpon>control.css</DependentUpon>
+    </Content>
+    <Content Include="Vorlon\plugins\interactiveConsole\control.less" />
+    <Content Include="Vorlon\plugins\interactiveConsole\control.css.map">
       <DependentUpon>control.css</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
@@ -95,7 +105,6 @@
     <Content Include="libs\require.js" />
     <Content Include="Vorlon\plugins\domExplorer\control.css" />
     <Content Include="Vorlon\plugins\domExplorer\control.html" />
-    <Content Include="Vorlon\plugins\interactiveConsole\control.css" />
     <Content Include="Vorlon\plugins\interactiveConsole\control.html" />
     <Content Include="Vorlon\plugins\modernizrReport\control.css" />
     <Content Include="Vorlon\plugins\modernizrReport\control.html" />
