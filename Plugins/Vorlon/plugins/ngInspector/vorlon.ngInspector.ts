@@ -50,6 +50,7 @@
         }
 
         private _rootScopes: Scope[] = [];
+        private _currentShownScopeId: number = null;
 
         private _findRootScopes(element: Node) {
             var rootScope = angular.element(element).scope();
@@ -57,7 +58,6 @@
                 var cleanedRootScope = this._cleanScope(rootScope);
                 this._rootScopes.push(cleanedRootScope);
 
-                //cleanedRootScope.$element = element;
                 this._findChildrenScopes(element, cleanedRootScope);
 
                 this._listenScopeChanges(rootScope);
@@ -84,7 +84,6 @@
                         cleanedChildScope.$type = ScopeType.NgRepeat;
                     }
 
-                    //cleanedChildScope.$element = childNode;
                     parentScope.$children.push(cleanedChildScope);
 
                     this._findChildrenScopes(childNode, cleanedChildScope);
@@ -94,24 +93,9 @@
             }
         }
 
-        private _updateScopeValue(value: any, property: string) {
-            //TODO: remplacer le null
-            var scope = angular.element(null).scope();
-
-            scope.$apply(() => {
-                scope[property] = value;
-            });
-        }
-
         private _listenScopeChanges(scope: any) {
-            console.log("listen to scope " + scope.$id);
-
             scope.$watch((newValue, oldValue) => {
                 this._markForRefresh();
-            });
-
-            scope.$on("$destroy",() => {
-                console.log(scope.$id + " has been destroyed");
             });
         }
 
@@ -158,6 +142,21 @@
                 });
 
                 this._ready = true;
+
+                document.getElementById("scopes-tree-wrapper").addEventListener("click",(e) => {
+                    var target = <HTMLElement>e.target;
+                    if (target.classList.contains("ng-scope") ||
+                        target.parentElement.classList.contains("ng-scope")) {
+                        var dataAttribute = target.attributes["data-scope-id"] ||
+                            target.parentElement.attributes["data-scope-id"];
+                        var scopeId = parseInt(dataAttribute.value);
+                        this.showScopeDetail(scopeId);
+                    }
+                    else if (target.classList.contains("ng-property") ||
+                        target.parentElement.classList.contains("ng-property")) {
+                        // Finir click
+                    }
+                });
             });
         }
 
@@ -165,32 +164,19 @@
             this._rootScopes = receivedObject.scopes;
             document.getElementById("scopes-tree-wrapper").innerHTML = this._formatScopesTree(receivedObject.scopes);
 
-            var nodes = document.getElementById("scopes-tree-wrapper").addEventListener("click",(e) => {
-                var target = <HTMLElement>e.target;
-                if (target.classList.contains("ng-scope") ||
-                    target.parentElement.classList.contains("ng-scope")) {
-                    var dataAttribute = target.attributes["data-scope-id"] ||
-                        target.parentElement.attributes["data-scope-id"];
-                    var scopeId = parseInt(dataAttribute.value);
-                    this.showScopeDetail(scopeId);
-                }
-                else if (target.classList.contains("ng-property") ||
-                    target.parentElement.classList.contains("ng-property")) {
-                    // Finir click
-                }
-            });
+            if (this._currentShownScopeId) {
+                this.showScopeDetail(this._currentShownScopeId);
+            }
         }
 
         private _formatScopesTree(scopes: Scope[]): string {
-            if (!scopes) {
-            }
-
             var dom = '<ul class="scopes-tree">';
             for (var i = 0; i < scopes.length; i++) {
                 dom += "<li>" + this._formatScopeNode(scopes[i]) + "</li>";
             }
 
             dom += "</ul>";
+
             return dom;
         }
 
@@ -433,6 +419,7 @@
         }
 
         public showScopeDetail(scopeId: number) {
+            this._currentShownScopeId = scopeId;
             var scope = this._findScopeById(this._rootScopes, scopeId);
             document.getElementById("scope-details-wrapper").innerHTML = this._renderScopeDetail(scope);
         }
