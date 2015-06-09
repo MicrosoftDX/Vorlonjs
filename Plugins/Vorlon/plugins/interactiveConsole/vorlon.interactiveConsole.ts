@@ -338,10 +338,11 @@
                 }
 
                 this._textFilter = <HTMLInputElement>Tools.QuerySelectorById(div, "filterInput");
+                var timeout;
                 this._textFilter.addEventListener("keydown", (evt) => {
-                    if (evt.keyCode === 13) { //enter
-                        applyFilters();
-                    }
+                    if (timeout)
+                        clearTimeout(timeout);
+                    setTimeout(() => applyFilters(), 300);
                 });
 
                 this._ready = true;
@@ -381,9 +382,9 @@
                 if (text && !this._logEntries[i].element.classList.contains('hide')) {
                     var contains = false;
                     for (var x = 0; x < this._logEntries[i].entry.messages.length; x++) {
-                        if (this._logEntries[i].entry.messages[x] && this._logEntries[i].entry.messages[x].toLowerCase() .indexOf(text) !== -1) {
+                        if (this._logEntries[i].entry.messages[x] && this._logEntries[i].entry.messages[x].toLowerCase().indexOf(text) !== -1) {
                             contains = true;
-                            break; 
+                            break;
                         }
                     }
                     if (!contains)

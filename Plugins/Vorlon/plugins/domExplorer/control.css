@@ -109,7 +109,7 @@
   margin-right: 5px;
 }
 .plugin-dom .treeNodeHeader .editable {
-  border-bottom: 1px dashed red;
+  border-bottom: 2px dashed red;
 }
 .plugin-dom .treeNodeHeader .editable::selection {
   background-color: transparent;
@@ -138,7 +138,7 @@
   padding: 0 0.25em;
 }
 .plugin-dom .nodeContentContainer:not([data-has-children]) .nodeTextContent.editable {
-  border-bottom: 1px dashed red;
+  border-bottom: 2px dashed red;
 }
 .plugin-dom .treeNodeButton[data-collapsed] ~ .treeNodeHeader .nodeAttribute,
 .plugin-dom .treeNodeButton[data-collapsed] ~ .treeNodeHeader .fa-plus-circle {
