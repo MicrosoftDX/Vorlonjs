@@ -66,13 +66,20 @@
   border-radius: 0.25em;
 }
 .plugin-dom .treeNodeButton {
-  display: inline-block;
   color: #444;
   margin-left: -0.75em;
-  width: 1.5em;
-  text-align: center;
   background: #fff;
   cursor: pointer;
+  border: 1px solid #CCC;
+  /*media screen*/
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  line-height: 12px;
+  vertical-align: middle;
+  text-align: center;
+  margin-right: 4px;
+  box-sizing: border-box;
 }
 .plugin-dom .treeNodeButton:before {
   content: "-";
@@ -133,7 +140,8 @@
 .plugin-dom .nodeContentContainer:not([data-has-children]) .nodeTextContent.editable {
   border-bottom: 1px dashed red;
 }
-.plugin-dom .treeNodeButton[data-collapsed] ~ .treeNodeHeader .nodeAttribute {
+.plugin-dom .treeNodeButton[data-collapsed] ~ .treeNodeHeader .nodeAttribute,
+.plugin-dom .treeNodeButton[data-collapsed] ~ .treeNodeHeader .fa-plus-circle {
   display: none;
 }
 .plugin-dom [data-hovered-tag] > .treeNodeHeader,
