@@ -318,13 +318,13 @@ module VORLON {
         }
         private _makeEditable(element: HTMLElement): void {
             element.contentEditable = "true";
-            element.focus();
             Tools.AddClass(element, "editable");
-
-            var range = document.createRange();
-            range.setStart(element, 0);
-            range.setEnd(element, 1);
-            window.getSelection().addRange(range);
+                var range = document.createRange();
+                range.setStart(element, 0);
+                range.collapse(true);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                element.focus();
         }
         private _generateClickableValue(label: HTMLElement, value: string, internalId: string): HTMLElement {
             // Value
