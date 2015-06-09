@@ -364,9 +364,11 @@
         }
 
         public applyFilter(filters: string[], text: string) {
+            if (text)
+                text = text.toLowerCase();
             for (var i = 0; i < this._logEntries.length; i++) {
                 if (filters.length) {
-                    if (filters.indexOf(this._logEntries[i].entry.type) == -1) {
+                    if (filters.indexOf(this._logEntries[i].entry.type) === -1) {
                         this._logEntries[i].element.classList.add('hide');
                     }
                     else {
@@ -376,38 +378,48 @@
                 else {
                     this._logEntries[i].element.classList.remove('hide');
                 }
-
-                console.log('apply filters ' + JSON.stringify(filters));
+                if (text && !this._logEntries[i].element.classList.contains('hide')) {
+                    var contains = false;
+                    for (var x = 0; x < this._logEntries[i].entry.messages.length; x++) {
+                        if (this._logEntries[i].entry.messages[x] && this._logEntries[i].entry.messages[x].toLowerCase() .indexOf(text) !== -1) {
+                            contains = true;
+                            break; 
+                        }
+                    }
+                    if (!contains)
+                        this._logEntries[i].element.classList.add('hide');
+                }
             }
+            console.log('apply filters ' + JSON.stringify(filters));
         }
     }
 
     InteractiveConsole.prototype.ClientCommands = {
-            order: function (data: any) {
-                var plugin = <InteractiveConsole>this;
-                plugin.evalOrderFromDashboard(data.order);
-            },
-            clear: function (data: any) {
-                var plugin = <InteractiveConsole>this;
-                console.clear();
-            }
-        };
+        order: function (data: any) {
+            var plugin = <InteractiveConsole>this;
+            plugin.evalOrderFromDashboard(data.order);
+        },
+        clear: function (data: any) {
+            var plugin = <InteractiveConsole>this;
+            console.clear();
+        }
+    };
 
     InteractiveConsole.prototype.DashboardCommands = {
-            entries: function (data: any) {
-                var plugin = <InteractiveConsole>this;
-                plugin.addDashboardEntries(<ConsoleEntry[]>data.entries);
-            },
-            clear: function (data: any) {
-                var plugin = <InteractiveConsole>this;
-                plugin.clearDashboard();
-            },
+        entries: function (data: any) {
+            var plugin = <InteractiveConsole>this;
+            plugin.addDashboardEntries(<ConsoleEntry[]>data.entries);
+        },
+        clear: function (data: any) {
+            var plugin = <InteractiveConsole>this;
+            plugin.clearDashboard();
+        },
 
-            setorder: function (data: any) {
-                var plugin = <InteractiveConsole>this;
-                plugin._interactiveInput.value = "document.getElementById(\"" + data.order + "\")";
-            }
-        };
+        setorder: function (data: any) {
+            var plugin = <InteractiveConsole>this;
+            plugin._interactiveInput.value = "document.getElementById(\"" + data.order + "\")";
+        }
+    };
 
 
     class InteractiveConsoleEntry {
