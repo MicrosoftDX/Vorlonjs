@@ -267,6 +267,13 @@ module VORLON {
                 this._attributesView = Tools.QuerySelectorById(filledDiv, "attributesView");
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
 
+                setInterval(() => {
+                    Core.Messenger.sendRealtimeMessage(this.getID(), {
+                        type: 'dirtycheck',
+                        order: null
+                    }, RuntimeSide.Dashboard);
+                }, 4000);
+
                 this._containerDiv.addEventListener('refresh', () => {
                     this.sendToClient({
                         type: ReceivedObjectClientSideType.refresh,
