@@ -196,13 +196,7 @@ module VORLON {
                 }
                 return;
             }
-            if (obj.type === ReceivedObjectClientSideType.valueEdit) {
-                var element = this._getElementByInternalId(obj.order, document.body);
-
-                if (!element) {
-                    return;
-                }
-            }
+         
             else {
                 var element = this._getElementByInternalId(obj.order, document.body);
 
