@@ -217,17 +217,19 @@ module VORLON {
                     element.style[obj.property] = obj.newValue;
                     break;
                 case ReceivedObjectClientSideType.attributeEdit:
-                    try {
-                        element.removeAttribute(obj.attributeOldName);
-                    }
-                    catch (e) { }
-                    if (obj.attributeName)
-                        element.setAttribute(obj.attributeName, obj.attributeValue);
-                    if (obj.attributeName && obj.attributeName.indexOf('on') === 0) {
-                        element[obj.attributeName] = function () {
-                            try { eval(obj.attributeValue); }
-                            catch (e) { console.error(e); }
-                        };
+                    if (obj.attributeName !== "attributeName") {
+                        try {
+                            element.removeAttribute(obj.attributeOldName);
+                        }
+                        catch (e) { }
+                        if (obj.attributeName)
+                            element.setAttribute(obj.attributeName, obj.attributeValue);
+                        if (obj.attributeName && obj.attributeName.indexOf('on') === 0) {
+                            element[obj.attributeName] = function () {
+                                try { eval(obj.attributeValue); }
+                                catch (e) { console.error(e); }
+                            };
+                        }
                     }
                     break;
                 case ReceivedObjectClientSideType.valueEdit:
@@ -485,15 +487,14 @@ module VORLON {
                 });
             }
             var addnode = document.createElement('span');
-            addnode.innerHTML = "+";
-            addnode.className = "addAttribute";
+            addnode.className = "fa fa-plus-circle";
             link.appendChild(addnode);
 
             addnode.addEventListener("click", () => {
                 var node = document.createElement('span');
                 node.className = 'nodeAttribute';
                 var nodeName = document.createElement('span');
-                nodeName.innerHTML = "AttributeName"
+                nodeName.innerHTML = "attributeName"
 
                 var nodeValue = document.createElement('span');
                 nodeValue.innerHTML = "value"

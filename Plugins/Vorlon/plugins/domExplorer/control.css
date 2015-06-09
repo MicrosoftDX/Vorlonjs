@@ -96,12 +96,10 @@
   color: #ccc;
   font-weight: bold;
 }
-.plugin-dom .treeNodeHeader .addAttribute {
-  border-radius: 20%;
-  border: 1px solid #bbb;
+.plugin-dom .treeNodeHeader .fa-plus-circle {
+  color: #555;
   margin-left: 5px;
-  padding-left: 2px;
-  padding-right: 2px;
+  margin-right: 5px;
 }
 .plugin-dom .treeNodeHeader .editable {
   border-bottom: 1px dashed red;
