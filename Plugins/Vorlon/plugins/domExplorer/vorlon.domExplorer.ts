@@ -443,7 +443,7 @@ module VORLON {
             parent.appendChild(span);
         }
 
-        private _generateColorfullLink(link: HTMLAnchorElement, receivedObject: any): void {
+        private _generateColorfullLink(link: HTMLElement, receivedObject: any): void {
             this._appendSpan(link, "nodeName", receivedObject.name);
 
             var eventNode = function (nodeName, nodeValue) {
@@ -598,8 +598,7 @@ module VORLON {
                 });
 
                 // Main node
-                var linkText = document.createElement("a");
-                linkText.draggable = false;
+                var linkText = document.createElement("span");
                 (<any>linkText).__targetInternalId = receivedObject.internalId;
 
                 this._generateColorfullLink(linkText, receivedObject);
@@ -629,8 +628,6 @@ module VORLON {
                     this._previousSelectedNode = linkText;
                 });
 
-                linkText.href = "#";
-
                 linkText.className = "treeNodeHeader";
 
                 root.appendChild(linkText);
@@ -638,11 +635,9 @@ module VORLON {
 
                 // Tools
                 if (receivedObject.id) {
-                    var toolsLink = document.createElement("a");
-                    toolsLink.draggable = false;
-                    toolsLink.innerHTML = "#";
-                    toolsLink.className = "treeNodeTools";
-                    toolsLink.href = "#";
+                    var toolsLink = document.createElement("span");
+                    toolsLink.innerHTML = "";
+                    toolsLink.className = "treeNodeTools fa fa-terminal";
 
                     toolsLink.addEventListener("click", () => {
                         this.sendCommandToPluginDashboard("CONSOLE", "setorder", {
@@ -774,6 +769,7 @@ module VORLON {
             this.internalId = node.__vorlon.internalId;
             this.children = [];
         }
+
         private _getAppliedStyles(node: HTMLElement): string[] {
             // Style sheets
             var styleNode = new Array<string>();
