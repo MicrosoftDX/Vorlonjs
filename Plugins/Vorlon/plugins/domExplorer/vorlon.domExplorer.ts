@@ -217,7 +217,12 @@ module VORLON {
                     element.style[obj.property] = obj.newValue;
                     break;
                 case ReceivedObjectClientSideType.attributeEdit:
-                    element.setAttribute(obj.attributeName, obj.attributeValue);
+                    try {
+                        element.removeAttribute(obj.attributeOldName);
+                    }
+                    catch (e) { }
+                    if (obj.attributeName)
+                        element.setAttribute(obj.attributeName, obj.attributeValue);
                     if (obj.attributeName && obj.attributeName.indexOf('on') === 0) {
                         element[obj.attributeName] = function () {
                             try { eval(obj.attributeValue); }
@@ -318,58 +323,6 @@ module VORLON {
             range.setStart(element, 0);
             range.setEnd(element, 1);
             window.getSelection().addRange(range);
-        }
-        private _generateClickableAttributeValue(label: HTMLElement, value: string, internalId: string): HTMLElement {
-            // Value
-            var valueElement = document.createElement("div");
-            valueElement.contentEditable = "false";
-            valueElement.innerHTML = value || "&nbsp;";
-            valueElement.className = "attributeValue";
-            valueElement.addEventListener("keydown", (evt) => {
-                if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                    //Create the properties object of elements.
-                    var propertyObject: any = {};
-                    propertyObject.property = label.innerHTML;
-                    propertyObject.newValue = valueElement.innerHTML;
-                    if (this._newAppliedAttributes[internalId] !== undefined) {
-                        var propsArr = this._newAppliedAttributes[internalId];
-                        //check if property exists in array
-                        for (var index = 0; index < propsArr.length; index++) {
-                            var propObj = propsArr[index];
-                            if (propObj.property === propertyObject.property) {
-                                propObj.newValue = propertyObject.newValue;
-                                propertyObject = propObj;
-                                propsArr.splice(index, 1);
-                                break;
-                            }
-                        }
-                        propsArr.push(propertyObject);
-                    } else {
-                        var proArr = [];
-                        proArr.push(propertyObject);
-                        this._newAppliedAttributes[internalId] = proArr;
-                    }
-                    this.sendToClient({
-                        type: ReceivedObjectClientSideType.attributeEdit,
-                        attributeName: label.innerHTML,
-                        attributeValue: valueElement.innerHTML,
-                        order: internalId
-                    });
-                    evt.preventDefault();
-                    valueElement.contentEditable = "false";
-                    Tools.RemoveClass(valueElement, "editable");
-                }
-            });
-
-            valueElement.addEventListener("blur", () => {
-                valueElement.contentEditable = "false";
-                Tools.RemoveClass(valueElement, "editable");
-            });
-
-
-            valueElement.addEventListener("click", () => this._makeEditable(valueElement));
-
-            return valueElement;
         }
         private _generateClickableValue(label: HTMLElement, value: string, internalId: string): HTMLElement {
             // Value
@@ -492,29 +445,41 @@ module VORLON {
             this._appendSpan(link, "nodeName", receivedObject.name);
 
             var eventNode = function (nodeName, nodeValue) {
+                var oldNodeName = nodeName.innerHTML;
                 var sendTextToClient = function (attributeName, attributeValue, nodeEditable) {
                     this.sendToClient({
                         type: ReceivedObjectClientSideType.attributeEdit,
                         attributeName: nodeName.innerHTML,
+                        attributeOldName: oldNodeName,
                         attributeValue: nodeValue.innerHTML,
                         order: receivedObject.internalId
                     });
+                    oldNodeName = nodeName.innerHTML;
+                    if (!oldNodeName) { // delete attribute 
+                        nodeName.parentElement.removeChild(nodeName);
+                        nodeValue.parentElement.removeChild(nodeValue);
+                    }
                     nodeEditable.contentEditable = "false";
                     Tools.RemoveClass(nodeEditable, "editable");
                 }
-                                nodeValue.addEventListener("click", () => this._makeEditable(nodeValue));
+                nodeValue.addEventListener("click", () => this._makeEditable(nodeValue));
                 nodeName.addEventListener("click", () => this._makeEditable(nodeName));
 
                 nodeValue.addEventListener("blur", () => {
                     sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
                 });
+                nodeName.addEventListener("blur", () => {
+                    sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeName);
+                });
                 nodeName.addEventListener("keydown", (evt) => {
                     if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+                        evt.preventDefault();
                         sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeName);
                     }
                 });
                 nodeValue.addEventListener("keydown", (evt) => {
                     if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+                        evt.preventDefault();
                         sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
                     }
                 });
@@ -760,6 +725,7 @@ module VORLON {
         public newValue: string;
         public attributeValue: string;
         public attributeName: string;
+        public attributeOldName: string;
         public internalID: string;
         public property: string;
         constructor() { }
