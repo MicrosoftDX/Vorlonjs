@@ -449,6 +449,9 @@ module VORLON {
             var eventNode = function (nodeName, nodeValue) {
                 var oldNodeName = nodeName.innerHTML;
                 var sendTextToClient = function (attributeName, attributeValue, nodeEditable) {
+                    if (sendedValue)
+                        return;
+                    sendedValue = true;
                     this.sendToClient({
                         type: ReceivedObjectClientSideType.attributeEdit,
                         attributeName: nodeName.innerHTML,
@@ -464,9 +467,15 @@ module VORLON {
                     nodeEditable.contentEditable = "false";
                     Tools.RemoveClass(nodeEditable, "editable");
                 }
-                nodeValue.addEventListener("click", () => this._makeEditable(nodeValue));
-                nodeName.addEventListener("click", () => this._makeEditable(nodeName));
-
+                               var sendedValue = false;
+                nodeValue.addEventListener("click", () => {
+                    this._makeEditable(nodeValue);
+                    sendedValue = false;
+                });
+                nodeName.addEventListener("click", () => {
+                    this._makeEditable(nodeName);
+                    sendedValue = false;
+                });
                 nodeValue.addEventListener("blur", () => {
                     sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
                 });
