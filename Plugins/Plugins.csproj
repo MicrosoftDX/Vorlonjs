@@ -72,8 +72,14 @@
     <Content Include="release\vorlon.js" />
     <Content Include="release\vorlon.max.js" />
     <Content Include="samples\andyet\index.html" />
+    <Content Include="Vorlon\plugins\domExplorer\control.min.css">
+      <DependentUpon>control.css</DependentUpon>
+    </Content>
     <Content Include="Vorlon\plugins\xhrPanel\control.less" />
     <Content Include="Vorlon\plugins\domExplorer\control.less" />
+    <Content Include="Vorlon\plugins\domExplorer\control.css.map">
+      <DependentUpon>control.css</DependentUpon>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

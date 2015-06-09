@@ -96,6 +96,19 @@
   color: #ccc;
   font-weight: bold;
 }
+.plugin-dom .treeNodeHeader .addAttribute {
+  border-radius: 20%;
+  border: 1px solid #bbb;
+  margin-left: 5px;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+.plugin-dom .treeNodeHeader .editable {
+  border-bottom: 1px dashed red;
+}
+.plugin-dom .treeNodeHeader .editable::selection {
+  background-color: transparent;
+}
 .plugin-dom .treeNodeHeader:focus {
   outline: 1px dotted #000;
 }

@@ -50,7 +50,7 @@
         }
     }
 
-    #treeView{
+    #treeView {
         height: ~"calc(100% - 36px)";
         overflow-x: none;
         overflow-y: auto;
@@ -111,6 +111,22 @@
         color: #ccc;
         font-weight: bold;
 
+        .addAttribute {
+            border-radius: 20%;
+            border: 1px solid #bbb;
+            margin-left: 5px;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+
+        .editable {
+            border-bottom: 1px dashed red;
+        }
+
+        .editable::selection {
+            background-color: transparent;
+        }
+
         &:focus {
             outline: 1px dotted #000;
         }
@@ -144,8 +160,11 @@
             }
         }
     }
-    .treeNodeButton[data-collapsed] ~ .treeNodeHeader .nodeAttribute{
-        display: none;
+
+    .treeNodeButton[data-collapsed] ~ .treeNodeHeader {
+        .nodeAttribute {
+            display: none;
+        }
     }
 
     [data-hovered-tag] > .treeNodeHeader,
@@ -198,6 +217,7 @@
     .nodeName {
         color: #6B2D81;
     }
+
     .nodeAttribute {
         padding-left: 0.5em;
 
