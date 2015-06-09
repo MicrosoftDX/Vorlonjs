@@ -77,11 +77,19 @@
         display: inline-block;
         color: #444;
         margin-left: -0.75em;
-        width: 1.5em;
         text-align: center;
         background: #fff;
         cursor: pointer;
-
+        border: 1px solid #CCC;
+        /*media screen*/
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        line-height: 12px;
+        vertical-align: middle;
+        text-align: center;
+        margin-right: 4px;
+        box-sizing: border-box;
 
         &:before {
             content: "-";
@@ -111,12 +119,10 @@
         color: #ccc;
         font-weight: bold;
 
-        .addAttribute {
-            border-radius: 20%;
-            border: 1px solid #bbb;
+        .fa-plus-circle {
+            color: #555;
             margin-left: 5px;
-            padding-left: 2px;
-            padding-right: 2px;
+            margin-right: 5px;
         }
 
         .editable {
@@ -162,7 +168,7 @@
     }
 
     .treeNodeButton[data-collapsed] ~ .treeNodeHeader {
-        .nodeAttribute {
+        .nodeAttribute,.fa-plus-circle {
             display: none;
         }
     }
