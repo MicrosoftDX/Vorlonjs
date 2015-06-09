@@ -264,10 +264,10 @@ module VORLON {
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
 
                 setInterval(() => {
-                    Core.Messenger.sendRealtimeMessage(this.getID(), {
-                        type: 'dirtycheck',
+                    this.sendToClient({
+                        type: ReceivedObjectClientSideType.dirtycheck,
                         order: null
-                    }, RuntimeSide.Dashboard);
+                    });
                 }, 4000);
 
                 this._containerDiv.addEventListener('refresh', () => {
