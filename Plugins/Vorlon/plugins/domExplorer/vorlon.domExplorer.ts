@@ -319,12 +319,12 @@ module VORLON {
         private _makeEditable(element: HTMLElement): void {
             element.contentEditable = "true";
             Tools.AddClass(element, "editable");
-                var range = document.createRange();
-                range.setStart(element, 0);
-                range.collapse(true);
-                window.getSelection().removeAllRanges();
-                window.getSelection().addRange(range);
-                element.focus();
+            //var range = document.createRange();
+            //range.setStart(element, 0);
+            ////range.collapse(true);
+            //window.getSelection().removeAllRanges();
+            //window.getSelection().addRange(range);
+            //element.focus();
         }
         private _generateClickableValue(label: HTMLElement, value: string, internalId: string): HTMLElement {
             // Value
@@ -599,6 +599,7 @@ module VORLON {
 
                 // Main node
                 var linkText = document.createElement("a");
+                linkText.draggable = false;
                 (<any>linkText).__targetInternalId = receivedObject.internalId;
 
                 this._generateColorfullLink(linkText, receivedObject);
@@ -638,6 +639,7 @@ module VORLON {
                 // Tools
                 if (receivedObject.id) {
                     var toolsLink = document.createElement("a");
+                    toolsLink.draggable = false;
                     toolsLink.innerHTML = "#";
                     toolsLink.className = "treeNodeTools";
                     toolsLink.href = "#";
