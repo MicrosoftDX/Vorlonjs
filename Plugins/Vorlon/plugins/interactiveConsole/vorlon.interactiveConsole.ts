@@ -382,7 +382,11 @@
                 if (text && !this._logEntries[i].element.classList.contains('hide')) {
                     var contains = false;
                     for (var x = 0; x < this._logEntries[i].entry.messages.length; x++) {
-                        if (this._logEntries[i].entry.messages[x] && this._logEntries[i].entry.messages[x].toLowerCase().indexOf(text) !== -1) {
+                        var message = this._logEntries[i].entry.messages[x];
+                        if (typeof message != 'string') {
+                            message = JSON.stringify(message).toLowerCase();
+                        }
+                        if (this._logEntries[i].entry.messages[x] && message.indexOf(text) !== -1) {
                             contains = true;
                             break;
                         }
