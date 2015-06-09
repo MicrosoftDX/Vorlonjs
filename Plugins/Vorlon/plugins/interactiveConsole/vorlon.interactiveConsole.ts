@@ -117,7 +117,7 @@
             this._cache.push(entry);
             //non batch send
             //this.sendCommandToDashboard('entries', { entries: [entry] });
-            
+
             this._pendingEntries.push(entry);
             if (this._pendingEntries.length > this._maxBatchSize) {
                 this.sendPendings();
@@ -156,11 +156,11 @@
 
         public startClientSide(): void {
             // Overrides clear, log, error and warn
-            this._hooks.clear = Tools.Hook(window.console, "clear",(): void => {
+            this._hooks.clear = Tools.Hook(window.console, "clear", (): void => {
                 this.clearClientConsole();
             });
 
-            this._hooks.dir = Tools.Hook(window.console, "dir",(message: string): void => {
+            this._hooks.dir = Tools.Hook(window.console, "dir", (message: string): void => {
                 var messages = arguments;
                 var data = {
                     messages: this.getMessages(arguments[0]),
@@ -170,7 +170,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.log = Tools.Hook(window.console, "log",(message: string): void => {
+            this._hooks.log = Tools.Hook(window.console, "log", (message: string): void => {
                 var messages = arguments;
                 var data = {
                     messages: this.getMessages(arguments[0]),
@@ -180,7 +180,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.debug = Tools.Hook(window.console, "debug",(message: string): void => {
+            this._hooks.debug = Tools.Hook(window.console, "debug", (message: string): void => {
                 var data = {
                     messages: this.getMessages(arguments[0]),
                     type: "debug"
@@ -189,7 +189,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.info = Tools.Hook(window.console, "info",(message: string): void => {
+            this._hooks.info = Tools.Hook(window.console, "info", (message: string): void => {
                 var data = {
                     messages: this.getMessages(arguments[0]),
                     type: "info"
@@ -198,7 +198,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.warn = Tools.Hook(window.console, "warn",(message: string): void => {
+            this._hooks.warn = Tools.Hook(window.console, "warn", (message: string): void => {
                 var data = {
                     messages: this.getMessages(arguments[0]),
                     type: "warn"
@@ -207,7 +207,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.error = Tools.Hook(window.console, "error",(message: string): void => {
+            this._hooks.error = Tools.Hook(window.console, "error", (message: string): void => {
                 var data = {
                     messages: this.getMessages(arguments[0]),
                     type: "error"
@@ -260,19 +260,19 @@
         private _logEntries: InteractiveConsoleEntry[] = [];
 
         public startDashboardSide(div: HTMLDivElement = null): void {
-            this._insertHtmlContentAsync(div,(filledDiv) => {
+            this._insertHtmlContentAsync(div, (filledDiv) => {
                 // Log container
                 this._containerDiv = Tools.QuerySelectorById(filledDiv, "logs");
                 this._clearButton = Tools.QuerySelectorById(filledDiv, 'clear');
 
-                this._clearButton.addEventListener('clear',() => {
+                this._clearButton.addEventListener('clear', () => {
                     this.sendCommandToClient('clear');
                 });
-                
+
 
                 // Interactive console
                 this._interactiveInput = <HTMLInputElement>Tools.QuerySelectorById(div, "input");
-                this._interactiveInput.addEventListener("keydown",(evt) => {
+                this._interactiveInput.addEventListener("keydown", (evt) => {
                     if (evt.keyCode === 13) { //enter
                         this.sendCommandToClient('order', {
                             order: this._interactiveInput.value
@@ -325,7 +325,7 @@
                     }
                 }
 
-                withFilterButton((btn) => {                    
+                withFilterButton((btn) => {
                     btn.onclick = filterButtonClick;
                 });
 
@@ -338,7 +338,7 @@
                 }
 
                 this._textFilter = <HTMLInputElement>Tools.QuerySelectorById(div, "filterInput");
-                this._textFilter.addEventListener("keydown",(evt) => {
+                this._textFilter.addEventListener("keydown", (evt) => {
                     if (evt.keyCode === 13) { //enter
                         applyFilters();
                     }
@@ -364,36 +364,50 @@
         }
 
         public applyFilter(filters: string[], text: string) {
-            console.log('apply filters ' + JSON.stringify(filters));
+            for (var i = 0; i < this._logEntries.length; i++) {
+                if (filters.length) {
+                    if (filters.indexOf(this._logEntries[i].entry.type) == -1) {
+                        this._logEntries[i].element.classList.add('hide');
+                    }
+                    else {
+                        this._logEntries[i].element.classList.remove('hide');
+                    }
+                }
+                else {
+                    this._logEntries[i].element.classList.remove('hide');
+                }
+
+                console.log('apply filters ' + JSON.stringify(filters));
+            }
         }
     }
 
     InteractiveConsole.prototype.ClientCommands = {
-        order: function (data: any) {
-            var plugin = <InteractiveConsole>this;
-            plugin.evalOrderFromDashboard(data.order);
-        },
-        clear: function (data: any) {
-            var plugin = <InteractiveConsole>this;
-            console.clear();
-        }
-    };
+            order: function (data: any) {
+                var plugin = <InteractiveConsole>this;
+                plugin.evalOrderFromDashboard(data.order);
+            },
+            clear: function (data: any) {
+                var plugin = <InteractiveConsole>this;
+                console.clear();
+            }
+        };
 
     InteractiveConsole.prototype.DashboardCommands = {
-        entries: function (data: any) {
-            var plugin = <InteractiveConsole>this;
-            plugin.addDashboardEntries(<ConsoleEntry[]>data.entries);
-        },
-        clear: function (data: any) {
-            var plugin = <InteractiveConsole>this;
-            plugin.clearDashboard();
-        },
+            entries: function (data: any) {
+                var plugin = <InteractiveConsole>this;
+                plugin.addDashboardEntries(<ConsoleEntry[]>data.entries);
+            },
+            clear: function (data: any) {
+                var plugin = <InteractiveConsole>this;
+                plugin.clearDashboard();
+            },
 
-        setorder: function (data: any) {
-            var plugin = <InteractiveConsole>this;
-            plugin._interactiveInput.value = "document.getElementById(\"" + data.order + "\")";
-        }
-    };
+            setorder: function (data: any) {
+                var plugin = <InteractiveConsole>this;
+                plugin._interactiveInput.value = "document.getElementById(\"" + data.order + "\")";
+            }
+        };
 
 
     class InteractiveConsoleEntry {
@@ -496,7 +510,7 @@
                 return;
 
             if (this.obj.proto) {
-                this.protoElt = new FluentDOM('DIV', 'obj-proto', this.content).append('A', 'label obj-link',(protolabel) => {
+                this.protoElt = new FluentDOM('DIV', 'obj-proto', this.content).append('A', 'label obj-link', (protolabel) => {
                     var toggleState = protolabel.createChild('SPAN', 'toggle-state').text("+");
                     protolabel.createChild('SPAN', '').html('[Prototype]');
 
@@ -516,7 +530,7 @@
             }
 
             if (this.obj.functions && this.obj.functions.length) {
-                this.functionsElt = new FluentDOM('DIV', 'obj-functions collapsed', this.content).append('A', 'label obj-link',(functionslabel) => {
+                this.functionsElt = new FluentDOM('DIV', 'obj-functions collapsed', this.content).append('A', 'label obj-link', (functionslabel) => {
                     var toggleState = functionslabel.createChild('SPAN', 'toggle-state').text("+");
                     functionslabel.createChild('SPAN', '').html('[Methods]');
                     functionslabel.click(() => {
@@ -532,25 +546,25 @@
                     //    Tools.ToggleClass(this.functionsElt, 'collapsed');
 
                     //});
-                }).append('DIV', 'content collapsed',(functionscontent) => {
-                    functionscontent.element;
-                    for (var i = 0, l = this.obj.functions.length; i < l; i++) {
-                        functionscontent.append('DIV', 'func',(objfunc) => {
-                            objfunc.html(this.obj.functions[i]);
-                        });
-                    }
-                }).element;
+                }).append('DIV', 'content collapsed', (functionscontent) => {
+                        functionscontent.element;
+                        for (var i = 0, l = this.obj.functions.length; i < l; i++) {
+                            functionscontent.append('DIV', 'func', (objfunc) => {
+                                objfunc.html(this.obj.functions[i]);
+                            });
+                        }
+                    }).element;
             }
 
-            this.propertiesElt = new FluentDOM('DIV', 'obj-properties', this.content).append('DIV', 'content',(propcontent) => {
+            this.propertiesElt = new FluentDOM('DIV', 'obj-properties', this.content).append('DIV', 'content', (propcontent) => {
                 for (var i = 0, l = this.obj.properties.length; i < l; i++) {
                     var p = this.obj.properties[i];
-                    propcontent.append('DIV', 'prop',(prop) => {
+                    propcontent.append('DIV', 'prop', (prop) => {
                         if (typeof p.val === 'object') {
                             var obj: InteractiveConsoleObject = null;
 
 
-                            prop.append('A', 'prop-name obj-link',(propname) => {
+                            prop.append('A', 'prop-name obj-link', (propname) => {
                                 var toggleState = propname.createChild('SPAN', 'toggle-state').text("+");
                                 propname.createChild('SPAN', '').html('<span class="prop-title">' + p.name + '</span>: <span>[Object]</span>');
 
@@ -565,11 +579,11 @@
                                     }
                                 });
                                 //propname.html('<span class="toggle-state open"></span> <span class="prop-title">' + p.name + '</span>:<span class="prop-value">[Object]</span>');
-                            }).append('DIV', 'prop-obj',(propobj) => {
-                                obj = new InteractiveConsoleObject(propobj.element, p.val);
-                            });
+                            }).append('DIV', 'prop-obj', (propobj) => {
+                                    obj = new InteractiveConsoleObject(propobj.element, p.val);
+                                });
                         } else {
-                            prop.append('DIV', 'prop-name',(propname) => {
+                            prop.append('DIV', 'prop-name', (propname) => {
                                 propname.html('<span class="blank-state"></span><span class="prop-title">' + p.name + '</span>: <span class="prop-value">' + p.val + '</span>');
                             });
                         }
@@ -579,7 +593,7 @@
             this.contentRendered = true;
         }
     }
-    
+
     // Register
     Core.RegisterPlugin(new InteractiveConsole());
 }
