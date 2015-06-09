@@ -114,11 +114,11 @@ module VORLON {
                 var node = <HTMLElement>root.childNodes[index];
 
                 var packagedNode = new PackagedNode(node);
-                if (withChildsNodes) {
-                    this._packageDOM(node, packagedNode);
-                }
-                if (node.childNodes && node.childNodes.length >= 0) {
+                if (node.childNodes && node.childNodes.length > 1) {
                     packagedNode.hasChildnodes = true;
+                }
+                else {
+                    this._packageDOM(node, packagedNode, withChildsNodes);               
                 }
                 packagedObject.children.push(packagedNode);
             }
@@ -149,21 +149,16 @@ module VORLON {
         public startClientSide(): void {
 
         }
-
-        private _getElementByInternalId(internalId: string, node: any, getNode: boolean= false): any {
+        private _getElementByInternalId(internalId: string, node: any): any {
             if (node.__vorlon && node.__vorlon.internalId === internalId) {
                 return node;
             }
-            var children = 'children';
-            if (getNode) {
-                children = 'childNodes'
-            }
-            if (!node[children]) {
+            if (!node.children) {
                 return null;
             }
 
-            for (var index = 0; index < node[children].length; index++) {
-                var result = this._getElementByInternalId(internalId, node[children][index], getNode);
+            for (var index = 0; index < node.children.length; index++) {
+                var result = this._getElementByInternalId(internalId, node.children[index]);
                 if (result) {
                     return result;
                 }
@@ -196,13 +191,14 @@ module VORLON {
                         break;
                     case ReceivedObjectClientSideType.refreshbyid:
                         this.refreshbyId(obj.internalID);
+                        console.log(obj.internalID);
                         this._lastContentState = document.body.innerHTML;
                         break;
                 }
                 return;
             }
             if (obj.type === ReceivedObjectClientSideType.valueEdit) {
-                var element = this._getElementByInternalId(obj.order, document.body, true);
+                var element = this._getElementByInternalId(obj.order, document.body);
 
                 if (!element) {
                     return;
@@ -237,7 +233,7 @@ module VORLON {
                     }
                     break;
                 case ReceivedObjectClientSideType.valueEdit:
-                    element.parentNode.innerHTML = obj.newValue;
+                    element.innerHTML = obj.newValue;
                     break;
             }
         }
@@ -586,7 +582,7 @@ module VORLON {
             return parentNode.appendChild(button);
         }
         private _spaceCheck = /[^\t\n\r ]/;
-        private _generateTreeNode(parentNode: HTMLElement, receivedObject: any, first = false): void {
+        private _generateTreeNode(parentNode: HTMLElement, receivedObject: any, first = false, parentReceivedObject?: any): void {
             if (receivedObject.type == 3) {
                 if (this._spaceCheck.test(receivedObject.content)) {
                     var textNode = document.createElement('span');
@@ -599,7 +595,7 @@ module VORLON {
                         this.sendToClient({
                             type: ReceivedObjectClientSideType.valueEdit,
                             newValue: textNode.innerHTML,
-                            order: receivedObject.internalId
+                            order: parentReceivedObject.internalId
                         });
                         textNode.contentEditable = "false";
                         Tools.RemoveClass(textNode, "editable");
@@ -607,7 +603,7 @@ module VORLON {
                     textNode.addEventListener("blur", () => {
                         sendTextToClient.bind(this)();
                     });
-                    
+
                     textNode.addEventListener("keydown", (evt) => {
                         if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
                             sendTextToClient.bind(this)();
@@ -687,7 +683,7 @@ module VORLON {
                     toolsLink.className = "treeNodeTools";
                     toolsLink.href = "#";
 
-                    toolsLink.addEventListener("click",() => {
+                    toolsLink.addEventListener("click", () => {
                         this.sendCommandToPluginDashboard("CONSOLE", "setorder", {
                             order: receivedObject.id
                         });
@@ -701,7 +697,7 @@ module VORLON {
                 if (nodes && nodes.length) {
                     for (var index = 0; index < nodes.length; index++) {
                         var child = nodes[index];
-                        if (child.nodeType != 3) this._generateTreeNode(container, child);
+                        if (child.nodeType != 3) this._generateTreeNode(container, child, false, receivedObject);
                     }
                 }
                 if (receivedObject.name) {
