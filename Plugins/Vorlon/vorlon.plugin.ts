@@ -11,15 +11,17 @@
         private _debug: boolean;
         public _type = PluginType.OneOne;
         public trace : (msg) => void;
-        private traceLog = (msg) => { console.log(msg); };
-        private traceNoop = (msg) => {};
+        protected traceLog = (msg) => { console.log(msg); };
+        private traceNoop = (msg) => { };
+        public ClientCommands: any;
+        public DashboardCommands: any;
         //public trace = function(msg){}
 
         constructor(name: string, htmlFragmentUrl: string, cssStyleSheetUrl: string) {
             this.name = name;
             this.htmlFragmentUrl = htmlFragmentUrl;
             this.cssStyleSheetUrl = cssStyleSheetUrl;
-            this.debug = false;
+            this.debug = Core.debug;
         }
 
         public get Type(): PluginType {
@@ -56,12 +58,40 @@
             if (Core.Messenger)
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message");
         }
+
+        public sendCommandToClient(command: string, data: any = null, incrementVisualIndicator: boolean = false) {
+            if (Core.Messenger) {
+                this.trace(this.getID() + ' send command to client ' + command);
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message", incrementVisualIndicator, command);
+            }
+        }
+
+        public sendCommandToPluginClient(pluginId: string, command: string, data: any = null, incrementVisualIndicator: boolean = false) {
+            if (Core.Messenger) {
+                this.trace(this.getID() + ' send command to plugin client ' + command);
+                Core.Messenger.sendRealtimeMessage(pluginId, data, RuntimeSide.Dashboard, "protocol", incrementVisualIndicator, command);
+            }
+        }
         
         public sendToDashboard(data: any, incrementVisualIndicator: boolean = false){
             if (Core.Messenger)
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator);
         }
         
+        public sendCommandToDashboard(command: string, data: any = null, incrementVisualIndicator: boolean = false) {
+            if (Core.Messenger) {
+                this.trace(this.getID() + ' send command to dashboard ' + command);
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator, command);
+            }
+        }
+
+        public sendCommandToPluginDashboard(pluginId : string, command: string, data: any = null, incrementVisualIndicator: boolean = false) {
+            if (Core.Messenger) {
+                this.trace(this.getID() + ' send command to plugin dashboard ' + command);
+                Core.Messenger.sendRealtimeMessage(pluginId, data, RuntimeSide.Client, "protocol", incrementVisualIndicator, command);
+            }
+        }
+
         public refresh(): void {
             console.error("Please override plugin.refresh()");
         }

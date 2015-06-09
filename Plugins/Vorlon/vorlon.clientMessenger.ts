@@ -12,7 +12,8 @@
     }
     
     export interface VorlonMessage {
-        metadata : VorlonMessageMetadata;
+        metadata: VorlonMessageMetadata;
+        command?: string;
         data? : any
     }
 
@@ -137,7 +138,7 @@
             }
         }
 
-        public sendRealtimeMessage(pluginID: string, objectToSend: any, side: RuntimeSide, messageType = "message", incrementVisualIndicator = false): void {
+        public sendRealtimeMessage(pluginID: string, objectToSend: any, side: RuntimeSide, messageType = "message", incrementVisualIndicator = false, command?:string): void {
             var message: VorlonMessage = {
                 metadata: {
                     pluginID: pluginID,
@@ -147,7 +148,10 @@
                     listenClientId: Core._listenClientId
                 },
                 data: objectToSend
-            };            
+            };
+
+            if (command)
+                message.command = command;
 
             if (!this.isConnected) {
                 // Directly raise response locally

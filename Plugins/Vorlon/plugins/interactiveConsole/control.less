@@ -1,58 +1,142 @@
 .plugin-console {
-  .logs-container {
-    padding: 0.5em 0.5em 0px;
-    overflow: auto;
-    height: ~"calc(100% - 2.25em)";
-  }
-  
-  .logs-list {
-    width: 100%;
-  }
-  
-  .log {
-    margin-bottom: 3px;
-    margin-left: 30px;
-    position: relative;
-  }
-  
-  .log:before {
-    content: '>';
-    position: absolute;
-    left: -30px;
-    top: 0;
-    font-size: 14px;
-    font-weight: 400;
-    color: #ccc;
-  }
-  
-  .logMessage {
-    color: #444;
-  }
-  
-  .logDebug {
-    color: #b200ff;
-  }
-  
-  .logInfo {
-    color: #0026ff;
-  }
-  
-  .logWarning {
-    color: #ff9205;
-  }
-  
-  .logError {
-    color: #ed2424;
-  }
-  
-  .logException {
-    color: #ed2424;
-  }
-  
-  .console-input {
-    display: block;
-    margin: 0px auto;
-    font-size: inherit;
-    width: ~"calc(100% - 1em)";
-  }
+    .logs-container {
+        width: 100%;
+        height: 100%;
+    }
+
+    .logs-list {
+        overflow: auto;
+        padding: 0.5em 0.5em 0px;
+        width: 100%;
+        height: ~"calc(100% - 80px)";
+    }
+
+    .filter-btn {
+        border-radius: 0;
+        background-color: transparent;
+        width: 32px;
+        text-align: center;
+        margin-left: 2px;
+
+        #filterall {
+            margin-right: 4px;
+        }
+        &.selected {
+            background-color: #333;
+            color: white;
+        }
+    }
+
+    .log-entry {
+        margin-bottom: 3px;
+        margin-left: 30px;
+        position: relative;
+
+        &.hide {
+            display: none !important;
+        }
+
+        &:before {
+            content: '>';
+            position: absolute;
+            left: -30px;
+            top: 0;
+            font-size: 14px;
+            font-weight: 400;
+            color: #ccc;
+        }
+
+        &.logMessage {
+            color: #444;
+        }
+
+        &.logDebug {
+            color: #b200ff;
+        }
+
+        &.logInfo {
+            color: #0026ff;
+        }
+
+        &.logWarning {
+            color: #ff9205;
+        }
+
+        &.logError {
+            color: #ed2424;
+        }
+
+        &.logException {
+            color: #ed2424;
+        }
+
+        .text-message {
+            display: inline-block;
+            margin-right: 1em;
+        }
+
+        .object-description {
+            .obj-link {
+                color: inherit;
+                cursor: pointer;
+            }
+
+            .toggle-state, .blank-state {
+                display: inline-block;
+                width: 14px;
+                height: 14px;
+                line-height: 12px;
+                vertical-align: middle;
+                text-align: center;
+                margin-right: 4px;
+                box-sizing: border-box;
+            }
+
+            .toggle-state {
+                border: 1px solid #CCC;
+            }
+
+            > .object-toggle {
+                display: block;
+            }
+
+            > .object-content {
+                border-left: 1px solid #DDD;
+                padding-left: 15px;
+                margin-left: 7px;
+
+                > .obj-proto, > .obj-functions {
+                    > .content {
+                        border-left: 1px solid #DDD;
+                        padding-left: 15px;
+                        margin-left: 7px;
+                    }
+
+
+                    &.collapsed {
+                        > .content {
+                            display: none;
+                        }
+                    }
+                }
+            }
+
+            &.collapsed {
+                > .object-content {
+                    display: none;
+                }
+            }
+
+            .prop-value {
+                font-weight: bold;
+            }
+        }
+    }
+
+    .console-input {
+        display: block;
+        margin: 0;
+        font-size: inherit;
+        width: 100%;
+    }
 }

@@ -181,8 +181,7 @@ export module VORLON {
                 var catalog = JSON.parse(catalogstring);
                 var vorlonpluginfiles: string = "";
                 var javascriptFile: string = "";
-                
-                
+                                
                 //read the socket.io file if needed
                 if(catalog.includeSocketIO){
                     javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.3.5.js"));
@@ -332,7 +331,7 @@ export module VORLON {
                     }
                     else {
                         //Send message if _clientID = clientID selected by dashboard
-                        if (receiveMessage.metadata.clientId === session.currentClientId) {
+                        if (session && receiveMessage.metadata.clientId === session.currentClientId) {
                             dashboard.emit("message", message);
                             //this._log.info("PLUGIN : " + receiveMessage._pluginID + " message receive from clientid " + receiveMessage._clientId + " send to dashboard for session id :" + receiveMessage._sessionId, { type: "PLUGIN", session: receiveMessage._sessionId });
                         }

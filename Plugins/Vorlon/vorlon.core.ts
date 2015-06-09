@@ -1,29 +1,31 @@
 ﻿module VORLON {
-    export class Core {
-        static _plugins = new Array<Plugin>();
-        static _messenger: ClientMessenger;
-        static _sessionID: string;
-        static _listenClientId: string;
-        static _side: RuntimeSide;
-        static _errorNotifier: any;
-        static _messageNotifier: any;
-        static _socketIOWaitCount = 0;
+    
+    export class _Core {
+        _plugins = new Array<Plugin>();
+        _messenger: ClientMessenger;
+        _sessionID: string;
+        _listenClientId: string;
+        _side: RuntimeSide;
+        _errorNotifier: any;
+        _messageNotifier: any;
+        _socketIOWaitCount = 0;
+        public debug: boolean = false;
 
-        static _RetryTimeout = 1002;
+        _RetryTimeout = 1002;
 
-        public static get Messenger(): ClientMessenger {
+        public get Messenger(): ClientMessenger {
             return Core._messenger;
         }
 
-        public static get Plugins(): Array<Plugin> {
+        public get Plugins(): Array<Plugin> {
             return Core._plugins;
         }
 
-        public static RegisterPlugin(plugin: Plugin): void {
+        public RegisterPlugin(plugin: Plugin): void {
             Core._plugins.push(plugin);
         }
 
-        public static Start(serverUrl = "'http://localhost:1337/'", sessionId = "", listenClientId = "",  divMapper: (string) => HTMLDivElement = null): void {
+        public Start(serverUrl = "'http://localhost:1337/'", sessionId = "", listenClientId = "",  divMapper: (string) => HTMLDivElement = null): void {
             Core._side = RuntimeSide.Client;
             Core._sessionID = sessionId;
             Core._listenClientId = listenClientId;
@@ -106,7 +108,7 @@
             }
         }
         
-        private static _startPlugin(plugin : Plugin,  divMapper: (string) => HTMLDivElement = null){
+        private _startPlugin(plugin : Plugin,  divMapper: (string) => HTMLDivElement = null){
             if (Core._side === RuntimeSide.Both || Core._side === RuntimeSide.Client) {
                 plugin.startClientSide();
             }
@@ -116,11 +118,11 @@
             }
         }
 
-        private static _OnStopListenReceived(): void {
+        private _OnStopListenReceived(): void {
             Core._listenClientId = "";
         }
 
-        private static _OnIdentifyReceived(message: string): void {
+        private _OnIdentifyReceived(message: string): void {
             //console.log('identify ' + message);
             if (Core._side == RuntimeSide.Dashboard) {
                 Core._messageNotifier.innerHTML = message;
@@ -150,7 +152,7 @@
             }
         }
 
-        private static ShowError(message: string, timeout = 5000) {
+        private ShowError(message: string, timeout = 5000) {
             
             if (Core._side == RuntimeSide.Dashboard) {
                 Core._errorNotifier.innerHTML = message;
@@ -183,11 +185,11 @@
             }
         }
 
-        private static _OnError(err: Error): void {
+        private _OnError(err: Error): void {
             Core.ShowError("Error while connecting to server. Server may be offline.<BR>Error message: " + err.message);
         }
 
-        private static _OnIdentificationReceived(id: string): void {
+        private _OnIdentificationReceived(id: string): void {
             //console.log('helo received ' + id);
             Core._listenClientId = id;
 
@@ -200,44 +202,68 @@
             }
         }
 
-        private static _RetrySendingRealtimeMessage(plugin: Plugin, receivedObject: any) {
+        private _RetrySendingRealtimeMessage(plugin: Plugin, message: VorlonMessage) {
             setTimeout(() => {
                 if (plugin.isReady()) {
-                    plugin.onRealtimeMessageReceivedFromClientSide(receivedObject);
+                    Core._DispatchFromClientPluginMessage(plugin, message);
                     return;
                 }
 
-                Core._RetrySendingRealtimeMessage(plugin, receivedObject);
+                Core._RetrySendingRealtimeMessage(plugin, message);
             },  Core._RetryTimeout);
         }
 
-        private static _Dispatch(message: VorlonMessage): void {
+        private _Dispatch(message: VorlonMessage): void {
             if (!message.metadata) {
                 console.error('invalid message ' + JSON.stringify(message));
                 return;
             }
-            //console.log('received message ' + JSON.stringify(message)); 
             
             for (var index = 0,  length = Core._plugins.length; index < length; index++) {
                 var plugin = Core._plugins[index];
 
                 if (plugin.getID() === message.metadata.pluginID) {
-                    Core._DispatchPluginMessage(plugin, message.metadata.side, message.data);
+                    Core._DispatchPluginMessage(plugin, message);
                     return;
                 }
             }
         }
-        
-        private static _DispatchPluginMessage(plugin: Plugin, side: any, receivedObject: any): void {
-            if (side === RuntimeSide.Client) {
+
+        private _DispatchPluginMessage(plugin: Plugin, message: VorlonMessage): void {
+            plugin.trace('received ' + JSON.stringify(message));
+            if (message.metadata.side === RuntimeSide.Client) {                
                 if (!plugin.isReady()) { // Plugin is not ready, let's try again later
-                    Core._RetrySendingRealtimeMessage(plugin, receivedObject);
+                    Core._RetrySendingRealtimeMessage(plugin, message);
                 } else {
-                     plugin.onRealtimeMessageReceivedFromClientSide(receivedObject);
+                    Core._DispatchFromClientPluginMessage(plugin, message);
                 }
             } else {
-                plugin.onRealtimeMessageReceivedFromDashboardSide(receivedObject);
+                Core._DispatchFromDashboardPluginMessage(plugin, message);
             }            
         }
+
+        private _DispatchFromClientPluginMessage(plugin: Plugin, message: VorlonMessage): void {
+            if (message.command && plugin.DashboardCommands) {
+                var command = plugin.DashboardCommands[message.command];
+                if (command) {
+                    command.call(plugin, message.data);
+                    return;
+                }
+            }
+            plugin.onRealtimeMessageReceivedFromClientSide(message.data);
+        }
+
+        private _DispatchFromDashboardPluginMessage(plugin: Plugin, message: VorlonMessage): void {
+            if (message.command && plugin.ClientCommands) {
+                var command = plugin.ClientCommands[message.command];
+                if (command) {
+                    command.call(plugin, message.data);
+                    return;
+                }
+            }
+            plugin.onRealtimeMessageReceivedFromDashboardSide(message.data);
+        }
     }
+
+    export var Core = new _Core();
 }

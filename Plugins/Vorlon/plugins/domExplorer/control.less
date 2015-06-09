@@ -1,233 +1,294 @@
 .plugin-dom {
-  [button-block] {
-    display: block;
-    padding: 0;
-    margin: 0;
-    border: none;
-    background: none;
-  }
-  
-  .dom-explorer-container {
-    height: 100%;
-    overflow: hidden !important;  
-  }
-  
-  .panel-left,
-  .panel-right {
-    height: 100%;
-  }
-  
-  .tree-view,
-  .style-view {
-    padding: 0;
-  }
-  
-  #treeView,
-  #styleView {
-    padding: 15px;
-  }
-  
-  .tree-view-wrapper {
-     > x-controlbar {
-      border-top: none;
-      border-left: none;
-      border-right: none;
-       
-       > * {
-        border-radius: 0.25em;
-      }
+   [button-block] {
+        display: block;
+        padding: 0;
+        margin: 0;
+        border: none;
+        background: none;
     }
-  }
-  
-  .treeNodeButton {
-    display: inline-block;
-    color: #444;
-    margin-left: -0.75em;
-    width: 1.5em;
-    text-align: center;
-    background: #fff;
-    cursor: pointer;
-    
-    
-    &:before {
-      content: "-";
-      outline: none;
-    }
-    
-    &[data-collapsed]:before {
-      content: "+";
-      vertical-align: middle;
-    }
-    
-    &[data-collapsed] ~ .nodeContentContainer {
-      display: none;
-    }
-    
-    &::-moz-focus-inner {
-      border: none;
-    }
-    
-    &:focus {
-      outline: 1px dotted #000;
-    }
-  }  
-  
-  .treeNodeHeader {
-    text-decoration: none;
-    color: #ccc;
-    font-weight: bold;
-    
-    &:focus {
-      outline: 1px dotted #000;
-    }
-    
-    &:before {
-      content: "<";
-      color: #000;
-    }
-    
-    &:after {
-      content: ">";
-      color: #000;
-    }
-  }
-  
-  .nodeContentContainer {
-    padding-left: 1em;
-    
-    &:not([data-has-children]),
-    &:not([data-has-children]) .treeNodeClosingText {
-      display: inline;
-      margin: 0;
-      padding: 0;
-    }
-    
-    &:not([data-has-children]) .nodeTextContent {
-      padding: 0 0.25em;
-    }
-  }
-  
-  
-  
-  [data-hovered-tag] > .treeNodeHeader,
-  [data-hovered-tag] > .nodeContentContainer > .treeNodeClosingText .nodeName {
-    background: cyan;
-  }
-  
-  .treeNodeSelected,
-  .treeNodeSelected ~ .nodeContentContainer > .treeNodeClosingText .nodeName {
-    background: yellow !important;
-  }
-  
-  .treeNodeTools {
-    color: #444; 
-    float: right;
-    text-decoration: none;
-  }
-  
-  .treeNodeText {
-    text-decoration: none;
-    border-left: 1px solid #eee;
-  }
-  
-  .firstTreeNodeText {
-    text-decoration: none;
-    padding-left: 0px;
-  }
-  
-  .nodeTextContent {
-    color: #777;
-  }
-  
-  .treeNodeClosingText {
-    margin-left: -0.25em;
-    font-weight: bold;
-    background: #fff;
-    cursor: default;
-    
-    .nodeName:before {
-      content: "</";
-      color: #000;
-    }
-    
-    .nodeName:after {
-      content: ">";
-      color: #000;
-    }
-  }
-  
-  .nodeName {
-    color: #6B2D81;
-  }
-  
-  .nodeAttribute {
-    padding-left: 0.5em;
-    
-    span:first-child {
-      color: #ed2424;
-      
-      &:after {
-        content: "=\"";
-        color: #6B2D81;
-      }
-    }
-    
-    span:last-child {
-      color: #007ca7;
-      
-      &:after {
-        content: "\"";
-        color: #6B2D81;
-      }
-    }
-  }
-  
-  .styleLabel {
-    display: inline-block;
-    margin-right: 2px;
-    padding: 0 2px;
-    color: #ed2424;
-    
-    &:after {
-      content: ":";
-    }
-  }
-  
-  .styleValue {
-    display: inline;
-    margin-left: 2px;
-    padding: 0 2px;
-    color: #444;
-    word-wrap: break-word;
-    vertical-align: top;
-  }
-  
-  .styleLabel.editable,
-  .styleValue.editable {
-    background-color: rgba(0,183,199,0.1);
-    color: #666;
-    outline: 1px solid rgb(255, 20, 147);
-  }
-  
-  .styleButton {
-    width: 80px;
-    max-width: 50%;
-    margin: 10px auto 0;
-    color: #444;
-    text-align: center;
-    background: #eee;
-    border-radius: 3px;
-    cursor: pointer;
-  }
-  
-  x-action[event="refresh"]:before {
-    content: 	'\26AB';
-    margin-right: 0.1em;
-    color: #aaa;
-    background: none;
-  }
 
-  x-action[event="refresh"][changed]:before {
-    color: red;
-  }
+    .dom-explorer-container {
+        height: 100%;
+        overflow: hidden !important;
+    }
+
+    .panel-left,
+    .panel-right {
+        height: 100%;
+    }
+
+    .tree-view,
+    .style-view {
+        padding: 0;
+    }
+
+    #accordion {
+        height: 100%;
+
+        .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+            background: #eee;
+        }
+
+        .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
+            background: #CCC;
+        }
+
+        .ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br,
+        .ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr {
+            border-radius: 0;
+        }
+
+        &.ui-accordion {
+            .ui-accordion-header {
+                font-family: "Menlo","Consolas","Lucida Console",Courier,monospace;
+                border: none;
+            }
+
+            .ui-accordion-content {
+                padding: 0;
+            }
+        }
+    }
+
+    #treeView {
+        height: ~"calc(100% - 36px)";
+        overflow-x: none;
+        overflow-y: auto;
+    }
+
+    #treeView,
+    #styleView, #attributesView {
+        padding: 15px;
+    }
+
+    .tree-view-wrapper {
+        > x-controlbar {
+            border-top: none;
+            border-left: none;
+            border-right: none;
+
+            > * {
+                border-radius: 0.25em;
+            }
+        }
+    }
+
+    .treeNodeButton {
+        display: inline-block;
+        color: #444;
+        margin-left: -0.75em;
+        text-align: center;
+        background: #fff;
+        cursor: pointer;
+        border: 1px solid #CCC;
+        /*media screen*/
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        line-height: 12px;
+        vertical-align: middle;
+        text-align: center;
+        margin-right: 4px;
+        box-sizing: border-box;
+
+        &:before {
+            content: "-";
+            outline: none;
+        }
+
+        &[data-collapsed]:before {
+            content: "+";
+            vertical-align: middle;
+        }
+
+        &[data-collapsed] ~ .nodeContentContainer {
+            display: none;
+        }
+
+        &::-moz-focus-inner {
+            border: none;
+        }
+
+        &:focus {
+            outline: 1px dotted #000;
+        }
+    }
+
+    .treeNodeHeader {
+        text-decoration: none;
+        color: #ccc;
+        font-weight: bold;
+
+        .fa-plus-circle {
+            color: #555;
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .editable {
+            border-bottom: 2px dashed red;
+        }
+
+
+        &:focus {
+            outline: 1px dotted #000;
+        }
+
+        &:before {
+            content: "<";
+            color: #000;
+        }
+
+        &:after {
+            content: ">";
+            color: #000;
+        }
+    }
+
+    .nodeContentContainer {
+        padding-left: 1em;
+
+        &:not([data-has-children]),
+        &:not([data-has-children]) .treeNodeClosingText {
+            display: inline;
+            margin: 0;
+            padding: 0;
+        }
+
+        &:not([data-has-children]) .nodeTextContent {
+            padding: 0 0.25em;
+
+            &.editable {
+                border-bottom: 2px dashed red;
+            }
+        }
+    }
+
+    .treeNodeButton[data-collapsed] ~ .treeNodeHeader {
+        .nodeAttribute, .fa-plus-circle {
+            display: none;
+        }
+    }
+
+    [data-hovered-tag] > .treeNodeHeader,
+    [data-hovered-tag] > .nodeContentContainer > .treeNodeClosingText .nodeName {
+        background: cyan;
+    }
+
+    .treeNodeSelected,
+    .treeNodeSelected ~ .nodeContentContainer > .treeNodeClosingText .nodeName {
+        background: yellow !important;
+    }
+
+    .treeNodeTools {
+        color: #444;
+        float: right;
+        text-decoration: none;
+    }
+
+    .treeNodeText {
+        text-decoration: none;
+        border-left: 1px solid #eee;
+    }
+
+    .firstTreeNodeText {
+        text-decoration: none;
+        padding-left: 0px;
+    }
+
+    .nodeTextContent {
+        color: #777;
+    }
+
+    .treeNodeClosingText {
+        margin-left: -0.25em;
+        font-weight: bold;
+        background: #fff;
+        cursor: default;
+
+        .nodeName:before {
+            content: "</";
+            color: #000;
+        }
+
+        .nodeName:after {
+            content: ">";
+            color: #000;
+        }
+    }
+
+    .nodeName {
+        color: #6B2D81;
+    }
+
+    .nodeAttribute {
+        padding-left: 0.5em;
+
+        span:first-child {
+            color: #ed2424;
+
+            &:after {
+                content: "=\"";
+                color: #6B2D81;
+            }
+        }
+
+        span:last-child {
+            color: #007ca7;
+
+            &:after {
+                content: "\"";
+                color: #6B2D81;
+            }
+        }
+    }
+
+    .styleLabel, .attributeName {
+        display: inline-block;
+        margin-right: 2px;
+        padding: 0 2px;
+        color: #ed2424;
+
+        &:after {
+            content: ":";
+        }
+    }
+
+    .styleValue, .attributeValue {
+        display: inline;
+        margin-left: 2px;
+        padding: 0 2px;
+        color: #444;
+        word-wrap: break-word;
+        vertical-align: top;
+    }
+
+    .styleLabel.editable, .attributeName.editable,
+    .styleValue.editable, .attributeValue.editable {
+        background-color: rgba(0,183,199,0.1);
+        color: #666;
+        outline: 1px solid rgb(255, 20, 147);
+    }
+
+    .styleButton {
+        width: 80px;
+        max-width: 50%;
+        margin: 10px auto 0;
+        color: #444;
+        text-align: center;
+        background: #eee;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    x-action[event="refresh"]:before {
+        content: '\26AB';
+        margin-right: 0.1em;
+        color: #aaa;
+        background: none;
+    }
+
+    x-action[event="refresh"][changed]:before {
+        color: red;
+    }
 }

@@ -65,6 +65,14 @@
     <TypeScriptCompile Include="server.ts" />
     <Content Include="package.json" />
     <Content Include="public\catalog.json" />
+    <Content Include="public\fonts\fontawesome\css\font-awesome.css" />
+    <Content Include="public\fonts\fontawesome\css\font-awesome.min.css" />
+    <Content Include="public\fonts\fontawesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="public\fonts\fontawesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="public\fonts\fontawesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="public\fonts\fontawesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="public\fonts\fontawesome\fonts\fontawesome-webfont.woff2" />
+    <Content Include="public\fonts\fontawesome\fonts\FontAwesome.otf" />
     <Content Include="public\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="public\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="public\fonts\glyphicons-halflings-regular.ttf" />
@@ -72,6 +80,20 @@
     <Content Include="public\javascripts\jquery-1.10.2.min.map" />
     <Content Include="public\stylesheets\bootstrap.css" />
     <Content Include="public\stylesheets\bootstrap.min.css" />
+    <Content Include="public\stylesheets\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="public\stylesheets\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="public\stylesheets\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="public\stylesheets\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="public\stylesheets\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="public\stylesheets\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="public\stylesheets\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="public\stylesheets\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="public\stylesheets\images\ui-icons_222222_256x240.png" />
+    <Content Include="public\stylesheets\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="public\stylesheets\images\ui-icons_454545_256x240.png" />
+    <Content Include="public\stylesheets\images\ui-icons_888888_256x240.png" />
+    <Content Include="public\stylesheets\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="public\stylesheets\jquery-ui.css" />
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="public\vorlon\plugins\domExplorer\control.css" />
     <Content Include="public\vorlon\plugins\domExplorer\control.html" />
@@ -98,6 +120,10 @@
   <ItemGroup>
     <Folder Include="bin\" />
     <Folder Include="config\" />
+    <Folder Include="public\fonts\fontawesome\" />
+    <Folder Include="public\fonts\fontawesome\css\" />
+    <Folder Include="public\fonts\fontawesome\fonts\" />
+    <Folder Include="public\stylesheets\images\" />
     <Folder Include="public\vorlon\plugins\" />
     <Folder Include="public\vorlon\plugins\domExplorer\" />
     <Folder Include="public\vorlon\plugins\interactiveConsole\" />
@@ -132,6 +158,7 @@
     <Compile Include="public\javascripts\bootstrap.min.js" />
     <Compile Include="public\javascripts\jquery-1.10.2.js" />
     <Compile Include="public\javascripts\jquery-1.10.2.min.js" />
+    <Compile Include="public\javascripts\jquery-2.1.1.min.js" />
     <Compile Include="public\javascripts\modernizr-2.6.2.js" />
     <Compile Include="public\javascripts\respond.js" />
     <Compile Include="public\javascripts\respond.min.js" />

@@ -1,5 +1,5 @@
 module VORLON {
-    interface NetworkEntry{
+    export interface NetworkEntry{
         id: string;
         url: string;
         status : number;
@@ -12,25 +12,45 @@ module VORLON {
     }
     
     export class XHRPanel extends Plugin {
+        public hooked: boolean = false;
+        public cache: Array<NetworkEntry> = [];
+
         constructor() {
             super("xhrPanel", "control.html", "control.css");
             this._id = "XHRPANEL";
             this._ready = false;        
         }
-
+            
         public refresh(): void {
+            this.sendStateToDashboard();
+            this.sendCacheToDashboard();
+        }
+
+        public sendStateToDashboard() {
+            this.sendCommandToDashboard('state', { hooked: this.hooked });
+        }
+
+        public sendCacheToDashboard() {
+            for (var i = 0, l = this.cache.length; i < l; i++) {
+                this.sendCommandToDashboard('xhr', this.cache[i]);
+            }
+        }
+
+        public clearClientCache() {
+            this.cache = [];
         }
 
         // This code will run on the client //////////////////////
 
         public startClientSide(): void {
-            this.setupXMLHttpRequestHook(true);
+            //this.setupXMLHttpRequestHook();
         }
 
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {            
         }
 
-        public setupXMLHttpRequestHook(debug){
+        public setupXMLHttpRequestHook(){
+
             var w = <any>window;
             w.___XMLHttpRequest = w.XMLHttpRequest;
             var XmlHttpRequestProxy = () => {
@@ -46,6 +66,7 @@ module VORLON {
                     requestHeaders : [],
                     readyState: 0,
                 }
+                this.cache.push(data);
                 xhr.__open = xhr.open;
                 xhr.__send = xhr.send;
                 xhr.__setRequestHeader = xhr.setRequestHeader;
@@ -57,17 +78,9 @@ module VORLON {
                     data.method = arguments[0];
                     data.url = arguments[1];
                     this.trace('request for ' + data.url);
-
-                    this.sendToDashboard({ type:'xhr', message: data});
-                    return xhr.__open.apply(xhr, arguments);
-                }
-                
-                xhr.open = () => {
-                    data.method = arguments[0];
-                    data.url = arguments[1];
-                    this.trace('request for ' + data.url);
-
-                    this.sendToDashboard({ type:'xhr', message: data});
+                    this.sendCommandToDashboard('xhr', data);
+                    
+                    xhr.__open.apply(xhr, arguments);
                     return xhr.__open.apply(xhr, arguments);
                 }
                 
@@ -94,12 +107,24 @@ module VORLON {
                         
                         this.trace('LOADED !!!');
                     }
-                    this.sendToDashboard({ type:'xhr', message: data});
+                    this.sendCommandToDashboard('xhr', data);
                 });
 
                 return xhr;
             }
             w.XMLHttpRequest = XmlHttpRequestProxy;
+            this.hooked = true;
+            this.sendStateToDashboard();
+        }
+
+        public removeXMLHttpRequestHook() {
+            if (this.hooked) {
+                this.trace('xhrPanel remove hook');
+                var w = <any>window;
+                w.XMLHttpRequest = w.___XMLHttpRequest;
+                this.hooked = false;
+                this.sendStateToDashboard();
+            }
         }
 
         private _render(tagname: string, parentNode:HTMLElement, classname?:string, value?: string): HTMLElement {
@@ -118,44 +143,100 @@ module VORLON {
         }
 
         // This code will run on the dashboard //////////////////////
-
-        private _itemsContainer: HTMLElement
-        private _dashboardDiv: HTMLDivElement;
-        private _clearButton: HTMLButtonElement;
-        private _items: any;
+        
+        public _itemsContainer: HTMLElement
+        public _dashboardDiv: HTMLDivElement;
+        public _clearButton: HTMLButtonElement;
+        public _startStopButton: HTMLButtonElement;
+        public _startStopButtonState: HTMLElement;
+        public _dashboardItems: any;
         
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
-            this._items = {};
+            this._dashboardItems = {};
             this._insertHtmlContentAsync(div, (filledDiv) => {                
                 this._itemsContainer = <HTMLElement>filledDiv.querySelector('.network-items');
                 this._clearButton = <HTMLButtonElement>filledDiv.querySelector('x-action[event="clear"]');
-                this._clearButton.addEventListener('click', (arg) => {
-                    this.sendToClient({ type : 'clear' });
+                this._startStopButton = <HTMLButtonElement>filledDiv.querySelector('x-action[event="toggleState"]');
+                this._startStopButtonState = <HTMLElement>filledDiv.querySelector('x-action[event="toggleState"]>i');
+                this._clearButton.addEventListener('click',(arg) => {
+                    this.sendCommandToClient('clear');
                     this._itemsContainer.innerHTML = '';
-                    this._items = {};
+                    this._dashboardItems = {};
+                });
+
+                this._startStopButton.addEventListener('click',(arg) => {
+                    if (!this._startStopButtonState.classList.contains('fa-spin')) {
+                        this._startStopButtonState.classList.remove('fa-play');
+                        this._startStopButtonState.classList.remove('fa-stop');
+                        this._startStopButtonState.classList.remove('no-anim');
+
+                        this._startStopButtonState.classList.add('fa-spin');
+                        this._startStopButtonState.classList.add('fa-spinner');
+                        if (this.hooked) {
+                            this.sendCommandToClient('stop');
+                        } else {
+                            this.sendCommandToClient('start');
+                        }
+                    }
                 });
                 this._ready = true;
             });
         }
 
-        public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-            if (receivedObject.type === 'xhr'){
-                var item = <NetworkEntry>receivedObject.message;
-                this.processNetworkItem(item);
-            }
-            this.trace(receivedObject.message);
+        public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {            
         }
         
-        private processNetworkItem(item: NetworkEntry){
-            var storedItem = <NetworkItemCtrl>this._items[item.id];
+        public processNetworkItem(item: NetworkEntry){
+            var storedItem = <NetworkItemCtrl>this._dashboardItems[item.id];
             if (!storedItem){
                 storedItem = new NetworkItemCtrl(this._itemsContainer, item);
-                this._items[item.id] = storedItem;
+                this._dashboardItems[item.id] = storedItem;
             }
             storedItem.update(item);
         } 
     }
+
+    XHRPanel.prototype.ClientCommands = {
+        start: function (data: any) {
+            var plugin = <XHRPanel>this;
+            plugin.setupXMLHttpRequestHook();
+        },
+        stop: function (data: any) {
+            var plugin = <XHRPanel>this;
+            plugin.removeXMLHttpRequestHook();
+        },
+        getState: function (data: any) {
+            var plugin = <XHRPanel>this;
+            plugin.sendStateToDashboard();
+        },
+        clear: function (data: any) {
+            var plugin = <XHRPanel>this;
+            plugin.clearClientCache();
+        }
+    };
+
+    XHRPanel.prototype.DashboardCommands = {
+        state: function (data: any) {
+            var plugin = <XHRPanel>this;
+            plugin.hooked = data.hooked;
+            plugin._startStopButtonState.classList.remove('fa-spin');
+            plugin._startStopButtonState.classList.remove('fa-spinner');
+            if (plugin.hooked) {
+                plugin._startStopButtonState.classList.remove('fa-play');
+                plugin._startStopButtonState.classList.add('fa-stop'); 
+                plugin._startStopButtonState.classList.add('no-anim');
+            } else {
+                plugin._startStopButtonState.classList.remove('fa-stop');
+                plugin._startStopButtonState.classList.add('fa-play');
+                plugin._startStopButtonState.classList.add('no-anim');
+            }
+        },
+        xhr: function (data: any) {
+            var plugin = <XHRPanel>this;
+            plugin.processNetworkItem(<NetworkEntry>data);
+        }
+    };
     
     class NetworkItemCtrl {
             element : HTMLElement;
