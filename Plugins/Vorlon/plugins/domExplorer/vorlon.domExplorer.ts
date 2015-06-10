@@ -679,11 +679,11 @@ module VORLON {
             }
             nodeValue.addEventListener("click",() => {
 
-                if (nodeValue.contentEditable != "true")
+                if (nodeValue.contentEditable != "true" && nodeName.contentEditable != "true")
                     menu.bind(this)("value");
             });
             nodeName.addEventListener("click",() => {
-                if (nodeValue.contentEditable != "true")
+                if (nodeValue.contentEditable != "true" && nodeName.contentEditable != "true")
                     menu.bind(this)("name");
             });
             nodeValue.addEventListener("blur",() => {
