@@ -2,24 +2,19 @@ module VORLON {
     declare var $: any;
     export class DOMExplorer extends Plugin {
 
-        private _previousSelectedNode: HTMLElement;
         private _internalId = 0;
         private _lastElementSelectedClientSide;
         private _newAppliedStyles = {};
         private _newAppliedAttributes = {};
         private _lastContentState = '';
         private _lastReceivedObject = null;
-        private _clikedNodeID = null;
         constructor() {
             super("domExplorer", "control.html", "control.css");
+            this._id = "DOM";
             this._ready = false;
         }
 
-        public getID(): string {
-            return "DOM";
-        }
-
-        private _getAppliedStyles(node: HTMLElement): string[] {
+        public static getAppliedStyles(node: HTMLElement): string[] {
             // Style sheets
             var styleNode = new Array<string>();
             var sheets = <any>document.styleSheets;
@@ -81,17 +76,20 @@ module VORLON {
             return styleNode;
         }
 
-        private _packageNode(node: any): any {
+        private _packageNode(node: any): PackagedNode {
             var packagedNode = {
                 id: node.id,
                 type: node.nodeType,
                 name: node.localName,
                 classes: node.className,
                 content: node.textContent,
-                attributes: node.attributes ? Array.prototype.map.call(node.attributes, (attr) => {
+                hasChildNodes: false,
+                attributes: node.attributes ? Array.prototype.map.call(node.attributes,(attr) => {
                     return [attr.name, attr.value];
                 }) : [],
-                styles: this._getAppliedStyles(node),
+                styles: DOMExplorer.getAppliedStyles(node),
+                children: [],
+                rootHTML: null,
                 internalId: VORLON.Tools.CreateGUID()
             };
             if (node.__vorlon) {
@@ -105,7 +103,7 @@ module VORLON {
             return packagedNode;
         }
 
-        private _packageDOM(root: HTMLElement, packagedObject: any, withChildsNodes: boolean = false): void {
+        private _packageDOM(root: HTMLElement, packagedObject: PackagedNode, withChildsNodes: boolean = false): void {
             if (!root.childNodes || root.childNodes.length === 0) {
                 return;
             }
@@ -113,9 +111,9 @@ module VORLON {
             for (var index = 0; index < root.childNodes.length; index++) {
                 var node = <HTMLElement>root.childNodes[index];
 
-                var packagedNode = new PackagedNode(node);
+                var packagedNode = this._packageNode(node);
                 if (node.childNodes && node.childNodes.length > 1) {
-                    packagedNode.hasChildnodes = true;
+                    packagedNode.hasChildNodes = true;
                 }
                 else {
                     this._packageDOM(node, packagedNode, withChildsNodes);
@@ -124,21 +122,15 @@ module VORLON {
             }
         }
 
-        private _packageAndSendDOM(element?: HTMLElement) {
+        private _packageAndSendDOM(element: HTMLElement) {
             this._internalId = 0;
             this._newAppliedStyles = {};
             this._newAppliedAttributes = {};
-            if (!element) {
-                var packagedObject = new PackagedNode(document.body);
-                packagedObject.rootHTML = document.body.innerHTML;
-                this._packageDOM(document.body, packagedObject, false);
-            }
-            else {
-                var packagedObject = new PackagedNode(element);
-                packagedObject.rootHTML = element.innerHTML;
-                this._packageDOM(element, packagedObject, false);
-                packagedObject.refreshbyId = true;
-            }
+
+            var packagedObject = this._packageNode(element);
+            packagedObject.rootHTML = element.innerHTML;
+            this._packageDOM(element, packagedObject, false);
+
             this.sendToDashboard(packagedObject);
         }
 
@@ -147,8 +139,8 @@ module VORLON {
         }
 
         public startClientSide(): void {
-
         }
+
         private _getElementByInternalId(internalId: string, node: any): any {
             if (node.__vorlon && node.__vorlon.internalId === internalId) {
                 return node;
@@ -174,12 +166,6 @@ module VORLON {
                         if (this._lastElementSelectedClientSide) {
                             this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
                         }
-                        break;
-                    case ReceivedObjectClientSideType.dirtycheck:
-                        this.sendToDashboard({
-                            action: 'dirtycheck',
-                            rootHTML: document.body.innerHTML
-                        });
                         break;
                     case ReceivedObjectClientSideType.refresh:
                         if (this._lastElementSelectedClientSide) {
@@ -239,8 +225,13 @@ module VORLON {
         }
 
         public refresh(): void {
-            this._packageAndSendDOM();
+            var packagedObject = this._packageNode(document.body);
+            packagedObject.rootHTML = document.body.innerHTML;
+            this._packageDOM(document.body, packagedObject, false);
+
+            this.sendCommandToDashboard('init', packagedObject);
         }
+
         public refreshbyId(internaID: any): void {
             if (internaID)
                 this._packageAndSendDOM(this._getElementByInternalId(internaID, document.body));
@@ -251,38 +242,38 @@ module VORLON {
         private _styleView: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
         private _refreshButton: Element;
+        public _clikedNodeID = null;
+        public _selectedNode: DomExplorerNode;
+
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
 
-            this._insertHtmlContentAsync(this._dashboardDiv, (filledDiv: HTMLElement) => {
+            this._insertHtmlContentAsync(this._dashboardDiv,(filledDiv: HTMLElement) => {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
 
                 setInterval(() => {
-                    this.sendToClient({
-                        type: ReceivedObjectClientSideType.dirtycheck,
-                        order: null
-                    });
+                    this.sendCommandToClient('dirtycheck');
                 }, 4000);
 
-                this._containerDiv.addEventListener('refresh', () => {
+                this._containerDiv.addEventListener('refresh',() => {
                     this.sendToClient({
                         type: ReceivedObjectClientSideType.refresh,
                         order: null
                     });
                 });
 
-                this._treeDiv.addEventListener('click', (e: Event) => {
+                this._treeDiv.addEventListener('click',(e: Event) => {
                     var button = <HTMLElement>e.target;
                     if (button.className.match('treeNodeButton')) {
                         button.hasAttribute('data-collapsed') ? button.removeAttribute('data-collapsed') : button.setAttribute('data-collapsed', '');
                     }
                 });
 
-                this._treeDiv.addEventListener('mouseenter', (e: Event) => {
+                this._treeDiv.addEventListener('mouseenter',(e: Event) => {
                     var node = <HTMLElement>e.target;
                     var parent = node.parentElement;
                     var isHeader = node.className.match('treeNodeHeader');
@@ -296,7 +287,7 @@ module VORLON {
                     }
                 }, true);
 
-                this._treeDiv.addEventListener('mouseleave', (e: Event) => {
+                this._treeDiv.addEventListener('mouseleave',(e: Event) => {
                     var node = <HTMLElement>e.target;
                     if (node.className.match('treeNodeHeader') || node.parentElement.className.match('treeNodeClosingText')) {
                         var hovered = this._treeDiv.querySelector('[data-hovered-tag]')
@@ -332,7 +323,7 @@ module VORLON {
             valueElement.contentEditable = "false";
             valueElement.innerHTML = value || "&nbsp;";
             valueElement.className = "styleValue";
-            valueElement.addEventListener("keydown", (evt) => {
+            valueElement.addEventListener("keydown",(evt) => {
                 if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
                     //Create the properties object of elements.
                     var propertyObject: any = {};
@@ -368,13 +359,13 @@ module VORLON {
                 }
             });
 
-            valueElement.addEventListener("blur", () => {
+            valueElement.addEventListener("blur",() => {
                 valueElement.contentEditable = "false";
                 Tools.RemoveClass(valueElement, "editable");
             });
 
 
-            valueElement.addEventListener("click", () => this._makeEditable(valueElement));
+            valueElement.addEventListener("click",() => this._makeEditable(valueElement));
 
             return valueElement;
         }
@@ -392,16 +383,16 @@ module VORLON {
             this._styleView.appendChild(wrap);
 
             if (editableLabel) {
-                label.addEventListener("blur", () => {
+                label.addEventListener("blur",() => {
                     label.contentEditable = "false";
                     Tools.RemoveClass(label, "editable");
                 });
 
-                label.addEventListener("click", () => {
+                label.addEventListener("click",() => {
                     this._makeEditable(label);
                 });
 
-                label.addEventListener("keydown", (evt) => {
+                label.addEventListener("keydown",(evt) => {
                     if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
                         this._makeEditable(valueElement);
                         evt.preventDefault();
@@ -429,7 +420,7 @@ module VORLON {
                 }
             }
             // Append add style button
-            this._generateButton(this._styleView, "+", "styleButton").addEventListener('click', (e) => {
+            this._generateButton(this._styleView, "+", "styleButton").addEventListener('click',(e) => {
                 this._generateStyle("property", "value", internalId, true);
                 this._styleView.appendChild(<HTMLElement>e.target);
             });
@@ -443,94 +434,94 @@ module VORLON {
             parent.appendChild(span);
         }
 
-        private _generateColorfullLink(link: HTMLAnchorElement, receivedObject: any): void {
-            this._appendSpan(link, "nodeName", receivedObject.name);
+        //private _generateColorfullLink(link: HTMLElement, receivedObject: any): void {
+        //    this._appendSpan(link, "nodeName", receivedObject.name);
 
-            var eventNode = function (nodeName, nodeValue) {
-                var oldNodeName = nodeName.innerHTML;
-                var sendTextToClient = function (attributeName, attributeValue, nodeEditable) {
-                    if (sendedValue)
-                        return;
-                    sendedValue = true;
-                    this.sendToClient({
-                        type: ReceivedObjectClientSideType.attributeEdit,
-                        attributeName: nodeName.innerHTML,
-                        attributeOldName: oldNodeName,
-                        attributeValue: nodeValue.innerHTML,
-                        order: receivedObject.internalId
-                    });
-                    oldNodeName = nodeName.innerHTML;
-                    if (!oldNodeName) { // delete attribute 
-                        nodeName.parentElement.removeChild(nodeName);
-                        nodeValue.parentElement.removeChild(nodeValue);
-                    }
-                    nodeEditable.contentEditable = "false";
-                    Tools.RemoveClass(nodeEditable, "editable");
-                }
-                               var sendedValue = false;
-                nodeValue.addEventListener("click", () => {
-                    this._makeEditable(nodeValue);
-                    sendedValue = false;
-                });
-                nodeName.addEventListener("click", () => {
-                    this._makeEditable(nodeName);
-                    sendedValue = false;
-                });
-                nodeValue.addEventListener("blur", () => {
-                    sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
-                });
-                nodeName.addEventListener("blur", () => {
-                    sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeName);
-                });
-                nodeName.addEventListener("keydown", (evt) => {
-                    if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                        evt.preventDefault();
-                        sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeName);
-                    }
-                });
-                nodeValue.addEventListener("keydown", (evt) => {
-                    if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                        evt.preventDefault();
-                        sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
-                    }
-                });
-            }
-            var addnode = document.createElement('span');
-            addnode.className = "fa fa-plus-circle";
-            link.appendChild(addnode);
+        //    var eventNode = function (nodeName, nodeValue) {
+        //        var oldNodeName = nodeName.innerHTML;
+        //        var sendTextToClient = function (attributeName, attributeValue, nodeEditable) {
+        //            if (sendedValue)
+        //                return;
+        //            sendedValue = true;
+        //            this.sendToClient({
+        //                type: ReceivedObjectClientSideType.attributeEdit,
+        //                attributeName: nodeName.innerHTML,
+        //                attributeOldName: oldNodeName,
+        //                attributeValue: nodeValue.innerHTML,
+        //                order: receivedObject.internalId
+        //            });
+        //            oldNodeName = nodeName.innerHTML;
+        //            if (!oldNodeName) { // delete attribute 
+        //                nodeName.parentElement.removeChild(nodeName);
+        //                nodeValue.parentElement.removeChild(nodeValue);
+        //            }
+        //            nodeEditable.contentEditable = "false";
+        //            Tools.RemoveClass(nodeEditable, "editable");
+        //        }
+        //        var sendedValue = false;
+        //        nodeValue.addEventListener("click",() => {
+        //            this._makeEditable(nodeValue);
+        //            sendedValue = false;
+        //        });
+        //        nodeName.addEventListener("click",() => {
+        //            this._makeEditable(nodeName);
+        //            sendedValue = false;
+        //        });
+        //        nodeValue.addEventListener("blur",() => {
+        //            sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
+        //        });
+        //        nodeName.addEventListener("blur",() => {
+        //            sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeName);
+        //        });
+        //        nodeName.addEventListener("keydown",(evt) => {
+        //            if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+        //                evt.preventDefault();
+        //                sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeName);
+        //            }
+        //        });
+        //        nodeValue.addEventListener("keydown",(evt) => {
+        //            if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+        //                evt.preventDefault();
+        //                sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
+        //            }
+        //        });
+        //    }
+        //    var addnode = document.createElement('span');
+        //    addnode.className = "fa fa-plus-circle";
+        //    link.appendChild(addnode);
 
-            addnode.addEventListener("click", () => {
-                var node = document.createElement('span');
-                node.className = 'nodeAttribute';
-                var nodeName = document.createElement('span');
-                nodeName.innerHTML = "attributeName"
+        //    addnode.addEventListener("click",() => {
+        //        var node = document.createElement('span');
+        //        node.className = 'nodeAttribute';
+        //        var nodeName = document.createElement('span');
+        //        nodeName.innerHTML = "attributeName"
 
-                var nodeValue = document.createElement('span');
-                nodeValue.innerHTML = "value"
-                node.appendChild(nodeName);
-                node.appendChild(nodeValue);
-                link.appendChild(node);
-                eventNode.bind(this)(nodeName, nodeValue);
-            });
+        //        var nodeValue = document.createElement('span');
+        //        nodeValue.innerHTML = "value"
+        //        node.appendChild(nodeName);
+        //        node.appendChild(nodeValue);
+        //        link.appendChild(node);
+        //        eventNode.bind(this)(nodeName, nodeValue);
+        //    });
 
-            receivedObject.attributes.forEach((attr) => {
-                var node = document.createElement('span');
-                node.className = 'nodeAttribute';
-                var nodeName = document.createElement('span');
-                nodeName.innerHTML = attr[0];
+        //    receivedObject.attributes.forEach((attr) => {
+        //        var node = document.createElement('span');
+        //        node.className = 'nodeAttribute';
+        //        var nodeName = document.createElement('span');
+        //        nodeName.innerHTML = attr[0];
 
-                var nodeValue = document.createElement('span');
-                nodeValue.innerHTML = attr[1];
-                node.appendChild(nodeName);
-                node.appendChild(nodeValue);
-                eventNode.bind(this)(nodeName, nodeValue);
-                link.appendChild(node);
-            });
-        }
+        //        var nodeValue = document.createElement('span');
+        //        nodeValue.innerHTML = attr[1];
+        //        node.appendChild(nodeName);
+        //        node.appendChild(nodeValue);
+        //        eventNode.bind(this)(nodeName, nodeValue);
+        //        link.appendChild(node);
+        //    });
+        //}
 
-        private _generateColorfullClosingLink(link: HTMLElement, receivedObject: any): void {
-            this._appendSpan(link, "nodeName", receivedObject.name);
-        }
+        //private _generateColorfullClosingLink(link: HTMLElement, receivedObject: any): void {
+        //    this._appendSpan(link, "nodeName", receivedObject.name);
+        //}
 
         private _generateButton(parentNode: HTMLElement, text: string, className: string, attribute?: any) {
             var button = document.createElement("button");
@@ -541,136 +532,133 @@ module VORLON {
             button.setAttribute('button-block', '');
             return parentNode.appendChild(button);
         }
-        private _spaceCheck = /[^\t\n\r ]/;
-        private _generateTreeNode(parentNode: HTMLElement, receivedObject: any, first = false, parentReceivedObject?: any): void {
-            if (receivedObject.type == 3) {
-                if (this._spaceCheck.test(receivedObject.content)) {
-                    var textNode = document.createElement('span');
-                    textNode.className = 'nodeTextContent';
-                    textNode.textContent = receivedObject.content.trim();
-                    parentNode.appendChild(textNode);
-                    textNode.contentEditable = "false";
-                    textNode.addEventListener("click", () => this._makeEditable(textNode));
-                    var sendTextToClient = function () {
-                        this.sendToClient({
-                            type: ReceivedObjectClientSideType.valueEdit,
-                            newValue: textNode.innerHTML,
-                            order: parentReceivedObject.internalId
-                        });
-                        textNode.contentEditable = "false";
-                        Tools.RemoveClass(textNode, "editable");
-                    }
-                    textNode.addEventListener("blur", () => {
-                        sendTextToClient.bind(this)();
-                    });
+        //private _spaceCheck = /[^\t\n\r ]/;
+        //private _generateTreeNode(parentNode: HTMLElement, receivedObject: any, first = false, parentReceivedObject?: any): void {
+        //    if (receivedObject.type == 3) {
+        //        if (this._spaceCheck.test(receivedObject.content)) {
+        //            var textNode = document.createElement('span');
+        //            textNode.className = 'nodeTextContent';
+        //            textNode.textContent = receivedObject.content.trim();
+        //            parentNode.appendChild(textNode);
+        //            textNode.contentEditable = "false";
+        //            textNode.addEventListener("click",() => this._makeEditable(textNode));
+        //            var sendTextToClient = () => {
+        //                this.sendToClient({
+        //                    type: ReceivedObjectClientSideType.valueEdit,
+        //                    newValue: textNode.innerHTML,
+        //                    order: parentReceivedObject.internalId
+        //                });
+        //                textNode.contentEditable = "false";
+        //                Tools.RemoveClass(textNode, "editable");
+        //            }
 
-                    textNode.addEventListener("keydown", (evt) => {
-                        if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                            sendTextToClient.bind(this)();
-                        }
-                    });
-                    textNode.addEventListener("click", () => {
-                        this._makeEditable(textNode);
-                    });
-                }
-            }
-            else {
-                parentNode.setAttribute('data-has-children', '');
+        //            textNode.addEventListener("blur",() => {
+        //                sendTextToClient.bind(this)();
+        //            });
 
-                var root = document.createElement("div");
-                parentNode.appendChild(root);
+        //            textNode.addEventListener("keydown",(evt) => {
+        //                if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+        //                    sendTextToClient.bind(this)();
+        //                }
+        //            });
+        //            textNode.addEventListener("click",() => {
+        //                this._makeEditable(textNode);
+        //            });
+        //        }
+        //    }
+        //    else {
+        //        parentNode.setAttribute('data-has-children', '');
 
-                var container = document.createElement("div");
-                container.className = 'nodeContentContainer';
-                var btnAttribute = null;
-                if (receivedObject.hasChildnodes) {
-                    btnAttribute = { name: "data-collapsed", value: "" };
-                    container.id = "vorlon-" + receivedObject.nodeId;
-                }
-                this._generateButton(root, "", "treeNodeButton", btnAttribute).addEventListener("click", () => {
-                    if (receivedObject.hasChildnodes) {
-                        this._clikedNodeID = receivedObject.internalId;
-                        this.sendToClient({
-                            type: ReceivedObjectClientSideType.refreshbyid,
-                            internalID: receivedObject.internalId
-                        });
-                    }
-                });
+        //        var root = document.createElement("div");
+        //        parentNode.appendChild(root);
 
-                // Main node
-                var linkText = document.createElement("a");
-                linkText.draggable = false;
-                (<any>linkText).__targetInternalId = receivedObject.internalId;
+        //        var container = document.createElement("div");
+        //        container.className = 'nodeContentContainer';
+        //        var btnAttribute = null;
+        //        if (receivedObject.hasChildnodes) {
+        //            btnAttribute = { name: "data-collapsed", value: "" };
+        //            container.id = "vorlon-" + receivedObject.nodeId;
+        //        }
+        //        this._generateButton(root, "", "treeNodeButton", btnAttribute).addEventListener("click",() => {
+        //            if (receivedObject.hasChildnodes) {
+        //                this._clikedNodeID = receivedObject.internalId;
+        //                this.sendToClient({
+        //                    type: ReceivedObjectClientSideType.refreshbyid,
+        //                    internalID: receivedObject.internalId
+        //                });
+        //            }
+        //        });
 
-                this._generateColorfullLink(linkText, receivedObject);
+        //        // Main node
+        //        var linkText = document.createElement("span");
+        //        (<any>linkText).__targetInternalId = receivedObject.internalId;
 
-                linkText.addEventListener("click", () => {
-                    if (this._previousSelectedNode) {
-                        Tools.RemoveClass(this._previousSelectedNode, "treeNodeSelected");
-                        this.sendToClient({
-                            type: ReceivedObjectClientSideType.unselect,
-                            order: (<any>this._previousSelectedNode).__targetInternalId
-                        });
-                    }
-                    else {
-                        this.sendToClient({
-                            type: ReceivedObjectClientSideType.unselect,
-                            order: null
-                        });
-                    }
+        //        this._generateColorfullLink(linkText, receivedObject);
 
-                    Tools.AddClass(linkText, "treeNodeSelected");
-                    this.sendToClient({
-                        type: ReceivedObjectClientSideType.select,
-                        order: receivedObject.internalId
-                    });
-                    this._generateStyles(receivedObject.styles, receivedObject.internalId);
+        //        linkText.addEventListener("click",() => {
+        //            if (this._previousSelectedNode) {
+        //                Tools.RemoveClass(this._previousSelectedNode, "treeNodeSelected");
+        //                this.sendToClient({
+        //                    type: ReceivedObjectClientSideType.unselect,
+        //                    order: (<any>this._previousSelectedNode).__targetInternalId
+        //                });
+        //            }
+        //            else {
+        //                this.sendToClient({
+        //                    type: ReceivedObjectClientSideType.unselect,
+        //                    order: null
+        //                });
+        //            }
 
-                    this._previousSelectedNode = linkText;
-                });
+        //            Tools.AddClass(linkText, "treeNodeSelected");
+        //            this.sendToClient({
+        //                type: ReceivedObjectClientSideType.select,
+        //                order: receivedObject.internalId
+        //            });
+        //            this._generateStyles(receivedObject.styles, receivedObject.internalId);
 
-                linkText.href = "#";
+        //            this._previousSelectedNode = linkText;
+        //        });
 
-                linkText.className = "treeNodeHeader";
+        //        linkText.className = "treeNodeHeader";
 
-                root.appendChild(linkText);
-                root.className = first ? "firstTreeNodeText" : "treeNodeText";
+        //        root.appendChild(linkText);
+        //        root.className = first ? "firstTreeNodeText" : "treeNodeText";
 
-                // Tools
-                if (receivedObject.id) {
-                    var toolsLink = document.createElement("a");
-                    toolsLink.draggable = false;
-                    toolsLink.innerHTML = "#";
-                    toolsLink.className = "treeNodeTools";
-                    toolsLink.href = "#";
+        //        // Tools
+        //        if (receivedObject.id) {
+        //            var toolsLink = document.createElement("span");
+        //            toolsLink.innerHTML = "";
+        //            toolsLink.className = "treeNodeTools fa fa-terminal";
 
-                    toolsLink.addEventListener("click", () => {
-                        this.sendCommandToPluginDashboard("CONSOLE", "setorder", {
-                            order: receivedObject.id
-                        });
-                    });
+        //            toolsLink.addEventListener("click",() => {
+        //                this.sendCommandToPluginDashboard("CONSOLE", "setorder", {
+        //                    order: receivedObject.id
+        //                });
+        //            });
 
-                    root.appendChild(toolsLink);
-                }
+        //            root.appendChild(toolsLink);
+        //        }
 
-                // Children
-                var nodes = receivedObject.children;
-                if (nodes && nodes.length) {
-                    for (var index = 0; index < nodes.length; index++) {
-                        var child = nodes[index];
-                        if (child.nodeType != 3) this._generateTreeNode(container, child, false, receivedObject);
-                    }
-                }
-                if (receivedObject.name) {
-                    var closingLink = document.createElement("div");
-                    closingLink.className = "treeNodeClosingText";
-                    this._generateColorfullClosingLink(closingLink, receivedObject);
-                    container.appendChild(closingLink);
-                }
+        //        // Children
+        //        var nodes = receivedObject.children;
+        //        if (nodes && nodes.length) {
+        //            for (var index = 0; index < nodes.length; index++) {
+        //                var child = nodes[index];
+        //                if (child.nodeType != 3) this._generateTreeNode(container, child, false, receivedObject);
+        //            }
+        //        }
+        //        if (receivedObject.name) {
+        //            var closingLink = document.createElement("div");
+        //            closingLink.className = "treeNodeClosingText";
+        //            this._generateColorfullClosingLink(closingLink, receivedObject);
+        //            container.appendChild(closingLink);
+        //        }
 
-                root.appendChild(container);
-            }
-        }
+        //        root.appendChild(container);
+        //    }
+        //}
+
         private _insertReceivedObject(receivedObject: any, root: any) {
             if (root.internalId === this._clikedNodeID) {
                 this._clikedNodeID = null;
@@ -703,24 +691,97 @@ module VORLON {
                 }
             }
             else if (receivedObject.refreshbyId) {
-                this._refreshButton.removeAttribute('changed');
-                var b = this._insertReceivedObject(receivedObject, this._lastReceivedObject);
-                while (this._treeDiv.hasChildNodes()) {
-                    this._treeDiv.removeChild(this._treeDiv.lastChild);
-                }
-                this._generateTreeNode(this._treeDiv, this._lastReceivedObject, true);
+                //this._refreshButton.removeAttribute('changed');
+                //var b = this._insertReceivedObject(receivedObject, this._lastReceivedObject);
+                //while (this._treeDiv.hasChildNodes()) {
+                //    this._treeDiv.removeChild(this._treeDiv.lastChild);
+                //}
+
+                //this._generateTreeNode(this._treeDiv, this._lastReceivedObject, true);
             }
             else {
-                this._refreshButton.removeAttribute('changed');
-                this._lastContentState = receivedObject.rootHTML;
-                this._lastReceivedObject = receivedObject;
-                while (this._treeDiv.hasChildNodes()) {
-                    this._treeDiv.removeChild(this._treeDiv.lastChild);
-                }
-                this._generateTreeNode(this._treeDiv, receivedObject, true);
+                
+                //this._generateTreeNode(this._treeDiv, receivedObject, true);
+            }
+        }
+
+        public initDashboard(root: PackagedNode) {
+            this._refreshButton.removeAttribute('changed');
+            this._lastContentState = root.rootHTML;
+            this._lastReceivedObject = root;
+            while (this._treeDiv.hasChildNodes()) {
+                this._treeDiv.removeChild(this._treeDiv.lastChild);
+            }
+            var node = new DomExplorerNode(this, null, this._treeDiv, root);
+        }
+
+        public refreshNode(node: PackagedNode) {
+            //this._refreshButton.removeAttribute('changed');
+                //var b = this._insertReceivedObject(receivedObject, this._lastReceivedObject);
+                //while (this._treeDiv.hasChildNodes()) {
+                //    this._treeDiv.removeChild(this._treeDiv.lastChild);
+                //}
+
+                //this._generateTreeNode(this._treeDiv, this._lastReceivedObject, true);
+        }
+
+        public dirtyCheck(receivedObject: any) {
+            if (this._lastContentState != receivedObject.rootHTML) {
+                this._refreshButton.setAttribute('changed', '');
+            }
+            else this._refreshButton.removeAttribute('changed');
+        }
+
+        select(selected: DomExplorerNode) {
+            if (this._selectedNode) {
+                this._selectedNode.selected(false);
+                this.sendToClient({
+                    type: ReceivedObjectClientSideType.unselect,
+                    order: this._selectedNode.node.internalId
+                });
+            } else {
+                this.sendToClient({
+                    type: ReceivedObjectClientSideType.unselect,
+                    order: null
+                });
+            }
+
+            if (selected) {
+                this._selectedNode = selected;
+                this.sendToClient({
+                    type: ReceivedObjectClientSideType.select,
+                    order: this._selectedNode.node.internalId
+                });
+                this._generateStyles(selected.node.styles, selected.node.internalId);
+            } else {
+                this._selectedNode = null;
             }
         }
     }
+
+    DOMExplorer.prototype.ClientCommands = {
+        dirtycheck: function () {
+            this.sendCommandToDashboard('dirtycheck', { rootHTML: document.body.innerHTML });
+        }
+    }
+
+    DOMExplorer.prototype.DashboardCommands = {
+        init: function (root: PackagedNode) {
+            var plugin = <DOMExplorer>this;
+            plugin.initDashboard(root);
+        },
+
+        refresh: function (root: PackagedNode) {
+            var plugin = <DOMExplorer>this;
+            plugin.initDashboard(root);
+        },
+
+        dirtyCheck: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.dirtyCheck(data);
+        }
+    }
+
     enum ReceivedObjectClientSideType {
         unselect,
         select,
@@ -731,6 +792,7 @@ module VORLON {
         ruleEdit,
         attributeEdit
     }
+
     class ReceivedObjectClientSide {
         public order: string;
         public type: ReceivedObjectClientSideType;
@@ -743,99 +805,198 @@ module VORLON {
         constructor() { }
     }
 
-    class PackagedNode {
-        id: String;
-        type: String;
-        name: String;
-        classes: String;
-        content: String;
+    class DomExplorerNode {
+        private static _spaceCheck = /[^\t\n\r ]/;
+        public element: HTMLElement;
+        public header: HTMLElement;
+        public node: PackagedNode;
+        public contentContainer: HTMLElement;
+        public attributes: DomExplorerNodeAttribute[] = [];
+        public childs: DomExplorerNode[] = [];
+        plugin: DOMExplorer;
+        parent: DomExplorerNode;
+
+        constructor(plugin: DOMExplorer, parent: DomExplorerNode, parentElt: HTMLElement, node: PackagedNode) {
+            this.parent = parent;
+            this.node = node;
+            this.plugin = plugin;
+            this.render(parentElt);
+        }
+
+        selected(selected: boolean) {
+            if (selected) {
+                Tools.AddClass(this.element, 'treeNodeSelected');
+            } else {
+                Tools.RemoveClass(this.element, 'treeNodeSelected');
+            }
+        }
+
+        render(parent: HTMLElement) {
+            if (this.node.type === "3") {
+                this.renderTextNode(parent);
+            } else {
+                this.renderDOMNode(parent);
+            }
+        }
+
+        sendTextToClient() {
+            this.plugin.sendToClient({
+                type: ReceivedObjectClientSideType.valueEdit,
+                newValue: this.element.innerHTML,
+                order: this.parent.node.internalId
+            });
+            this.element.contentEditable = "false";
+            Tools.RemoveClass(this.element, "editable");
+        }
+
+        renderTextNode(parentElt: HTMLElement) {
+            if (DomExplorerNode._spaceCheck.test(this.node.content)) {
+                var textNode = new FluentDOM('span', 'nodeTextContent', parentElt);
+                this.element = textNode.element;
+                textNode.text(this.node.content.trim())
+                    .editable(false)
+                    .blur(() => this.sendTextToClient())
+                    .keydown((evt) => {
+                    if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+                        this.sendTextToClient();
+                    }
+                })
+                    .click(() => DomExplorerNode._makeEditable(this.element));
+
+            }
+        }
+
+        renderDOMNode(parentElt: HTMLElement) {
+            parentElt.setAttribute('data-has-children', '');
+            var root = new FluentDOM('DIV', '', parentElt);
+            this.element = root.element;
+            root.append('BUTTON', 'treeNodeButton',(nodeButton) => {
+                if (this.node.hasChildNodes) {
+                    nodeButton.attr("data-collapsed", "");
+                }
+                nodeButton.attr('button-block', '');
+                nodeButton.click(() => {
+                    if (this.node.hasChildNodes) {
+                        this.plugin._clikedNodeID = this.node.internalId;
+                        this.plugin.sendToClient({
+                            type: ReceivedObjectClientSideType.refreshbyid,
+                            internalID: this.node.internalId
+                        });
+                    }
+                });
+            });
+
+            root.append("SPAN", "treeNodeHeader",(header) => {
+                this.header = header.element;
+                header.click(() => this.plugin.select(this));
+                header.createChild("SPAN", "nodeName").text(this.node.name);
+                header.createChild("SPAN", "fa fa-plus-circle").click(() => {
+                    this.addAttribute("name", "value");
+                });
+                this.node.attributes.forEach((attr) => {
+                    this.addAttribute(attr[0], attr[1]);
+                });
+            });
+
+            root.append('DIV', 'nodeContentContainer',(container) => {
+                this.contentContainer = container.element;
+                if (this.node.hasChildNodes) {
+                    this.contentContainer.id = "vorlon-" + this.node.internalId;
+                }
+
+                var nodes = this.node.children;
+                if (nodes && nodes.length) {
+                    for (var index = 0; index < nodes.length; index++) {
+                        var child = nodes[index];
+                        if (child.nodeType != 3) {
+                            var node = new DomExplorerNode(this.plugin, this, this.contentContainer, child);
+                            this.childs.push(node);
+                            //this._generateTreeNode(container, child, false, receivedObject);
+                        }
+                    }
+                }
+
+                if (this.node.name) {
+                    container.createChild("DIV", "treeNodeClosingText",(footer) => {
+                        footer.createChild("SPAN", "nodeName").text(this.node.name);
+                    });
+                }
+            });            
+
+            // Main node
+            
+            //this._generateColorfullLink(linkText, receivedObject);
+            
+            //root.className = first ? "firstTreeNodeText" : "treeNodeText";
+
+            // Tools
+            if (this.node.id) {
+                root.createChild("span", "treeNodeTools fa fa-terminal").click(() => {
+                    this.plugin.sendCommandToPluginDashboard("CONSOLE", "setorder", {
+                        order: this.node.id
+                    });
+                });
+            }
+        }
+
+        addAttribute(name: string, value: string) {
+            var attr = new DomExplorerNodeAttribute(this, name, value);
+            this.attributes.push(attr);
+        }
+
+        static _makeEditable(element: HTMLElement): void {
+            element.contentEditable = "true";
+            Tools.AddClass(element, "editable");
+        }
+    }
+
+    class DomExplorerNodeAttribute {
+        public parent: DomExplorerNode;
+        public element: HTMLElement;
+        public name: string;
+        public value: string;
+
+        constructor(parent: DomExplorerNode, name: string, value: string) {
+            this.parent = parent;
+            this.name = name;
+            this.value = value;
+            this.render();
+        }
+
+        render() {
+            var node = new FluentDOM("SPAN", "nodeAttribute", this.parent.header);
+            this.element = node.element;
+            node.createChild("SPAN").text(this.name);
+            node.createChild("SPAN").text(this.value);
+        }
+    }
+
+    //TODO move code for style editor here
+    class DomExplorerPropertyEditor {
+        public items: DomExplorerPropertyEditorItem[] = [];
+
+        constructor(parent: HTMLElement, styles: any) {
+        }
+    }
+
+    //TODO move code for style editor item here
+    class DomExplorerPropertyEditorItem {
+        constructor(parent: DomExplorerPropertyEditor, name: string, value: string) {
+        }
+    }
+
+    export interface PackagedNode {
+        id: string;
+        type: string;
+        name: string;
+        classes: string;
+        content: string;
         attributes: Array<any>;
         styles: any;
         internalId: string;
-        hasChildnodes: boolean;
+        hasChildNodes: boolean;
         rootHTML: any;
         children: Array<any>;
-        refreshbyId: boolean;
-        constructor(node: any) {
-            this.id = node.id;
-            this.type = node.nodeType;
-            this.name = node.localName;
-            this.classes = node.className;
-            this.content = node.textContent;
-            this.attributes = node.attributes ? Array.prototype.map.call(node.attributes, function (attr) {
-                return [attr.name, attr.value];
-            }) : [];
-            this.styles = this._getAppliedStyles(node);
-            if (!node.__vorlon) {
-                node.__vorlon = <any>{
-                    internalId: VORLON.Tools.CreateGUID()
-                };
-            }
-            this.internalId = node.__vorlon.internalId;
-            this.children = [];
-        }
-        private _getAppliedStyles(node: HTMLElement): string[] {
-            // Style sheets
-            var styleNode = new Array<string>();
-            var sheets = <any>document.styleSheets;
-            var style: CSSStyleDeclaration;
-            var appliedStyles = new Array<string>();
-
-            for (var c = 0; c < sheets.length; c++) {
-
-                var rules = sheets[c].rules || sheets[c].cssRules;
-
-                if (!rules) {
-                    continue;
-                }
-
-                for (var r = 0; r < rules.length; r++) {
-                    var rule = rules[r];
-                    var selectorText = rule.selectorText;
-
-                    try {
-                        var matchedElts = document.querySelectorAll(selectorText);
-
-                        for (var index = 0; index < matchedElts.length; index++) {
-                            var element = matchedElts[index];
-                            style = rule.style;
-                            if (element === node) {
-                                for (var i = 0; i < style.length; i++) {
-                                    if (appliedStyles.indexOf(style[i]) === -1) {
-                                        appliedStyles.push(style[i]);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch (e) {
-                        // Ignoring this rule - Angular.js, etc..
-                    }
-                }
-            }
-
-            // Local style
-            style = node.style;
-            if (style) {
-                for (index = 0; index < style.length; index++) {
-                    if (appliedStyles.indexOf(style[index]) === -1) {
-                        appliedStyles.push(style[index]);
-                    }
-                }
-            }
-
-            // Get effective styles
-            var winObject = document.defaultView || window;
-            for (index = 0; index < appliedStyles.length; index++) {
-                var appliedStyle = appliedStyles[index];
-                if (winObject.getComputedStyle) {
-                    styleNode.push(appliedStyle + ":" + winObject.getComputedStyle(node, "").getPropertyValue(appliedStyle));
-                }
-            }
-
-            return styleNode;
-        }
-
     }
     // Register
     Core.RegisterPlugin(new DOMExplorer());
