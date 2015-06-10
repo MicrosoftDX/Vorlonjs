@@ -306,14 +306,11 @@
         cursor: pointer;
     }
 
-    x-action[event="refresh"]:before {
-        content: '\26AB';
-        margin-right: 0.1em;
+    x-action[event="refresh"] .fa {
         color: #aaa;
-        background: none;
     }
 
-    x-action[event="refresh"][changed]:before {
+    x-action[event="refresh"][changed] .fa {
         color: red;
     }
 }
