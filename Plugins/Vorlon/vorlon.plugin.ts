@@ -8,7 +8,7 @@
 
         public _ready = true;
         protected _id = "";
-        private _debug: boolean;
+        protected _debug: boolean;
         public _type = PluginType.OneOne;
         public trace : (msg) => void;
         protected traceLog = (msg) => { console.log(msg); };

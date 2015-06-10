@@ -1,5 +1,12 @@
 .plugin-dom {
-   [button-block] {
+    @bracketColor: #BBB;
+    @nodeNameColor: #6b2d81;
+    @nodeTextColor: #111;
+    @attributeNameColor: #ed2424;
+    @attributeValueColor: #007ca7;
+    @quotesColor: #6b2d81;
+
+    [button-block] {
         display: block;
         padding: 0;
         margin: 0;
@@ -54,6 +61,8 @@
         height: ~"calc(100% - 36px)";
         overflow-x: none;
         overflow-y: auto;
+        font-size: 13px;
+        line-height: 1.7em;
     }
 
     #treeView,
@@ -76,16 +85,16 @@
     .treeNodeButton {
         display: inline-block;
         color: #444;
-        margin-left: -0.75em;
+        margin-left: -7px;
         text-align: center;
         background: #fff;
         cursor: pointer;
-        border: 1px solid #CCC;
+        border: 1px solid #DDD;
         /*media screen*/
         display: inline-block;
-        width: 14px;
-        height: 14px;
-        line-height: 12px;
+        width: 12px;
+        height: 12px;
+        line-height: 10px;
         vertical-align: middle;
         text-align: center;
         margin-right: 4px;
@@ -114,19 +123,26 @@
         }
     }
 
+    .editable {
+        cursor: text;
+    }
+
     .treeNodeHeader {
         text-decoration: none;
         color: #ccc;
-        font-weight: bold;
+        /*font-weight: bold;*/
+        cursor: pointer;
 
         .fa-plus-circle {
-            color: #555;
+            color: #BBB;
+            font-size: 0.9em;
             margin-left: 5px;
             margin-right: 5px;
         }
 
         .editable {
             border-bottom: 2px dashed red;
+            background-color: transparent !important;
         }
 
 
@@ -136,17 +152,19 @@
 
         &:before {
             content: "<";
-            color: #000;
+            color: @bracketColor;
         }
 
         &:after {
             content: ">";
-            color: #000;
+            color: @bracketColor;
         }
     }
 
     .nodeContentContainer {
-        padding-left: 1em;
+        padding-left: 20px;
+
+
 
         &:not([data-has-children]),
         &:not([data-has-children]) .treeNodeClosingText {
@@ -176,14 +194,22 @@
     }
 
     .treeNodeSelected,
-    .treeNodeSelected ~ .nodeContentContainer > .treeNodeClosingText .nodeName {
+    .treeNodeSelected .treeNodeClosingText .nodeName {
         background: yellow !important;
     }
 
     .treeNodeTools {
-        color: #444;
+        color: #666;
         float: right;
         text-decoration: none;
+        border: 1px solid #DDD;
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        box-sizing: border-box;
+        text-align: center;
+        cursor: pointer;
+        font-size: 0.8em;
     }
 
     .treeNodeText {
@@ -197,48 +223,47 @@
     }
 
     .nodeTextContent {
-        color: #777;
+        color: @nodeTextColor;
     }
 
     .treeNodeClosingText {
-        margin-left: -0.25em;
-        font-weight: bold;
+        display: inline-block;
         background: #fff;
         cursor: default;
 
         .nodeName:before {
             content: "</";
-            color: #000;
+            color: @bracketColor;
         }
 
         .nodeName:after {
             content: ">";
-            color: #000;
+            color: @bracketColor;
         }
     }
 
     .nodeName {
-        color: #6B2D81;
+        color: @nodeNameColor;
     }
 
     .nodeAttribute {
         padding-left: 0.5em;
 
         span:first-child {
-            color: #ed2424;
+            color: @attributeNameColor;
 
             &:after {
                 content: "=\"";
-                color: #6B2D81;
+                color: @quotesColor;
             }
         }
 
         span:last-child {
-            color: #007ca7;
+            color: @attributeValueColor;
 
             &:after {
                 content: "\"";
-                color: #6B2D81;
+                color: @quotesColor;
             }
         }
     }
@@ -281,14 +306,11 @@
         cursor: pointer;
     }
 
-    x-action[event="refresh"]:before {
-        content: '\26AB';
-        margin-right: 0.1em;
+    x-action[event="refresh"] .fa {
         color: #aaa;
-        background: none;
     }
 
-    x-action[event="refresh"][changed]:before {
+    x-action[event="refresh"][changed] .fa {
         color: red;
     }
 }

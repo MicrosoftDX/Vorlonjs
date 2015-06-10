@@ -186,19 +186,27 @@
 		public childs: Array<FluentDOM>;
 		public parent: FluentDOM;
 
-		constructor(nodeType: string, className?: string, parentElt?: Element, parent?: FluentDOM) {
-			this.element = document.createElement(nodeType);
-			if (className)
-				this.element.className = className;
-			if (parentElt)
-				parentElt.appendChild(this.element);
+        constructor(nodeType: string, className?: string, parentElt?: Element, parent?: FluentDOM) {
+            this.childs = [];
+            if (nodeType) {
+                this.element = document.createElement(nodeType);
+                if (className)
+                    this.element.className = className;
+                if (parentElt)
+                    parentElt.appendChild(this.element);
 
-			this.parent = parent;
-			this.childs = [];
-			if (parent) {
-				parent.childs.push(this);
-			}
-		}
+                this.parent = parent;
+                if (parent) {
+                    parent.childs.push(this);
+                }
+            }
+        }
+
+        public static for(element: HTMLElement) {
+            var res = new FluentDOM(null);
+            res.element = element;
+            return res;
+        }
 
 		addClass(classname: string) {
 			this.element.classList.add(classname);
@@ -231,7 +239,7 @@
 		}
 
 		text(text: string) {
-			this.element.innerText = text;
+			this.element.textContent = text;
 			return this;
 		}
 
@@ -243,7 +251,12 @@
 		attr(name: string, val: string) {
 			this.element.setAttribute(name, val);
 			return this;
-		}
+        }
+
+        editable(editable: boolean) {
+            this.element.contentEditable = editable ? "true" : "false";
+            return this;
+        }
 
 		style(name: string, val: string) {
 			this.element.style[name] = val;
@@ -270,6 +283,16 @@
         
         click(callback : (EventTarget) => void){
             this.element.addEventListener('click', callback);
+            return this;
+        }
+
+        blur(callback: (EventTarget) => void) {
+            this.element.addEventListener('blur', callback);
+            return this;
+        }
+
+        keydown(callback: (EventTarget) => void) {
+            this.element.addEventListener('keydown', callback);
             return this;
         }
 	}
