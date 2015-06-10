@@ -1,5 +1,6 @@
 npm-debug.log
 *.log
+/plugins/**/*.css
 tsconfig.json
 /Plugins/obj
 **/node_modules
@@ -7,5 +8,6 @@ sync.bat
 *.suo
 /.vs/
 bin/
-GLE idées.txt
+GLE idï¿½es.txt
 sync.bat
+Plugins/Vorlon/plugins/remoteDebugging.zip

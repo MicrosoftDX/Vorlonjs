@@ -24,6 +24,7 @@
                 hookingFunction(optionalParams);
                 previousFunction.apply(rootObject, optionalParams);
             }
+            return previousFunction;
         }
 
         public static CreateCookie(name: string, value: string, days: number): void {
@@ -170,5 +171,106 @@
                 return e;
             }
         }
-    }
+
+        public static ToggleClass(e: HTMLElement, name: string) {
+            if (e.className.match(name)) {
+                Tools.RemoveClass(e, name);
+            } else {
+                Tools.AddClass(e, name);
+            }
+        }
+    }    
+    
+    export class FluentDOM {
+		public element: HTMLElement;
+		public childs: Array<FluentDOM>;
+		public parent: FluentDOM;
+
+		constructor(nodeType: string, className?: string, parentElt?: Element, parent?: FluentDOM) {
+			this.element = document.createElement(nodeType);
+			if (className)
+				this.element.className = className;
+			if (parentElt)
+				parentElt.appendChild(this.element);
+
+			this.parent = parent;
+			this.childs = [];
+			if (parent) {
+				parent.childs.push(this);
+			}
+		}
+
+		addClass(classname: string) {
+			this.element.classList.add(classname);
+			return this;
+		}
+
+		className(classname: string) {
+			this.element.className = classname;
+			return this;
+		}
+
+		opacity(opacity: string) {
+			this.element.style.opacity = opacity;
+			return this;
+		}
+
+		display(display: string) {
+			this.element.style.display = display;
+			return this;
+		}
+
+		hide() {
+			this.element.style.display = 'none';
+			return this;
+		}
+
+		visibility(visibility: string) {
+			this.element.style.visibility = visibility;
+			return this;
+		}
+
+		text(text: string) {
+			this.element.innerText = text;
+			return this;
+		}
+
+		html(text: string) {
+			this.element.innerHTML = text;
+			return this;
+		}
+
+		attr(name: string, val: string) {
+			this.element.setAttribute(name, val);
+			return this;
+		}
+
+		style(name: string, val: string) {
+			this.element.style[name] = val;
+			return this;
+		}
+
+		appendTo(elt: Element) {
+			elt.appendChild(this.element);
+			return this;
+		}
+		
+		append(nodeType: string, className?: string, callback?: (FluentDOM) => void) {
+			var child = new FluentDOM(nodeType, className, this.element, this);
+			if (callback) {
+				callback(child);
+			}
+			return this;
+        }
+
+        createChild(nodeType: string, className?: string) {
+            var child = new FluentDOM(nodeType, className, this.element, this);            
+            return child;
+        }
+        
+        click(callback : (EventTarget) => void){
+            this.element.addEventListener('click', callback);
+            return this;
+        }
+	}
 }

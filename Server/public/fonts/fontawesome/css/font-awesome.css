@@ -19,6 +19,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transform: translate(0, 0);
+  -webkit-animation: none;
+  animation : none;  
 }
 /* makes the font 33% larger relative to the icon container */
 .fa-lg {
@@ -85,6 +87,12 @@
   -webkit-animation: fa-spin 1s infinite steps(8);
   animation: fa-spin 1s infinite steps(8);
 }
+
+.no-anim{
+  -webkit-animation: none;
+  animation: none;
+}
+
 @-webkit-keyframes fa-spin {
   0% {
     -webkit-transform: rotate(0deg);

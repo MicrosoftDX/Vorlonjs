@@ -38,8 +38,7 @@ module VORLON {
                 message: receivedObject.message.split("").reverse().join("")
             };
 
-            Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", true);
-
+            this.sendToDashboard(data);
         }
 
 
@@ -60,9 +59,9 @@ module VORLON {
                 // Send message to client when user types and hits return
                 this._inputField.addEventListener("keydown", (evt) => {
                     if (evt.keyCode === 13) {
-                        Core.Messenger.sendRealtimeMessage(this.getID(), {
+                        this.sendToClient({
                             message: this._inputField.value
-                        }, RuntimeSide.Dashboard);
+                        });
 
                         this._inputField.value = "";
                     }

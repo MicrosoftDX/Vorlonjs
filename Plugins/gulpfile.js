@@ -65,6 +65,7 @@ gulp.task('scripts', ['typescript-to-js'], function () {
             './**/vorlon.domExplorer.js',
             './**/vorlon.modernizrReport.js',
             './**/objectExplorer/vorlon.objectExplorer.js',
+            './**/xhrPanel/vorlon.xhrPanel.js',
             './**/vorlon.ngInspector.js',
             './**/sample/vorlon.sample.js'
         ])
@@ -72,7 +73,7 @@ gulp.task('scripts', ['typescript-to-js'], function () {
                 path.extname = ".min.js";
               })
             )
-        .pipe(uglify())
+/*   .pipe(uglify())*/
         .pipe(gulp.dest('.'));
 });
 
@@ -128,7 +129,7 @@ gulp.task('watch', function() {
   gulp.watch([
     'Vorlon/**/*.ts',
     'Vorlon/**/*.less',
-    'Vorlon/plugins/**/*.*',
+    //'Vorlon/plugins/**/*.*',
   ], ['default']);
 });
 

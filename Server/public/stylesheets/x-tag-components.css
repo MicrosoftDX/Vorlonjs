@@ -1,0 +1,154 @@
+x-action{display:inline-block}
+
+
+x-controlbar {
+  display:-webkit-box;
+  display:-moz-box;
+  display:-ms-flexbox;
+  display:-webkit-flex;
+  display:flex;
+  padding: 0.35em;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 36px;
+  font-size: 0.8rem;
+}
+
+x-controlbar > * {
+  -webkit-box-flex: 0;
+  -moz-box-flex: 0;
+  -webkit-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
+  box-flex: 0;
+  flex: 0 0 auto;
+  margin-left: 0.35em;
+  padding: 0.35em 0.7em;
+  border: 1px solid rgba(0,0,0, 0.1);
+  font: inherit;  
+}
+
+x-controlbar > *:first-child {
+  margin-left: 0; 
+}
+
+x-controlbar > [stretch] {
+  -webkit-box-flex:1;
+  -moz-box-flex:1;
+  -webkit-flex:1;
+  -ms-flex:1;
+  box-flex:1;
+  flex:1;
+}
+
+x-controlbar > button,
+x-controlbar > x-action,
+x-controlbar > input[type="submit"] {
+  background: #ddd;
+  cursor: pointer;
+  line-height: 0.9rem;
+  text-align:center;
+}
+
+x-controlbar > button:hover,
+x-controlbar > x-action:hover,
+x-controlbar > input[type="submit"]:hover {
+  background: #BBB;
+}
+
+x-controlbar > input[type="text"],
+x-controlbar > input:not([type]) {
+  border: 1px solid rgba(0,0,0, 0.15);
+}
+
+
+
+[x-notify-parentnode] {
+  position: relative;
+  overflow: hidden;
+}
+
+x-notify {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 0.6em 2.5em 0.5em 0.6em;
+  color: #fff;
+  background: #34495e;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  cursor: default;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-transform: translateY(100%);
+  -ms-transform: translateY(100%);
+  transform: translateY(100%);
+  -webkit-transition: opacity 0.4s, transform 0.4s;
+  -ms-transition: opacity 0.4s, transform 0.4s;
+  transition: opacity 0.4s, transform 0.4s;
+}
+  
+  x-notify > *, x-notify:before, x-notify:after {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  
+  x-notify[closable]:after {
+    content: "✖";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 2.5em;
+    text-align: center;
+    cursor: pointer;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+  
+  x-notify[position="top"] {
+    top: 0;
+    bottom: auto;
+    -webkit-transform: translateY(-100%);
+    -ms-transform: translateY(-100%);
+    transform: translateY(-100%);
+  }
+  
+  x-notify[transition="show"] {
+    display: block;
+    opacity: 1;
+    -webkit-transform: translateY(0%);
+    -ms-transform: translateY(0%);
+    transform: translateY(0%);
+  }
+
+  x-notify[transition="hide"] {
+    opacity: 0;
+    -webkit-transition-duration: 0.2s;
+    -ms-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+  }
+  
+  x-notify[transitioning] {
+    display: block;
+  }
+
+/*** DEFAULT VARIANTS ***/
+
+x-notify[type="success"] {
+  background-color: #27ae60;
+}
+
+x-notify[type="warning"] {
+  background-color: #e67e22;
+}
+
+x-notify[type="error"] {
+  background-color: #e74c3c;
+}

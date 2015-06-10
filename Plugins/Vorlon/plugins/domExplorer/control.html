@@ -5,13 +5,22 @@
     <link href="control.css" rel="stylesheet" />
 </head>
 <body>
-<div id="DOMExplorerContainer" class="dom-explorer-container code-text">
-    <div class="tree-view-wrapper panel-left">
-      <div id="treeView"></div>
+    <div id="DOMExplorerContainer" class="dom-explorer-container code-text">
+        <div class="tree-view-wrapper panel-left">
+            <x-controlbar>
+                <x-action event="refresh" tabindex="0">Refresh</x-action>
+            </x-controlbar>
+            <div id="treeView"></div>
+        </div>
+        <div class="style-view-wrapper panel-right">
+            <div id="accordion">
+                <h3>styles</h3>
+                <div>
+                    <div id="styleView">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="style-view-wrapper panel-right">
-      <div id="styleView"></div>
-    </div>
-</div>
 </body>
 </html>
