@@ -13,7 +13,6 @@ module VORLON {
             super("domExplorer", "control.html", "control.css");
             this._id = "DOM";
             this._ready = false;
-            this._debug = true;
         }
 
         public static getAppliedStyles(node: HTMLElement): string[] {
@@ -287,6 +286,12 @@ module VORLON {
         }
         static makeEditable(element: HTMLElement): void {
             element.contentEditable = "true";
+            var range = document.createRange();
+            var sel = window.getSelection();
+            range.setStart(element, 1);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
             Tools.AddClass(element, "editable");
         }
 
@@ -340,7 +345,6 @@ module VORLON {
             }
             if (this._rootNode)
                 this._rootNode.dispose();
-
             this._rootNode = new DomExplorerNode(this, null, this._treeDiv, root);
         }
 
@@ -526,8 +530,7 @@ module VORLON {
                     if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
                         this.sendTextToClient();
                     }
-                })
-                    .click(() => DOMExplorer.makeEditable(this.element));
+                }).click(() => DOMExplorer.makeEditable(this.element));
 
             }
         }
@@ -620,36 +623,68 @@ module VORLON {
             this.value = value;
             this.render();
         }
-
-        eventNode(nodeName, nodeValue) {
+        eventNode(nodeName, nodeValue, parentElementId: string) {
             var oldNodeName = nodeName.innerHTML;
+            var that = this;
             var sendTextToClient = function (attributeName, attributeValue, nodeEditable) {
-                if (sendedValue)
-                    return;
-                sendedValue = true;
                 this.parent.plugin.sendCommandToClient('attribute', {
-                    attributeName: nodeName.innerHTML,
+                    attributeName: attributeName,
                     attributeOldName: oldNodeName,
-                    attributeValue: nodeValue.innerHTML,
+                    attributeValue: attributeValue,
                     order: this.parent.node.internalId
                 });
 
-                oldNodeName = nodeName.innerHTML;
-                if (!oldNodeName) { // delete attribute 
+                if (!attributeName) { // delete attribute 
                     nodeName.parentElement.removeChild(nodeName);
                     nodeValue.parentElement.removeChild(nodeValue);
                 }
                 nodeEditable.contentEditable = "false";
                 Tools.RemoveClass(nodeEditable, "editable");
             }
-            var sendedValue = false;
+            var menu = function (editText: string) {
+                $.contextMenu('destroy');
+                $('.plugin-dom .context-menu-root').remove();
+                $.contextMenu({
+                    selector: "#" + parentElementId,
+                    trigger: "left",
+                    appendTo: '.plugin-dom',
+                    events: {
+                        hide: function (opt) {
+                            $('.plugin-dom .context-menu-root').remove();
+                        }
+                    },
+                    callback: function (key, options) {
+                        //$.contextMenu('destroy');
+                        if (key === "edit") {
+                            DOMExplorer.makeEditable(nodeName);
+                        }
+                        else if (key === "editvalue") {
+                            DOMExplorer.makeEditable(nodeValue);
+                        }
+                        else if (key === "delete") {
+                            sendTextToClient.bind(that)("", nodeValue.innerHTML, nodeValue);
+                        }
+                        else if (key === "add") {
+                            that.parent.addAttribute("name", "value");
+                        }
+                    },
+                    items: {
+                        "edit": { name: "Edit attribute name" },
+                        "editvalue": { name: "Edit attribute value" },
+                        "add": { name: "Add attribute" },
+                        "delete": { name: "Delete attribute" }
+                    }
+                });
+                $("#" + parentElementId).contextMenu();
+            }
             nodeValue.addEventListener("click",() => {
-                DOMExplorer.makeEditable(nodeValue);
-                sendedValue = false;
+
+                if (nodeValue.contentEditable != "true")
+                    menu.bind(this)("value");
             });
             nodeName.addEventListener("click",() => {
-                DOMExplorer.makeEditable(nodeName);
-                sendedValue = false;
+                if (nodeValue.contentEditable != "true")
+                    menu.bind(this)("name");
             });
             nodeValue.addEventListener("blur",() => {
                 sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
@@ -674,8 +709,9 @@ module VORLON {
             var node = new FluentDOM("SPAN", "nodeAttribute", this.parent.header);
             this.element = node.element;
             var nodename = node.createChild("SPAN").html(this.name);
+            node.element.id = VORLON.Tools.CreateGUID();
             var nodevalue = node.createChild("SPAN").html(this.value);
-            this.eventNode(nodename.element, nodevalue.element);
+            this.eventNode(nodename.element, nodevalue.element, node.element.id);
         }
     }
 
