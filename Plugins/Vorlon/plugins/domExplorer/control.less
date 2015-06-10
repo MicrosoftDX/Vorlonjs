@@ -1,12 +1,12 @@
 .plugin-dom {
-   @bracketColor: #BBB;
-   @nodeNameColor: #6b2d81;
-   @nodeTextColor: #111;
-   @attributeNameColor: #ed2424;
-   @attributeValueColor: #007ca7;
-   @quotesColor: #6b2d81;
+    @bracketColor: #BBB;
+    @nodeNameColor: #6b2d81;
+    @nodeTextColor: #111;
+    @attributeNameColor: #ed2424;
+    @attributeValueColor: #007ca7;
+    @quotesColor: #6b2d81;
 
-   [button-block] {
+    [button-block] {
         display: block;
         padding: 0;
         margin: 0;
@@ -62,7 +62,7 @@
         overflow-x: none;
         overflow-y: auto;
         font-size: 13px;
-        line-height:1.7em;
+        line-height: 1.7em;
     }
 
     #treeView,
@@ -123,7 +123,7 @@
         }
     }
 
-    .editable{
+    .editable {
         cursor: text;
     }
 
@@ -142,6 +142,7 @@
 
         .editable {
             border-bottom: 2px dashed red;
+            background-color: transparent !important;
         }
 
 
@@ -162,6 +163,8 @@
 
     .nodeContentContainer {
         padding-left: 20px;
+
+
 
         &:not([data-has-children]),
         &:not([data-has-children]) .treeNodeClosingText {
@@ -191,7 +194,7 @@
     }
 
     .treeNodeSelected,
-    .treeNodeSelected ~ .nodeContentContainer > .treeNodeClosingText .nodeName {
+    .treeNodeSelected .treeNodeClosingText .nodeName {
         background: yellow !important;
     }
 
@@ -199,14 +202,14 @@
         color: #666;
         float: right;
         text-decoration: none;
-        border : 1px solid #DDD;
+        border: 1px solid #DDD;
         width: 18px;
         height: 18px;
         line-height: 18px;
-        box-sizing:border-box;
-        text-align:center;
+        box-sizing: border-box;
+        text-align: center;
         cursor: pointer;
-        font-size: 0.8em;        
+        font-size: 0.8em;
     }
 
     .treeNodeText {
@@ -224,8 +227,7 @@
     }
 
     .treeNodeClosingText {
-        margin-left: -0.25em;
-        /*font-weight: bold;*/
+        display: inline-block;
         background: #fff;
         cursor: default;
 
@@ -304,14 +306,11 @@
         cursor: pointer;
     }
 
-    x-action[event="refresh"]:before {
-        content: '\26AB';
-        margin-right: 0.1em;
+    x-action[event="refresh"] .fa {
         color: #aaa;
-        background: none;
     }
 
-    x-action[event="refresh"][changed]:before {
+    x-action[event="refresh"][changed] .fa {
         color: red;
     }
 }
