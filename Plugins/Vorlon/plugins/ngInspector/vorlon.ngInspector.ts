@@ -55,8 +55,9 @@
             var rootScope = angular.element(element).scope();
             if (!!rootScope) {
                 var cleanedRootScope = this._cleanScope(rootScope);
+                cleanedRootScope.$type = ScopeType.RootScope;
+                cleanedRootScope.$name = "$rootScope";
                 this._rootScopes.push(cleanedRootScope);
-
                 //cleanedRootScope.$element = element;
                 this._findChildrenScopes(element, cleanedRootScope);
 
@@ -82,6 +83,17 @@
                         childNode.attributes["ng_repeat"] ||
                         childNode.attributes["ng:repeat"]) {
                         cleanedChildScope.$type = ScopeType.NgRepeat;
+                        cleanedChildScope.$name = "ng-repeat";
+                    }
+                    else if (angular.element(childNode).data("$ngControllerController")) {
+                        var constructor: string = angular.element(childNode).data("$ngControllerController").constructor;
+
+                        // Workaround for IE, name property of constructor return undefined :/
+                        // Get the name from the constructor function as string
+                        var name: string = constructor.toString().match(/function (\w+)\(/)[1];
+
+                        cleanedChildScope.$type = ScopeType.Controller;
+                        cleanedChildScope.$name = name;
                     }
 
                     //cleanedChildScope.$element = childNode;
@@ -138,8 +150,6 @@
 
             if (scope.$parent !== null) {
                 scopePackaged.$parentId = scope.$parent.$id;
-            } else {
-                scopePackaged.$type = ScopeType.RootScope;
             }
 
             return scopePackaged;
@@ -203,17 +213,15 @@
         private _formatScopeNode(scope: Scope): string {
             var scopeClass: string = "",
                 scopeId: number = scope.$id,
-                scopeName: string = "",
+                scopeName: string = scope.$name,
                 iconName: string = "";
             switch (scope.$type) {
                 case ScopeType.NgRepeat:
                     scopeClass = "ng-repeat-scope";
-                    scopeName = "ng-repeat";
                     iconName = "fa-repeat";
                     break;
                 case ScopeType.RootScope:
                     scopeClass = "root-scope";
-                    scopeName = "$rootScope";
                     iconName = "fa-arrows-alt";
                     break;
                 case ScopeType.Controller:
