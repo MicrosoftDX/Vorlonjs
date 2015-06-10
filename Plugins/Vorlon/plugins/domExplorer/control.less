@@ -19,6 +19,19 @@
         overflow: hidden !important;
     }
 
+    .context-menu-list {
+        -webkit-box-shadow: none;
+        box-shadow: none;
+
+        .context-menu-item {
+            &.hover {
+                background-color: #bbb;
+            }
+
+            padding: 2px;
+        }
+    }
+
     .panel-left,
     .panel-right {
         height: 100%;
@@ -228,7 +241,6 @@
 
     .treeNodeClosingText {
         display: inline-block;
-        background: #fff;
         cursor: default;
 
         .nodeName:before {

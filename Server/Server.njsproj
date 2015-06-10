@@ -80,6 +80,7 @@
     <Content Include="public\javascripts\jquery-1.10.2.min.map" />
     <Content Include="public\stylesheets\bootstrap.css" />
     <Content Include="public\stylesheets\bootstrap.min.css" />
+    <Content Include="public\stylesheets\contextMenu.css" />
     <Content Include="public\stylesheets\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="public\stylesheets\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="public\stylesheets\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -156,6 +157,7 @@
   <ItemGroup>
     <Compile Include="public\javascripts\bootstrap.js" />
     <Compile Include="public\javascripts\bootstrap.min.js" />
+    <Compile Include="public\javascripts\contextMenu.js" />
     <Compile Include="public\javascripts\jquery-1.10.2.js" />
     <Compile Include="public\javascripts\jquery-1.10.2.min.js" />
     <Compile Include="public\javascripts\jquery-2.1.1.min.js" />

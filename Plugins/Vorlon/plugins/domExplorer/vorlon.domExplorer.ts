@@ -4,7 +4,7 @@ module VORLON {
 
         private _internalId = 0;
         private _lastElementSelectedClientSide;
-        private _newAppliedStyles = {};
+        public _newAppliedStyles = {};
         private _newAppliedAttributes = {};
         private _lastContentState = '';
         private _lastReceivedObject = null;
@@ -13,7 +13,6 @@ module VORLON {
             super("domExplorer", "control.html", "control.css");
             this._id = "DOM";
             this._ready = false;
-            this._debug = true;
         }
 
         public static getAppliedStyles(node: HTMLElement): string[] {
@@ -86,7 +85,7 @@ module VORLON {
                 classes: node.className,
                 content: node.textContent,
                 hasChildNodes: false,
-                attributes: node.attributes ? Array.prototype.map.call(node.attributes, (attr) => {
+                attributes: node.attributes ? Array.prototype.map.call(node.attributes,(attr) => {
                     return [attr.name, attr.value];
                 }) : [],
                 styles: DOMExplorer.getAppliedStyles(node),
@@ -214,10 +213,12 @@ module VORLON {
             var element = this._getElementByInternalId(internaID, document.body);
             element.innerHTML = value;
         }
+
+
         // DASHBOARD
         private _containerDiv: HTMLElement;
         private _treeDiv: HTMLElement;
-        private _styleView: HTMLElement;
+        public styleView: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
         public _refreshButton: Element;
         public _clikedNodeID = null;
@@ -228,28 +229,28 @@ module VORLON {
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
 
-            this._insertHtmlContentAsync(this._dashboardDiv, (filledDiv: HTMLElement) => {
+            this._insertHtmlContentAsync(this._dashboardDiv,(filledDiv: HTMLElement) => {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
-                this._styleView = Tools.QuerySelectorById(filledDiv, "styleView");
+                this.styleView = Tools.QuerySelectorById(filledDiv, "styleView");
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
 
                 setInterval(() => {
                     this.sendCommandToClient('dirtycheck');
                 }, 4000);
 
-                this._containerDiv.addEventListener('refresh', () => {
+                this._containerDiv.addEventListener('refresh',() => {
                     this.sendCommandToClient('refresh');
                 });
 
-                this._treeDiv.addEventListener('click', (e: Event) => {
+                this._treeDiv.addEventListener('click',(e: Event) => {
                     var button = <HTMLElement>e.target;
                     if (button.className.match('treeNodeButton')) {
                         button.hasAttribute('data-collapsed') ? button.removeAttribute('data-collapsed') : button.setAttribute('data-collapsed', '');
                     }
                 });
 
-                this._treeDiv.addEventListener('mouseenter', (e: Event) => {
+                this._treeDiv.addEventListener('mouseenter',(e: Event) => {
                     var node = <HTMLElement>e.target;
                     var parent = node.parentElement;
                     var isHeader = node.className.match('treeNodeHeader');
@@ -263,7 +264,7 @@ module VORLON {
                     }
                 }, true);
 
-                this._treeDiv.addEventListener('mouseleave', (e: Event) => {
+                this._treeDiv.addEventListener('mouseleave',(e: Event) => {
                     var node = <HTMLElement>e.target;
                     if (node.className.match('treeNodeHeader') || node.parentElement.className.match('treeNodeClosingText')) {
                         var hovered = this._treeDiv.querySelector('[data-hovered-tag]')
@@ -283,117 +284,15 @@ module VORLON {
                 this._ready = true;
             });
         }
-        private _makeEditable(element: HTMLElement): void {
+        static makeEditable(element: HTMLElement): void {
             element.contentEditable = "true";
+            var range = document.createRange();
+            var sel = window.getSelection();
+            range.setStart(element, 1);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
             Tools.AddClass(element, "editable");
-        }
-        private _generateClickableValue(label: HTMLElement, value: string, internalId: string): HTMLElement {
-            // Value
-            var valueElement = document.createElement("div");
-            valueElement.contentEditable = "false";
-            valueElement.innerHTML = value || "&nbsp;";
-            valueElement.className = "styleValue";
-            valueElement.addEventListener("keydown", (evt) => {
-                if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                    //Create the properties object of elements.
-                    var propertyObject: any = {};
-                    propertyObject.property = label.innerHTML;
-                    propertyObject.newValue = valueElement.innerHTML;
-                    if (this._newAppliedStyles[internalId] !== undefined) {
-                        var propsArr = this._newAppliedStyles[internalId];
-                        //check if property exists in array
-                        for (var index = 0; index < propsArr.length; index++) {
-                            var propObj = propsArr[index];
-                            if (propObj.property === propertyObject.property) {
-                                propObj.newValue = propertyObject.newValue;
-                                propertyObject = propObj;
-                                propsArr.splice(index, 1);
-                                break;
-                            }
-                        }
-                        propsArr.push(propertyObject);
-                    } else {
-                        var proArr = [];
-                        proArr.push(propertyObject);
-                        this._newAppliedStyles[internalId] = proArr;
-                    }
-                    this.sendCommandToClient('style', {
-                        property: label.innerHTML,
-                        newValue: valueElement.innerHTML,
-                        order: internalId
-                    });
-
-                    evt.preventDefault();
-                    valueElement.contentEditable = "false";
-                    Tools.RemoveClass(valueElement, "editable");
-                }
-            });
-
-            valueElement.addEventListener("blur", () => {
-                valueElement.contentEditable = "false";
-                Tools.RemoveClass(valueElement, "editable");
-            });
-
-
-            valueElement.addEventListener("click", () => this._makeEditable(valueElement));
-
-            return valueElement;
-        }
-        // Generate styles for a selected node
-        private _generateStyle(property: string, value: string, internalId: string, editableLabel = false): void {
-            var wrap = document.createElement("div");
-            wrap.className = 'styleWrap';
-            var label = document.createElement("div");
-            label.innerHTML = property;
-            label.className = "styleLabel";
-            label.contentEditable = "false";
-            var valueElement = this._generateClickableValue(label, value, internalId);
-            wrap.appendChild(label);
-            wrap.appendChild(valueElement);
-            this._styleView.appendChild(wrap);
-
-            if (editableLabel) {
-                label.addEventListener("blur", () => {
-                    label.contentEditable = "false";
-                    Tools.RemoveClass(label, "editable");
-                });
-
-                label.addEventListener("click", () => {
-                    this._makeEditable(label);
-                });
-
-                label.addEventListener("keydown", (evt) => {
-                    if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                        this._makeEditable(valueElement);
-                        evt.preventDefault();
-                    }
-                });
-            }
-        }
-        private _generateStyles(styles: string[], internalId: string): void {
-            while (this._styleView.hasChildNodes()) {
-                this._styleView.removeChild(this._styleView.lastChild);
-            }
-
-            // Current styles
-            for (var index = 0; index < styles.length; index++) {
-                var style = styles[index];
-                var splits = style.split(":");
-
-                this._generateStyle(splits[0], splits[1], internalId);
-            }
-            if (this._newAppliedStyles[internalId]) {
-                var newProps = this._newAppliedStyles[internalId];
-                for (var index = 0; index < newProps.length; index++) {
-                    var currentObj = newProps[index];
-                    this._generateStyle(currentObj.property, currentObj.newValue, internalId);
-                }
-            }
-            // Append add style button
-            this._generateButton(this._styleView, "+", "styleButton").addEventListener('click', (e) => {
-                this._generateStyle("property", "value", internalId, true);
-                this._styleView.appendChild(<HTMLElement>e.target);
-            });
         }
 
         private _appendSpan(parent: HTMLElement, className: string, value: string): void {
@@ -446,7 +345,6 @@ module VORLON {
             }
             if (this._rootNode)
                 this._rootNode.dispose();
-
             this._rootNode = new DomExplorerNode(this, null, this._treeDiv, root);
         }
 
@@ -481,7 +379,7 @@ module VORLON {
                 this.sendCommandToClient('select', {
                     order: this._selectedNode.node.internalId
                 });
-                this._generateStyles(selected.node.styles, selected.node.internalId);
+                selected.stylesEditor.generateStyles()
             } else {
                 this._selectedNode = null;
             }
@@ -501,7 +399,6 @@ module VORLON {
             var plugin = <DOMExplorer>this;
             plugin.setAttribute(data.order, data.attributeName, data.attributeOldName, data.attributeValue);
         },
-
         setElementValue: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setElementValue(data.order, data.value);
@@ -510,7 +407,6 @@ module VORLON {
             var plugin = <DOMExplorer>this;
             plugin.unselectClientElement();
         },
-
         refreshNode: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.refreshbyId(data.order);
@@ -571,6 +467,7 @@ module VORLON {
         public node: PackagedNode;
         public contentContainer: HTMLElement;
         public attributes: DomExplorerNodeAttribute[] = [];
+        public stylesEditor: DomExplorerPropertyEditor;
         public childs: DomExplorerNode[] = [];
         plugin: DOMExplorer;
         parent: DomExplorerNode;
@@ -579,6 +476,7 @@ module VORLON {
             this.parent = parent;
             this.node = node;
             this.plugin = plugin;
+            this.stylesEditor = new DomExplorerPropertyEditor(parentElt, node.styles, plugin, node.internalId);
             this.render(parentElt);
         }
 
@@ -629,11 +527,10 @@ module VORLON {
                     .editable(false)
                     .blur(() => this.sendTextToClient())
                     .keydown((evt) => {
-                        if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                            this.sendTextToClient();
-                        }
-                    })
-                    .click(() => DomExplorerNode._makeEditable(this.element));
+                    if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+                        this.sendTextToClient();
+                    }
+                }).click(() => DOMExplorer.makeEditable(this.element));
 
             }
         }
@@ -642,7 +539,7 @@ module VORLON {
             parentElt.setAttribute('data-has-children', '');
             var root = new FluentDOM('DIV', '', parentElt);
             this.element = root.element;
-            root.append('BUTTON', 'treeNodeButton', (nodeButton) => {
+            root.append('BUTTON', 'treeNodeButton',(nodeButton) => {
                 if (this.node.hasChildNodes) {
                     nodeButton.attr("data-collapsed", "");
                 }
@@ -657,19 +554,19 @@ module VORLON {
                 });
             });
 
-            root.append("SPAN", "treeNodeHeader", (header) => {
+            root.append("SPAN", "treeNodeHeader",(header) => {
                 this.header = header.element;
                 header.click(() => this.plugin.select(this));
                 header.createChild("SPAN", "nodeName").text(this.node.name);
                 header.createChild("SPAN", "fa fa-plus-circle").click(() => {
                     this.addAttribute("name", "value");
-                });
+                }).element.title = "add attribute";
                 this.node.attributes.forEach((attr) => {
                     this.addAttribute(attr[0], attr[1]);
                 });
             });
 
-            root.append('DIV', 'nodeContentContainer', (container) => {
+            root.append('DIV', 'nodeContentContainer',(container) => {
                 this.contentContainer = container.element;
                 if (this.node.hasChildNodes) {
                     this.contentContainer.id = "vorlon-" + this.node.internalId;
@@ -688,7 +585,7 @@ module VORLON {
                 }
             });
             if (this.node.name) {
-                root.append("DIV", "treeNodeClosingText", (footer) => {
+                root.append("DIV", "treeNodeClosingText",(footer) => {
                     footer.createChild("SPAN", "nodeName").text(this.node.name);
                 });
             }
@@ -712,11 +609,6 @@ module VORLON {
             var attr = new DomExplorerNodeAttribute(this, name, value);
             this.attributes.push(attr);
         }
-
-        static _makeEditable(element: HTMLElement): void {
-            element.contentEditable = "true";
-            Tools.AddClass(element, "editable");
-        }
     }
 
     export class DomExplorerNodeAttribute {
@@ -731,50 +623,82 @@ module VORLON {
             this.value = value;
             this.render();
         }
-
-        eventNode(nodeName, nodeValue) {
+        eventNode(nodeName, nodeValue, parentElementId: string) {
             var oldNodeName = nodeName.innerHTML;
+            var that = this;
             var sendTextToClient = function (attributeName, attributeValue, nodeEditable) {
-                if (sendedValue)
-                    return;
-                sendedValue = true;
                 this.parent.plugin.sendCommandToClient('attribute', {
-                    attributeName: nodeName.innerHTML,
+                    attributeName: attributeName,
                     attributeOldName: oldNodeName,
-                    attributeValue: nodeValue.innerHTML,
+                    attributeValue: attributeValue,
                     order: this.parent.node.internalId
                 });
 
-                oldNodeName = nodeName.innerHTML;
-                if (!oldNodeName) { // delete attribute 
+                if (!attributeName) { // delete attribute 
                     nodeName.parentElement.removeChild(nodeName);
                     nodeValue.parentElement.removeChild(nodeValue);
                 }
                 nodeEditable.contentEditable = "false";
                 Tools.RemoveClass(nodeEditable, "editable");
             }
-                var sendedValue = false;
-            nodeValue.addEventListener("click", () => {
-                DomExplorerNode._makeEditable(nodeValue);
-                sendedValue = false;
+            var menu = function (editText: string) {
+                $.contextMenu('destroy');
+                $('.plugin-dom .context-menu-root').remove();
+                $.contextMenu({
+                    selector: "#" + parentElementId,
+                    trigger: "left",
+                    appendTo: '.plugin-dom',
+                    events: {
+                        hide: function (opt) {
+                            $('.plugin-dom .context-menu-root').remove();
+                        }
+                    },
+                    callback: function (key, options) {
+                        //$.contextMenu('destroy');
+                        if (key === "edit") {
+                            DOMExplorer.makeEditable(nodeName);
+                        }
+                        else if (key === "editvalue") {
+                            DOMExplorer.makeEditable(nodeValue);
+                        }
+                        else if (key === "delete") {
+                            sendTextToClient.bind(that)("", nodeValue.innerHTML, nodeValue);
+                        }
+                        else if (key === "add") {
+                            that.parent.addAttribute("name", "value");
+                        }
+                    },
+                    items: {
+                        "edit": { name: "Edit attribute name" },
+                        "editvalue": { name: "Edit attribute value" },
+                        "add": { name: "Add attribute" },
+                        "delete": { name: "Delete attribute" }
+                    }
+                });
+                $("#" + parentElementId).contextMenu();
+            }
+            nodeValue.addEventListener("click",() => {
+
+                if (nodeValue.contentEditable != "true")
+                    menu.bind(this)("value");
             });
-            nodeName.addEventListener("click", () => {
-                DomExplorerNode._makeEditable(nodeName);
-                sendedValue = false;
+            nodeName.addEventListener("click",() => {
+                if (nodeValue.contentEditable != "true")
+                    menu.bind(this)("name");
             });
-            nodeValue.addEventListener("blur", () => {
+            nodeValue.addEventListener("blur",() => {
                 sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
             });
-            nodeName.addEventListener("blur", () => {
+            nodeName.addEventListener("blur",() => {
                 sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeName);
             });
-            nodeName.addEventListener("keydown", (evt) => {
+            nodeName.addEventListener("keydown",(evt) => {
                 if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
                     evt.preventDefault();
                     sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeName);
                 }
             });
-            nodeValue.addEventListener("keydown", (evt) => {
+            nodeValue.addEventListener("keydown",(evt) => {
                 if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
                     evt.preventDefault();
                     sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
@@ -785,23 +709,153 @@ module VORLON {
             var node = new FluentDOM("SPAN", "nodeAttribute", this.parent.header);
             this.element = node.element;
             var nodename = node.createChild("SPAN").html(this.name);
+            node.element.id = VORLON.Tools.CreateGUID();
             var nodevalue = node.createChild("SPAN").html(this.value);
-            this.eventNode(nodename.element, nodevalue.element);
+            this.eventNode(nodename.element, nodevalue.element, node.element.id);
         }
     }
 
-    //TODO move code for style editor here
-    class DomExplorerPropertyEditor {
-        public items: DomExplorerPropertyEditorItem[] = [];
-
-        constructor(parent: HTMLElement, styles: any) {
+    export class DomExplorerPropertyEditor {
+        private parent: HTMLElement = null;
+        private styles: Array<any> = [];
+        public plugin: DOMExplorer;
+        private internalId: string;
+        constructor(parent: HTMLElement, styles: any, plugin: DOMExplorer, internalId: string) {
+            this.parent = parent;
+            this.styles = styles;
+            this.plugin = plugin;
+            this.internalId = internalId;
         }
+
+        private _generateButton(parentNode: HTMLElement, text: string, className: string, attribute?: any) {
+            var button = document.createElement("button");
+            button.innerHTML = text;
+            button.className = className;
+            if (attribute)
+                button.setAttribute(attribute.name, attribute.value);
+            button.setAttribute('button-block', '');
+            return parentNode.appendChild(button);
+        }
+
+        public generateStyles(): void {
+            while (this.plugin.styleView.hasChildNodes()) {
+                this.plugin.styleView.removeChild(this.plugin.styleView.lastChild);
+            }
+
+            // Current styles
+            for (var index = 0; index < this.styles.length; index++) {
+                var style = this.styles[index];
+                var splits = style.split(":");
+                new DomExplorerPropertyEditorItem(this, splits[0], splits[1], this.internalId);
+            }
+            if (this.plugin._newAppliedStyles[this.internalId]) {
+                var newProps = this.plugin._newAppliedStyles[this.internalId];
+                for (var index = 0; index < newProps.length; index++) {
+                    var currentObj = newProps[index];
+                    new DomExplorerPropertyEditorItem(this, currentObj.property, currentObj.newValue, this.internalId);
+                }
+            }
+            // Append add style button
+            this._generateButton(this.plugin.styleView, "+", "styleButton").addEventListener('click',(e) => {
+                new DomExplorerPropertyEditorItem(this, "property", "value", this.internalId, true);
+                this.plugin.styleView.appendChild(<HTMLElement>e.target);
+            });
+
+        }
+
     }
 
-    //TODO move code for style editor item here
-    class DomExplorerPropertyEditorItem {
-        constructor(parent: DomExplorerPropertyEditor, name: string, value: string) {
+    export class DomExplorerPropertyEditorItem {
+        private parent: DomExplorerPropertyEditor;
+
+        constructor(parent: DomExplorerPropertyEditor, name: string, value: string, internalId: string, editableLabel = false) {
+            this.parent = parent;
+            this._generateStyle(name, value, internalId, editableLabel);
         }
+        private _generateStyle(property: string, value: string, internalId: string, editableLabel = false): void {
+            var wrap = document.createElement("div");
+            wrap.className = 'styleWrap';
+            var label = document.createElement("div");
+            label.innerHTML = property;
+            label.className = "styleLabel";
+            label.contentEditable = "false";
+            var valueElement = this._generateClickableValue(label, value, internalId);
+            wrap.appendChild(label);
+            wrap.appendChild(valueElement);
+            this.parent.plugin.styleView.appendChild(wrap);
+
+            if (editableLabel) {
+                label.addEventListener("blur",() => {
+                    label.contentEditable = "false";
+                    Tools.RemoveClass(label, "editable");
+                });
+
+                label.addEventListener("click",() => {
+                    DOMExplorer.makeEditable(label);
+                });
+
+                label.addEventListener("keydown",(evt) => {
+                    if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+                        DOMExplorer.makeEditable(valueElement);
+                        evt.preventDefault();
+                    }
+                });
+            }
+        }
+
+        private _generateClickableValue(label: HTMLElement, value: string, internalId: string): HTMLElement {
+            // Value
+            var valueElement = document.createElement("div");
+            valueElement.contentEditable = "false";
+            valueElement.innerHTML = value || "&nbsp;";
+            valueElement.className = "styleValue";
+            valueElement.addEventListener("keydown",(evt) => {
+                if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+                    //Create the properties object of elements.
+                    var propertyObject: any = {};
+                    propertyObject.property = label.innerHTML;
+                    propertyObject.newValue = valueElement.innerHTML;
+                    if (this.parent.plugin._newAppliedStyles[internalId] !== undefined) {
+                        var propsArr = this.parent.plugin._newAppliedStyles[internalId];
+                        //check if property exists in array
+                        for (var index = 0; index < propsArr.length; index++) {
+                            var propObj = propsArr[index];
+                            if (propObj.property === propertyObject.property) {
+                                propObj.newValue = propertyObject.newValue;
+                                propertyObject = propObj;
+                                propsArr.splice(index, 1);
+                                break;
+                            }
+                        }
+                        propsArr.push(propertyObject);
+                    } else {
+                        var proArr = [];
+                        proArr.push(propertyObject);
+                        this.parent.plugin._newAppliedStyles[internalId] = proArr;
+                    }
+                    this.parent.plugin.sendCommandToClient('style', {
+                        property: label.innerHTML,
+                        newValue: valueElement.innerHTML,
+                        order: internalId
+                    });
+
+                    evt.preventDefault();
+                    valueElement.contentEditable = "false";
+                    Tools.RemoveClass(valueElement, "editable");
+                }
+            });
+
+            valueElement.addEventListener("blur",() => {
+                valueElement.contentEditable = "false";
+                Tools.RemoveClass(valueElement, "editable");
+            });
+
+
+            valueElement.addEventListener("click",() => DOMExplorer.makeEditable(valueElement));
+
+            return valueElement;
+        }
+
     }
 
     export interface PackagedNode {
