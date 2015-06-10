@@ -1,6 +1,7 @@
 ﻿{
     "plugins": [
-        { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername" : "interactiveConsole"},
+        { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername": "interactiveConsole" },
+        { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername" : "domExplorer" },
         { "id": "MODERNIZR", "name": "Modernizr","panel": "bottom", "foldername" : "modernizrReport" },
         { "id": "NGINSPECTOR", "name": "Ng. Inspector", "panel": "top", "foldername": "ngInspector" },
         { "id" : "OBJEXPLORER", "name" : "Obj. Explorer","panel": "top", "foldername" : "objectExplorer" }

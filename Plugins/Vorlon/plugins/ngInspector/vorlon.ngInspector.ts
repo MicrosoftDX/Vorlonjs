@@ -50,6 +50,7 @@
         }
 
         private _rootScopes: Scope[] = [];
+        private _currentShownScopeId: number = null;
 
         private _findRootScopes(element: Node) {
             var rootScope = angular.element(element).scope();
@@ -58,7 +59,7 @@
                 cleanedRootScope.$type = ScopeType.RootScope;
                 cleanedRootScope.$name = "$rootScope";
                 this._rootScopes.push(cleanedRootScope);
-                //cleanedRootScope.$element = element;
+
                 this._findChildrenScopes(element, cleanedRootScope);
 
                 this._listenScopeChanges(rootScope);
@@ -96,7 +97,6 @@
                         cleanedChildScope.$name = name;
                     }
 
-                    //cleanedChildScope.$element = childNode;
                     parentScope.$children.push(cleanedChildScope);
 
                     this._findChildrenScopes(childNode, cleanedChildScope);
@@ -106,24 +106,9 @@
             }
         }
 
-        private _updateScopeValue(value: any, property: string) {
-            //TODO: remplacer le null
-            var scope = angular.element(null).scope();
-
-            scope.$apply(() => {
-                scope[property] = value;
-            });
-        }
-
         private _listenScopeChanges(scope: any) {
-            console.log("listen to scope " + scope.$id);
-
             scope.$watch((newValue, oldValue) => {
                 this._markForRefresh();
-            });
-
-            scope.$on("$destroy",() => {
-                console.log(scope.$id + " has been destroyed");
             });
         }
 
@@ -156,7 +141,9 @@
         }
 
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
-            console.log(receivedObject);
+            if (receivedObject.type === MessageType.ReloadWithDebugInfo) {
+                angular.reloadWithDebugInfo(); 
+        }
         }
 
         public startDashboardSide(div: HTMLDivElement = null): void {
@@ -167,15 +154,7 @@
                     position: '35%'
                 });
 
-                this._ready = true;
-            });
-        }
-
-        public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-            this._rootScopes = receivedObject.scopes;
-            document.getElementById("scopes-tree-wrapper").innerHTML = this._formatScopesTree(receivedObject.scopes);
-
-            var nodes = document.getElementById("scopes-tree-wrapper").addEventListener("click",(e) => {
+                document.getElementsByClassName("scopes-tree-wrapper")[0].addEventListener("click",(e) => {
                 var target = <HTMLElement>e.target;
                 if (target.classList.contains("ng-scope") ||
                     target.parentElement.classList.contains("ng-scope")) {
@@ -189,18 +168,41 @@
                     // Finir click
                 }
             });
+
+                document.getElementById("reloadAppWithDebugInfo").addEventListener("click",(e) => {
+                    Core.Messenger.sendRealtimeMessage(this.getID(), { type: MessageType.ReloadWithDebugInfo }, RuntimeSide.Dashboard, "message");
+                    (<HTMLElement>document.getElementsByClassName("no-scope-found")[0]).style.display = "none";
+                });
+
+                this._ready = true;
+            });
         }
 
-        private _formatScopesTree(scopes: Scope[]): string {
-            if (!scopes) {
+        public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
+            this._rootScopes = receivedObject.scopes;
+
+            if (!this._rootScopes || this._rootScopes.length === 0) {
+                (<HTMLElement>document.getElementsByClassName("no-scope-found")[0]).style.display = "block";
+                (<HTMLElement>document.getElementsByClassName("scopes-tree-wrapper")[0]).innerHTML = "";
+                (<HTMLElement>document.getElementsByClassName("scope-details-wrapper")[0]).innerHTML = "";
+            } else {
+                (<HTMLElement>document.getElementsByClassName("no-scope-found")[0]).style.display = "none";
+                (<HTMLElement>document.getElementsByClassName("scopes-tree-wrapper")[0]).innerHTML = this._formatScopesTree(receivedObject.scopes);
+
+                if (this._currentShownScopeId) {
+                    this.showScopeDetail(this._currentShownScopeId);
+                }
+            }
             }
 
+        private _formatScopesTree(scopes: Scope[]): string {
             var dom = '<ul class="scopes-tree">';
             for (var i = 0; i < scopes.length; i++) {
                 dom += "<li>" + this._formatScopeNode(scopes[i]) + "</li>";
             }
 
             dom += "</ul>";
+
             return dom;
         }
 
@@ -441,13 +443,16 @@
         }
 
         public showScopeDetail(scopeId: number) {
+            this._currentShownScopeId = scopeId;
             var scope = this._findScopeById(this._rootScopes, scopeId);
-            document.getElementById("scope-details-wrapper").innerHTML = this._renderScopeDetail(scope);
+            (<HTMLElement>document.getElementsByClassName("scope-details-wrapper")[0]).innerHTML = this._renderScopeDetail(scope);
         }
     }
 
     enum ScopeType { NgRepeat, RootScope, Controller, Directive };
     enum PropertyType { Array, Object, Number, String, Boolean, Null };
+
+    enum MessageType { ReloadWithDebugInfo };
 
     // Register
     Core.RegisterPlugin(new NgInspector());
