@@ -12,6 +12,7 @@
     <LaunchUrl>
     </LaunchUrl>
     <NameOfLastUsedPublishProfile>vorlonjs</NameOfLastUsedPublishProfile>
+    <ToolsVersionPromptShown>1.5</ToolsVersionPromptShown>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
