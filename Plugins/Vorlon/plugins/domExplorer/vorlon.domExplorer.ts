@@ -13,6 +13,7 @@ module VORLON {
             super("domExplorer", "control.html", "control.css");
             this._id = "DOM";
             this._ready = false;
+            this._debug = true;
         }
 
         public static getAppliedStyles(node: HTMLElement): string[] {
@@ -160,72 +161,83 @@ module VORLON {
         }
 
         public setClientSelectedElement(elementId: string) {
-        }
+            var element = this._getElementByInternalId(elementId, document.body);
 
-        public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
-            var obj = <ReceivedObjectClientSide>receivedObject;
-            if (!obj.order) {
-                switch (obj.type) {
-                    case ReceivedObjectClientSideType.unselect:
-                        if (this._lastElementSelectedClientSide) {
-                            this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
-                        }
-                        break;
-                    case ReceivedObjectClientSideType.refresh:
-                        if (this._lastElementSelectedClientSide) {
-                            this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
-                        }
-
-                        this.refresh();
-                        this._lastContentState = document.body.innerHTML;
-                        break;
-                    case ReceivedObjectClientSideType.refreshbyid:
-                        this.refreshbyId(obj.internalID);
-                        this._lastContentState = document.body.innerHTML;
-                        break;
-                }
+            if (!element) {
                 return;
             }
+            element.__savedOutline = element.style.outline;
+            element.style.outline = "2px solid red";
+            this._lastElementSelectedClientSide = element;
+        }
+        public unselectClientElement() {
+            if (this._lastElementSelectedClientSide)
+                this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
+        }
+        public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
+            //var obj = <ReceivedObjectClientSide>receivedObject;
+            //if (!obj.order) {
+            //    switch (obj.type) {
+            //        case ReceivedObjectClientSideType.unselect:
+            //            if (this._lastElementSelectedClientSide) {
+            //                this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
+            //            }
+            //            break;
+            //        case ReceivedObjectClientSideType.refresh:
+            //            if (this._lastElementSelectedClientSide) {
+            //                this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
+            //            }
 
-            else {
-                var element = this._getElementByInternalId(obj.order, document.body);
+            //            this.refresh();
+            //            this._lastContentState = document.body.innerHTML;
+            //            break;
+            //        case ReceivedObjectClientSideType.refreshbyid:
+            //            this.refreshbyId(obj.internalID);
+            //            this._lastContentState = document.body.innerHTML;
+            //            break;
+            //    }
+            //    return;
+            //}
 
-                if (!element) {
-                    return;
-                }
-            }
-            switch (obj.type) {
-                case ReceivedObjectClientSideType.select:
-                    element.__savedOutline = element.style.outline;
-                    element.style.outline = "2px solid red";
-                    this._lastElementSelectedClientSide = element;
-                    break;
-                case ReceivedObjectClientSideType.unselect:
-                    element.style.outline = element.__savedOutline;
-                    break;
-                case ReceivedObjectClientSideType.ruleEdit:
-                    element.style[obj.property] = obj.newValue;
-                    break;
-                case ReceivedObjectClientSideType.attributeEdit:
-                    if (obj.attributeName !== "attributeName") {
-                        try {
-                            element.removeAttribute(obj.attributeOldName);
-                        }
-                        catch (e) { }
-                        if (obj.attributeName)
-                            element.setAttribute(obj.attributeName, obj.attributeValue);
-                        if (obj.attributeName && obj.attributeName.indexOf('on') === 0) {
-                            element[obj.attributeName] = function () {
-                                try { eval(obj.attributeValue); }
-                                catch (e) { console.error(e); }
-                            };
-                        }
-                    }
-                    break;
-                case ReceivedObjectClientSideType.valueEdit:
-                    element.innerHTML = obj.newValue;
-                    break;
-            }
+            //else {
+            //    var element = this._getElementByInternalId(obj.order, document.body);
+
+            //    if (!element) {
+            //        return;
+            //    }
+            //}
+            //switch (obj.type) {
+            //    //case ReceivedObjectClientSideType.select:
+            //    //    element.__savedOutline = element.style.outline;
+            //    //    element.style.outline = "2px solid red";
+            //    //    this._lastElementSelectedClientSide = element;
+            //    //    break;
+            //    //case ReceivedObjectClientSideType.unselect:
+            //    //    element.style.outline = element.__savedOutline;
+            //    //    break;
+            //    //case ReceivedObjectClientSideType.ruleEdit:
+            //    //    element.style[obj.property] = obj.newValue;
+            //    //    break;
+            //    //case ReceivedObjectClientSideType.attributeEdit:
+            //    //    if (obj.attributeName !== "attributeName") {
+            //    //        try {
+            //    //            element.removeAttribute(obj.attributeOldName);
+            //    //        }
+            //    //        catch (e) { }
+            //    //        if (obj.attributeName)
+            //    //            element.setAttribute(obj.attributeName, obj.attributeValue);
+            //    //        if (obj.attributeName && obj.attributeName.indexOf('on') === 0) {
+            //    //            element[obj.attributeName] = function () {
+            //    //                try { eval(obj.attributeValue); }
+            //    //                catch (e) { console.error(e); }
+            //    //            };
+            //    //        }
+            //    //    }
+            //    //    break;
+            //    //case ReceivedObjectClientSideType.valueEdit:
+            //    //    element.innerHTML = obj.newValue;
+            //    //    break;
+            //}
         }
 
         public refresh(): void {
@@ -235,10 +247,34 @@ module VORLON {
 
             this.sendCommandToDashboard('init', packagedObject);
         }
-
+        public setStyle(internaID: string, property: string, newValue: string): void {
+            var element = this._getElementByInternalId(internaID, document.body);
+            element.style[property] = newValue;
+        }
+        public setAttribute(internaID: string, attributeName: string, attributeOldName: string, attributeValue: string): void {
+            var element = this._getElementByInternalId(internaID, document.body);
+            if (attributeName !== "attributeName") {
+                try {
+                    element.removeAttribute(attributeOldName);
+                }
+                catch (e) { }
+                if (attributeName)
+                    element.setAttribute(attributeName, attributeValue);
+                if (attributeName && attributeName.indexOf('on') === 0) {
+                    element[attributeName] = function () {
+                        try { eval(attributeValue); }
+                        catch (e) { console.error(e); }
+                    };
+                }
+            }
+        }
         public refreshbyId(internaID: any): void {
             if (internaID)
                 this._packageAndSendDOM(this._getElementByInternalId(internaID, document.body));
+        }
+        public setElementValue(internaID: string, value: string) {
+            var element = this._getElementByInternalId(internaID, document.body);
+            element.innerHTML = value;
         }
         // DASHBOARD
         private _containerDiv: HTMLElement;
@@ -352,12 +388,12 @@ module VORLON {
                         proArr.push(propertyObject);
                         this._newAppliedStyles[internalId] = proArr;
                     }
-                    this.sendToClient({
-                        type: ReceivedObjectClientSideType.ruleEdit,
+                    this.sendCommandToClient('style', {
                         property: label.innerHTML,
                         newValue: valueElement.innerHTML,
                         order: internalId
                     });
+
                     evt.preventDefault();
                     valueElement.contentEditable = "false";
                     Tools.RemoveClass(valueElement, "editable");
@@ -661,6 +697,7 @@ module VORLON {
 
             if (selected) {
                 this._selectedNode = selected;
+                this._selectedNode.selected(true);
                 this.sendCommandToClient('select', {
                     order: this._selectedNode.node.internalId
                 });
@@ -676,10 +713,22 @@ module VORLON {
             var plugin = <DOMExplorer>this;
             plugin.setClientSelectedElement(data.order);
         },
+        style: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.setStyle(data.order, data.property, data.newValue);
+        },
+        attribute: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.setAttribute(data.order, data.attributeName, data.attributeOldName, data.attributeValue);
+        },
 
+        setElementValue: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.setElementValue(data.order, data.value);
+        },
         unselect: function (data: any) {
             var plugin = <DOMExplorer>this;
-            plugin.setClientSelectedElement(data.order);
+            plugin.unselectClientElement();
         },
 
         refreshNode: function (data: any) {
@@ -781,9 +830,8 @@ module VORLON {
         }
 
         sendTextToClient() {
-            this.plugin.sendToClient({
-                type: ReceivedObjectClientSideType.valueEdit,
-                newValue: this.element.innerHTML,
+            this.plugin.sendCommandToClient('setElementValue', {
+                value: this.element.innerHTML,
                 order: this.parent.node.internalId
             });
             this.element.contentEditable = "false";
@@ -855,14 +903,12 @@ module VORLON {
                         }
                     }
                 }
-
-                if (this.node.name) {
-                    container.append("DIV", "treeNodeClosingText", (footer) => {
-                        footer.createChild("SPAN", "nodeName").text(this.node.name);
-                    });
-                }
             });
-
+            if (this.node.name) {
+                root.append("DIV", "treeNodeClosingText", (footer) => {
+                    footer.createChild("SPAN", "nodeName").text(this.node.name);
+                });
+            }
             // Main node
 
             //this._generateColorfullLink(linkText, receivedObject);
@@ -909,13 +955,13 @@ module VORLON {
                 if (sendedValue)
                     return;
                 sendedValue = true;
-                this.parent.plugin.sendToClient({
-                    type: ReceivedObjectClientSideType.attributeEdit,
+                this.parent.plugin.sendCommandToClient('attribute', {
                     attributeName: nodeName.innerHTML,
                     attributeOldName: oldNodeName,
                     attributeValue: nodeValue.innerHTML,
                     order: this.parent.node.internalId
                 });
+
                 oldNodeName = nodeName.innerHTML;
                 if (!oldNodeName) { // delete attribute 
                     nodeName.parentElement.removeChild(nodeName);

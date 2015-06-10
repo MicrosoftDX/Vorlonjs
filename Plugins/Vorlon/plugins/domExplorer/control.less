@@ -164,6 +164,8 @@
     .nodeContentContainer {
         padding-left: 20px;
 
+
+
         &:not([data-has-children]),
         &:not([data-has-children]) .treeNodeClosingText {
             display: inline;
@@ -192,7 +194,7 @@
     }
 
     .treeNodeSelected,
-    .treeNodeSelected ~ .nodeContentContainer > .treeNodeClosingText .nodeName {
+    .treeNodeSelected .treeNodeClosingText .nodeName {
         background: yellow !important;
     }
 
@@ -225,8 +227,7 @@
     }
 
     .treeNodeClosingText {
-        margin-left: -0.25em;
-        /*font-weight: bold;*/
+        display: inline-block;
         background: #fff;
         cursor: default;
 
