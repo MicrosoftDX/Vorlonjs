@@ -5,6 +5,7 @@ import stylus = require("stylus");
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
+import vauth = require("./vorlon.authentication");
 
 export module VORLON {
     export class WebServer {
@@ -14,6 +15,7 @@ export module VORLON {
         private _session = require("express-session");
         private _json = require("json");
         private _multer = require("multer");
+       // private _flash = require('connect-flash');
 
         private _components: Array<iwsc.VORLON.IWebServerComponent>;
         private _httpServer: http.Server;
@@ -54,12 +56,16 @@ export module VORLON {
             app.use(this._cookieParser);
             app.use(this._favicon);
             app.use(this._session({
-                secret: '1th3is4is3as2e5cr6ec7t7keyf23or1or5lon5',
+               // secret: '1th3is4is3as2e5cr6ec7t7keyf23or1or5lon5',
+                expires: false,
                 saveUninitialized: true,
                 resave: true }));
             app.use(this._bodyParser.json());
             app.use(this._bodyParser.urlencoded({ extended: true }));
             app.use(this._multer());
+            app.use(vauth.VORLON.Authentication.Passport.initialize());
+            app.use(vauth.VORLON.Authentication.Passport.session());
+           // app.use(this._flash());
           
             //Authorization CORS
             //Ressource : http://enable-cors.org
@@ -68,6 +74,8 @@ export module VORLON {
                 res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
                 next();
             });
+            
+            vauth.VORLON.Authentication.initAuthentication();
 
             this._httpServer = http.createServer(app).listen(app.get('port'),() => {
                 console.log('Vorlon listening on port ' + app.get('port'));

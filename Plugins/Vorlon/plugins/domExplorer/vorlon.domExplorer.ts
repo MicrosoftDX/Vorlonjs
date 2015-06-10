@@ -373,9 +373,7 @@ module VORLON {
                 Tools.RemoveClass(valueElement, "editable");
             });
 
-
             valueElement.addEventListener("click", () => this._makeEditable(valueElement));
-
             return valueElement;
         }
         // Generate styles for a selected node
