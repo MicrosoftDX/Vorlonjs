@@ -557,7 +557,7 @@ module VORLON {
                 header.createChild("SPAN", "nodeName").text(this.node.name);
                 header.createChild("SPAN", "fa fa-plus-circle").click(() => {
                     this.addAttribute("name", "value");
-                });
+                }).element.title = "add attribute";
                 this.node.attributes.forEach((attr) => {
                     this.addAttribute(attr[0], attr[1]);
                 });
