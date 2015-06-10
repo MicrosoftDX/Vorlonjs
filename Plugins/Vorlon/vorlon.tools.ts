@@ -239,7 +239,7 @@
 		}
 
 		text(text: string) {
-			this.element.innerText = text;
+			this.element.textContent = text;
 			return this;
 		}
 
