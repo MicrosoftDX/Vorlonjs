@@ -1,10 +1,10 @@
 ﻿import express = require("express");
 import path = require("path");
+import http = require("http");
 import stylus = require("stylus");
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
-import httpConfig = require("../config/vorlon.httpconfig"); 
 
 export module VORLON {
     export class WebServer {
@@ -19,13 +19,12 @@ export module VORLON {
 
         static DisableLogin = true;
         private _components: Array<iwsc.VORLON.IWebServerComponent>;
-        private http: httpConfig.VORLON.HttpConfig;
+        private _httpServer: http.Server;
         private _app: express.Express;
 
         constructor() {
             this._app = express();
             this._components = new Array<iwsc.VORLON.IWebServerComponent>();
-            this.http = new httpConfig.VORLON.HttpConfig();
         }
 
         public init(): void {
@@ -78,24 +77,18 @@ export module VORLON {
                 next();
             });
 
-            if (this.http.useSSL) {
-                this.http.httpModule = this.http.httpModule.createServer(this.http.options, app).listen(app.get('port'), () => {
-                    console.log('Vorlon with SSL listening on port ' + app.get('port'));
-                });
-            } else {
-                this.http.httpModule = this.http.httpModule.createServer(app).listen(app.get('port'), () => {
-                    console.log('Vorlon listening on port ' + app.get('port'));
-                });
-            }
+            this._httpServer = http.createServer(app).listen(app.get('port'),() => {
+                console.log('Vorlon listening on port ' + app.get('port'));
+            });
 
             for (var id in this._components) {
                 var component = this._components[id];
-                component.start(this.http.httpModule);
+                component.start(this._httpServer);
             }
         }
 
-        public get httpServer(){
-            return this.http.httpModule;
+        public get httpServer(): http.Server {
+            return this._httpServer;
         }
 
         private initializeLogin(): void {
