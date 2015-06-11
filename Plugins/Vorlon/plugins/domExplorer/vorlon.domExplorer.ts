@@ -159,6 +159,19 @@ module VORLON {
             }
             return null;
         }
+        public getInnerHTML(internalId: string) {
+            var element = this._getElementByInternalId(internalId, document.body);
+            if (element)
+                this.sendCommandToDashboard("innerHTML", { internalId: internalId, innerHTML: element.innerHTML });
+        }
+
+        public saveInnerHTML(internalId: string, innerHTML: string) {
+            var element = this._getElementByInternalId(internalId, document.body);
+            if (element) {
+                element.innerHTML = innerHTML;
+            }
+        }
+
 
         public setClientSelectedElement(elementId: string) {
             var element = this._getElementByInternalId(elementId, document.body);
@@ -173,7 +186,7 @@ module VORLON {
         public unselectClientElement(internalId?: string) {
             if (internalId) {
                 var element = this._getElementByInternalId(internalId, document.body);
-                if (this._lastElementSelectedClientSide == element)
+                if (this._lastElementSelectedClientSide && this._lastElementSelectedClientSide == element)
                     this._lastElementSelectedClientSide.style.backgroundColor = this._lastElementSelectedClientSide.__savedBackgroundColor;
                 return;
             }
@@ -239,19 +252,31 @@ module VORLON {
         public _rootNode: DomExplorerNode;
         private _globalload: HTMLInputElement;
         private _autorefresh: HTMLInputElement;
+        public _innerHTMLView: HTMLTextAreaElement;
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
             this._insertHtmlContentAsync(this._dashboardDiv,(filledDiv: HTMLElement) => {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
+                this._innerHTMLView = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "innerHTMLView");
                 this.styleView = Tools.QuerySelectorById(filledDiv, "styleView");
                 this.setSettings(filledDiv);
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
                 this._containerDiv.addEventListener('refresh',() => {
                     this.sendCommandToClient('refresh');
                 });
-
+                this._containerDiv.addEventListener('gethtml',() => {
+                    this.sendCommandToClient('innerHTML', {
+                        order: this._selectedNode.node.internalId
+                    });
+                });
+                this._containerDiv.addEventListener('savehtml',() => {
+                    this.sendCommandToClient('saveinnerHTML', {
+                        order: this._selectedNode.node.internalId,
+                        innerhtml: this._innerHTMLView.value
+                    });
+                });
                 this._treeDiv.addEventListener('click',(e: Event) => {
                     var button = <HTMLElement>e.target;
                     if (button.className.match('treeNodeButton')) {
@@ -413,7 +438,9 @@ module VORLON {
                 this.dirtyCheck(receivedObject.content)
             }
         }
-
+        public setInnerHTMLView(data: any) {
+            this._innerHTMLView.value = data.innerHTML;
+        }
         public initDashboard(root: PackagedNode) {
             this._refreshButton.removeAttribute('changed');
             this._lastContentState = root.rootHTML;
@@ -479,6 +506,7 @@ module VORLON {
                     order: this._selectedNode.node.internalId
                 });
                 selected.stylesEditor.generateStyles()
+                this._innerHTMLView.value = "";
             } else {
                 this._selectedNode = null;
             }
@@ -491,6 +519,7 @@ module VORLON {
             plugin.unselectClientElement();
             plugin.setClientSelectedElement(data.order);
         },
+
         style: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setStyle(data.order, data.property, data.newValue);
@@ -499,6 +528,10 @@ module VORLON {
         globalload: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.globalload(data.value);
+        },
+        saveinnerHTML: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.saveInnerHTML(data.order, data.innerhtml);
         },
         attribute: function (data: any) {
             var plugin = <DOMExplorer>this;
@@ -520,6 +553,10 @@ module VORLON {
             var plugin = <DOMExplorer>this;
             plugin.refresh();
         },
+        innerHTML: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.getInnerHTML(data.order);
+        },
     }
 
     DOMExplorer.prototype.DashboardCommands = {
@@ -527,34 +564,16 @@ module VORLON {
             var plugin = <DOMExplorer>this;
             plugin.initDashboard(root);
         },
+        innerHTML: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.setInnerHTMLView(data);
+        },
 
         refreshNode: function (node: PackagedNode) {
             var plugin = <DOMExplorer>this;
             plugin.updateDashboard(node);
         },
 
-    }
-
-    enum ReceivedObjectClientSideType {
-        unselect,
-        select,
-        refresh,
-        refreshbyid,
-        valueEdit,
-        ruleEdit,
-        attributeEdit
-    }
-
-    class ReceivedObjectClientSide {
-        public order: string;
-        public type: ReceivedObjectClientSideType;
-        public newValue: string;
-        public attributeValue: string;
-        public attributeName: string;
-        public attributeOldName: string;
-        public internalID: string;
-        public property: string;
-        constructor() { }
     }
 
     export class DomExplorerNode {
@@ -580,6 +599,7 @@ module VORLON {
         public dispose() {
             //TODO cleanup references & childs
         }
+
 
         public update(node: PackagedNode) {
             this.plugin._refreshButton.removeAttribute('changed');
@@ -861,7 +881,6 @@ module VORLON {
                 new DomExplorerPropertyEditorItem(this, "property", "value", this.internalId, true);
                 this.plugin.styleView.appendChild(<HTMLElement>e.target);
             });
-
         }
 
     }
