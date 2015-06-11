@@ -167,7 +167,7 @@ module VORLON {
                 return;
             }
             element.__savedBackgroundColor = element.style.backgroundColor;
-            element.style. backgroundColor = "yellow";
+            element.style.backgroundColor = "yellow";
             this._lastElementSelectedClientSide = element;
         }
         public unselectClientElement(internalId?: string) {
@@ -309,8 +309,7 @@ module VORLON {
                     heightStyle: "content"
                 });
 
-                $("input#autorefresh").switchButton({});
-                $("input#globalload").switchButton({});
+
 
                 this._ready = true;
             });
@@ -334,7 +333,12 @@ module VORLON {
         private setSettings(filledDiv: HTMLElement) {
             this._globalload = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "globalload");
             this._autorefresh = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "autorefresh");
+            this._setSettings();
+            $(this._autorefresh).change(() => {
+                this._saveSettings();
+            });
             $(this._globalload).change(() => {
+                this._saveSettings();
                 if (this._globalload.checked) {
                     this.sendCommandToClient('globalload', { value: true });
                 }
@@ -343,7 +347,29 @@ module VORLON {
                 }
             });
         }
+        private _saveSettings() {
+            VORLON.Tools.setLocalStorageValue("settings" + Core._sessionID, JSON.stringify({
+                "globalload": this._globalload.checked,
+                "autorefresh": this._autorefresh.checked,
+            }));
+        }
 
+        private _setSettings() {
+            var stringSettings = VORLON.Tools.getLocalStorageValue("settings" + Core._sessionID);
+            if (this._autorefresh && this._globalload && stringSettings) {
+                var settings = JSON.parse(stringSettings);
+                if (settings) {
+                    $(this._globalload).switchButton({ checked: settings.globalload });
+                    $(this._autorefresh).switchButton({ checked: settings.autorefresh });
+                    if (settings.globalload)
+                        this.sendCommandToClient('globalload', { value: true });
+                    return;
+                }
+            }
+            $(this._globalload).switchButton({ checked: false });
+            $(this._autorefresh).switchButton({ checked: false });
+
+        }
         private _appendSpan(parent: HTMLElement, className: string, value: string): void {
             var span = document.createElement("span");
             span.className = className;
