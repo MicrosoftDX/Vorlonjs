@@ -1,12 +1,12 @@
 ﻿module VORLON {
     export class Tools {
-        
+
         public static QuerySelectorById(root: HTMLElement, id: string): HTMLElement {
             if (root.querySelector) {
                 return <HTMLElement>root.querySelector("#" + id);
             }
-            
-            return document.getElementById(id);            
+
+            return document.getElementById(id);
         }
 
         public static SetImmediate(func: () => void): void {
@@ -16,7 +16,27 @@
                 setTimeout(func, 0);
             }
         }
-
+        public static setLocalStorageValue(key: string, data: string) {
+            if (localStorage) {
+                try {
+                    localStorage.setItem(key, data);
+                }
+                catch (e) {
+                    //local storage is not available (private mode maybe)
+                }
+            }
+        }
+        public static getLocalStorageValue(key: string) {
+            if (localStorage) {
+                try {
+                    return localStorage.getItem(key);
+                }
+                catch (e) {
+                    //local storage is not available (private mode maybe)
+                    return "";
+                }
+            }
+        }
         public static Hook(rootObject: any, functionToHook: string, hookingFunction: (...optionalParams: any[]) => void): void {
             var previousFunction = rootObject[functionToHook];
 
@@ -58,7 +78,7 @@
 
         // from http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/2117523#answer-2117523
         public static CreateGUID(): string {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,(c) => {
                 var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
             });
@@ -179,12 +199,12 @@
                 Tools.AddClass(e, name);
             }
         }
-    }    
-    
+    }
+
     export class FluentDOM {
-		public element: HTMLElement;
-		public childs: Array<FluentDOM>;
-		public parent: FluentDOM;
+        public element: HTMLElement;
+        public childs: Array<FluentDOM>;
+        public parent: FluentDOM;
 
         constructor(nodeType: string, className?: string, parentElt?: Element, parent?: FluentDOM) {
             this.childs = [];
@@ -208,49 +228,49 @@
             return res;
         }
 
-		addClass(classname: string) {
-			this.element.classList.add(classname);
-			return this;
-		}
+        addClass(classname: string) {
+            this.element.classList.add(classname);
+            return this;
+        }
 
-		className(classname: string) {
-			this.element.className = classname;
-			return this;
-		}
+        className(classname: string) {
+            this.element.className = classname;
+            return this;
+        }
 
-		opacity(opacity: string) {
-			this.element.style.opacity = opacity;
-			return this;
-		}
+        opacity(opacity: string) {
+            this.element.style.opacity = opacity;
+            return this;
+        }
 
-		display(display: string) {
-			this.element.style.display = display;
-			return this;
-		}
+        display(display: string) {
+            this.element.style.display = display;
+            return this;
+        }
 
-		hide() {
-			this.element.style.display = 'none';
-			return this;
-		}
+        hide() {
+            this.element.style.display = 'none';
+            return this;
+        }
 
-		visibility(visibility: string) {
-			this.element.style.visibility = visibility;
-			return this;
-		}
+        visibility(visibility: string) {
+            this.element.style.visibility = visibility;
+            return this;
+        }
 
-		text(text: string) {
-			this.element.textContent = text;
-			return this;
-		}
+        text(text: string) {
+            this.element.textContent = text;
+            return this;
+        }
 
-		html(text: string) {
-			this.element.innerHTML = text;
-			return this;
-		}
+        html(text: string) {
+            this.element.innerHTML = text;
+            return this;
+        }
 
-		attr(name: string, val: string) {
-			this.element.setAttribute(name, val);
-			return this;
+        attr(name: string, val: string) {
+            this.element.setAttribute(name, val);
+            return this;
         }
 
         editable(editable: boolean) {
@@ -258,30 +278,30 @@
             return this;
         }
 
-		style(name: string, val: string) {
-			this.element.style[name] = val;
-			return this;
-		}
+        style(name: string, val: string) {
+            this.element.style[name] = val;
+            return this;
+        }
 
-		appendTo(elt: Element) {
-			elt.appendChild(this.element);
-			return this;
-		}
-		
-		append(nodeType: string, className?: string, callback?: (FluentDOM) => void) {
-			var child = new FluentDOM(nodeType, className, this.element, this);
-			if (callback) {
-				callback(child);
-			}
-			return this;
+        appendTo(elt: Element) {
+            elt.appendChild(this.element);
+            return this;
+        }
+
+        append(nodeType: string, className?: string, callback?: (FluentDOM) => void) {
+            var child = new FluentDOM(nodeType, className, this.element, this);
+            if (callback) {
+                callback(child);
+            }
+            return this;
         }
 
         createChild(nodeType: string, className?: string) {
-            var child = new FluentDOM(nodeType, className, this.element, this);            
+            var child = new FluentDOM(nodeType, className, this.element, this);
             return child;
         }
-        
-        click(callback : (EventTarget) => void){
+
+        click(callback: (EventTarget) => void) {
             this.element.addEventListener('click', callback);
             return this;
         }
@@ -295,5 +315,5 @@
             this.element.addEventListener('keydown', callback);
             return this;
         }
-	}
+    }
 }
