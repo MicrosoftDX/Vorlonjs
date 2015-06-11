@@ -95,6 +95,7 @@
     <Content Include="public\stylesheets\images\ui-icons_888888_256x240.png" />
     <Content Include="public\stylesheets\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="public\stylesheets\jquery-ui.css" />
+    <Content Include="public\stylesheets\jquery.switchButton.css" />
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="public\vorlon\plugins\domExplorer\control.css" />
     <Content Include="public\vorlon\plugins\domExplorer\control.html" />
@@ -161,6 +162,7 @@
     <Compile Include="public\javascripts\jquery-1.10.2.js" />
     <Compile Include="public\javascripts\jquery-1.10.2.min.js" />
     <Compile Include="public\javascripts\jquery-2.1.1.min.js" />
+    <Compile Include="public\javascripts\jquery.switchButton.js" />
     <Compile Include="public\javascripts\modernizr-2.6.2.js" />
     <Compile Include="public\javascripts\respond.js" />
     <Compile Include="public\javascripts\respond.min.js" />

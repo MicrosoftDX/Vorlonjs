@@ -8,6 +8,7 @@ module VORLON {
         private _newAppliedAttributes = {};
         private _lastContentState = '';
         private _lastReceivedObject = null;
+        private _globalloadactive = false;
 
         constructor() {
             super("domExplorer", "control.html", "control.css");
@@ -180,13 +181,19 @@ module VORLON {
         refresh(): void {
             var packagedObject = this._packageNode(document.body);
             packagedObject.rootHTML = document.body.innerHTML;
-            this._packageDOM(document.body, packagedObject, false);
+            this._packageDOM(document.body, packagedObject, this._globalloadactive);
 
             this.sendCommandToDashboard('init', packagedObject);
         }
         setStyle(internaID: string, property: string, newValue: string): void {
             var element = this._getElementByInternalId(internaID, document.body);
             element.style[property] = newValue;
+        }
+        globalload(value: boolean): void {
+            this._globalloadactive = value;
+            if (this._globalloadactive) {
+                this.refresh();
+            }
         }
         setAttribute(internaID: string, attributeName: string, attributeOldName: string, attributeValue: string): void {
             var element = this._getElementByInternalId(internaID, document.body);
@@ -224,7 +231,8 @@ module VORLON {
         public _clikedNodeID = null;
         public _selectedNode: DomExplorerNode;
         public _rootNode: DomExplorerNode;
-
+        private _globalload: HTMLInputElement;
+        private _autorefresh: HTMLInputElement;
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
@@ -232,6 +240,7 @@ module VORLON {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this.styleView = Tools.QuerySelectorById(filledDiv, "styleView");
+                this.setSettings(filledDiv);
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
                 this._containerDiv.addEventListener('refresh',() => {
                     this.sendCommandToClient('refresh');
@@ -263,6 +272,7 @@ module VORLON {
                     if (node.className.match('treeNodeHeader') || node.parentElement.className.match('treeNodeClosingText')) {
                         var hovered = this._treeDiv.querySelector('[data-hovered-tag]')
                         if (hovered) hovered.removeAttribute('data-hovered-tag');
+
                     }
                 }, true);
 
@@ -274,6 +284,9 @@ module VORLON {
                 $('#accordion').accordion({
                     heightStyle: "content"
                 });
+
+                $("input#autorefresh").switchButton({});
+                $("input#globalload").switchButton({});
 
                 this._ready = true;
             });
@@ -294,6 +307,19 @@ module VORLON {
             Tools.RemoveClass(element, "editable");
             $(element).closest(".treeNodeSelected").addClass("editableselection");
         }
+        private setSettings(filledDiv: HTMLElement) {
+            this._globalload = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "globalload");
+            this._autorefresh = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "autorefresh");
+            $(this._globalload).change(() => {
+                if (this._globalload.checked) {
+                    this.sendCommandToClient('globalload', { value: true });
+                }
+                else {
+                    this.sendCommandToClient('globalload', { value: false });
+                }
+            });
+        }
+
         private _appendSpan(parent: HTMLElement, className: string, value: string): void {
             var span = document.createElement("span");
             span.className = className;
@@ -359,6 +385,9 @@ module VORLON {
         dirtyCheck(content: string) {
             if (this._lastContentState != content) {
                 this._refreshButton.setAttribute('changed', '');
+                if (this._autorefresh && this._autorefresh.checked) {
+                    this.sendCommandToClient('refresh');
+                }
             }
             else this._refreshButton.removeAttribute('changed');
         }
@@ -396,6 +425,11 @@ module VORLON {
         style: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setStyle(data.order, data.property, data.newValue);
+        },
+
+        globalload: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.globalload(data.value);
         },
         attribute: function (data: any) {
             var plugin = <DOMExplorer>this;
@@ -653,6 +687,7 @@ module VORLON {
                         }
                         else if (key === "editvalue") {
                             DOMExplorer.makeEditable(nodeValue);
+
                         }
                         else if (key === "delete") {
                             sendTextToClient.bind(that)("", nodeValue.innerHTML, nodeValue);
