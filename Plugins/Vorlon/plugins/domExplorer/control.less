@@ -19,21 +19,7 @@
         overflow: hidden !important;
     }
 
-    .context-menu-list {
-        -webkit-box-shadow: none;
-        box-shadow: none;
-        background-color: #EFEFEF;
 
-        .context-menu-item {
-            background-color: #EFEFEF;
-
-            &.hover {
-                background-color: #CCC;
-            }
-
-            padding: 10px;
-        }
-    }
 
     .panel-left,
     .panel-right {
@@ -366,5 +352,15 @@
 
     x-action[event="refresh"][changed] .fa {
         color: red;
+    }
+}
+
+
+.ui-contextmenu.ui-menu {
+    z-index: 5000;
+
+    .ui-menu-item {
+        padding: 10px;
+        font-size: 10pt;
     }
 }

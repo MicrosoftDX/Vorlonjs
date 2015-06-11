@@ -710,36 +710,29 @@ module VORLON {
                 });
                 var that = this;
                 nodename.element.addEventListener("contextmenu",(evt) => {
-                    $.contextMenu('destroy');
-                    $('.plugin-dom .context-menu-root').remove();
-                    $.contextMenu({
-                        selector: "#treeNodeHeader-" + this.node.internalId,
-                        appendTo: '.plugin-dom',
-                        events: {
-                            hide: function (opt) {
-                                $('.plugin-dom .context-menu-root').remove();
-                            }
+                    $(document).contextmenu({
+                        close: () => {
+                            $(document).contextmenu("destroy");
                         },
-                        callback: function (key, options) {
-                            //$.contextMenu('destroy');
-                            if (key === "editHTML") {
+                        delegate: "#treeNodeHeader-" + this.node.internalId,
+                        menu: [
+                            { title: "Edit content as HTML", cmd: "editHTML" },
+                            { title: "Add attribute", cmd: "add" },
+                        ],
+                        select: function (event, ui) {
+                            if (ui.cmd == "editHTML") {
                                 that.parent.plugin.select(that);
                                 that.parent.plugin.sendCommandToClient('innerHTML', {
                                     order: that.plugin._selectedNode.node.internalId
                                 });
                                 $("#accordion .htmlsection").trigger('click');
                             }
-                            if (key === "add") {
+                            else if (ui.cmd = "add") {
                                 var attr = new DomExplorerNodeAttribute(that, "name", "value");
                                 that.attributes.push(attr);
                             }
-                        },
-                        items: {
-                            "editHTML": { name: "Edit content as HTML " },
-                            "add": { name: "Add attribute" }
                         }
                     });
-                    $("#treeNodeHeader-" + this.node.internalId).contextMenu();
 
                 });
             });
@@ -822,47 +815,42 @@ module VORLON {
                 that.parent.plugin.undoEditable(nodeEditable);
             }
             var menu = function (editText: string) {
-                $.contextMenu('destroy');
-                $('.plugin-dom .context-menu-root').remove();
-                $.contextMenu({
-                    selector: "#" + parentElementId,
-                    appendTo: '.plugin-dom',
-                    events: {
-                        hide: function (opt) {
-                            $('.plugin-dom .context-menu-root').remove();
-                        }
+
+                $(document).contextmenu({
+                    close: () => {
+                        //$.contextmenu._destroy();
+                        $(document).contextmenu("destroy");
                     },
-                    callback: function (key, options) {
-                        //$.contextMenu('destroy');
-                        if (key === "edit") {
+                    delegate: "#" + parentElementId,
+                    menu: [
+                        { title: "Edit attribute name", cmd: "edit" },
+                        { title: "Edit attribute value", cmd: "editvalue" },
+                        { title: "Edit content as HTML", cmd: "editHTML" },
+                        { title: "Add attribute", cmd: "add" },
+                        { title: "Delete attribute", cmd: "delete" }
+                    ],
+                    select: function (event, ui) {
+                        if (ui.cmd == "edit") {
                             that.parent.plugin.makeEditable(nodeName);
                         }
-                        else if (key === "editvalue") {
+                        else if (ui.cmd = "editvalue") {
                             that.parent.plugin.makeEditable(nodeValue);
                         }
-                        else if (key === "delete") {
-                            sendTextToClient.bind(that)("", nodeValue.innerHTML, nodeValue);
-                        }
-                        else if (key === "add") {
-                            that.parent.addAttribute("name", "value");
-                        }
-                        else if (key === "editHTML") {
+                        else if (ui.cmd = "editHTML") {
                             that.parent.plugin.select(that.parent);
                             that.parent.plugin.sendCommandToClient('innerHTML', {
                                 order: that.parent.plugin._selectedNode.node.internalId
                             });
                             $("#accordion .htmlsection").trigger('click');
                         }
-                    },
-                    items: {
-                        "edit": { name: "Edit attribute name" },
-                        "editvalue": { name: "Edit attribute value" },
-                        "editHTML": { name: "Edit content as HTML " },
-                        "add": { name: "Add attribute" },
-                        "delete": { name: "Delete attribute" }
+                        else if (ui.cmd = "add") {
+                            that.parent.addAttribute("name", "value");
+                        }
+                        else if (ui.cmd = "delete") {
+                            sendTextToClient.bind(that)("", nodeValue.innerHTML, nodeValue);
+                        }
                     }
                 });
-                $("#" + parentElementId).contextMenu();
             }
             nodeValue.addEventListener("contextmenu",(evt) => {
                 if (nodeValue.contentEditable != "true" && nodeName.contentEditable != "true")
