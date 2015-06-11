@@ -9,7 +9,7 @@ module VORLON {
         private _lastContentState = '';
         private _lastReceivedObject = null;
         private _globalloadactive = false;
-
+        private _overley: HTMLElement;
         constructor() {
             super("domExplorer", "control.html", "control.css");
             this._id = "DOM";
@@ -94,13 +94,12 @@ module VORLON {
                 rootHTML: null,
                 internalId: VORLON.Tools.CreateGUID()
             };
-            if (node.__vorlon) {
+            if (node.__vorlon && node.__vorlon.internalId) {
                 packagedNode.internalId = node.__vorlon.internalId;
             }
             else {
-                node.__vorlon = <any>{
-                    internalId: packagedNode.internalId
-                };
+                node.__vorlon = node.__vorlon ? node.__vorlon : <any> {};
+                node.__vorlon.internalId = packagedNode.internalId
             }
             return packagedNode;
         }
@@ -120,6 +119,7 @@ module VORLON {
                 else if (withChildsNodes || node.childNodes.length == 1) {
                     this._packageDOM(node, packagedNode, withChildsNodes);
                 }
+                if ((<any>node).__vorlon.ignore) { return; }
                 packagedObject.children.push(packagedNode);
             }
         }
@@ -172,6 +172,12 @@ module VORLON {
             }
         }
 
+        private _offsetFor(element: HTMLElement) {
+            var p = element.getBoundingClientRect();
+            var w = element.offsetWidth;
+            var h = element.offsetHeight;
+            return { x: p.top, y: p.left, width: w, height: h };
+        }
 
         public setClientSelectedElement(elementId: string) {
             var element = this._getElementByInternalId(elementId, document.body);
@@ -179,19 +185,25 @@ module VORLON {
             if (!element) {
                 return;
             }
-            element.__savedBackgroundColor = element.style.backgroundColor;
-            element.style.backgroundColor = "yellow";
-            this._lastElementSelectedClientSide = element;
+            if (!this._overley) {
+                this._overley = document.createElement("div");
+                this._overley.id = "vorlonOverley";
+                this._overley.style.position = "absolute";
+                this._overley.style.backgroundColor = "rgba(255,255,0,0.4)";
+                this._overley.style.pointerEvents = "none";
+                (<any>  this._overley).__vorlon = { ignore: true };
+                document.body.appendChild(this._overley);
+            }
+            this._overley.style.display = "block";
+            var position = this._offsetFor(element);
+            this._overley.style.top = position.x + "px";
+            this._overley.style.left = position.y + "px";
+            this._overley.style.width = position.width + "px";
+            this._overley.style.height = position.height + "px";
         }
         public unselectClientElement(internalId?: string) {
-            if (internalId) {
-                var element = this._getElementByInternalId(internalId, document.body);
-                if (this._lastElementSelectedClientSide && this._lastElementSelectedClientSide == element)
-                    this._lastElementSelectedClientSide.style.backgroundColor = this._lastElementSelectedClientSide.__savedBackgroundColor;
-                return;
-            }
-            if (this._lastElementSelectedClientSide)
-                this._lastElementSelectedClientSide.style.backgroundColor = this._lastElementSelectedClientSide.__savedBackgroundColor;
+            if (this._overley)
+                this._overley.style.display = "none";
         }
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
 
