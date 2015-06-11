@@ -166,13 +166,19 @@ module VORLON {
             if (!element) {
                 return;
             }
-            element.__savedOutline = element.style.outline;
-            element.style.outline = "2px solid red";
+            element.__savedBackgroundColor = element.style.backgroundColor;
+            element.style. backgroundColor = "yellow";
             this._lastElementSelectedClientSide = element;
         }
-        public unselectClientElement() {
+        public unselectClientElement(internalId?: string) {
+            if (internalId) {
+                var element = this._getElementByInternalId(internalId, document.body);
+                if (this._lastElementSelectedClientSide == element)
+                    this._lastElementSelectedClientSide.style.backgroundColor = this._lastElementSelectedClientSide.__savedBackgroundColor;
+                return;
+            }
             if (this._lastElementSelectedClientSide)
-                this._lastElementSelectedClientSide.style.outline = this._lastElementSelectedClientSide.__savedOutline;
+                this._lastElementSelectedClientSide.style.backgroundColor = this._lastElementSelectedClientSide.__savedBackgroundColor;
         }
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
 
@@ -254,15 +260,23 @@ module VORLON {
                 });
 
                 this._treeDiv.addEventListener('mouseenter',(e: Event) => {
-                    var node = <HTMLElement>e.target;
+                    var node = <any>e.target;
                     var parent = node.parentElement;
                     var isHeader = node.className.match('treeNodeHeader');
                     if (isHeader || parent.className.match('treeNodeClosingText')) {
                         if (isHeader) {
                             parent.setAttribute('data-hovered-tag', '');
+                            var id = $(node).data('internalid');
+                            if (id) {
+                                this.hoverNode(id);
+                            }
                         }
                         else {
                             parent.parentElement.parentElement.setAttribute('data-hovered-tag', '');
+                            var id = $(parent).data('internalid');
+                            if (id) {
+                                this.hoverNode(id);
+                            }
                         }
                     }
                 }, true);
@@ -272,8 +286,18 @@ module VORLON {
                     if (node.className.match('treeNodeHeader') || node.parentElement.className.match('treeNodeClosingText')) {
                         var hovered = this._treeDiv.querySelector('[data-hovered-tag]')
                         if (hovered) hovered.removeAttribute('data-hovered-tag');
-
+                        var id = $(node).data('internalid');
+                        if (id) {
+                            this.hoverNode(id, true);
+                        }
+                        else {
+                            var id = $(node.parentElement).data('internalid');
+                            if (id) {
+                                this.hoverNode(id, true);
+                            }
+                        }
                     }
+
                 }, true);
 
                 $('.dom-explorer-container').split({
@@ -391,6 +415,24 @@ module VORLON {
             }
             else this._refreshButton.removeAttribute('changed');
         }
+        hoverNode(internalId: string, unselect: boolean = false) {
+            if (!internalId) {
+                this.sendCommandToClient('unselect', {
+                    order: null
+                });
+            }
+            else if (unselect) {
+                this.sendCommandToClient('unselect', {
+                    order: internalId
+                });
+            }
+            else {
+                this.sendCommandToClient('select', {
+                    order: internalId
+                });
+            }
+
+        }
 
         select(selected: DomExplorerNode) {
             if (this._selectedNode) {
@@ -420,6 +462,7 @@ module VORLON {
     DOMExplorer.prototype.ClientCommands = {
         select: function (data: any) {
             var plugin = <DOMExplorer>this;
+            plugin.unselectClientElement();
             plugin.setClientSelectedElement(data.order);
         },
         style: function (data: any) {
@@ -441,7 +484,7 @@ module VORLON {
         },
         unselect: function (data: any) {
             var plugin = <DOMExplorer>this;
-            plugin.unselectClientElement();
+            plugin.unselectClientElement(data.order);
         },
         refreshNode: function (data: any) {
             var plugin = <DOMExplorer>this;
@@ -585,6 +628,7 @@ module VORLON {
                 this.header = header.element;
                 header.click(() => this.plugin.select(this));
                 header.createChild("SPAN", "nodeName").text(this.node.name);
+                $(this.header).data("internalid", this.node.internalId);
                 header.createChild("SPAN", "fa fa-plus-circle").click(() => {
                     this.addAttribute("name", "value");
                 }).element.title = "add attribute";
@@ -614,6 +658,9 @@ module VORLON {
             if (this.node.name) {
                 root.append("DIV", "treeNodeClosingText",(footer) => {
                     footer.createChild("SPAN", "nodeName").text(this.node.name);
+                    if (!footer.element.dataset)
+                        footer.element.dataset = {};
+                    $(footer.element).data("internalid", this.node.internalId);
                 });
             }
             // Main node
