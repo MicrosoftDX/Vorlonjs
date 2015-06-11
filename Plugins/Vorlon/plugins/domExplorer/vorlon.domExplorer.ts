@@ -267,6 +267,7 @@ module VORLON {
         private _autorefresh: HTMLInputElement;
         public _innerHTMLView: HTMLTextAreaElement;
         public _editablemode: boolean = false;
+        private _editableElement: HTMLElement;
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
@@ -353,21 +354,29 @@ module VORLON {
                 this._ready = true;
             });
         }
-        static makeEditable(element: HTMLElement): void {
+        public makeEditable(element: HTMLElement): void {
+            if (element.contentEditable == "true") { return; }
+            var range = document.createRange();
+            var sel = window.getSelection();
+            range.setStart(element, 1);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+            if (this._editableElement)
+                this.undoEditable(this._editableElement);
             element.contentEditable = "true";
-            //var range = document.createRange();
-            //var sel = window.getSelection();
-            //range.setStart(element, 1);
-            //range.collapse(true);
-            //sel.removeAllRanges();
-            //sel.addRange(range);
+            this._editablemode = true;
+            this._editableElement = element;
             Tools.AddClass(element, "editable");
+            $(element).focus();
             $(element).closest(".treeNodeSelected").addClass("editableselection");
         }
-        static undoEditable(element: HTMLElement): void {
+        public undoEditable(element: HTMLElement): void {
+            this._editablemode = false;
             element.contentEditable = "false";
             Tools.RemoveClass(element, "editable");
             $(element).closest(".treeNodeSelected").addClass("editableselection");
+            this._editableElement = null;
         }
         private setSettings(filledDiv: HTMLElement) {
             this._globalload = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "globalload");
@@ -646,8 +655,7 @@ module VORLON {
                 value: this.element.innerHTML,
                 order: this.parent.node.internalId
             });
-            this.plugin._editablemode = false;
-            DOMExplorer.undoEditable(this.element);
+            this.plugin.undoEditable(this.element);
         }
 
         renderTextNode(parentElt: HTMLElement) {
@@ -662,8 +670,7 @@ module VORLON {
                         this.sendTextToClient();
                     }
                 }).click(() => {
-                    DOMExplorer.makeEditable(this.element);
-                    this.plugin._editablemode = true;
+                    this.plugin.makeEditable(this.element);
                 });
 
             }
@@ -812,9 +819,7 @@ module VORLON {
                     nodeName.parentElement.removeChild(nodeName);
                     nodeValue.parentElement.removeChild(nodeValue);
                 }
-                that.parent.plugin._editablemode = true;
-                nodeEditable.contentEditable = "false";
-                Tools.RemoveClass(nodeEditable, "editable");
+                that.parent.plugin.undoEditable(nodeEditable);
             }
             var menu = function (editText: string) {
                 $.contextMenu('destroy');
@@ -830,12 +835,10 @@ module VORLON {
                     callback: function (key, options) {
                         //$.contextMenu('destroy');
                         if (key === "edit") {
-                            DOMExplorer.makeEditable(nodeName);
-                            that.parent.plugin._editablemode = true;
+                            that.parent.plugin.makeEditable(nodeName);
                         }
                         else if (key === "editvalue") {
-                            DOMExplorer.makeEditable(nodeValue);
-                            that.parent.plugin._editablemode = true;
+                            that.parent.plugin.makeEditable(nodeValue);
                         }
                         else if (key === "delete") {
                             sendTextToClient.bind(that)("", nodeValue.innerHTML, nodeValue);
@@ -866,12 +869,10 @@ module VORLON {
                     menu.bind(this)("value");
             });
             nodeValue.addEventListener("click",(evt) => {
-                DOMExplorer.makeEditable(nodeValue);
-                this.parent.plugin._editablemode = true;
+                this.parent.plugin.makeEditable(nodeValue);
             });
             nodeName.addEventListener("click",(evt) => {
-                DOMExplorer.makeEditable(nodeName);
-                this.parent.plugin._editablemode = true;
+                this.parent.plugin.makeEditable(nodeName);
             });
             nodeName.addEventListener("contextmenu",() => {
                 if (nodeValue.contentEditable != "true" && nodeName.contentEditable != "true")
@@ -976,20 +977,16 @@ module VORLON {
 
             if (editableLabel) {
                 label.addEventListener("blur",() => {
-                    this.parent.plugin._editablemode = false;
-                    label.contentEditable = "false";
-                    Tools.RemoveClass(label, "editable");
+                    this.parent.plugin.undoEditable(label);
                 });
 
                 label.addEventListener("click",() => {
-                    DOMExplorer.makeEditable(label);
-                    this.parent.plugin._editablemode = true;
+                    this.parent.plugin.makeEditable(label);
                 });
 
                 label.addEventListener("keydown",(evt) => {
                     if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
-                        DOMExplorer.makeEditable(valueElement);
-                        this.parent.plugin._editablemode = true;
+                        this.parent.plugin.makeEditable(valueElement);
                         evt.preventDefault();
                     }
                 });
@@ -1031,24 +1028,17 @@ module VORLON {
                         newValue: valueElement.innerHTML,
                         order: internalId
                     });
-
                     evt.preventDefault();
-                    this.parent.plugin._editablemode = false;
-                    DOMExplorer.undoEditable(valueElement);
+                    this.parent.plugin.undoEditable(valueElement);
                 }
             });
 
             valueElement.addEventListener("blur",() => {
-                this.parent.plugin._editablemode = false;
-                DOMExplorer.undoEditable(valueElement);
+                this.parent.plugin.undoEditable(valueElement);
             });
-
-
             valueElement.addEventListener("click",() => {
-                DOMExplorer.makeEditable(valueElement);
-                this.parent.plugin._editablemode = true;
+                this.parent.plugin.makeEditable(valueElement);
             });
-
             return valueElement;
         }
 
