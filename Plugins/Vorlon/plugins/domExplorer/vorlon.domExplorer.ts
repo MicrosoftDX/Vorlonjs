@@ -355,18 +355,20 @@ module VORLON {
             });
         }
         public makeEditable(element: HTMLElement): void {
-            //var range = document.createRange();
-            //var sel = window.getSelection();
-            //range.setStart(element, 1);
-            //range.collapse(true);
-            //sel.removeAllRanges();
-            //sel.addRange(range);
+            if (element.contentEditable == "true") { return; }
+            var range = document.createRange();
+            var sel = window.getSelection();
+            range.setStart(element, 1);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
             if (this._editableElement)
                 this.undoEditable(this._editableElement);
             element.contentEditable = "true";
             this._editablemode = true;
             this._editableElement = element;
             Tools.AddClass(element, "editable");
+            $(element).focus();
             $(element).closest(".treeNodeSelected").addClass("editableselection");
         }
         public undoEditable(element: HTMLElement): void {
