@@ -154,7 +154,9 @@
         }
 
         .editable {
-            border-bottom: 2px dashed red;
+            -moz-box-shadow: 0 0 2px 2px #888;
+            -webkit-box-shadow: 0 0 2px 2px #888;
+            box-shadow: 0 0 2px 2px #888;
             background-color: transparent !important;
         }
 
@@ -184,13 +186,17 @@
             display: inline;
             margin: 0;
             padding: 0;
+            padding-left: 5px;
+            padding-right: 5px;
         }
 
         &:not([data-has-children]) .nodeTextContent {
             padding: 0 0.25em;
 
             &.editable {
-                border-bottom: 2px dashed red;
+                -moz-box-shadow: 0 0 2px 2px #888;
+                -webkit-box-shadow: 0 0 2px 2px #888;
+                box-shadow: 0 0 2px 2px #888;
             }
         }
     }
@@ -209,6 +215,13 @@
     .treeNodeSelected,
     .treeNodeSelected .treeNodeClosingText .nodeName {
         background: yellow !important;
+    }
+
+    .editableselection {
+        &.treeNodeSelected,
+        &.treeNodeSelected .treeNodeClosingText .nodeName {
+            background: white !important;
+        }
     }
 
     .treeNodeTools {

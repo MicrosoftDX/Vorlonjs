@@ -228,17 +228,11 @@ module VORLON {
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
-
             this._insertHtmlContentAsync(this._dashboardDiv,(filledDiv: HTMLElement) => {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this.styleView = Tools.QuerySelectorById(filledDiv, "styleView");
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
-
-                setInterval(() => {
-                    this.sendCommandToClient('dirtycheck');
-                }, 4000);
-
                 this._containerDiv.addEventListener('refresh',() => {
                     this.sendCommandToClient('refresh');
                 });
@@ -293,8 +287,13 @@ module VORLON {
             sel.removeAllRanges();
             sel.addRange(range);
             Tools.AddClass(element, "editable");
+            $(element).closest(".treeNodeSelected").addClass("editableselection");
         }
-
+        static undoEditable(element: HTMLElement): void {
+            element.contentEditable = "false";
+            Tools.RemoveClass(element, "editable");
+            $(element).closest(".treeNodeSelected").addClass("editableselection");
+        }
         private _appendSpan(parent: HTMLElement, className: string, value: string): void {
             var span = document.createElement("span");
             span.className = className;
@@ -334,6 +333,9 @@ module VORLON {
 
         }
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
+            if (receivedObject.type === "contentchanged") {
+                this.dirtyCheck(receivedObject.content)
+            }
         }
 
         public initDashboard(root: PackagedNode) {
@@ -354,8 +356,8 @@ module VORLON {
             }
         }
 
-        dirtyCheck(receivedObject: any) {
-            if (this._lastContentState != receivedObject.rootHTML) {
+        dirtyCheck(content: string) {
+            if (this._lastContentState != content) {
                 this._refreshButton.setAttribute('changed', '');
             }
             else this._refreshButton.removeAttribute('changed');
@@ -415,9 +417,6 @@ module VORLON {
             var plugin = <DOMExplorer>this;
             plugin.refresh();
         },
-        dirtycheck: function () {
-            this.sendCommandToDashboard('dirtyCheck', { rootHTML: document.body.innerHTML });
-        }
     }
 
     DOMExplorer.prototype.DashboardCommands = {
@@ -431,16 +430,11 @@ module VORLON {
             plugin.updateDashboard(node);
         },
 
-        dirtyCheck: function (data: any) {
-            var plugin = <DOMExplorer>this;
-            plugin.dirtyCheck(data);
-        }
     }
 
     enum ReceivedObjectClientSideType {
         unselect,
         select,
-        dirtycheck,
         refresh,
         refreshbyid,
         valueEdit,
@@ -515,8 +509,7 @@ module VORLON {
                 value: this.element.innerHTML,
                 order: this.parent.node.internalId
             });
-            this.element.contentEditable = "false";
-            Tools.RemoveClass(this.element, "editable");
+            DOMExplorer.undoEditable(this.element);
         }
 
         renderTextNode(parentElt: HTMLElement) {
@@ -840,14 +833,12 @@ module VORLON {
                     });
 
                     evt.preventDefault();
-                    valueElement.contentEditable = "false";
-                    Tools.RemoveClass(valueElement, "editable");
+                    DOMExplorer.undoEditable(valueElement);
                 }
             });
 
             valueElement.addEventListener("blur",() => {
-                valueElement.contentEditable = "false";
-                Tools.RemoveClass(valueElement, "editable");
+                DOMExplorer.undoEditable(valueElement);
             });
 
 
