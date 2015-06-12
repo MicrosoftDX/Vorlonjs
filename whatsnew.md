@@ -10,6 +10,9 @@
 		- Direct inner text edit
 		- Attributes display and edit
 		- Hover coloration
+		- Edit content as HTML
+		- right click context menu on DOM node (with shortcust to attribute, HTML edit, ...)
+		- settings panel to define behavior
 	- Improvements on console plugin
 		- history for commands
 		- support for logging objects and console.dir

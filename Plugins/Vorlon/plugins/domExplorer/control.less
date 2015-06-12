@@ -19,6 +19,8 @@
         overflow: hidden !important;
     }
 
+
+
     .panel-left,
     .panel-right {
         height: 100%;
@@ -66,8 +68,33 @@
     }
 
     #treeView,
-    #styleView, #attributesView {
+    #styleView, #settings {
         padding: 15px;
+    }
+
+    #settings {
+        > div {
+            clear: both;
+        }
+
+        .switch-wrapper {
+            display: inline-block;
+            position: relative;
+            float: right;
+            top: 3px;
+        }
+    }
+
+    .innerHTMLViewContainer {
+        .filter-btn {
+            border-radius: 0;
+            background-color: transparent;
+            width: 32px;
+            text-align: center;
+            margin-left: 2px;
+            background-color: #333;
+            color: white;
+        }
     }
 
     .tree-view-wrapper {
@@ -99,15 +126,17 @@
         text-align: center;
         margin-right: 4px;
         box-sizing: border-box;
+        outline: none;
 
         &:before {
-            content: "-";
-            outline: none;
+            content: "-";   
+            outline: none;         
         }
 
         &[data-collapsed]:before {
             content: "+";
             vertical-align: middle;
+            outline: none;
         }
 
         &[data-collapsed] ~ .nodeContentContainer {
@@ -141,7 +170,9 @@
         }
 
         .editable {
-            border-bottom: 2px dashed red;
+            -moz-box-shadow: 0 0 2px 2px #888;
+            -webkit-box-shadow: 0 0 2px 2px #888;
+            box-shadow: 0 0 2px 2px #888;
             background-color: transparent !important;
         }
 
@@ -150,13 +181,13 @@
             outline: 1px dotted #000;
         }
 
-        &:before {
-            content: "<";
+        .opentag {
+            /*content: "<";*/
             color: @bracketColor;
         }
 
-        &:after {
-            content: ">";
+        .closetag {
+            /*content: ">";*/
             color: @bracketColor;
         }
     }
@@ -164,20 +195,27 @@
     .nodeContentContainer {
         padding-left: 20px;
 
-
+        &[data-has-children]{
+            border-left: 1px solid #EEE;
+            margin-left: -2px;
+        }
 
         &:not([data-has-children]),
         &:not([data-has-children]) .treeNodeClosingText {
             display: inline;
             margin: 0;
             padding: 0;
+            padding-left: 5px;
+            padding-right: 5px;
         }
 
         &:not([data-has-children]) .nodeTextContent {
             padding: 0 0.25em;
 
             &.editable {
-                border-bottom: 2px dashed red;
+                -moz-box-shadow: 0 0 2px 2px #888;
+                -webkit-box-shadow: 0 0 2px 2px #888;
+                box-shadow: 0 0 2px 2px #888;
             }
         }
     }
@@ -196,6 +234,13 @@
     .treeNodeSelected,
     .treeNodeSelected .treeNodeClosingText .nodeName {
         background: yellow !important;
+    }
+
+    .editableselection {
+        &.treeNodeSelected,
+        &.treeNodeSelected .treeNodeClosingText .nodeName {
+            background: white !important;
+        }
     }
 
     .treeNodeTools {
@@ -228,16 +273,13 @@
 
     .treeNodeClosingText {
         display: inline-block;
-        background: #fff;
         cursor: default;
 
-        .nodeName:before {
-            content: "</";
+        .openclosingtag {
             color: @bracketColor;
         }
 
-        .nodeName:after {
-            content: ">";
+        .closetag {
             color: @bracketColor;
         }
     }
@@ -248,23 +290,14 @@
 
     .nodeAttribute {
         padding-left: 0.5em;
+        color: @quotesColor;
 
-        span:first-child {
+        span.attr-name {
             color: @attributeNameColor;
-
-            &:after {
-                content: "=\"";
-                color: @quotesColor;
-            }
         }
 
-        span:last-child {
+        span.attr-value {
             color: @attributeValueColor;
-
-            &:after {
-                content: "\"";
-                color: @quotesColor;
-            }
         }
     }
 
@@ -306,6 +339,7 @@
         cursor: pointer;
     }
 
+
     x-action[event="refresh"] .fa {
         color: #aaa;
     }
@@ -313,4 +347,34 @@
     x-action[event="refresh"][changed] .fa {
         color: red;
     }
+}
+
+
+body .b-m-mpanel {
+    z-index: 5000;
+    background: #eee;
+    padding: 0;
+    border-color: #888;
+
+    .b-m-item, .b-m-ifocus {
+        background: #eee;
+        padding: 10px;
+        font-size: 10pt;
+        margin: 0;
+    }
+
+    .b-m-ifocus {
+        background: #CCC;
+        cursor: pointer;
+        border: none;
+    }
+    /*.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+        background: #CCC;
+    }
+
+
+    .ui-menu-item {
+        padding: 10px;
+        font-size: 10pt;
+    }*/
 }

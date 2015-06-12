@@ -2,14 +2,14 @@
     export class FeatureSupported {
         public featureName: string;
         public isSupported: boolean;
-        public type: string; 
+        public type: string;
     }
 
     declare var Modernizr;
-    
+
     export class ModernizrReport extends Plugin {
         public supportedFeatures: FeatureSupported[] = [];
-        
+
         constructor() {
             super("modernizrReport", "control.html", "control.css");
             this._ready = false;
@@ -20,7 +20,7 @@
         }
 
         public startClientSide(): void {
-            this._loadNewScriptAsync("modernizr.js", () => {
+            this._loadNewScriptAsync("modernizr.js",() => {
                 if (Modernizr) {
                     this.supportedFeatures.push({ featureName: "Application cache", isSupported: Modernizr.applicationcache, type: "html" });
                     this.supportedFeatures.push({ featureName: "Audio tag", isSupported: Modernizr.audio, type: "html" });
@@ -124,53 +124,56 @@
                 this._htmlFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "htmlFeaturesList");
                 this._miscFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "miscFeaturesList");
                 this._nonCoreFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "nonCoreFeaturesList");
-                
+
                 var list = this._filterList;
                 var filter = <HTMLInputElement>document.getElementById('css_feature_filter');
-                filter.addEventListener('input', () => {
+                filter.addEventListener('input',() => {
                     var value = filter.value;
                     for (var z in list) {
                         list[z].setAttribute('data-feature-visibility', z.indexOf(value) > -1 ? '' : 'hidden');
                     }
                 });
-                
+
                 this._ready = true;
             });
         }
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
+            if (!receivedObject || !receivedObject.features)
+                return;
             var targettedTable;
             var supportedFeatures: FeatureSupported[] = receivedObject.features;
-            for (var i = 0; i < supportedFeatures.length; i++) {
-                switch (supportedFeatures[i].type) {
-                    case "css":
-                        targettedTable = this._cssFeaturesListTable;
-                        break;
-                    case "misc":
-                        targettedTable = this._miscFeaturesListTable;
-                        break;
-                    case "noncore":
-                        targettedTable = this._nonCoreFeaturesListTable;
-                        break;
-                    default:
-                        targettedTable = this._htmlFeaturesListTable;
-                        break;
+            if (supportedFeatures && supportedFeatures.length)
+                for (var i = 0; i < supportedFeatures.length; i++) {
+                    switch (supportedFeatures[i].type) {
+                        case "css":
+                            targettedTable = this._cssFeaturesListTable;
+                            break;
+                        case "misc":
+                            targettedTable = this._miscFeaturesListTable;
+                            break;
+                        case "noncore":
+                            targettedTable = this._nonCoreFeaturesListTable;
+                            break;
+                        default:
+                            targettedTable = this._htmlFeaturesListTable;
+                            break;
+                    }
+
+                    var rowCount = targettedTable.rows.length;
+                    var row = <HTMLTableRowElement>targettedTable.insertRow(rowCount);
+                    row.insertCell(0).innerHTML = supportedFeatures[i].featureName;
+                    var cellSupported = <HTMLTableCellElement>row.insertCell(1);
+                    cellSupported.align = "center";
+                    if (supportedFeatures[i].isSupported) {
+                        cellSupported.className = "modernizrFeatureSupported";
+                        cellSupported.innerHTML = "✔";
+                    }
+                    else {
+                        cellSupported.className = "modernizrFeatureUnsupported";
+                        cellSupported.innerHTML = "×";
+                    }
                 }
-             
-                var rowCount = targettedTable.rows.length;
-                var row = <HTMLTableRowElement>targettedTable.insertRow(rowCount);
-                row.insertCell(0).innerHTML = supportedFeatures[i].featureName;
-                var cellSupported = <HTMLTableCellElement>row.insertCell(1);
-                cellSupported.align = "center";
-                if (supportedFeatures[i].isSupported) {
-                    cellSupported.className = "modernizrFeatureSupported";
-                    cellSupported.innerHTML = "✔";
-                }
-                else {
-                    cellSupported.className = "modernizrFeatureUnsupported";
-                    cellSupported.innerHTML = "×";
-                }
-            }
             Array.prototype.slice.call(document.querySelectorAll('.modernizr-features-list td:first-child'), 0).forEach((node) => {
                 this._filterList[node.textContent.toLowerCase()] = node.parentNode;
             });
