@@ -627,11 +627,8 @@ module VORLON {
         public update(node: PackagedNode) {
             this.plugin._refreshButton.removeAttribute('changed');
             var b = this.plugin._insertReceivedObject(node, this.plugin._rootNode.node);
-
-            //this._generateTreeNode(this._treeDiv, this._lastReceivedObject, true);
             this.plugin.initDashboard(this.plugin._rootNode.node);
-            //var newNode = new DomExplorerNode(this.plugin, this.parent, this.contentContainer, node);
-            //this.childs.push(newNode);
+
         }
 
         selected(selected: boolean) {
@@ -702,9 +699,7 @@ module VORLON {
                 nodename.text(this.node.name);
                 header.element.id = "treeNodeHeader-" + this.node.internalId;
                 $(this.header).data("internalid", this.node.internalId);
-                //header.createChild("SPAN", "fa fa-plus-circle").click(() => {
-                //    this.addAttribute("name", "value");
-                //}).element.title = "add attribute";
+
                 this.node.attributes.forEach((attr) => {
                     this.addAttribute(attr[0], attr[1]);
                 });
@@ -818,7 +813,6 @@ module VORLON {
 
                 $(document).contextmenu({
                     close: () => {
-                        //$.contextmenu._destroy();
                         $(document).contextmenu("destroy");
                     },
                     delegate: "#" + parentElementId,
