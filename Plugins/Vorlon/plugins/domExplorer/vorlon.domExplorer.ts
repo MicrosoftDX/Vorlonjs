@@ -603,6 +603,7 @@ module VORLON {
         private static _spaceCheck = /[^\t\n\r ]/;
         public element: HTMLElement;
         public header: HTMLElement;
+        public headerAttributes: HTMLElement;
         public node: PackagedNode;
         public contentContainer: HTMLElement;
         public attributes: DomExplorerNodeAttribute[] = [];
@@ -720,14 +721,16 @@ module VORLON {
             root.append("SPAN", "treeNodeHeader",(header) => {
                 this.header = header.element;
                 header.click(() => this.plugin.select(this));
+                header.createChild("SPAN", "opentag").text('<');
                 var nodename = header.createChild("SPAN", "nodeName");
                 nodename.text(this.node.name);
                 header.element.id = "treeNodeHeader-" + this.node.internalId;
                 $(this.header).data("internalid", this.node.internalId);
-
+                this.headerAttributes = header.createChild("SPAN", "attributes").element;
                 this.node.attributes.forEach((attr) => {
                     this.addAttribute(attr[0], attr[1]);
                 });
+                header.createChild("SPAN", "closetag").text('>');
 
                 nodename.element.addEventListener("contextmenu",(evt) => {
                     menu("#treeNodeHeader-" + that.node.internalId);
@@ -754,7 +757,9 @@ module VORLON {
             });
             if (this.node.name) {
                 root.append("DIV", "treeNodeClosingText",(footer) => {
+                    footer.createChild("SPAN", "openclosingtag").text('</');
                     footer.createChild("SPAN", "nodeName").text(this.node.name);
+                    footer.createChild("SPAN", "closetag").text('>');
                     if (!footer.element.dataset)
                         footer.element.dataset = {};
                     $(footer.element).data("internalid", this.node.internalId);
@@ -845,7 +850,7 @@ module VORLON {
                         },
                         {
                             text: "Delete attribute", alias: "1-5", icon: "", action: () => {
-                                that.parent.plugin.makeEditable(nodeValue);
+                                sendTextToClient.bind(that)("", nodeValue.innerHTML, nodeValue);
                             }
                         },
                     ]
@@ -887,7 +892,7 @@ module VORLON {
             });
         }
         render() {
-            var node = new FluentDOM("SPAN", "nodeAttribute", this.parent.header);
+            var node = new FluentDOM("SPAN", "nodeAttribute", this.parent.headerAttributes);
             this.element = node.element;
             var nodename = node.createChild("SPAN").html(this.name);
             node.element.id = VORLON.Tools.CreateGUID();
