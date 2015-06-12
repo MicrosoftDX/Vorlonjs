@@ -1,7 +1,7 @@
 ﻿{
-    "useSSL": false,
-    "SSLkey": "../cert/Vorlon.key",
-    "SSLcert": "../cert/Vorlon.crt",
+    "useSSL": true,
+    "SSLkey": "../cert/server.key",
+    "SSLcert": "../cert/server.crt",
     "includeSocketIO": true,
     "plugins": [
         { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername" : "interactiveConsole"},

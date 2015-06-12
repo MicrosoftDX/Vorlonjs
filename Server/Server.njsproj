@@ -64,6 +64,9 @@
     <TypeScriptCompile Include="Scripts\vorlon.IWebServerComponent.ts" />
     <TypeScriptCompile Include="Scripts\vorlon.webServer.ts" />
     <TypeScriptCompile Include="server.ts" />
+    <Content Include="cert\server.crt" />
+    <Content Include="cert\server.csr" />
+    <Content Include="cert\server.key" />
     <Content Include="package.json" />
     <Content Include="public\catalog.json" />
     <Content Include="public\fonts\fontawesome\css\font-awesome.css" />
@@ -120,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\" />
+    <Folder Include="cert\" />
     <Folder Include="config\" />
     <Folder Include="public\fonts\fontawesome\" />
     <Folder Include="public\fonts\fontawesome\css\" />
