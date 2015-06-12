@@ -197,8 +197,8 @@ module VORLON {
             }
             this._overley.style.display = "block";
             var position = this._offsetFor(element);
-            this._overley.style.top = position.x + "px";
-            this._overley.style.left = position.y + "px";
+            this._overley.style.top = (position.x + document.body.scrollTop ) + "px";
+            this._overley.style.left = (position.y + document.body.scrollLeft )+ "px";
             this._overley.style.width = position.width + "px";
             this._overley.style.height = position.height + "px";
         }
