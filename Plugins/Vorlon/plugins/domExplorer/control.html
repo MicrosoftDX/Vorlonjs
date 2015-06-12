@@ -6,11 +6,13 @@
 </head>
 <body>
     <div id="DOMExplorerContainer" class="dom-explorer-container code-text">
+
         <div class="tree-view-wrapper panel-left">
             <x-controlbar>
                 <x-action event="refresh" tabindex="0"><i class="fa fa-circle"></i> Refresh</x-action>
             </x-controlbar>
             <div id="treeView"></div>
+            <div id="text"></div>
         </div>
         <div class="style-view-wrapper panel-right">
             <div id="accordion">
@@ -19,8 +21,35 @@
                     <div id="styleView">
                     </div>
                 </div>
+                <h3 class="htmlsection">html</h3>
+                <div class="innerHTMLViewContainer">
+                    <x-controlbar>
+                        <x-action event="gethtml" tabindex="0"><i class="fa fa-download "></i></x-action>
+                        <x-action event="savehtml" tabindex="0"><i class="fa fa-save"></i></x-action>
+                    </x-controlbar>
+                    <textarea style="width:100%;min-height:100px;" id="innerHTMLView"></textarea>
+                </div>
+                <h3>settings</h3>
+                <div>
+                    <div id="settings">
+                        <div>
+                            Auto refresh
+                            <div class="switch-wrapper">
+                                <input type="checkbox" name="auto refresh" id="autorefresh" />
+                            </div>
+                        </div>
+                        <div>
+                            Global load
+                            <div class="switch-wrapper">
+                                <input type="checkbox" name="global load" id="globalload" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <script>
+    </script>
 </body>
 </html>
