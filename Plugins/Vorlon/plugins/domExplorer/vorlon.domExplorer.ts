@@ -170,7 +170,7 @@ module VORLON {
             if (element) {
                 element.innerHTML = innerHTML;
             }
-            this.refresh();
+            this.refreshbyId(internalId);
         }
 
         private _offsetFor(element: HTMLElement) {
@@ -282,6 +282,7 @@ module VORLON {
                     this.sendCommandToClient('refresh');
                 });
                 this._containerDiv.addEventListener('savehtml',() => {
+                    this._clikedNodeID = this._selectedNode.node.internalId;
                     this.sendCommandToClient('saveinnerHTML', {
                         order: this._selectedNode.node.internalId,
                         innerhtml: this._innerHTMLView.value
@@ -343,7 +344,7 @@ module VORLON {
                 $('#accordion').accordion({
                     heightStyle: "content",
                     beforeActivate: (event, ui) => {
-                        if (ui.newHeader.context.innerText === "HTML" && this._selectedNode && this._selectedNode.node) {
+                        if (ui.newHeader.context.textContent && ui.newHeader.context.textContent.toLowerCase() === "html" && this._selectedNode && this._selectedNode.node) {
                             this.sendCommandToClient('innerHTML', {
                                 order: this._selectedNode.node.internalId
                             });
