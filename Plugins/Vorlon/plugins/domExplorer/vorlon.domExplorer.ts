@@ -691,7 +691,32 @@ module VORLON {
                     }
                 });
             });
+            var that = this;
+            var menu = function (idtarget) {
+                $('.b-m-mpanel').remove();
+                var option = {
+                    width: 180, items: [
+                        {
+                            text: "Edit content as HTML", icon: "", alias: "1-1", action: () => {
+                                that.parent.plugin.select(that);
+                                that.parent.plugin.sendCommandToClient('innerHTML', {
+                                    order: that.plugin._selectedNode.node.internalId
+                                });
+                                $("#accordion .htmlsection").trigger('click');
+                            }
+                        },
+                        {
+                            text: "Add attribute", alias: "1-3", icon: "", action: () => {
+                                var attr = new DomExplorerNodeAttribute(that, "name", "value");
+                                that.attributes.push(attr);
+                            }
+                        },
+                    ]
+                };
+                $('.b-m-mpanel').remove();
+                $(idtarget).contextmenu(option);
 
+            }
             root.append("SPAN", "treeNodeHeader",(header) => {
                 this.header = header.element;
                 header.click(() => this.plugin.select(this));
@@ -703,32 +728,9 @@ module VORLON {
                 this.node.attributes.forEach((attr) => {
                     this.addAttribute(attr[0], attr[1]);
                 });
-                var that = this;
-                nodename.element.addEventListener("contextmenu",(evt) => {
-                    $(document).contextmenu({
-                        close: () => {
-                            $(document).contextmenu("destroy");
-                        },
-                        delegate: "#treeNodeHeader-" + this.node.internalId,
-                        menu: [
-                            { title: "Edit content as HTML", cmd: "editHTML" },
-                            { title: "Add attribute", cmd: "add" },
-                        ],
-                        select: function (event, ui) {
-                            if (ui.cmd == "editHTML") {
-                                that.parent.plugin.select(that);
-                                that.parent.plugin.sendCommandToClient('innerHTML', {
-                                    order: that.plugin._selectedNode.node.internalId
-                                });
-                                $("#accordion .htmlsection").trigger('click');
-                            }
-                            else if (ui.cmd = "add") {
-                                var attr = new DomExplorerNodeAttribute(that, "name", "value");
-                                that.attributes.push(attr);
-                            }
-                        }
-                    });
 
+                nodename.element.addEventListener("contextmenu",(evt) => {
+                    menu("#treeNodeHeader-" + that.node.internalId);
                 });
             });
 
@@ -756,6 +758,10 @@ module VORLON {
                     if (!footer.element.dataset)
                         footer.element.dataset = {};
                     $(footer.element).data("internalid", this.node.internalId);
+                    footer.element.id = "treeNodeClosingText" + this.node.internalId
+                    footer.element.addEventListener("contextmenu",(evt) => {
+                        menu("#treeNodeClosingText" + this.node.internalId);
+                    });
                 });
             }
             // Main node
@@ -811,40 +817,41 @@ module VORLON {
             }
             var menu = function (editText: string) {
 
-                $(document).contextmenu({
-                    close: () => {
-                        $(document).contextmenu("destroy");
-                    },
-                    delegate: "#" + parentElementId,
-                    menu: [
-                        { title: "Edit attribute name", cmd: "edit" },
-                        { title: "Edit attribute value", cmd: "editvalue" },
-                        { title: "Edit content as HTML", cmd: "editHTML" },
-                        { title: "Add attribute", cmd: "add" },
-                        { title: "Delete attribute", cmd: "delete" }
-                    ],
-                    select: function (event, ui) {
-                        if (ui.cmd == "edit") {
-                            that.parent.plugin.makeEditable(nodeName);
-                        }
-                        else if (ui.cmd = "editvalue") {
-                            that.parent.plugin.makeEditable(nodeValue);
-                        }
-                        else if (ui.cmd = "editHTML") {
-                            that.parent.plugin.select(that.parent);
-                            that.parent.plugin.sendCommandToClient('innerHTML', {
-                                order: that.parent.plugin._selectedNode.node.internalId
-                            });
-                            $("#accordion .htmlsection").trigger('click');
-                        }
-                        else if (ui.cmd = "add") {
-                            that.parent.addAttribute("name", "value");
-                        }
-                        else if (ui.cmd = "delete") {
-                            sendTextToClient.bind(that)("", nodeValue.innerHTML, nodeValue);
-                        }
-                    }
-                });
+                var option = {
+                    width: 180, items: [
+                        {
+                            text: "Edit attribute name", icon: "", alias: "1-1", action: () => {
+                                that.parent.plugin.makeEditable(nodeName);
+                            }
+                        },
+                        {
+                            text: "Edit attribute value", alias: "1-2", icon: "", action: () => {
+                                that.parent.plugin.makeEditable(nodeValue);
+                            }
+                        },
+                        {
+                            text: "Edit content as HTML", alias: "1-3", icon: "", action: () => {
+                                that.parent.plugin.select(that.parent);
+                                that.parent.plugin.sendCommandToClient('innerHTML', {
+                                    order: that.parent.plugin._selectedNode.node.internalId
+                                });
+                                $("#accordion .htmlsection").trigger('click');
+                            }
+                        },
+                        {
+                            text: "Add attribute", alias: "1-4", icon: "", action: () => {
+                                that.parent.addAttribute("name", "value");
+                            }
+                        },
+                        {
+                            text: "Delete attribute", alias: "1-5", icon: "", action: () => {
+                                that.parent.plugin.makeEditable(nodeValue);
+                            }
+                        },
+                    ]
+                };
+                $('.b-m-mpanel').remove();
+                $("#" + parentElementId).contextmenu(option);
             }
             nodeValue.addEventListener("contextmenu",(evt) => {
                 if (nodeValue.contentEditable != "true" && nodeName.contentEditable != "true")
