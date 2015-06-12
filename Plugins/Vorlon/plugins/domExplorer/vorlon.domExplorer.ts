@@ -103,24 +103,32 @@ module VORLON {
             }
             return packagedNode;
         }
-
-        private _packageDOM(root: HTMLElement, packagedObject: PackagedNode, withChildsNodes: boolean = false): void {
+        private found = false;
+        private _packageDOM(root: HTMLElement, packagedObject: PackagedNode, withChildsNodes: boolean = false, highlightElementID: string = ""): PackagedNode {
             if (!root.childNodes || root.childNodes.length === 0) {
                 return;
             }
 
             for (var index = 0; index < root.childNodes.length; index++) {
                 var node = <HTMLElement>root.childNodes[index];
-
                 var packagedNode = this._packageNode(node);
+
                 if (node.childNodes && node.childNodes.length > 1) {
                     packagedNode.hasChildNodes = true;
                 }
-                else if (withChildsNodes || node.childNodes.length == 1) {
-                    this._packageDOM(node, packagedNode, withChildsNodes);
+                else if (withChildsNodes || node.childNodes.length == 1)
+                    this._packageDOM(node, packagedNode, withChildsNodes, highlightElementID);
+                else if (highlightElementID !== "") {
+                    this._packageDOM(node, packagedNode, withChildsNodes, highlightElementID);
                 }
+
                 if ((<any>node).__vorlon.ignore) { return; }
                 packagedObject.children.push(packagedNode);
+                //if (highlightElementID === packagedNode.internalId) {
+                //    this.found = true;
+                //    highlightElementID == "";
+                //}
+
             }
         }
 
@@ -131,7 +139,7 @@ module VORLON {
 
             var packagedObject = this._packageNode(element);
             packagedObject.rootHTML = element.innerHTML;
-            this._packageDOM(element, packagedObject, false);
+            this._packageDOM(element, packagedObject, false, highlightElementID);
             if (highlightElementID)
                 packagedObject.highlightElementID = highlightElementID;
             this.sendCommandToDashboard('refreshNode', packagedObject);
@@ -228,14 +236,27 @@ module VORLON {
                 this.refresh();
             }
         }
+        getFirstParentWithInternalId(node) {
+            if (!node)
+                return null;
+            if (node && node.parentNode && node.parentNode.__vorlon && node.parentNode.__vorlon.internalId) {
+                return node.parentNode.__vorlon.internalId;
+            }
+            else return this.getFirstParentWithInternalId(node.parentNode);
+        }
         searchDOMBySelector(selector: string) {
             var elements = document.querySelectorAll(selector);
             var nodes: Array<PackagedNode> = [];
             for (var i = 0; i < elements.length; i++) {
                 nodes.push(this._packageNode(elements[i]));
             }
-            if (nodes.length)
-                this.refreshbyId(nodes[0].internalId, true);
+            if (nodes.length) {
+                var parentId = this.getFirstParentWithInternalId(elements[0]);
+                if (parentId)
+                    this.refreshbyId(parentId, nodes[0].internalId);
+            }
+
+
             this.sendCommandToDashboard('searchDOMByResults', { nodes: nodes });
         }
 
@@ -256,9 +277,10 @@ module VORLON {
                 }
             }
         }
-        public refreshbyId(internaID: any, highlight: boolean = false): void {
-            if (internaID && highlight)
-                this._packageAndSendDOM(this._getElementByInternalId(internaID, document.body), internaID);
+        public refreshbyId(internaID: string, internalIdToshow: string = ""): void {
+            if (internaID && internalIdToshow) {
+                this._packageAndSendDOM(this._getElementByInternalId(internaID, document.body), internalIdToshow);
+            }
             else if (internaID) {
                 this._packageAndSendDOM(this._getElementByInternalId(internaID, document.body));
             }
@@ -456,7 +478,7 @@ module VORLON {
         }
 
         public _insertReceivedObject(receivedObject: any, root: any) {
-            if (root.internalId === this._clikedNodeID) {
+            if (root.internalId === this._clikedNodeID || (this._clikedNodeID === null && root.internalId === receivedObject.internalId)) {
                 this._clikedNodeID = null;
                 root = receivedObject;
                 root.hasChildnodes = false;
