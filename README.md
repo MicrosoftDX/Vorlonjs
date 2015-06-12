@@ -31,6 +31,7 @@ if you want to run the server with SSL support proceed as follows:
 4. In JSON file set to true 
 5. If you want to replace our localhost certificate should only change the path of the files with the private key and certificate
 6. Exit and save JSON file
+7. 
 ```console
 [Windows]
 C:\>cd %HOMEPATH%\node_modules\vorlon
@@ -50,6 +51,17 @@ C:\Users\Username\node_modules\vorlon>notepad Server/public/catalog.json
         { "id" : "XHRPANEL", "name" : "XHR","panel": "top", "foldername" : "xhrPanel" }
     ]
 }
+
+C:\Users\Username\node_modules\vorlon>vorlon
+Vorlon with SSL listening on port 1337
+
+With the server is running, open https://localhost:1337 in your browser to see the Vorlon.JS dashboard.
+```
+
+The last step is to enable Vorlon.JS by adding this to your app:
+
+```html
+<script src="https://localhost:1337/vorlon.js"></script>
 ```
 
 ## Documentation
