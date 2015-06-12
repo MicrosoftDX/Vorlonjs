@@ -179,13 +179,13 @@
             outline: 1px dotted #000;
         }
 
-        &:before {
-            content: "<";
+        .opentag {
+            /*content: "<";*/
             color: @bracketColor;
         }
 
-        &:after {
-            content: ">";
+        .closetag {
+            /*content: ">";*/
             color: @bracketColor;
         }
     }
@@ -270,13 +270,11 @@
         display: inline-block;
         cursor: default;
 
-        .nodeName:before {
-            content: "</";
+        .openclosingtag {
             color: @bracketColor;
         }
 
-        .nodeName:after {
-            content: ">";
+        .closetag {
             color: @bracketColor;
         }
     }
