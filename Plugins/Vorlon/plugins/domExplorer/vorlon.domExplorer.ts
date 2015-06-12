@@ -170,7 +170,7 @@ module VORLON {
             if (element) {
                 element.innerHTML = innerHTML;
             }
-            this.refresh();
+            this.refreshbyId(internalId);
         }
 
         private _offsetFor(element: HTMLElement) {
@@ -197,8 +197,8 @@ module VORLON {
             }
             this._overley.style.display = "block";
             var position = this._offsetFor(element);
-            this._overley.style.top = (position.x + document.body.scrollTop ) + "px";
-            this._overley.style.left = (position.y + document.body.scrollLeft )+ "px";
+            this._overley.style.top = (position.x + document.body.scrollTop) + "px";
+            this._overley.style.left = (position.y + document.body.scrollLeft) + "px";
             this._overley.style.width = position.width + "px";
             this._overley.style.height = position.height + "px";
         }
@@ -281,12 +281,8 @@ module VORLON {
                 this._containerDiv.addEventListener('refresh',() => {
                     this.sendCommandToClient('refresh');
                 });
-                this._containerDiv.addEventListener('gethtml',() => {
-                    this.sendCommandToClient('innerHTML', {
-                        order: this._selectedNode.node.internalId
-                    });
-                });
                 this._containerDiv.addEventListener('savehtml',() => {
+                    this._clikedNodeID = this._selectedNode.node.internalId;
                     this.sendCommandToClient('saveinnerHTML', {
                         order: this._selectedNode.node.internalId,
                         innerhtml: this._innerHTMLView.value
@@ -346,11 +342,19 @@ module VORLON {
                     position: '70%'
                 });
                 $('#accordion').accordion({
-                    heightStyle: "content"
+                    active: false,
+                    collapsible: true,
+                    heightStyle: "content",
+                    beforeActivate: (event, ui) => {
+                        if (ui && ui.newHeader && ui.newHeader.context && ui.newHeader.context.textContent && ui.newHeader.context.textContent.toLowerCase() === "html" && this._selectedNode && this._selectedNode.node) {
+                            this.sendCommandToClient('innerHTML', {
+                                order: this._selectedNode.node.internalId
+                            });
+
+                        }
+                    }
                 });
-
-
-
+                //$("#accordion .stylessection").trigger('click');
                 this._ready = true;
             });
         }
@@ -511,6 +515,7 @@ module VORLON {
         }
 
         select(selected: DomExplorerNode) {
+            $("#accordion").accordion("option", "collapsible", true).accordion("option", "active", false);
             if (this._selectedNode) {
                 this._selectedNode.selected(false);
                 this.sendCommandToClient('unselect', {
@@ -773,10 +778,6 @@ module VORLON {
                 });
             }
             // Main node
-
-            //this._generateColorfullLink(linkText, receivedObject);
-
-            //root.className = first ? "firstTreeNodeText" : "treeNodeText";
 
             // Tools
             if (this.node.id) {
