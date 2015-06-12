@@ -268,19 +268,26 @@ module VORLON {
         public _innerHTMLView: HTMLTextAreaElement;
         public _editablemode: boolean = false;
         private _editableElement: HTMLElement;
-
+        private _searchinput: HTMLInputElement;
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
             this._insertHtmlContentAsync(this._dashboardDiv,(filledDiv: HTMLElement) => {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this._innerHTMLView = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "innerHTMLView");
+                this._searchinput = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "searchinput");
                 this.styleView = Tools.QuerySelectorById(filledDiv, "styleView");
                 this.setSettings(filledDiv);
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
                 this._containerDiv.addEventListener('refresh',() => {
                     this.sendCommandToClient('refresh');
                 });
+                this._containerDiv.addEventListener('gethtml',() => {
+                    this.sendCommandToClient('innerHTML', {
+                        order: this._selectedNode.node.internalId
+                    });
+                });
+
                 this._containerDiv.addEventListener('savehtml',() => {
                     this._clikedNodeID = this._selectedNode.node.internalId;
                     this.sendCommandToClient('saveinnerHTML', {

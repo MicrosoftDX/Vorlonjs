@@ -106,6 +106,13 @@
             > * {
                 border-radius: 0.25em;
             }
+
+            #searchinput {
+                display: none;
+                position: absolute;
+                right: 0.25em;
+                top: 0.25em;
+            }
         }
     }
 
@@ -129,8 +136,8 @@
         outline: none;
 
         &:before {
-            content: "-";   
-            outline: none;         
+            content: "-";
+            outline: none;
         }
 
         &[data-collapsed]:before {
@@ -195,7 +202,7 @@
     .nodeContentContainer {
         padding-left: 20px;
 
-        &[data-has-children]{
+        &[data-has-children] {
             border-left: 1px solid #EEE;
             margin-left: -2px;
         }
