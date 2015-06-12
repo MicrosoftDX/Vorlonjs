@@ -342,9 +342,11 @@ module VORLON {
                     position: '70%'
                 });
                 $('#accordion').accordion({
+                    active: false,
+                    collapsible: true,
                     heightStyle: "content",
                     beforeActivate: (event, ui) => {
-                        if (ui.newHeader.context.textContent && ui.newHeader.context.textContent.toLowerCase() === "html" && this._selectedNode && this._selectedNode.node) {
+                        if (ui && ui.newHeader && ui.newHeader.context && ui.newHeader.context.textContent && ui.newHeader.context.textContent.toLowerCase() === "html" && this._selectedNode && this._selectedNode.node) {
                             this.sendCommandToClient('innerHTML', {
                                 order: this._selectedNode.node.internalId
                             });
@@ -352,9 +354,7 @@ module VORLON {
                         }
                     }
                 });
-
-
-
+                //$("#accordion .stylessection").trigger('click');
                 this._ready = true;
             });
         }
@@ -515,7 +515,7 @@ module VORLON {
         }
 
         select(selected: DomExplorerNode) {
-            $("#accordion .stylessection").trigger('click');
+            $("#accordion").accordion("option", "collapsible", true).accordion("option", "active", false);
             if (this._selectedNode) {
                 this._selectedNode.selected(false);
                 this.sendCommandToClient('unselect', {
