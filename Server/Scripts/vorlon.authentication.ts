@@ -3,6 +3,7 @@ export module VORLON {
     export class Authentication  {
         public static Passport = require("passport");
         public static LocalStrategy = require("passport-local").Strategy;
+        public static ActivateAuth: boolean = false;
         
         public static initAuthentication(){
             Authentication.Passport.use(new Authentication.LocalStrategy(function(username, password, done) { 
@@ -28,15 +29,8 @@ export module VORLON {
         }
         
         public static ensureAuthenticated(req, res, next) { 
-            // if (req.isAuthenticated()) { return next(); } 
-            // res.redirect('/login') 
-            return next();
+            if (!Authentication.ActivateAuth || req.isAuthenticated()) { return next(); } 
+            res.redirect('/login') 
         } 
-        
-        public static myPass(req, res, next){
-            // do your thing
-            Authentication.Passport.authenticate('local', {failureFlash : false})(req, res, next);
-            // ^ this returns a middleware that you gotta call here now ^
-        }
     }
 };
