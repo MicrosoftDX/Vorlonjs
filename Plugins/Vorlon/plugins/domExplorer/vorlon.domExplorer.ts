@@ -103,7 +103,6 @@
             }
             return packagedNode;
         }
-        private found = false;
         private _packageDOM(root: HTMLElement, packagedObject: PackagedNode, withChildsNodes: boolean = false, highlightElementID: string = ""): PackagedNode {
             if (!root.childNodes || root.childNodes.length === 0) {
                 return;
@@ -126,10 +125,9 @@
 
                 if ((<any>node).__vorlon.ignore) { return; }
                 packagedObject.children.push(packagedNode);
-                //if (highlightElementID === packagedNode.internalId) {
-                //    this.found = true;
-                //    highlightElementID == "";
-                //}
+                if (highlightElementID === packagedNode.internalId) {
+                    highlightElementID == "";
+                }
 
             }
         }
@@ -246,20 +244,24 @@
             }
             else return this.getFirstParentWithInternalId(node.parentNode);
         }
-        searchDOMBySelector(selector: string) {
+        searchDOMBySelector(selector: string, position: number = 0) {
+
             var elements = document.querySelectorAll(selector);
-            var nodes: Array<PackagedNode> = [];
-            for (var i = 0; i < elements.length; i++) {
-                nodes.push(this._packageNode(elements[i]));
-            }
-            if (nodes.length) {
-                var parentId = this.getFirstParentWithInternalId(elements[0]);
-                if (parentId)
-                    this.refreshbyId(parentId, nodes[0].internalId);
+            if (elements.length) {
+                if (!elements[position])
+                    position = 0;
+                var parentId = this.getFirstParentWithInternalId(elements[position]);
+                if (parentId) {
+                    this.refreshbyId(parentId, this._packageNode(elements[position]).internalId);
+                }
+                if (position < elements.length + 1) {
+                    position++;
+                }
+
             }
 
 
-            this.sendCommandToDashboard('searchDOMByResults', { nodes: nodes });
+            this.sendCommandToDashboard('searchDOMByResults', { length: elements.length, selector: selector, position: position });
         }
 
         setAttribute(internaID: string, attributeName: string, attributeOldName: string, attributeValue: string): void {
@@ -410,7 +412,12 @@
             this._searchinput.addEventListener("keydown",(evt) => {
                 if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
                     evt.preventDefault();
-                    this.sendCommandToClient("searchDOMBySelector", { selector: this._searchinput.value });
+                    this._selectorSearch = this._searchinput.value;
+                    if (this._selectorSearch === this._searchinput.value) {
+                        this.sendCommandToClient("searchDOMBySelector", { selector: this._searchinput.value, position: this._positionSearch });
+                    }
+                    else
+                        this.sendCommandToClient("searchDOMBySelector", { selector: this._searchinput.value });
                 }
             });
         }
@@ -507,8 +514,13 @@
         public setInnerHTMLView(data: any) {
             this._innerHTMLView.value = data.innerHTML;
         }
+        private _lengthSearch;
+        private _positionSearch;
+        private _selectorSearch;
         public searchDOMByResults(data: any) {
-
+            this._lengthSearch = data.length,
+            this._selectedNode = data.selector
+            this._positionSearch = data.position
         }
         public initDashboard(root: PackagedNode) {
             this._refreshButton.removeAttribute('changed');
@@ -596,7 +608,7 @@
         },
         searchDOMBySelector: function (data: any) {
             var plugin = <DOMExplorer>this;
-            plugin.searchDOMBySelector(data.selector);
+            plugin.searchDOMBySelector(data.selector, data.position);
         },
         globalload: function (data: any) {
             var plugin = <DOMExplorer>this;
@@ -694,7 +706,7 @@
             if (domnode.length == 0) {
                 return;
             }
-            
+
             domnode.addClass('treeNodeSelected');
             var container = $(this.plugin._treeDiv);
             container.animate({ scrollTop: domnode.offset().top - container.offset().top + container.scrollTop() });
