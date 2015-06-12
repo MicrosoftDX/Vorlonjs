@@ -521,7 +521,7 @@
         private _selectorSearch;
         public searchDOMByResults(data: any) {
             this._lengthSearch = data.length,
-            this._selectedNode = data.selector
+            this._selectorSearch = data.selector
             this._positionSearch = data.position
         }
         public initDashboard(root: PackagedNode) {
