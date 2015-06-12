@@ -108,7 +108,7 @@
             }
 
             #searchinput {
-                display: none;
+                /*display: none;*/
                 position: absolute;
                 right: 0.25em;
                 top: 0.25em;
@@ -144,6 +144,11 @@
             content: "+";
             vertical-align: middle;
             outline: none;
+        }
+
+        &[data-collapsed] ~ .treeNodeHeader .closetag:after {
+            content: '...';
+            color: black;
         }
 
         &[data-collapsed] ~ .nodeContentContainer {
@@ -227,11 +232,7 @@
         }
     }
 
-    .treeNodeButton[data-collapsed] ~ .treeNodeHeader {
-        .nodeAttribute, .fa-plus-circle {
-            display: none;
-        }
-    }
+
 
     [data-hovered-tag] > .treeNodeHeader,
     [data-hovered-tag] > .nodeContentContainer > .treeNodeClosingText .nodeName {
