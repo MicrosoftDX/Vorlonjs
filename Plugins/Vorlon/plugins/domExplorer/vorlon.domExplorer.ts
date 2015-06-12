@@ -715,6 +715,7 @@
         }
         selected(selected: boolean) {
             if (selected) {
+                $('.treeNodeSelected').removeClass('treeNodeSelected');
                 Tools.AddClass(this.element, 'treeNodeSelected');
             } else {
                 $('.treeNodeSelected').removeClass('treeNodeSelected');
