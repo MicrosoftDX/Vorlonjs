@@ -1,4 +1,4 @@
-module VORLON {
+﻿module VORLON {
     declare var $: any;
     export class DOMExplorer extends Plugin {
 
@@ -112,13 +112,15 @@ module VORLON {
             for (var index = 0; index < root.childNodes.length; index++) {
                 var node = <HTMLElement>root.childNodes[index];
                 var packagedNode = this._packageNode(node);
-
+                var b = false;
                 if (node.childNodes && node.childNodes.length > 1) {
                     packagedNode.hasChildNodes = true;
                 }
-                else if (withChildsNodes || node.childNodes.length == 1)
+                else if (withChildsNodes || node.childNodes.length == 1) {
                     this._packageDOM(node, packagedNode, withChildsNodes, highlightElementID);
-                else if (highlightElementID !== "") {
+                    b = true;
+                }
+                if (highlightElementID !== "" && !b) {
                     this._packageDOM(node, packagedNode, withChildsNodes, highlightElementID);
                 }
 
@@ -293,7 +295,7 @@ module VORLON {
 
         // DASHBOARD
         private _containerDiv: HTMLElement;
-        private _treeDiv: HTMLElement;
+        public _treeDiv: HTMLElement;
         public styleView: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
         public _refreshButton: Element;
@@ -688,7 +690,14 @@ module VORLON {
         openNode(highlightElementID: string) {
             $('#plusbtn' + highlightElementID).trigger('click');
             $('.treeNodeSelected').removeClass('treeNodeSelected');
-            $('#domNode' + highlightElementID).addClass('treeNodeSelected');
+            var domnode = $('#domNode' + highlightElementID);
+            if (domnode.length == 0) {
+                return;
+            }
+            
+            domnode.addClass('treeNodeSelected');
+            var container = $(this.plugin._treeDiv);
+            container.animate({ scrollTop: domnode.offset().top - container.offset().top + container.scrollTop() });
         }
         selected(selected: boolean) {
             if (selected) {
@@ -739,7 +748,7 @@ module VORLON {
             this.element.id = "domNode" + this.node.internalId;
             root.append('BUTTON', 'treeNodeButton',(nodeButton) => {
                 nodeButton.element.id = "plusbtn" + this.node.internalId;
-                if (this.node.hasChildNodes) {
+                if (this.node.hasChildNodes && (!this.node.children || this.node.children.length === 0)) {
                     Tools.AddClass(this.element, "collapsed");
                     nodeButton.attr("data-collapsed", "");
                 } else {
