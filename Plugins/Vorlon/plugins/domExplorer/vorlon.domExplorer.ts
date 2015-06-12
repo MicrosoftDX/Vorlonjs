@@ -416,8 +416,10 @@
                     if (this._selectorSearch === this._searchinput.value) {
                         this.sendCommandToClient("searchDOMBySelector", { selector: this._searchinput.value, position: this._positionSearch });
                     }
-                    else
+                    else {
+                        this._positionSearch = 0;
                         this.sendCommandToClient("searchDOMBySelector", { selector: this._searchinput.value });
+                    }
                 }
             });
         }
