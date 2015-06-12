@@ -676,11 +676,14 @@ module VORLON {
 
         renderDOMNode(parentElt: HTMLElement) {
             parentElt.setAttribute('data-has-children', '');
-            var root = new FluentDOM('DIV', '', parentElt);
+            var root = new FluentDOM('DIV', 'domNode', parentElt);
             this.element = root.element;
             root.append('BUTTON', 'treeNodeButton',(nodeButton) => {
                 if (this.node.hasChildNodes) {
+                    Tools.AddClass(this.element, "collapsed");
                     nodeButton.attr("data-collapsed", "");
+                } else {
+                    Tools.RemoveClass(this.element, "collapsed");
                 }
                 nodeButton.attr('button-block', '');
                 nodeButton.click(() => {
@@ -891,12 +894,15 @@ module VORLON {
                 }
             });
         }
+
         render() {
             var node = new FluentDOM("SPAN", "nodeAttribute", this.parent.headerAttributes);
             this.element = node.element;
-            var nodename = node.createChild("SPAN").html(this.name);
+            var nodename = node.createChild("SPAN", "attr-name").html(this.name);
             node.element.id = VORLON.Tools.CreateGUID();
-            var nodevalue = node.createChild("SPAN").html(this.value);
+            node.createChild("SPAN").html("=\"");
+            var nodevalue = node.createChild("SPAN", "attr-value").html(this.value);
+            node.createChild("SPAN").html("\"");
             this.eventNode(nodename.element, nodevalue.element, node.element.id);
         }
     }

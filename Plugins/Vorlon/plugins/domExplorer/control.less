@@ -126,15 +126,17 @@
         text-align: center;
         margin-right: 4px;
         box-sizing: border-box;
+        outline: none;
 
         &:before {
-            content: "-";
-            outline: none;
+            content: "-";   
+            outline: none;         
         }
 
         &[data-collapsed]:before {
             content: "+";
             vertical-align: middle;
+            outline: none;
         }
 
         &[data-collapsed] ~ .nodeContentContainer {
@@ -193,7 +195,10 @@
     .nodeContentContainer {
         padding-left: 20px;
 
-
+        &[data-has-children]{
+            border-left: 1px solid #EEE;
+            margin-left: -2px;
+        }
 
         &:not([data-has-children]),
         &:not([data-has-children]) .treeNodeClosingText {
@@ -285,23 +290,14 @@
 
     .nodeAttribute {
         padding-left: 0.5em;
+        color: @quotesColor;
 
-        span:first-child {
+        span.attr-name {
             color: @attributeNameColor;
-
-            &:after {
-                content: "=\"";
-                color: @quotesColor;
-            }
         }
 
-        span:last-child {
+        span.attr-value {
             color: @attributeValueColor;
-
-            &:after {
-                content: "\"";
-                color: @quotesColor;
-            }
         }
     }
 
