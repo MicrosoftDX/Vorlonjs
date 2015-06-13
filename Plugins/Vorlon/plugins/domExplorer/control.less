@@ -26,12 +26,17 @@
         height: 100%;
     }
 
+    .panel-right {
+        overflow: hidden;
+    }
+
     .tree-view,
     .style-view {
         padding: 0;
     }
 
     #accordion {
+        height: 100%;
         .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
             background: #eee;
         }
@@ -49,10 +54,14 @@
             .ui-accordion-header {
                 font-family: "Menlo","Consolas","Lucida Console",Courier,monospace;
                 border: none;
+                height : 30px;
+                margin: 0;
+                border-bottom: 1px solid #BBB;
             }
 
             .ui-accordion-content {
                 padding: 0;
+                min-height: ~"calc(100% - 90px)";
             }
         }
     }
@@ -131,11 +140,22 @@
         text-align: center;
         margin-right: 4px;
         box-sizing: border-box;
-        outline: none;
+        outline: none;        
 
         &:before {
             content: "-";
             outline: none;
+        }
+
+        &.loading{
+            border-color: transparent;
+            &:before {
+                -webkit-animation: fa-spin 2s infinite linear;
+                animation: fa-spin 2s infinite linear;
+                font-family: 'FontAwesome';
+                content : "\f110";
+                outline: none;
+            }
         }
 
         &[data-collapsed]:before {
@@ -158,7 +178,7 @@
         }
 
         &:focus {
-            outline: 1px dotted #000;
+            /*outline: 1px dotted #000;*/
         }
     }
 

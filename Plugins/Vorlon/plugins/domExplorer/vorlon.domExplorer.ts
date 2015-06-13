@@ -1,5 +1,13 @@
-﻿module VORLON {
-    declare var $: any;
+﻿interface Element {
+    __vorlon: any;
+}
+interface HTMLElement {
+    __vorlon: any;
+}
+
+module VORLON {
+    declare var $: any;    
+
     export class DOMExplorer extends Plugin {
 
         private _internalId = 0;
@@ -9,7 +17,8 @@
         private _lastContentState = '';
         private _lastReceivedObject = null;
         private _globalloadactive = false;
-        private _overley: HTMLElement;
+        private _overlay: HTMLElement;
+
         constructor() {
             super("domExplorer", "control.html", "control.css");
             this._id = "DOM";
@@ -103,6 +112,7 @@
             }
             return packagedNode;
         }
+
         private _packageDOM(root: HTMLElement, packagedObject: PackagedNode, withChildsNodes: boolean = false, highlightElementID: string = ""): PackagedNode {
             if (!root.childNodes || root.childNodes.length === 0) {
                 return;
@@ -128,7 +138,6 @@
                 if (highlightElementID === packagedNode.internalId) {
                     highlightElementID == "";
                 }
-
             }
         }
 
@@ -152,7 +161,7 @@
         public startClientSide(): void {
         }
 
-        private _getElementByInternalId(internalId: string, node: any): any {
+        private _getElementByInternalId(internalId: string, node: HTMLElement): any {
             if (node.__vorlon && node.__vorlon.internalId === internalId) {
                 return node;
             }
@@ -161,13 +170,14 @@
             }
 
             for (var index = 0; index < node.children.length; index++) {
-                var result = this._getElementByInternalId(internalId, node.children[index]);
+                var result = this._getElementByInternalId(internalId, <HTMLElement>node.children[index]);
                 if (result) {
                     return result;
                 }
             }
             return null;
         }
+
         public getInnerHTML(internalId: string) {
             var element = this._getElementByInternalId(internalId, document.body);
             if (element)
@@ -195,26 +205,28 @@
             if (!element) {
                 return;
             }
-            if (!this._overley) {
-                this._overley = document.createElement("div");
-                this._overley.id = "vorlonOverley";
-                this._overley.style.position = "absolute";
-                this._overley.style.backgroundColor = "rgba(255,255,0,0.4)";
-                this._overley.style.pointerEvents = "none";
-                (<any>  this._overley).__vorlon = { ignore: true };
-                document.body.appendChild(this._overley);
+            if (!this._overlay) {
+                this._overlay = document.createElement("div");
+                this._overlay.id = "vorlonOverlay";
+                this._overlay.style.position = "absolute";
+                this._overlay.style.backgroundColor = "rgba(255,255,0,0.4)";
+                this._overlay.style.pointerEvents = "none";
+                (<any>  this._overlay).__vorlon = { ignore: true };
+                document.body.appendChild(this._overlay);
             }
-            this._overley.style.display = "block";
+            this._overlay.style.display = "block";
             var position = this._offsetFor(element);
-            this._overley.style.top = (position.x + document.body.scrollTop) + "px";
-            this._overley.style.left = (position.y + document.body.scrollLeft) + "px";
-            this._overley.style.width = position.width + "px";
-            this._overley.style.height = position.height + "px";
+            this._overlay.style.top = (position.x + document.body.scrollTop) + "px";
+            this._overlay.style.left = (position.y + document.body.scrollLeft) + "px";
+            this._overlay.style.width = position.width + "px";
+            this._overlay.style.height = position.height + "px";
         }
+
         public unselectClientElement(internalId?: string) {
-            if (this._overley)
-                this._overley.style.display = "none";
+            if (this._overlay)
+                this._overlay.style.display = "none";
         }
+
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
 
         }
@@ -226,16 +238,19 @@
 
             this.sendCommandToDashboard('init', packagedObject);
         }
+
         setStyle(internaID: string, property: string, newValue: string): void {
             var element = this._getElementByInternalId(internaID, document.body);
             element.style[property] = newValue;
         }
+
         globalload(value: boolean): void {
             this._globalloadactive = value;
             if (this._globalloadactive) {
                 this.refresh();
             }
         }
+
         getFirstParentWithInternalId(node) {
             if (!node)
                 return null;
@@ -244,8 +259,8 @@
             }
             else return this.getFirstParentWithInternalId(node.parentNode);
         }
-        searchDOMBySelector(selector: string, position: number = 0) {
 
+        searchDOMBySelector(selector: string, position: number = 0) {
             var elements = document.querySelectorAll(selector);
             if (elements.length) {
                 if (!elements[position])
@@ -257,9 +272,7 @@
                 if (position < elements.length + 1) {
                     position++;
                 }
-
             }
-
 
             this.sendCommandToDashboard('searchDOMByResults', { length: elements.length, selector: selector, position: position });
         }
@@ -281,6 +294,7 @@
                 }
             }
         }
+
         public refreshbyId(internaID: string, internalIdToshow: string = ""): void {
             if (internaID && internalIdToshow) {
                 this._packageAndSendDOM(this._getElementByInternalId(internaID, document.body), internalIdToshow);
@@ -289,11 +303,11 @@
                 this._packageAndSendDOM(this._getElementByInternalId(internaID, document.body));
             }
         }
+
         public setElementValue(internaID: string, value: string) {
             var element = this._getElementByInternalId(internaID, document.body);
             element.innerHTML = value;
         }
-
 
         // DASHBOARD
         private _containerDiv: HTMLElement;
@@ -310,6 +324,11 @@
         public _editablemode: boolean = false;
         private _editableElement: HTMLElement;
         private _searchinput: HTMLInputElement;
+        private _stylesEditor: DomExplorerPropertyEditor;
+        private _lengthSearch;
+        private _positionSearch;
+        private _selectorSearch;
+        
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
             this._insertHtmlContentAsync(this._dashboardDiv,(filledDiv: HTMLElement) => {
@@ -321,6 +340,7 @@
                 this.setSettings(filledDiv);
                 this.searchDOM();
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
+                this._stylesEditor = new DomExplorerPropertyEditor(this);
                 this._containerDiv.addEventListener('refresh',() => {
                     this.sendCommandToClient('refresh');
                 });
@@ -393,7 +413,7 @@
                 $('#accordion').accordion({
                     active: false,
                     collapsible: true,
-                    heightStyle: "content",
+                    heightStyle: "fill",
                     beforeActivate: (event, ui) => {
                         if (ui && ui.newHeader && ui.newHeader.context && ui.newHeader.context.textContent && ui.newHeader.context.textContent.toLowerCase() === "html" && this._selectedNode && this._selectedNode.node) {
                             this.sendCommandToClient('innerHTML', {
@@ -407,6 +427,7 @@
                 this._ready = true;
             });
         }
+
         private searchDOM() {
 
             this._searchinput.addEventListener("keydown",(evt) => {
@@ -423,6 +444,7 @@
                 }
             });
         }
+
         public makeEditable(element: HTMLElement): void {
             if (element.contentEditable == "true") { return; }
             var range = document.createRange();
@@ -440,6 +462,7 @@
             $(element).focus();
             $(element).closest(".treeNodeSelected").addClass("editableselection");
         }
+
         public undoEditable(element: HTMLElement): void {
             this._editablemode = false;
             element.contentEditable = "false";
@@ -447,6 +470,7 @@
             $(element).closest(".treeNodeSelected").addClass("editableselection");
             this._editableElement = null;
         }
+
         private setSettings(filledDiv: HTMLElement) {
             this._globalload = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "globalload");
             this._autorefresh = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "autorefresh");
@@ -464,6 +488,7 @@
                 }
             });
         }
+
         private _saveSettings() {
             VORLON.Tools.setLocalStorageValue("settings" + Core._sessionID, JSON.stringify({
                 "globalload": this._globalload.checked,
@@ -488,11 +513,11 @@
 
         }
 
-        public _insertReceivedObject(receivedObject: any, root: any) {
+        public _insertReceivedObject(receivedObject: PackagedNode, root: PackagedNode) {
             if (root.internalId === this._clikedNodeID || (this._clikedNodeID === null && root.internalId === receivedObject.internalId)) {
                 this._clikedNodeID = null;
                 root = receivedObject;
-                root.hasChildnodes = false;
+                root.hasChildNodes = false;
                 return root;
             }
             else {
@@ -506,24 +531,24 @@
                     }
                 }
             }
-
         }
+
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
             if (receivedObject.type === "contentchanged" && !this._editablemode) {
                 this.dirtyCheck(receivedObject.content)
             }
         }
+
         public setInnerHTMLView(data: any) {
             this._innerHTMLView.value = data.innerHTML;
         }
-        private _lengthSearch;
-        private _positionSearch;
-        private _selectorSearch;
+
         public searchDOMByResults(data: any) {
             this._lengthSearch = data.length,
             this._selectorSearch = data.selector
             this._positionSearch = data.position
         }
+
         public initDashboard(root: PackagedNode) {
             this._refreshButton.removeAttribute('changed');
             this._lastContentState = root.rootHTML;
@@ -589,7 +614,7 @@
                 this.sendCommandToClient('select', {
                     order: this._selectedNode.node.internalId
                 });
-                selected.stylesEditor.generateStyles()
+                this._stylesEditor.generateStyles(selected.node.styles, selected.node.internalId);
                 this._innerHTMLView.value = "";
             } else {
                 this._selectedNode = null;
@@ -608,38 +633,47 @@
             var plugin = <DOMExplorer>this;
             plugin.setStyle(data.order, data.property, data.newValue);
         },
+
         searchDOMBySelector: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.searchDOMBySelector(data.selector, data.position);
         },
+
         globalload: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.globalload(data.value);
         },
+
         saveinnerHTML: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.saveInnerHTML(data.order, data.innerhtml);
         },
+
         attribute: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setAttribute(data.order, data.attributeName, data.attributeOldName, data.attributeValue);
         },
+
         setElementValue: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setElementValue(data.order, data.value);
         },
+
         unselect: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.unselectClientElement(data.order);
         },
+
         refreshNode: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.refreshbyId(data.order);
         },
+
         refresh: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.refresh();
         },
+
         innerHTML: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.getInnerHTML(data.order);
@@ -651,11 +685,13 @@
             var plugin = <DOMExplorer>this;
             plugin.initDashboard(root);
         },
+
         searchDOMByResults: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.searchDOMByResults(data);
 
         },
+
         innerHTML: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setInnerHTMLView(data);
@@ -665,7 +701,6 @@
             var plugin = <DOMExplorer>this;
             plugin.updateDashboard(node);
         },
-
     }
 
     export class DomExplorerNode {
@@ -676,7 +711,6 @@
         public node: PackagedNode;
         public contentContainer: HTMLElement;
         public attributes: DomExplorerNodeAttribute[] = [];
-        public stylesEditor: DomExplorerPropertyEditor;
         public childs: DomExplorerNode[] = [];
         plugin: DOMExplorer;
         parent: DomExplorerNode;
@@ -685,12 +719,20 @@
             this.parent = parent;
             this.node = node;
             this.plugin = plugin;
-            this.stylesEditor = new DomExplorerPropertyEditor(parentElt, node.styles, plugin, node.internalId);
             this.render(parentElt);
         }
 
         public dispose() {
-            //TODO cleanup references & childs
+            for (var i = 0, l = this.childs.length; i < l; i++) {
+                this.childs[i].dispose();
+            }
+
+            this.plugin = null;
+            this.parent = null;
+            this.element = null;
+            this.header = null;
+            this.headerAttributes = null;
+            this.contentContainer = null;            
         }
 
 
@@ -701,6 +743,7 @@
             if (node.highlightElementID)
                 this.openNode(node.highlightElementID)
         }
+
         openNode(highlightElementID: string) {
             $('#plusbtn' + highlightElementID).trigger('click');
             $('.treeNodeSelected').removeClass('treeNodeSelected');
@@ -713,6 +756,7 @@
             var container = $(this.plugin._treeDiv);
             container.animate({ scrollTop: domnode.offset().top - container.offset().top + container.scrollTop() });
         }
+
         selected(selected: boolean) {
             if (selected) {
                 $('.treeNodeSelected').removeClass('treeNodeSelected');
@@ -761,6 +805,11 @@
             var root = new FluentDOM('DIV', 'domNode', parentElt);
             this.element = root.element;
             this.element.id = "domNode" + this.node.internalId;
+            this.renderDOMNodeContent();
+        }
+
+        renderDOMNodeContent() {
+            var root = FluentDOM.for(this.element);
             root.append('BUTTON', 'treeNodeButton',(nodeButton) => {
                 nodeButton.element.id = "plusbtn" + this.node.internalId;
                 if (this.node.hasChildNodes && (!this.node.children || this.node.children.length === 0)) {
@@ -771,7 +820,8 @@
                 }
                 nodeButton.attr('button-block', '');
                 nodeButton.click(() => {
-                    if (this.node.hasChildNodes) {
+                    if (this.node.hasChildNodes && !nodeButton.element.className.match('loading')) {
+                        Tools.AddClass(nodeButton.element, "loading");
                         this.plugin._clikedNodeID = this.node.internalId;
                         this.plugin.sendCommandToClient('refreshNode', {
                             order: this.node.internalId
@@ -779,6 +829,7 @@
                     }
                 });
             });
+
             var that = this;
             var menu = function (idtarget) {
                 $('.b-m-mpanel').remove();
@@ -988,15 +1039,12 @@
     }
 
     export class DomExplorerPropertyEditor {
-        private parent: HTMLElement = null;
+        //private parent: HTMLElement = null;
         private styles: Array<any> = [];
         public plugin: DOMExplorer;
         private internalId: string;
-        constructor(parent: HTMLElement, styles: any, plugin: DOMExplorer, internalId: string) {
-            this.parent = parent;
-            this.styles = styles;
+        constructor(plugin: DOMExplorer) {
             this.plugin = plugin;
-            this.internalId = internalId;
         }
 
         private _generateButton(parentNode: HTMLElement, text: string, className: string, attribute?: any) {
@@ -1009,7 +1057,10 @@
             return parentNode.appendChild(button);
         }
 
-        public generateStyles(): void {
+        public generateStyles(styles: Array<any>, internalId: string): void {
+            this.styles = styles;
+            this.internalId = internalId;
+
             while (this.plugin.styleView.hasChildNodes()) {
                 this.plugin.styleView.removeChild(this.plugin.styleView.lastChild);
             }
