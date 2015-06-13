@@ -37,6 +37,7 @@
 
     #accordion {
         height: 100%;
+
         .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
             background: #eee;
         }
@@ -54,7 +55,7 @@
             .ui-accordion-header {
                 font-family: "Menlo","Consolas","Lucida Console",Courier,monospace;
                 border: none;
-                height : 36px;
+                height: 36px;
                 margin: 0;
                 padding-top: 10px;
                 border-bottom: 1px solid #CCC;
@@ -143,20 +144,21 @@
         text-align: center;
         margin-right: 4px;
         box-sizing: border-box;
-        outline: none;        
+        outline: none;
 
         &:before {
             content: "-";
             outline: none;
         }
 
-        &.loading{
+        &.loading {
             border-color: transparent;
+
             &:before {
                 -webkit-animation: fa-spin 2s infinite linear;
                 animation: fa-spin 2s infinite linear;
                 font-family: 'FontAwesome';
-                content : "\f110";
+                content: "\f110";
                 outline: none;
             }
         }
@@ -390,6 +392,10 @@ body .b-m-mpanel {
         padding: 10px;
         font-size: 10pt;
         margin: 0;
+
+        img {
+            display: none;
+        }
     }
 
     .b-m-ifocus {
