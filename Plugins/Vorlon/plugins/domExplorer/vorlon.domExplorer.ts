@@ -693,7 +693,12 @@ module VORLON {
         private _insertReceivedObject(receivedObject: PackagedNode, root: DomExplorerNode): DomExplorerNode {
             if ((root && root.node && root.node.internalId === this.plugin._clikedNodeID) || (this.plugin._clikedNodeID === null && root.node.internalId === receivedObject.internalId)) {
                 this.plugin._clikedNodeID = null;
-                var newNode = new DomExplorerNode(root.plugin, root.parent, root.parent.element, receivedObject, root);
+                if (root.parent === null) {
+                    var newNode = new DomExplorerNode(root.plugin, null, this.plugin._treeDiv, receivedObject, root);
+                }
+                else {
+                    var newNode = new DomExplorerNode(root.plugin, root.parent, root.parent.element, receivedObject, root);
+                }
                 root.childs = newNode.childs;
                 root.node.hasChildNodes = false;
                 return root;
