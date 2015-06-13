@@ -310,7 +310,7 @@ module VORLON {
         }
 
         // DASHBOARD
-        public _containerDiv: HTMLElement;
+        private _containerDiv: HTMLElement;
         public _treeDiv: HTMLElement;
         public styleView: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
@@ -525,6 +525,9 @@ module VORLON {
         }
         public setAutorefresh(value: boolean) {
             this._autorefresh = value;
+        }
+        public getContainerDiv(): HTMLElement {
+            return this._containerDiv
         }
         dirtyCheck(content: string) {
             if (this._lastContentState != content) {
@@ -892,7 +895,7 @@ module VORLON {
         private _autorefresh: HTMLInputElement;
         constructor(plugin: DOMExplorer) {
             this._plugin = plugin;
-            this.setSettings(this._plugin._containerDiv);
+            this.setSettings(this._plugin.getContainerDiv());
         }
 
 
