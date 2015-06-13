@@ -6,7 +6,7 @@ interface HTMLElement {
 }
 
 module VORLON {
-    declare var $: any;    
+    declare var $: any;
 
     export class DOMExplorer extends Plugin {
 
@@ -318,8 +318,7 @@ module VORLON {
         public _clikedNodeID = null;
         public _selectedNode: DomExplorerNode;
         public _rootNode: DomExplorerNode;
-        private _globalload: HTMLInputElement;
-        private _autorefresh: HTMLInputElement;
+        private _autorefresh: boolean = false;
         public _innerHTMLView: HTMLTextAreaElement;
         public _editablemode: boolean = false;
         private _editableElement: HTMLElement;
@@ -328,7 +327,7 @@ module VORLON {
         private _lengthSearch;
         private _positionSearch;
         private _selectorSearch;
-        
+
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
             this._insertHtmlContentAsync(this._dashboardDiv,(filledDiv: HTMLElement) => {
@@ -337,7 +336,7 @@ module VORLON {
                 this._innerHTMLView = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "innerHTMLView");
                 this._searchinput = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "searchinput");
                 this.styleView = Tools.QuerySelectorById(filledDiv, "styleView");
-                this.setSettings(filledDiv);
+                new DomSettings(this);
                 this.searchDOM();
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
                 this._stylesEditor = new DomExplorerPropertyEditor(this);
@@ -411,8 +410,8 @@ module VORLON {
                     position: '70%'
                 });
                 $('#accordion').accordion({
-                    active: false,
-                    collapsible: true,
+                    //active: false,
+                    //collapsible: true,
                     heightStyle: "fill",
                     beforeActivate: (event, ui) => {
                         if (ui && ui.newHeader && ui.newHeader.context && ui.newHeader.context.textContent && ui.newHeader.context.textContent.toLowerCase() === "html" && this._selectedNode && this._selectedNode.node) {
@@ -423,7 +422,7 @@ module VORLON {
                         }
                     }
                 });
-                //$("#accordion .stylessection").trigger('click');
+                $("#accordion .stylessection").trigger('click');
                 this._ready = true;
             });
         }
@@ -469,48 +468,6 @@ module VORLON {
             Tools.RemoveClass(element, "editable");
             $(element).closest(".treeNodeSelected").addClass("editableselection");
             this._editableElement = null;
-        }
-
-        private setSettings(filledDiv: HTMLElement) {
-            this._globalload = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "globalload");
-            this._autorefresh = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "autorefresh");
-            this._setSettings();
-            $(this._autorefresh).change(() => {
-                this._saveSettings();
-            });
-            $(this._globalload).change(() => {
-                this._saveSettings();
-                if (this._globalload.checked) {
-                    this.sendCommandToClient('globalload', { value: true });
-                }
-                else {
-                    this.sendCommandToClient('globalload', { value: false });
-                }
-            });
-        }
-
-        private _saveSettings() {
-            VORLON.Tools.setLocalStorageValue("settings" + Core._sessionID, JSON.stringify({
-                "globalload": this._globalload.checked,
-                "autorefresh": this._autorefresh.checked,
-            }));
-        }
-
-        private _setSettings() {
-            var stringSettings = VORLON.Tools.getLocalStorageValue("settings" + Core._sessionID);
-            if (this._autorefresh && this._globalload && stringSettings) {
-                var settings = JSON.parse(stringSettings);
-                if (settings) {
-                    $(this._globalload).switchButton({ checked: settings.globalload });
-                    $(this._autorefresh).switchButton({ checked: settings.autorefresh });
-                    if (settings.globalload)
-                        this.sendCommandToClient('globalload', { value: true });
-                    return;
-                }
-            }
-            $(this._globalload).switchButton({ checked: false });
-            $(this._autorefresh).switchButton({ checked: false });
-
         }
 
         public _insertReceivedObject(receivedObject: PackagedNode, root: PackagedNode) {
@@ -566,11 +523,16 @@ module VORLON {
                 this._rootNode.update(node);
             }
         }
-
+        public setAutorefresh(value: boolean) {
+            this._autorefresh = value;
+        }
+        public getContainerDiv(): HTMLElement {
+            return this._containerDiv
+        }
         dirtyCheck(content: string) {
             if (this._lastContentState != content) {
                 this._refreshButton.setAttribute('changed', '');
-                if (this._autorefresh && this._autorefresh.checked) {
+                if (this._autorefresh) {
                     this.sendCommandToClient('refresh');
                 }
             }
@@ -596,7 +558,8 @@ module VORLON {
         }
 
         select(selected: DomExplorerNode) {
-            $("#accordion").accordion("option", "collapsible", true).accordion("option", "active", false);
+            //$("#accordion").accordion("option", "collapsible", true).accordion("option", "active", false);
+            $("#accordion .stylessection ").trigger('click');
             if (this._selectedNode) {
                 this._selectedNode.selected(false);
                 this.sendCommandToClient('unselect', {
@@ -732,7 +695,7 @@ module VORLON {
             this.element = null;
             this.header = null;
             this.headerAttributes = null;
-            this.contentContainer = null;            
+            this.contentContainer = null;
         }
 
 
@@ -922,6 +885,60 @@ module VORLON {
         addAttribute(name: string, value: string) {
             var attr = new DomExplorerNodeAttribute(this, name, value);
             this.attributes.push(attr);
+        }
+    }
+
+
+    export class DomSettings {
+        private _plugin: DOMExplorer;
+        private _globalload: HTMLInputElement;
+        private _autorefresh: HTMLInputElement;
+        constructor(plugin: DOMExplorer) {
+            this._plugin = plugin;
+            this.setSettings(this._plugin.getContainerDiv());
+        }
+
+
+        private setSettings(filledDiv: HTMLElement) {
+            this._globalload = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "globalload");
+            this._autorefresh = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "autorefresh");
+            this._setSettings();
+            $(this._autorefresh).change(() => {
+                this._saveSettings();
+            });
+            $(this._globalload).change(() => {
+                this._saveSettings();
+                if (this._globalload.checked) {
+                    this._plugin.sendCommandToClient('globalload', { value: true });
+                }
+                else {
+                    this._plugin.sendCommandToClient('globalload', { value: false });
+                }
+            });
+        }
+        private _setSettings() {
+            var stringSettings = VORLON.Tools.getLocalStorageValue("settings" + Core._sessionID);
+            if (this._autorefresh && this._globalload && stringSettings) {
+                var settings = JSON.parse(stringSettings);
+                if (settings) {
+                    $(this._globalload).switchButton({ checked: settings.globalload });
+                    $(this._autorefresh).switchButton({ checked: settings.autorefresh });
+                    if (settings.globalload)
+                        this._plugin.sendCommandToClient('globalload', { value: true });
+                    return;
+                }
+            }
+            $(this._globalload).switchButton({ checked: false });
+            $(this._autorefresh).switchButton({ checked: false });
+            this._plugin.setAutorefresh(this._autorefresh.checked);
+        }
+
+        private _saveSettings() {
+            this._plugin.setAutorefresh(this._autorefresh.checked);
+            VORLON.Tools.setLocalStorageValue("settings" + Core._sessionID, JSON.stringify({
+                "globalload": this._globalload.checked,
+                "autorefresh": this._autorefresh.checked,
+            }));
         }
     }
 
