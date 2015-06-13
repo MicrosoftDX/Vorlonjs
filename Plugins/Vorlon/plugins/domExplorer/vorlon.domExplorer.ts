@@ -416,8 +416,10 @@
                     if (this._selectorSearch === this._searchinput.value) {
                         this.sendCommandToClient("searchDOMBySelector", { selector: this._searchinput.value, position: this._positionSearch });
                     }
-                    else
+                    else {
+                        this._positionSearch = 0;
                         this.sendCommandToClient("searchDOMBySelector", { selector: this._searchinput.value });
+                    }
                 }
             });
         }
@@ -519,7 +521,7 @@
         private _selectorSearch;
         public searchDOMByResults(data: any) {
             this._lengthSearch = data.length,
-            this._selectedNode = data.selector
+            this._selectorSearch = data.selector
             this._positionSearch = data.position
         }
         public initDashboard(root: PackagedNode) {
@@ -713,6 +715,7 @@
         }
         selected(selected: boolean) {
             if (selected) {
+                $('.treeNodeSelected').removeClass('treeNodeSelected');
                 Tools.AddClass(this.element, 'treeNodeSelected');
             } else {
                 $('.treeNodeSelected').removeClass('treeNodeSelected');
