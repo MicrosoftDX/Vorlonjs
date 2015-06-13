@@ -12,8 +12,6 @@ module VORLON {
 
         private _internalId = 0;
         private _lastElementSelectedClientSide;
-        public _newAppliedStyles = {};
-        private _newAppliedAttributes = {};
         private _lastContentState = '';
         private _lastReceivedObject = null;
         private _globalloadactive = false;
@@ -143,9 +141,6 @@ module VORLON {
 
         private _packageAndSendDOM(element: HTMLElement, highlightElementID: string = "") {
             this._internalId = 0;
-            this._newAppliedStyles = {};
-            this._newAppliedAttributes = {};
-
             var packagedObject = this._packageNode(element);
             packagedObject.rootHTML = element.innerHTML;
             this._packageDOM(element, packagedObject, false, highlightElementID);
@@ -558,7 +553,7 @@ module VORLON {
                 this.sendCommandToClient('select', {
                     order: this._selectedNode.node.internalId
                 });
-                this._stylesEditor.generateStyles(selected.node.styles, selected.node.internalId);
+                this._stylesEditor.generateStyles(selected.node, selected.node.internalId);
                 this._innerHTMLView.value = "";
             } else {
                 this._selectedNode = null;
@@ -1073,7 +1068,8 @@ module VORLON {
 
     export class DomExplorerPropertyEditor {
         //private parent: HTMLElement = null;
-        private styles: Array<any> = [];
+        public styles: Array<DomExplorerPropertyEditorItem> = [];
+        public node: PackagedNode
         public plugin: DOMExplorer;
         private internalId: string;
         constructor(plugin: DOMExplorer) {
@@ -1090,26 +1086,19 @@ module VORLON {
             return parentNode.appendChild(button);
         }
 
-        public generateStyles(styles: Array<any>, internalId: string): void {
-            this.styles = styles;
+        public generateStyles(node: PackagedNode, internalId: string): void {
+            this.node = node;
             this.internalId = internalId;
-
+            this.styles = [];
             while (this.plugin.styleView.hasChildNodes()) {
                 this.plugin.styleView.removeChild(this.plugin.styleView.lastChild);
             }
 
             // Current styles
-            for (var index = 0; index < this.styles.length; index++) {
-                var style = this.styles[index];
+            for (var index = 0; index < node.styles.length; index++) {
+                var style = node.styles[index];
                 var splits = style.split(":");
-                new DomExplorerPropertyEditorItem(this, splits[0], splits[1], this.internalId);
-            }
-            if (this.plugin._newAppliedStyles[this.internalId]) {
-                var newProps = this.plugin._newAppliedStyles[this.internalId];
-                for (var index = 0; index < newProps.length; index++) {
-                    var currentObj = newProps[index];
-                    new DomExplorerPropertyEditorItem(this, currentObj.property, currentObj.newValue, this.internalId);
-                }
+                this.styles.push(new DomExplorerPropertyEditorItem(this, splits[0], splits[1], this.internalId));
             }
             // Append add style button
             this._generateButton(this.plugin.styleView, "+", "styleButton", null).addEventListener('click',(e) => {
@@ -1122,10 +1111,14 @@ module VORLON {
 
     export class DomExplorerPropertyEditorItem {
         private parent: DomExplorerPropertyEditor;
-
-        constructor(parent: DomExplorerPropertyEditor, name: string, value: string, internalId: string, editableLabel = false) {
-            this.parent = parent;
-            this._generateStyle(name, value, internalId, editableLabel);
+        private name: string;
+        private value: string;
+        constructor(parent: DomExplorerPropertyEditor, name: string, value: string, internalId: string, editableLabel: boolean = false, generate: boolean = true) {
+            this.parent = parent
+            this.name = name;
+            this.value = value;
+            if (generate)
+                this._generateStyle(name, value, internalId, editableLabel);
         }
         private _generateStyle(property: string, value: string, internalId: string, editableLabel = false): void {
             var wrap = document.createElement("div");
@@ -1167,25 +1160,25 @@ module VORLON {
                 if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
                     //Create the properties object of elements.
                     var propertyObject: any = {};
-                    propertyObject.property = label.innerHTML;
+                    propertyObject.property = label.innerHTML.trim();
                     propertyObject.newValue = valueElement.innerHTML;
-                    if (this.parent.plugin._newAppliedStyles[internalId] !== undefined) {
-                        var propsArr = this.parent.plugin._newAppliedStyles[internalId];
-                        //check if property exists in array
-                        for (var index = 0; index < propsArr.length; index++) {
-                            var propObj = propsArr[index];
-                            if (propObj.property === propertyObject.property) {
-                                propObj.newValue = propertyObject.newValue;
-                                propertyObject = propObj;
-                                propsArr.splice(index, 1);
-                                break;
-                            }
+                    var propsArr = this.parent.styles;
+                    //check if property exists in array
+                    var found = false;
+                    for (var index = 0; index < this.parent.styles.length; index++) {
+                        var propObj = this.parent.styles[index];
+                        if (propObj.name === propertyObject.property) {
+                            this.parent.styles[index].value = propertyObject.newValue;
+                            found = true;
+                            break;
                         }
-                        propsArr.push(propertyObject);
-                    } else {
-                        var proArr = [];
-                        proArr.push(propertyObject);
-                        this.parent.plugin._newAppliedStyles[internalId] = proArr;
+                    }
+                    if (!found) {
+                        this.parent.styles.push(new DomExplorerPropertyEditorItem(this.parent, propertyObject.property, propertyObject.newValue, internalId, false, false));
+                    }
+                    this.parent.node.styles = [];
+                    for (var index = 0; index < this.parent.styles.length; index++) {
+                        this.parent.node.styles.push(this.parent.styles[index].name + ":" + this.parent.styles[index].value);
                     }
                     this.parent.plugin.sendCommandToClient('style', {
                         property: label.innerHTML,
