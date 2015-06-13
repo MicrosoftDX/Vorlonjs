@@ -142,32 +142,35 @@
 
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
             if (receivedObject.type === MessageType.ReloadWithDebugInfo) {
-                angular.reloadWithDebugInfo(); 
-        }
+                angular.reloadWithDebugInfo();
+            }
         }
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div,(filledDiv) => {
-                $('.ng-inspector-container').split({
-                    orientation: 'vertical',
-                    limit: 50,
-                    position: '35%'
+                var $pluginContainer = $(filledDiv).parent();
+                $pluginContainer.on("vorlon.plugins.active", function () {
+                    $('.ng-inspector-container').split({
+                        orientation: 'vertical',
+                        limit: 50,
+                        position: '35%'
+                    });
                 });
 
                 document.getElementsByClassName("scopes-tree-wrapper")[0].addEventListener("click",(e) => {
-                var target = <HTMLElement>e.target;
-                if (target.classList.contains("ng-scope") ||
-                    target.parentElement.classList.contains("ng-scope")) {
-                    var dataAttribute = target.attributes["data-scope-id"] ||
-                        target.parentElement.attributes["data-scope-id"];
-                    var scopeId = parseInt(dataAttribute.value);
-                    this.showScopeDetail(scopeId);
-                }
-                else if (target.classList.contains("ng-property") ||
-                    target.parentElement.classList.contains("ng-property")) {
-                    // Finir click
-                }
-            });
+                    var target = <HTMLElement>e.target;
+                    if (target.classList.contains("ng-scope") ||
+                        target.parentElement.classList.contains("ng-scope")) {
+                        var dataAttribute = target.attributes["data-scope-id"] ||
+                            target.parentElement.attributes["data-scope-id"];
+                        var scopeId = parseInt(dataAttribute.value);
+                        this.showScopeDetail(scopeId);
+                    }
+                    else if (target.classList.contains("ng-property") ||
+                        target.parentElement.classList.contains("ng-property")) {
+                        // Finir click
+                    }
+                });
 
                 document.getElementById("reloadAppWithDebugInfo").addEventListener("click",(e) => {
                     Core.Messenger.sendRealtimeMessage(this.getID(), { type: MessageType.ReloadWithDebugInfo }, RuntimeSide.Dashboard, "message");
@@ -179,21 +182,25 @@
         }
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
+            if (receivedObject.type === "contentchanged") {
+                return;
+            }
+
             this._rootScopes = receivedObject.scopes;
 
             if (!this._rootScopes || this._rootScopes.length === 0) {
-                (<HTMLElement>document.getElementsByClassName("no-scope-found")[0]).style.display = "block";
                 (<HTMLElement>document.getElementsByClassName("scopes-tree-wrapper")[0]).innerHTML = "";
                 (<HTMLElement>document.getElementsByClassName("scope-details-wrapper")[0]).innerHTML = "";
+                (<HTMLElement>document.getElementsByClassName("no-scope-found")[0]).style.display = "block";
             } else {
-                (<HTMLElement>document.getElementsByClassName("no-scope-found")[0]).style.display = "none";
                 (<HTMLElement>document.getElementsByClassName("scopes-tree-wrapper")[0]).innerHTML = this._formatScopesTree(receivedObject.scopes);
+                (<HTMLElement>document.getElementsByClassName("no-scope-found")[0]).style.display = "none";
 
                 if (this._currentShownScopeId) {
                     this.showScopeDetail(this._currentShownScopeId);
                 }
             }
-            }
+        }
 
         private _formatScopesTree(scopes: Scope[]): string {
             var dom = '<ul class="scopes-tree">';
@@ -445,7 +452,12 @@
         public showScopeDetail(scopeId: number) {
             this._currentShownScopeId = scopeId;
             var scope = this._findScopeById(this._rootScopes, scopeId);
-            (<HTMLElement>document.getElementsByClassName("scope-details-wrapper")[0]).innerHTML = this._renderScopeDetail(scope);
+            var scopeDetailsWrapper = (<HTMLElement>document.getElementsByClassName("scope-details-wrapper")[0]);
+            if (scope) {
+                scopeDetailsWrapper.innerHTML = this._renderScopeDetail(scope);
+            } else {
+                scopeDetailsWrapper.innerHTML = "";
+            }
         }
     }
 

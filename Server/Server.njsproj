@@ -112,10 +112,8 @@
     <Content Include="views\dashboard.jade" />
     <Content Include="views\getsession.jade" />
     <Content Include="views\layout.jade" />
-    <None Include="vorlonjs.pubxml" />
     <Content Include="views\login.jade" />
     <Content Include="Web.config" />
-    <Content Include="Web.Debug.config" />
     <Content Include="bin\ChangeConfig.ps1" />
     <Content Include="bin\download.ps1" />
     <Content Include="bin\setup_web.cmd" />
@@ -160,12 +158,15 @@
     <None Include="public\javascripts\_references.js" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="gulpfile.js" />
     <Compile Include="public\javascripts\bootstrap.js" />
     <Compile Include="public\javascripts\bootstrap.min.js" />
     <Compile Include="public\javascripts\contextMenu.js" />
+    <Compile Include="public\javascripts\dashboard.js" />
     <Compile Include="public\javascripts\jquery-1.10.2.js" />
     <Compile Include="public\javascripts\jquery-1.10.2.min.js" />
     <Compile Include="public\javascripts\jquery-2.1.1.min.js" />
+    <Compile Include="public\javascripts\jquery.splitter-0.14.0.js" />
     <Compile Include="public\javascripts\jquery.switchButton.js" />
     <Compile Include="public\javascripts\modernizr-2.6.2.js" />
     <Compile Include="public\javascripts\respond.js" />
