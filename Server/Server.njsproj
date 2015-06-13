@@ -12,6 +12,7 @@
     <LaunchUrl>
     </LaunchUrl>
     <NameOfLastUsedPublishProfile>vorlonjs</NameOfLastUsedPublishProfile>
+    <ToolsVersionPromptShown>1.5</ToolsVersionPromptShown>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -28,7 +29,7 @@
     <OutputPath>.</OutputPath>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
-    <ProjectView>ShowAllFiles</ProjectView>
+    <ProjectView>ProjectFiles</ProjectView>
     <NodejsPort>1337</NodejsPort>
     <TypeScriptSourceMap>False</TypeScriptSourceMap>
     <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
@@ -103,16 +104,16 @@
     <Content Include="public\vorlon\plugins\interactiveConsole\control.html" />
     <Content Include="public\vorlon\plugins\modernizrReport\control.css" />
     <Content Include="public\vorlon\plugins\modernizrReport\control.html" />
+    <Content Include="public\vorlon\plugins\ngInspector\control.css" />
+    <Content Include="public\vorlon\plugins\ngInspector\control.html" />
     <Content Include="public\vorlon\plugins\objectExplorer\control.css" />
     <Content Include="public\vorlon\plugins\objectExplorer\control.html" />
     <Content Include="README.md" />
     <Content Include="views\dashboard.jade" />
     <Content Include="views\getsession.jade" />
     <Content Include="views\layout.jade" />
-    <None Include="vorlonjs.pubxml" />
     <Content Include="views\login.jade" />
     <Content Include="Web.config" />
-    <Content Include="Web.Debug.config" />
     <Content Include="bin\ChangeConfig.ps1" />
     <Content Include="bin\download.ps1" />
     <Content Include="bin\setup_web.cmd" />
@@ -130,6 +131,7 @@
     <Folder Include="public\vorlon\plugins\domExplorer\" />
     <Folder Include="public\vorlon\plugins\interactiveConsole\" />
     <Folder Include="public\vorlon\plugins\modernizrReport\" />
+    <Folder Include="public\vorlon\plugins\ngInspector\" />
     <Folder Include="public\vorlon\plugins\objectExplorer\" />
     <Folder Include="Scripts\typings\vorlon\plugins\" />
     <Folder Include="Scripts\typings\vorlon\plugins\domExplorer\" />
@@ -156,12 +158,15 @@
     <None Include="public\javascripts\_references.js" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="gulpfile.js" />
     <Compile Include="public\javascripts\bootstrap.js" />
     <Compile Include="public\javascripts\bootstrap.min.js" />
     <Compile Include="public\javascripts\contextMenu.js" />
+    <Compile Include="public\javascripts\dashboard.js" />
     <Compile Include="public\javascripts\jquery-1.10.2.js" />
     <Compile Include="public\javascripts\jquery-1.10.2.min.js" />
     <Compile Include="public\javascripts\jquery-2.1.1.min.js" />
+    <Compile Include="public\javascripts\jquery.splitter-0.14.0.js" />
     <Compile Include="public\javascripts\jquery.switchButton.js" />
     <Compile Include="public\javascripts\modernizr-2.6.2.js" />
     <Compile Include="public\javascripts\respond.js" />
@@ -171,6 +176,7 @@
     <Compile Include="public\vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.js" />
     <Compile Include="public\vorlon\plugins\modernizrReport\modernizr..js" />
     <Compile Include="public\vorlon\plugins\modernizrReport\vorlon.modernizrReport.js" />
+    <Compile Include="public\vorlon\plugins\ngInspector\vorlon.ngInspector.js" />
     <Compile Include="public\vorlon\plugins\objectExplorer\vorlon.objectExplorer.js" />
     <Compile Include="public\vorlon\vorlon-noplugin.js" />
     <Compile Include="public\vorlon\vorlon-noplugin.max.js" />

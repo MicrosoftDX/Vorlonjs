@@ -38,39 +38,45 @@ module VORLON {
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        var catalog = JSON.parse(xhr.responseText);
+                        var catalog;
+                        try {
+                            catalog = JSON.parse(xhr.responseText);
+                        } catch (ex) {
+                            throw new Error("The catalog JSON is not well-formed");
+                        }
+
                         var pluginLoaded = 0;
 
                         for (var i = 0; i < catalog.plugins.length; i++) {
                             var plugin = catalog.plugins[i];
 
-                            var existingLocation = document.querySelector('[data-plugin='+plugin.id+']');
+                            var existingLocation = document.querySelector('[data-plugin=' + plugin.id + ']');
 
                             if (!existingLocation) {
-                              var pluginmaindiv = document.createElement('div');
-                              pluginmaindiv.classList.add('plugin');
-                              pluginmaindiv.classList.add('plugin-' + plugin.id.toLowerCase());
-                              pluginmaindiv.setAttribute('data-plugin', plugin.id);
+                                var pluginmaindiv = document.createElement('div');
+                                pluginmaindiv.classList.add('plugin');
+                                pluginmaindiv.classList.add('plugin-' + plugin.id.toLowerCase());
+                                pluginmaindiv.setAttribute('data-plugin', plugin.id);
 
-                              var plugintab = document.createElement('div');
-                              plugintab.classList.add('tab');
-                              plugintab.textContent = plugin.name;
-                              plugintab.setAttribute('data-plugin-target', plugin.id);
-                              
-                              if(plugin.panel === "bottom"){
-                                if(divPluginsBottom.children.length === 1){
-                                    pluginmaindiv.classList.add("active");
+                                var plugintab = document.createElement('div');
+                                plugintab.classList.add('tab');
+                                plugintab.textContent = plugin.name;
+                                plugintab.setAttribute('data-plugin-target', plugin.id);
+
+                                if (plugin.panel === "bottom") {
+                                    if (divPluginsBottom.children.length === 1) {
+                                        pluginmaindiv.classList.add("active");
+                                    }
+                                    divPluginsBottom.appendChild(pluginmaindiv);
+                                    divPluginBottomTabs.appendChild(plugintab);
                                 }
-                                divPluginsBottom.appendChild(pluginmaindiv);
-                                divPluginBottomTabs.appendChild(plugintab);
-                              }
-                              else {
-                                if(divPluginsTop.children.length === 1){
-                                    pluginmaindiv.classList.add("active");
+                                else {
+                                    if (divPluginsTop.children.length === 1) {
+                                        pluginmaindiv.classList.add("active");
+                                    }
+                                    divPluginsTop.appendChild(pluginmaindiv);
+                                    divPluginTopTabs.appendChild(plugintab);
                                 }
-                                divPluginsTop.appendChild(pluginmaindiv);
-                                divPluginTopTabs.appendChild(plugintab);
-                              }
                             }
 
                             var pluginscript = document.createElement("script");
@@ -113,7 +119,7 @@ module VORLON {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         DashboardManager.ClientList = new Array<any>();
-                        
+
                         var clients = JSON.parse(xhr.responseText);
                         //console.log("dashboard clients ", clients);
                         
@@ -125,8 +131,8 @@ module VORLON {
 
                         var clientlist = document.createElement("ul");
                         divClientsListPane.appendChild(clientlist);
-                        
-                        if(clients.length === 0){
+
+                        if (clients.length === 0) {
                             DashboardManager.ResetDashboard(false);
                         }
 
@@ -135,10 +141,10 @@ module VORLON {
                             if (DashboardManager.ListenClientid === "") {
                                 DashboardManager.ListenClientid = client.clientid;
                             }
-                            
+
                             var pluginlistelement = document.createElement("li");
                             pluginlistelement.classList.add('client');
-                            if(client.clientid === DashboardManager.ListenClientid) {
+                            if (client.clientid === DashboardManager.ListenClientid) {
                                 pluginlistelement.classList.add('active');
                             }
                             clientlist.appendChild(pluginlistelement);
@@ -163,14 +169,14 @@ module VORLON {
         public identify(): void {
             Core.Messenger.sendRealtimeMessage("", { "_sessionid": DashboardManager.SessionId }, VORLON.RuntimeSide.Dashboard, "identify");
         }
-        
-        public static ResetDashboard(reload:boolean = true): void {
+
+        public static ResetDashboard(reload: boolean = true): void {
             var sessionid = DashboardManager.SessionId;
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        if(reload){
+                        if (reload) {
                             location.reload();
                         }
                     }
@@ -189,7 +195,7 @@ module VORLON {
             DashboardManager.UpdateClientWaitingInfo(clientid, waitingevents);
         }
 
-        public static UpdateClientWaitingInfo(clientid: string, waitingevents: number): void{
+        public static UpdateClientWaitingInfo(clientid: string, waitingevents: number): void {
             var clientLink = document.getElementById(clientid);
             for (var id in DashboardManager.ClientList) {
                 var client = DashboardManager.ClientList[id];
