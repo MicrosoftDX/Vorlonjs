@@ -470,25 +470,6 @@ module VORLON {
             this._editableElement = null;
         }
 
-        public _insertReceivedObject(receivedObject: PackagedNode, root: PackagedNode) {
-            if (root.internalId === this._clikedNodeID || (this._clikedNodeID === null && root.internalId === receivedObject.internalId)) {
-                this._clikedNodeID = null;
-                root = receivedObject;
-                root.hasChildNodes = false;
-                return root;
-            }
-            else {
-                if (root.children && root.children.length) {
-                    for (var index = 0; index < root.children.length; index++) {
-                        var res = this._insertReceivedObject(receivedObject, root.children[index])
-                        if (res) {
-                            root.children[index] = res;
-                            return root;
-                        }
-                    }
-                }
-            }
-        }
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
             if (receivedObject.type === "contentchanged" && !this._editablemode) {
@@ -678,11 +659,19 @@ module VORLON {
         plugin: DOMExplorer;
         parent: DomExplorerNode;
 
-        constructor(plugin: DOMExplorer, parent: DomExplorerNode, parentElt: HTMLElement, node: PackagedNode) {
+        constructor(plugin: DOMExplorer, parent: DomExplorerNode, parentElt: HTMLElement, node: PackagedNode, oldNode?: DomExplorerNode) {
             this.parent = parent;
             this.node = node;
             this.plugin = plugin;
-            this.render(parentElt);
+            if (oldNode) {
+                this.parent = oldNode.parent;
+                this.element = oldNode.element;
+                this.element.innerHTML = "";
+                this.render(parentElt, true);
+            }
+            else {
+                this.render(parentElt);
+            }
         }
 
         public dispose() {
@@ -701,10 +690,30 @@ module VORLON {
 
         public update(node: PackagedNode) {
             this.plugin._refreshButton.removeAttribute('changed');
-            var b = this.plugin._insertReceivedObject(node, this.plugin._rootNode.node);
-            this.plugin.initDashboard(this.plugin._rootNode.node);
+            var newNode = this._insertReceivedObject(node, this.plugin._rootNode);
+
             if (node.highlightElementID)
-                this.openNode(node.highlightElementID)
+                this.openNode(node.highlightElementID);
+        }
+        private _insertReceivedObject(receivedObject: PackagedNode, root: DomExplorerNode): DomExplorerNode {
+            if ((root && root.node && root.node.internalId === this.plugin._clikedNodeID) || (this.plugin._clikedNodeID === null && root.node.internalId === receivedObject.internalId)) {
+                this.plugin._clikedNodeID = null;
+                var newNode = new DomExplorerNode(root.plugin, root.parent, root.parent.element, receivedObject, root);
+                root.childs = newNode.childs;
+                root.node.hasChildNodes = false;
+                return root;
+            }
+            else {
+                if (root && root.childs && root.childs.length) {
+                    for (var index = 0; index < root.childs.length; index++) {
+                        var res = this._insertReceivedObject(receivedObject, root.childs[index])
+                        if (res) {
+                            root.childs.length[index] = res;
+                            return root;
+                        }
+                    }
+                }
+            }
         }
 
         openNode(highlightElementID: string) {
@@ -729,14 +738,13 @@ module VORLON {
             }
         }
 
-        render(parent: HTMLElement) {
+        render(parent: HTMLElement, isUpdate: boolean = false) {
             if (this.node.type == "3") {
-                this.renderTextNode(parent);
+                this.renderTextNode(parent, isUpdate);
             } else {
-                this.renderDOMNode(parent);
+                this.renderDOMNode(parent, isUpdate);
             }
         }
-
         sendTextToClient() {
             this.plugin.sendCommandToClient('setElementValue', {
                 value: this.element.innerHTML,
@@ -745,10 +753,16 @@ module VORLON {
             this.plugin.undoEditable(this.element);
         }
 
-        renderTextNode(parentElt: HTMLElement) {
+        renderTextNode(parentElt: HTMLElement, isUpdate: boolean = false) {
             if (DomExplorerNode._spaceCheck.test(this.node.content)) {
-                var textNode = new FluentDOM('span', 'nodeTextContent', parentElt);
-                this.element = textNode.element;
+
+                if (!isUpdate) {
+                    var textNode = new FluentDOM('span', 'nodeTextContent', parentElt);
+                    this.element = textNode.element;
+                }
+                else {
+                    this.element.innerHTML = "";
+                }
                 textNode.text(this.node.content.trim())
                     .editable(false)
                     .blur(() => this.sendTextToClient())
@@ -763,10 +777,15 @@ module VORLON {
             }
         }
 
-        renderDOMNode(parentElt: HTMLElement) {
+        renderDOMNode(parentElt: HTMLElement, isUpdate: boolean = false) {
             parentElt.setAttribute('data-has-children', '');
-            var root = new FluentDOM('DIV', 'domNode', parentElt);
-            this.element = root.element;
+            if (!isUpdate) {
+                var root = new FluentDOM('DIV', 'domNode', parentElt);
+                this.element = root.element;
+            }
+            else {
+                this.element.innerHTML = "";
+            }
             this.element.id = "domNode" + this.node.internalId;
             this.renderDOMNodeContent();
         }
@@ -888,7 +907,6 @@ module VORLON {
         }
     }
 
-
     export class DomSettings {
         private _plugin: DOMExplorer;
         private _globalload: HTMLInputElement;
@@ -897,7 +915,6 @@ module VORLON {
             this._plugin = plugin;
             this.setSettings(this._plugin.getContainerDiv());
         }
-
 
         private setSettings(filledDiv: HTMLElement) {
             this._globalload = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "globalload");
@@ -932,7 +949,6 @@ module VORLON {
             $(this._autorefresh).switchButton({ checked: false });
             this._plugin.setAutorefresh(this._autorefresh.checked);
         }
-
         private _saveSettings() {
             this._plugin.setAutorefresh(this._autorefresh.checked);
             VORLON.Tools.setLocalStorageValue("settings" + Core._sessionID, JSON.stringify({
