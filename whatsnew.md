@@ -13,6 +13,8 @@
 		- Edit content as HTML
 		- right click context menu on DOM node (with shortcust to attribute, HTML edit, ...)
 		- settings panel to define behavior
+		- search nodes by css selectors
+		- refresh through MutationObserver, if available in client browser
 	- Improvements on console plugin
 		- history for commands
 		- support for logging objects and console.dir
