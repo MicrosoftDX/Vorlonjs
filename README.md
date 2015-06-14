@@ -21,6 +21,49 @@ The last step is to enable Vorlon.JS by adding this to your app:
 <script src="http://localhost:1337/vorlon.js"></script>
 ```
 
+## SSL Support
+
+if you want to run the server with SSL support proceed as follows:
+
+1. Install Vorlonjs following the steps in Easy Setup
+2. Navigate to the installation folder
+3. Modify JSON file for activation SSL support
+4. In JSON file set to true 
+5. If you want to replace our localhost certificate should only change the path of the files with the private key and certificate
+6. Exit and save JSON file
+7. 
+```console
+[Windows]
+C:\>cd %HOMEPATH%\node_modules\vorlon
+C:\Users\Username\node_modules\vorlon>notepad Server/public/catalog.json
+
+## JSON FILE ##
+{
+    "useSSL": true,
+    "SSLkey": "cert/server.key",
+    "SSLcert": "cert/server.crt",
+    "includeSocketIO": true,
+    "plugins": [
+        { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername" : "interactiveConsole"},
+        { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername" : "domExplorer" },
+        { "id": "MODERNIZR", "name": "Modernizr","panel": "bottom", "foldername" : "modernizrReport" },
+        { "id" : "OBJEXPLORER", "name" : "Obj. Explorer","panel": "top", "foldername" : "objectExplorer" },
+        { "id" : "XHRPANEL", "name" : "XHR","panel": "top", "foldername" : "xhrPanel" }
+    ]
+}
+
+C:\Users\Username\node_modules\vorlon>vorlon
+Vorlon with SSL listening on port 1337
+
+With the server is running, open https://localhost:1337 in your browser to see the Vorlon.JS dashboard.
+```
+
+The last step is to enable Vorlon.JS by adding this to your app:
+
+```html
+<script src="https://localhost:1337/vorlon.js"></script>
+```
+
 ## Documentation
 
 Read further documentation about Vorlon.JS, and writing your own plugins at [http://vorlonjs.com/documentation](http://vorlonjs.com/documentation).
