@@ -16,7 +16,7 @@ module VORLON {
         private _lastReceivedObject = null;
         private _globalloadactive = false;
         private _overlay: HTMLElement;
-
+        private _observerMutationObserver;
         constructor() {
             super("domExplorer", "control.html", "control.css");
             this._id = "DOM";
@@ -108,6 +108,21 @@ module VORLON {
                 node.__vorlon = node.__vorlon ? node.__vorlon : <any> {};
                 node.__vorlon.internalId = packagedNode.internalId
             }
+            var _MutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
+            if (_MutationObserver && !node.__vorlon._observerMutationObserver) {
+                var _MutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
+                var config = { attributes: true, childList: true, characterData: true };
+                node.__vorlon._observerMutationObserver = new _MutationObserver((mutations) => {
+                    var sended = false;
+                    mutations.forEach((mutation) => {
+                        if ((mutation.target || mutation.target.id != "vorlonOverlay") && !sended && mutation.target.__vorlon && mutation.target.parentElement && mutation.target.parentElement.__vorlon && mutation.target.parentElement.__vorlon.internalId) {
+                            this.refreshbyId(mutation.target.parentElement.__vorlon.internalId);
+                        }
+                        sended = true;
+                    });
+                });
+                node.__vorlon._observerMutationObserver.observe(node, config);
+            }
             return packagedNode;
         }
 
@@ -127,7 +142,7 @@ module VORLON {
                     this._packageDOM(node, packagedNode, withChildsNodes, highlightElementID);
                     b = true;
                 }
-                if (highlightElementID !== "" && !b) {
+                if (highlightElementID !== "" && (!b && withChildsNodes)) {
                     this._packageDOM(node, packagedNode, withChildsNodes, highlightElementID);
                 }
 
@@ -154,6 +169,7 @@ module VORLON {
         }
 
         public startClientSide(): void {
+
         }
 
         private _getElementByInternalId(internalId: string, node: HTMLElement): any {
@@ -229,7 +245,7 @@ module VORLON {
         refresh(): void {
             var packagedObject = this._packageNode(document.body);
             packagedObject.rootHTML = document.body.innerHTML;
-            this._packageDOM(document.body, packagedObject, this._globalloadactive);
+            this._packageDOM(document.body, packagedObject, this._globalloadactive, null);
 
             this.sendCommandToDashboard('init', packagedObject);
         }
@@ -253,6 +269,16 @@ module VORLON {
                 return node.parentNode.__vorlon.internalId;
             }
             else return this.getFirstParentWithInternalId(node.parentNode);
+        }
+
+        public getMutationObeserverAvailability() {
+            var _MutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
+            if (_MutationObserver) {
+                this.sendCommandToDashboard('mutationObeserverAvailability', { availability: true });
+            }
+            else {
+                this.sendCommandToDashboard('mutationObeserverAvailability', { availability: false });
+            }
         }
 
         searchDOMBySelector(selector: string, position: number = 0) {
@@ -322,6 +348,7 @@ module VORLON {
         private _lengthSearch;
         private _positionSearch;
         private _selectorSearch;
+        private _clientHaveMutationObserver: boolean = false;
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
@@ -419,6 +446,7 @@ module VORLON {
                 });
                 $("#accordion .stylessection").trigger('click');
                 this._ready = true;
+                this.sendCommandToClient("getMutationObeserverAvailability");
             });
         }
 
@@ -465,13 +493,14 @@ module VORLON {
             this._editableElement = null;
         }
 
-
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-            if (receivedObject.type === "contentchanged" && !this._editablemode) {
+            if (receivedObject.type === "contentchanged" && !this._editablemode && !this._clientHaveMutationObserver) {
                 this.dirtyCheck(receivedObject.content)
             }
         }
-
+        public contentChanged() {
+            this._refreshButton.setAttribute('changed', '');
+        }
         public setInnerHTMLView(data: any) {
             this._innerHTMLView.value = data.innerHTML;
         }
@@ -480,6 +509,10 @@ module VORLON {
             this._lengthSearch = data.length,
             this._selectorSearch = data.selector
             this._positionSearch = data.position
+        }
+
+        public mutationObeserverAvailability(data: any) {
+            this._clientHaveMutationObserver = data.availability;
         }
 
         public initDashboard(root: PackagedNode) {
@@ -499,12 +532,15 @@ module VORLON {
                 this._rootNode.update(node);
             }
         }
+
         public setAutorefresh(value: boolean) {
             this._autorefresh = value;
         }
+
         public getContainerDiv(): HTMLElement {
             return this._containerDiv
         }
+
         dirtyCheck(content: string) {
             if (this._lastContentState != content) {
                 this._refreshButton.setAttribute('changed', '');
@@ -514,6 +550,7 @@ module VORLON {
             }
             else this._refreshButton.removeAttribute('changed');
         }
+
         hoverNode(internalId: string, unselect: boolean = false) {
             if (!internalId) {
                 this.sendCommandToClient('unselect', {
@@ -567,7 +604,10 @@ module VORLON {
             plugin.unselectClientElement();
             plugin.setClientSelectedElement(data.order);
         },
-
+        getMutationObeserverAvailability: function () {
+            var plugin = <DOMExplorer>this;
+            plugin.getMutationObeserverAvailability();
+        },
         style: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setStyle(data.order, data.property, data.newValue);
@@ -624,13 +664,18 @@ module VORLON {
             var plugin = <DOMExplorer>this;
             plugin.initDashboard(root);
         },
+        contentChanged: function () {
 
+        },
         searchDOMByResults: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.searchDOMByResults(data);
 
         },
-
+        mutationObeserverAvailability: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.mutationObeserverAvailability(data);
+        },
         innerHTML: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setInnerHTMLView(data);
