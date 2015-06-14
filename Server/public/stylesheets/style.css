@@ -429,3 +429,23 @@ x-controlbar > * {
   -webkit-animation: none;
   animation: none;
 }
+input[type=text]::-webkit-input-placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+input[type=text]:-moz-placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+input[type=text]::-moz-placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+input[type=text]:-ms-input-placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+input[type=text]::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
