@@ -116,7 +116,9 @@ module VORLON {
                     var sended = false;
                     mutations.forEach((mutation) => {
                         if ((mutation.target || mutation.target.id != "vorlonOverlay") && !sended && mutation.target.__vorlon && mutation.target.parentElement && mutation.target.parentElement.__vorlon && mutation.target.parentElement.__vorlon.internalId) {
-                            this.refreshbyId(mutation.target.parentElement.__vorlon.internalId);
+                            setTimeout(() => {
+                                this.refreshbyId(mutation.target.parentElement.__vorlon.internalId);
+                            }, 300);
                         }
                         sended = true;
                     });
