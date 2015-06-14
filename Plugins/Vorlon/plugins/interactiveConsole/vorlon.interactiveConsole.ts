@@ -48,7 +48,7 @@
             this.debug = true;
         }
 
-        private inspect(obj: any): ObjectDescriptor {
+        private inspect(obj: any, context: any, deepness: number): ObjectDescriptor {
             if (!obj)
                 return null;
 
@@ -60,18 +60,36 @@
             };
 
             if (proto && proto != this._objPrototype)
-                res.proto = this.inspect(proto);
+                res.proto = this.inspect(proto, context, deepness+1);
 
             for (var i = 0, l = objProperties.length; i < l; i++) {
                 var p = objProperties[i];
-                var propertyType = typeof obj[p]
-                if (propertyType === 'function') {
-                    res.functions.push(p);
-                } else if (propertyType === 'object') {
-                    res.properties.push({ name: p, val: this.inspect(obj[p]) });
-                } else {
-                    var val =
-                        res.properties.push({ name: p, val: obj[p].toString() });
+                var propertyType = "";
+                if (p === '__vorlon')
+                    continue;
+
+                try {
+                    var objValue = context[p];
+                    propertyType = typeof objValue;
+                    if (propertyType === 'function') {
+                        res.functions.push(p);
+                    } else if (propertyType === 'undefined') {
+                        res.properties.push({ name: p, val: undefined });
+                    } else if (propertyType === 'null') {
+                        res.properties.push({ name: p, val: null });
+                    } else if (propertyType === 'object') {
+                        if (deepness > 10) {
+                            res.properties.push({ name: p, val: "Vorlon cannot inspect deeper, try inspecting the proper object directly" });
+                        } else {
+                            res.properties.push({ name: p, val: this.inspect(objValue, objValue, deepness + 1) });
+                        }
+                    } else {
+                        res.properties.push({ name: p, val: objValue.toString() });
+                    }
+                } catch (exception) {
+                    this.trace('error reading property ' + p + ' of type ' + propertyType);
+                    this.trace(exception);
+                    res.properties.push({ name: p, val: "oups, Vorlon has an error reading this " + propertyType + " property..." });
                 }
             }
 
@@ -107,7 +125,7 @@
                 if (typeof msg === 'string' || typeof msg === 'number') {
                     resmessages.push(msg);
                 } else {
-                    resmessages.push(this.inspect(msg));
+                    resmessages.push(this.inspect(msg, msg, 0));
                 }
             }
             return resmessages;
@@ -448,7 +466,7 @@
                 var elt = document.createElement('DIV');
                 elt.className = 'log-message text-message';
                 this.element.appendChild(elt);
-                elt.innerHTML = msg;
+                elt.textContent = msg;
             } else {
                 var obj = new InteractiveConsoleObject(this.element, <ObjectDescriptor>msg, true);
                 this.objects.push(obj);
@@ -558,16 +576,11 @@
                             toggleState.text("-");
                         }
                     });
-
-                    //functionslabel.html('<span class="toggle-state open"></span> [Methods]').click(() => {
-                    //    Tools.ToggleClass(this.functionsElt, 'collapsed');
-
-                    //});
                 }).append('DIV', 'content collapsed', (functionscontent) => {
                         functionscontent.element;
                         for (var i = 0, l = this.obj.functions.length; i < l; i++) {
                             functionscontent.append('DIV', 'func', (objfunc) => {
-                                objfunc.html(this.obj.functions[i]);
+                                objfunc.text(this.obj.functions[i]);
                             });
                         }
                     }).element;
@@ -577,9 +590,8 @@
                 for (var i = 0, l = this.obj.properties.length; i < l; i++) {
                     var p = this.obj.properties[i];
                     propcontent.append('DIV', 'prop', (prop) => {
-                        if (typeof p.val === 'object') {
+                        if (typeof p.val === 'object' && p.val !== null && p.val !== undefined) {
                             var obj: InteractiveConsoleObject = null;
-
 
                             prop.append('A', 'prop-name obj-link', (propname) => {
                                 var toggleState = propname.createChild('SPAN', 'toggle-state').text("+");
@@ -595,13 +607,17 @@
                                         }
                                     }
                                 });
-                                //propname.html('<span class="toggle-state open"></span> <span class="prop-title">' + p.name + '</span>:<span class="prop-value">[Object]</span>');
-                            }).append('DIV', 'prop-obj', (propobj) => {
-                                    obj = new InteractiveConsoleObject(propobj.element, p.val);
-                                });
+                            }).append('DIV', 'prop-obj',(propobj) => {
+                                if (!p.val)
+                                    console.error("no value !", p);
+                                obj = new InteractiveConsoleObject(propobj.element, p.val);
+                            });
                         } else {
-                            prop.append('DIV', 'prop-name', (propname) => {
-                                propname.html('<span class="blank-state"></span><span class="prop-title">' + p.name + '</span>: <span class="prop-value">' + p.val + '</span>');
+                            prop.append('DIV', 'prop-name',(prop) => {
+                                prop.createChild('SPAN', 'blank-state');
+                                prop.createChild('SPAN', 'prop-title').text(p.name);
+                                prop.createChild('SPAN').text(": ");
+                                prop.createChild('SPAN', 'prop-value').text(p.val);
                             });
                         }
                     });

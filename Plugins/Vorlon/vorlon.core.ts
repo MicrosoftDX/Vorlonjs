@@ -121,7 +121,7 @@
                         content = html;
                         Core.Messenger.sendRealtimeMessage('ALL_PLUGINS', {
                             type: 'contentchanged',
-                            content: html
+                            //content: html
                         }, Core._side, 'message');
                     }
                 }, 2000);
