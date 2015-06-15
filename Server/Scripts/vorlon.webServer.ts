@@ -1,11 +1,12 @@
 ﻿import express = require("express");
 import path = require("path");
-import http = require("http");
 import stylus = require("stylus");
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
 import vauth = require("./vorlon.authentication");
+import httpConfig = require("../config/vorlon.httpconfig"); 
+
 
 export module VORLON {
     export class WebServer {
@@ -18,12 +19,13 @@ export module VORLON {
        // private _flash = require('connect-flash');
 
         private _components: Array<iwsc.VORLON.IWebServerComponent>;
-        private _httpServer: http.Server;
+        private http: httpConfig.VORLON.HttpConfig;
         private _app: express.Express;
 
         constructor() {
             this._app = express();
             this._components = new Array<iwsc.VORLON.IWebServerComponent>();
+            this.http = new httpConfig.VORLON.HttpConfig();
         }
 
         public init(): void {
@@ -77,18 +79,24 @@ export module VORLON {
             
             vauth.VORLON.Authentication.initAuthentication();
 
-            this._httpServer = http.createServer(app).listen(app.get('port'),() => {
-                console.log('Vorlon listening on port ' + app.get('port'));
-            });
+            if (this.http.useSSL) {
+                this.http.httpModule = this.http.httpModule.createServer(this.http.options, app).listen(app.get('port'), () => {
+                    console.log('Vorlon with SSL listening on port ' + app.get('port'));
+                });
+            } else {
+                this.http.httpModule = this.http.httpModule.createServer(app).listen(app.get('port'), () => {
+                    console.log('Vorlon listening on port ' + app.get('port'));
+                });
+            }
 
             for (var id in this._components) {
                 var component = this._components[id];
-                component.start(this._httpServer);
+                component.start(this.http.httpModule);
             }
         }
 
-        public get httpServer(): http.Server {
-            return this._httpServer;
+        public get httpServer(){
+            return this.http.httpModule;
         }
     }
 }

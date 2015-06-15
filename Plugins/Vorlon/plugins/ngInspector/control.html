@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="control.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="ngInspectorContainer" class="ng-inspector-container">
+        <div class="panel-left">
+            <div class="no-scope-found" style="display: none;">
+                <div>This app does not seem to use AngularJS.</div>
+                <div>
+                    If so, checks that the app is launched with debugging informations. If not, just execute the following code <span class="ng-command">angular.reloadWithDebugInfo();</span> in your browser control then refresh the dashboard or click this button.
+                </div>
+
+                <a id="reloadAppWithDebugInfo" class="btn btn-secondary"><i class="icon"></i>Reload your app with debugging informations</a>
+            </div>
+            <div class="scopes-tree-wrapper">
+            </div>
+        </div>
+        <div class="scope-details-wrapper panel-right">
+        </div>
+    </div>
+</body>
+</html>

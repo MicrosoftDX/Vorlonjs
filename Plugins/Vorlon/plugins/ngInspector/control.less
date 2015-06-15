@@ -1,0 +1,143 @@
+﻿.ng-inspector-container {
+    @propertyArrayColor: #6b2d81;
+    @propertyObjectColor: #00b7c7;
+    @propertyNumberColor: #ffd800;
+    @propertyBooleanColor: #ffd800;
+    @propertyNullColor: #ff0000;
+    @propertyStringColor: #333;
+
+    height: 100%;
+
+    .panel-left,
+    .panel-right {
+        height: 100%;
+    }
+
+    .scopes-tree-wrapper, .scope-details-wrapper {
+        .fa-stack-1x {
+            margin-top: -1px;
+            display: block;
+        }
+
+        .fa-stack {
+            font-size: 0.9em;
+        }
+
+        ul.scopes-tree {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+
+            ul.scopes-tree {
+                padding-left: 20px;
+            }
+
+            a.ng-scope {
+                display: block;
+                cursor: pointer;
+                padding: 3px;
+                color: #00b7c7;
+
+                &.ng-repeat-scope {
+                    color: #6b2d81;
+                }
+
+                &.root-scope {
+                    color: #333;
+                }
+
+                &:hover {
+                    opacity: 0.8;
+                    font-weight: bold;
+                }
+
+                .scope-name {
+                    padding-left: 4px;
+                }
+
+                .scope-id {
+                    font-size: 0.7em;
+                }
+            }
+        }
+
+        ul.scope-properties {
+            padding-left: 20px;
+
+            .ng-property {
+                display: block;
+                cursor: pointer;
+                padding: 3px;
+                color: #00b7c7;
+
+                .ng-property-name {
+                    padding-left: 4px;
+                }
+
+                .ng-sub-properties-length {
+                    display: none;
+                }
+
+                &.ng-property-array {
+                    color: @propertyArrayColor;
+
+                    .ng-sub-properties-length {
+                        display: initial;
+                    }
+                }
+
+                &.ng-property-object {
+                    color: @propertyObjectColor;
+
+                    .ng-property-value {
+                    }
+
+                    .ng-sub-properties-length {
+                        display: initial;
+                    }
+                }
+
+                &.ng-property-null {
+                    color: @propertyNullColor;
+
+                    .ng-property-value {
+                    }
+                }
+
+                &.ng-property-number {
+                    color: @propertyNumberColor;
+
+                    .ng-property-value {
+                    }
+                }
+
+                &.ng-property-string {
+                    color: @propertyStringColor;
+
+                    .ng-property-value {
+                        &:before, &:after {
+                            content: '"';
+                        }
+                    }
+                }
+
+                &.ng-property-boolean {
+                    color: @propertyBooleanColor;
+
+                    .ng-property-value {
+                    }
+                }
+            }
+        }
+    }
+
+    .no-scope-found {
+        padding: 10px;
+
+        .ng-command {
+            color: #00b7c7;
+            font-size: 13px;
+            font-family: Oswald;
+        }
+    }
+}
