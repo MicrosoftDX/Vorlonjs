@@ -21,9 +21,43 @@
     border-radius: 10px
     text-align: center
 
-.dashboard-plugins
+.dashboard-plugins-container
   height: 100vh
+  position: relative
 
+.dashboard-plugins-overlay
+  position: absolute
+  left:0
+  top: 0
+  right: 0
+  bottom: 0
+  background-color: #DDD
+  z-index: 1000
+  opacity : 1
+  transition: opacity
+  transition-duration: 500ms
+  transition-timing: ease-out
+  .message
+    text-align:center
+    max-width:80%
+    margin : auto
+    margin-top: calc(26% - 50px)
+    h1
+      font-size: 36px
+      color: #6b2d81
+    h3
+      font-size: 16px
+      margin-top : 0.5em
+      margin-bottom : 0.5em  
+    h4
+	  font-size: 16px
+
+.dashboard-plugins-overlay.hidden
+  opacity: 0
+  pointer-events: none
+
+.dashboard-plugins
+  height: 100%
   // Panel positions and default sizing
   .panel-top,
   .panel-bottom

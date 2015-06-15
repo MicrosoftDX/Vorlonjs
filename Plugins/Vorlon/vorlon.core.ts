@@ -190,6 +190,7 @@
                 divError.style.paddingTop = "20px";
                 divError.style.color = "white";
                 divError.style.fontFamily = "consolas";
+                divError.style.zIndex = "1001";
 
                 divError.innerHTML = message;
 
@@ -217,6 +218,9 @@
                     var plugin = Core._plugins[index];
                     plugin.refresh();
                 }
+            } else {
+                var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+                Tools.AddClass(elt, 'hidden');
             }
         }
 
