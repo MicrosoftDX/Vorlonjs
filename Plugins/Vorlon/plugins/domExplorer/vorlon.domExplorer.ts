@@ -12,7 +12,6 @@ module VORLON {
 
         private _internalId = 0;
         private _lastElementSelectedClientSide;
-        private _lastContentState = '';
         private _lastReceivedObject = null;
         private _globalloadactive = false;
         private _overlay: HTMLElement;
@@ -91,7 +90,7 @@ module VORLON {
                 type: node.nodeType,
                 name: node.localName,
                 classes: node.className,
-                content: node.textContent,
+                content: null,
                 hasChildNodes: false,
                 attributes: node.attributes ? Array.prototype.map.call(node.attributes,(attr) => {
                     return [attr.name, attr.value];
@@ -101,6 +100,12 @@ module VORLON {
                 rootHTML: null,
                 internalId: VORLON.Tools.CreateGUID()
             };
+            if (packagedNode.type == "3" || node.nodeName === "#comment") {
+                if (node.nodeName === "#comment") {
+                    packagedNode.name = "#comment";
+                }
+                packagedNode.content = node.textContent
+            }
             if (node.__vorlon && node.__vorlon.internalId) {
                 packagedNode.internalId = node.__vorlon.internalId;
             }
@@ -159,7 +164,7 @@ module VORLON {
         private _packageAndSendDOM(element: HTMLElement, highlightElementID: string = "") {
             this._internalId = 0;
             var packagedObject = this._packageNode(element);
-            packagedObject.rootHTML = element.innerHTML;
+            //packagedObject.rootHTML = element.innerHTML;
             this._packageDOM(element, packagedObject, false, highlightElementID);
             if (highlightElementID)
                 packagedObject.highlightElementID = highlightElementID;
@@ -246,7 +251,7 @@ module VORLON {
 
         refresh(): void {
             var packagedObject = this._packageNode(document.body);
-            packagedObject.rootHTML = document.body.innerHTML;
+            //packagedObject.rootHTML = document.body.innerHTML;
             this._packageDOM(document.body, packagedObject, this._globalloadactive, null);
 
             this.sendCommandToDashboard('init', packagedObject);
@@ -519,7 +524,6 @@ module VORLON {
 
         public initDashboard(root: PackagedNode) {
             this._refreshButton.removeAttribute('changed');
-            this._lastContentState = root.rootHTML;
             this._lastReceivedObject = root;
             while (this._treeDiv.hasChildNodes()) {
                 this._treeDiv.removeChild(this._treeDiv.lastChild);
@@ -544,13 +548,10 @@ module VORLON {
         }
 
         dirtyCheck(content: string) {
-            if (this._lastContentState != content) {
-                this._refreshButton.setAttribute('changed', '');
-                if (this._autorefresh) {
-                    this.sendCommandToClient('refresh');
-                }
+            this._refreshButton.setAttribute('changed', '');
+            if (this._autorefresh) {
+                this.sendCommandToClient('refresh');
             }
-            else this._refreshButton.removeAttribute('changed');
         }
 
         hoverNode(internalId: string, unselect: boolean = false) {
@@ -786,7 +787,10 @@ module VORLON {
         }
 
         render(parent: HTMLElement, isUpdate: boolean = false) {
-            if (this.node.type == "3") {
+            if (this.node.name === "#comment") {
+                this.renderCommentNode(parent, isUpdate);
+            }
+            else if (this.node.type == "3") {
                 this.renderTextNode(parent, isUpdate);
             } else {
                 this.renderDOMNode(parent, isUpdate);
@@ -799,7 +803,19 @@ module VORLON {
             });
             this.plugin.undoEditable(this.element);
         }
+        renderCommentNode(parentElt: HTMLElement, isUpdate: boolean = false) {
+            if (DomExplorerNode._spaceCheck.test(this.node.content)) {
 
+                if (!isUpdate) {
+                    var textNode = new FluentDOM('span', 'nodeTextContent nodeComment', parentElt);
+                    this.element = textNode.element;
+                }
+                else {
+                    this.element.innerHTML = "";
+                }
+                textNode.text(this.node.content.trim()).editable(false);
+            }
+        }
         renderTextNode(parentElt: HTMLElement, isUpdate: boolean = false) {
             if (DomExplorerNode._spaceCheck.test(this.node.content)) {
 

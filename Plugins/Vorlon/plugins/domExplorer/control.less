@@ -301,6 +301,18 @@
 
     .nodeTextContent {
         color: @nodeTextColor;
+
+        &.nodeComment {
+            color: #3fa83f;
+
+            &:before {
+                content: '<!--';
+            }
+
+            &:after {
+                content: '--!>';
+            }
+        }
     }
 
     .treeNodeClosingText {
