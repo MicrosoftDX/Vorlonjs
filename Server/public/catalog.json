@@ -1,12 +1,16 @@
 ﻿{
+    "useSSL": false,
+    "SSLkey": "cert/server.key",
+    "SSLcert": "cert/server.crt",
     "includeSocketIO": true,
     "plugins": [
         { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername" : "interactiveConsole"},
         { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername" : "domExplorer" },
         { "id": "MODERNIZR", "name": "Modernizr","panel": "bottom", "foldername" : "modernizrReport" },
         { "id" : "OBJEXPLORER", "name" : "Obj. Explorer","panel": "top", "foldername" : "objectExplorer" },
-        { "id" : "XHRPANEL", "name" : "XHR","panel": "top", "foldername" : "xhrPanel" },
+        { "id": "XHRPANEL", "name": "XHR", "panel": "top", "foldername": "xhrPanel" },
         { "id" : "NETWORK", "name" : "Network","panel": "top", "foldername" : "networkMonitor" },
         { "id" : "RESOURCES", "name" : "Resources","panel": "top", "foldername" : "resourcesExplorer" }
+    
     ]
 }
