@@ -580,7 +580,15 @@ module VORLON {
             $('.bottom', this._paddingcontainer).html(data.padding.bottom);
             $('.left', this._paddingcontainer).html(data.padding.left);
             $('.right', this._paddingcontainer).html(data.padding.right);
-            $(this._sizecontainer).html(data.size.width + " x " + data.size.height);
+            var w = data.size.width;
+            if (w && w.indexOf('.') !== -1) {
+                w = w.split('.')[0] + 'px';
+            }
+            var h = data.size.height;
+            if (h && h.indexOf('.')!==-1) {
+                h = h.split('.')[0] + 'px';
+            }
+            $(this._sizecontainer).html(w + " x " + h);
         }
 
         public searchDOMByResults(data: any) {
