@@ -337,15 +337,15 @@ export module VORLON {
                         //Send message if _clientID = clientID selected by dashboard
                         if (session && receiveMessage.metadata.clientId === session.currentClientId) {
                             dashboard.emit("message", message);
-                            this._log.info("PLUGIN : " + receiveMessage.metadata.pluginID + " message receive from clientid " + receiveMessage.metadata.clientId + " send command '"+ receiveMessage.command +"' to dashboard for session id :" + receiveMessage.metadata.sessionId , { type: "PLUGIN", session: receiveMessage.metadata.sessionId });
+                            this._log.info("PLUGIN : " + receiveMessage.metadata.sessionId + " " + receiveMessage.metadata.clientId + " " + receiveMessage.metadata.pluginID + "  " +  " command:" + (receiveMessage.command||""));
                         }
                         else {
-                            this._log.error("PLUGIN : " + receiveMessage.metadata.pluginID + " message from client that must be disconnected clientID = " + receiveMessage.metadata.clientId + " this session " + session.currentClientId, { type: "PLUGIN", session: receiveMessage.metadata.sessionId });
+                            this._log.error("PLUGIN : " + receiveMessage.metadata.sessionId + " " + receiveMessage.metadata.clientId + " " + receiveMessage.metadata.pluginID + "  " + " command:" + (receiveMessage.command || "") + " must be disconnected");
                         }
                     }
                 }
                 else {
-                    this._log.error("PLUGIN : No dashboard for session id :" + receiveMessage.metadata.sessionId, { type: "PLUGIN", session: receiveMessage.metadata.sessionId });
+                    this._log.error("PLUGIN : " + receiveMessage.metadata.sessionId + " " + receiveMessage.metadata.clientId + " " + receiveMessage.metadata.pluginID + " command:" + (receiveMessage.command || "") + " no dashboard found");
                 }
             });
 
