@@ -45,7 +45,6 @@
                     console.log(msg);
                 }
             }
-            this.debug = true;
         }
 
         private inspect(obj: any, context: any, deepness: number): ObjectDescriptor {
