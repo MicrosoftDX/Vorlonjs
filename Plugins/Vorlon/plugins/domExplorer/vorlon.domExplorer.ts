@@ -111,26 +111,33 @@ module VORLON {
                 packagedNode.internalId = node.__vorlon.internalId;
             }
             else {
-                node.__vorlon = node.__vorlon ? node.__vorlon : <any> {};
-                node.__vorlon.internalId = packagedNode.internalId
+                if (!node.__vorlon) {
+                    node.__vorlon = <any> {};
+                }
+                node.__vorlon.internalId = packagedNode.internalId;
             }
             var _MutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
             if (_MutationObserver && !node.__vorlon._observerMutationObserver) {
-                var _MutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
-                var config = { attributes: true, childList: true, characterData: true };
-                node.__vorlon._observerMutationObserver = new _MutationObserver((mutations) => {
-                    var sended = false;
-                    mutations.forEach((mutation) => {
-                        if ((mutation.target || mutation.target.id != "vorlonOverlay") && !sended && mutation.target.__vorlon && mutation.target.parentElement && mutation.target.parentElement.__vorlon && mutation.target.parentElement.__vorlon.internalId) {
-                            setTimeout(() => {
-                                if (this._autoRefreshActive)
-                                    this.refreshbyId(mutation.target.parentElement.__vorlon.internalId);
-                            }, 300);
-                        }
-                        sended = true;
+                if (node.tagName === "BODY") {
+                    var _MutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
+                    var config = { attributes: true, childList: true, subtree: true, characterData: true };
+                    node.__vorlon._observerMutationObserver = new _MutationObserver((mutations) => {
+                        var sended = false;
+                        mutations.forEach((mutation) => {
+                            if (mutation.target && mutation.target.__vorlon && mutation.target.__vorlon.ignore) {
+                                return;
+                            }
+                            if (mutation.target && !sended && mutation.target.__vorlon && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId) {
+                                setTimeout(() => {
+                                    if (this._autoRefreshActive)
+                                        this.refreshbyId(mutation.target.parentNode.__vorlon.internalId);
+                                }, 300);
+                            }
+                            sended = true;
+                        });
                     });
-                });
-                node.__vorlon._observerMutationObserver.observe(node, config);
+                    node.__vorlon._observerMutationObserver.observe(node, config);
+                }
             }
             return packagedNode;
         }
