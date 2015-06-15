@@ -1,15 +1,22 @@
+﻿interface Element {
+    __vorlon: any;
+}
+interface HTMLElement {
+    __vorlon: any;
+}
+
 module VORLON {
     declare var $: any;
+
     export class DOMExplorer extends Plugin {
 
         private _internalId = 0;
         private _lastElementSelectedClientSide;
-        public _newAppliedStyles = {};
-        private _newAppliedAttributes = {};
-        private _lastContentState = '';
         private _lastReceivedObject = null;
         private _globalloadactive = false;
-        private _overley: HTMLElement;
+        private _autoRefreshActive = false;
+        private _overlay: HTMLElement;
+        private _observerMutationObserver;
         constructor() {
             super("domExplorer", "control.html", "control.css");
             this._id = "DOM";
@@ -84,7 +91,7 @@ module VORLON {
                 type: node.nodeType,
                 name: node.localName,
                 classes: node.className,
-                content: node.textContent,
+                content: null,
                 hasChildNodes: false,
                 attributes: node.attributes ? Array.prototype.map.call(node.attributes,(attr) => {
                     return [attr.name, attr.value];
@@ -94,45 +101,82 @@ module VORLON {
                 rootHTML: null,
                 internalId: VORLON.Tools.CreateGUID()
             };
+            if (packagedNode.type == "3" || node.nodeName === "#comment") {
+                if (node.nodeName === "#comment") {
+                    packagedNode.name = "#comment";
+                }
+                packagedNode.content = node.textContent
+            }
             if (node.__vorlon && node.__vorlon.internalId) {
                 packagedNode.internalId = node.__vorlon.internalId;
             }
             else {
-                node.__vorlon = node.__vorlon ? node.__vorlon : <any> {};
-                node.__vorlon.internalId = packagedNode.internalId
+                if (!node.__vorlon) {
+                    node.__vorlon = <any> {};
+                }
+                node.__vorlon.internalId = packagedNode.internalId;
+            }
+            var _MutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
+            if (_MutationObserver && !node.__vorlon._observerMutationObserver) {
+                if (node.tagName === "BODY") {
+                    var _MutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
+                    var config = { attributes: true, childList: true, subtree: true, characterData: true };
+                    node.__vorlon._observerMutationObserver = new _MutationObserver((mutations) => {
+                        var sended = false;
+                        mutations.forEach((mutation) => {
+                            if (mutation.target && mutation.target.__vorlon && mutation.target.__vorlon.ignore) {
+                                return;
+                            }
+                            if (mutation.target && !sended && mutation.target.__vorlon && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId) {
+                                setTimeout(() => {
+                                    if (this._autoRefreshActive)
+                                        this.refreshbyId(mutation.target.parentNode.__vorlon.internalId);
+                                }, 300);
+                            }
+                            sended = true;
+                        });
+                    });
+                    node.__vorlon._observerMutationObserver.observe(node, config);
+                }
             }
             return packagedNode;
         }
 
-        private _packageDOM(root: HTMLElement, packagedObject: PackagedNode, withChildsNodes: boolean = false): void {
+        private _packageDOM(root: HTMLElement, packagedObject: PackagedNode, withChildsNodes: boolean = false, highlightElementID: string = ""): PackagedNode {
             if (!root.childNodes || root.childNodes.length === 0) {
                 return;
             }
 
             for (var index = 0; index < root.childNodes.length; index++) {
                 var node = <HTMLElement>root.childNodes[index];
-
                 var packagedNode = this._packageNode(node);
+                var b = false;
                 if (node.childNodes && node.childNodes.length > 1) {
                     packagedNode.hasChildNodes = true;
                 }
                 else if (withChildsNodes || node.childNodes.length == 1) {
-                    this._packageDOM(node, packagedNode, withChildsNodes);
+                    this._packageDOM(node, packagedNode, withChildsNodes, highlightElementID);
+                    b = true;
                 }
+                if (highlightElementID !== "" && (!b && withChildsNodes)) {
+                    this._packageDOM(node, packagedNode, withChildsNodes, highlightElementID);
+                }
+
                 if ((<any>node).__vorlon.ignore) { return; }
                 packagedObject.children.push(packagedNode);
+                if (highlightElementID === packagedNode.internalId) {
+                    highlightElementID == "";
+                }
             }
         }
 
-        private _packageAndSendDOM(element: HTMLElement) {
+        private _packageAndSendDOM(element: HTMLElement, highlightElementID: string = "") {
             this._internalId = 0;
-            this._newAppliedStyles = {};
-            this._newAppliedAttributes = {};
-
             var packagedObject = this._packageNode(element);
-            packagedObject.rootHTML = element.innerHTML;
-            this._packageDOM(element, packagedObject, false);
-
+            //packagedObject.rootHTML = element.innerHTML;
+            this._packageDOM(element, packagedObject, false, highlightElementID);
+            if (highlightElementID)
+                packagedObject.highlightElementID = highlightElementID;
             this.sendCommandToDashboard('refreshNode', packagedObject);
         }
 
@@ -141,9 +185,10 @@ module VORLON {
         }
 
         public startClientSide(): void {
+
         }
 
-        private _getElementByInternalId(internalId: string, node: any): any {
+        private _getElementByInternalId(internalId: string, node: HTMLElement): any {
             if (node.__vorlon && node.__vorlon.internalId === internalId) {
                 return node;
             }
@@ -152,13 +197,14 @@ module VORLON {
             }
 
             for (var index = 0; index < node.children.length; index++) {
-                var result = this._getElementByInternalId(internalId, node.children[index]);
+                var result = this._getElementByInternalId(internalId, <HTMLElement>node.children[index]);
                 if (result) {
                     return result;
                 }
             }
             return null;
         }
+
         public getInnerHTML(internalId: string) {
             var element = this._getElementByInternalId(internalId, document.body);
             if (element)
@@ -170,7 +216,7 @@ module VORLON {
             if (element) {
                 element.innerHTML = innerHTML;
             }
-            this.refresh();
+            this.refreshbyId(internalId);
         }
 
         private _offsetFor(element: HTMLElement) {
@@ -186,47 +232,90 @@ module VORLON {
             if (!element) {
                 return;
             }
-            if (!this._overley) {
-                this._overley = document.createElement("div");
-                this._overley.id = "vorlonOverley";
-                this._overley.style.position = "absolute";
-                this._overley.style.backgroundColor = "rgba(255,255,0,0.4)";
-                this._overley.style.pointerEvents = "none";
-                (<any>  this._overley).__vorlon = { ignore: true };
-                document.body.appendChild(this._overley);
+            if (!this._overlay) {
+                this._overlay = document.createElement("div");
+                this._overlay.id = "vorlonOverlay";
+                this._overlay.style.position = "absolute";
+                this._overlay.style.backgroundColor = "rgba(255,255,0,0.4)";
+                this._overlay.style.pointerEvents = "none";
+                (<any>  this._overlay).__vorlon = { ignore: true };
+                document.body.appendChild(this._overlay);
             }
-            this._overley.style.display = "block";
+            this._overlay.style.display = "block";
             var position = this._offsetFor(element);
-            this._overley.style.top = (position.x + document.body.scrollTop ) + "px";
-            this._overley.style.left = (position.y + document.body.scrollLeft )+ "px";
-            this._overley.style.width = position.width + "px";
-            this._overley.style.height = position.height + "px";
+            this._overlay.style.top = (position.x + document.body.scrollTop) + "px";
+            this._overlay.style.left = (position.y + document.body.scrollLeft) + "px";
+            this._overlay.style.width = position.width + "px";
+            this._overlay.style.height = position.height + "px";
         }
+
         public unselectClientElement(internalId?: string) {
-            if (this._overley)
-                this._overley.style.display = "none";
+            if (this._overlay)
+                this._overlay.style.display = "none";
         }
+
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
 
         }
 
         refresh(): void {
             var packagedObject = this._packageNode(document.body);
-            packagedObject.rootHTML = document.body.innerHTML;
-            this._packageDOM(document.body, packagedObject, this._globalloadactive);
+            //packagedObject.rootHTML = document.body.innerHTML;
+            this._packageDOM(document.body, packagedObject, this._globalloadactive, null);
 
             this.sendCommandToDashboard('init', packagedObject);
         }
+
         setStyle(internaID: string, property: string, newValue: string): void {
             var element = this._getElementByInternalId(internaID, document.body);
             element.style[property] = newValue;
         }
+
         globalload(value: boolean): void {
             this._globalloadactive = value;
             if (this._globalloadactive) {
                 this.refresh();
             }
         }
+        setClientAutoRefresh(value: boolean): void {
+            this._autoRefreshActive = value;
+        }
+        getFirstParentWithInternalId(node) {
+            if (!node)
+                return null;
+            if (node && node.parentNode && node.parentNode.__vorlon && node.parentNode.__vorlon.internalId) {
+                return node.parentNode.__vorlon.internalId;
+            }
+            else return this.getFirstParentWithInternalId(node.parentNode);
+        }
+
+        public getMutationObeserverAvailability() {
+            var _MutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
+            if (_MutationObserver) {
+                this.sendCommandToDashboard('mutationObeserverAvailability', { availability: true });
+            }
+            else {
+                this.sendCommandToDashboard('mutationObeserverAvailability', { availability: false });
+            }
+        }
+
+        searchDOMBySelector(selector: string, position: number = 0) {
+            var elements = document.querySelectorAll(selector);
+            if (elements.length) {
+                if (!elements[position])
+                    position = 0;
+                var parentId = this.getFirstParentWithInternalId(elements[position]);
+                if (parentId) {
+                    this.refreshbyId(parentId, this._packageNode(elements[position]).internalId);
+                }
+                if (position < elements.length + 1) {
+                    position++;
+                }
+            }
+
+            this.sendCommandToDashboard('searchDOMByResults', { length: elements.length, selector: selector, position: position });
+        }
+
         setAttribute(internaID: string, attributeName: string, attributeOldName: string, attributeValue: string): void {
             var element = this._getElementByInternalId(internaID, document.body);
             if (attributeName !== "attributeName") {
@@ -244,30 +333,40 @@ module VORLON {
                 }
             }
         }
-        public refreshbyId(internaID: any): void {
-            if (internaID)
+
+        public refreshbyId(internaID: string, internalIdToshow: string = ""): void {
+            if (internaID && internalIdToshow) {
+                this._packageAndSendDOM(this._getElementByInternalId(internaID, document.body), internalIdToshow);
+            }
+            else if (internaID) {
                 this._packageAndSendDOM(this._getElementByInternalId(internaID, document.body));
+            }
         }
+
         public setElementValue(internaID: string, value: string) {
             var element = this._getElementByInternalId(internaID, document.body);
             element.innerHTML = value;
         }
 
-
         // DASHBOARD
         private _containerDiv: HTMLElement;
-        private _treeDiv: HTMLElement;
+        public _treeDiv: HTMLElement;
         public styleView: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
         public _refreshButton: Element;
         public _clikedNodeID = null;
         public _selectedNode: DomExplorerNode;
         public _rootNode: DomExplorerNode;
-        private _globalload: HTMLInputElement;
-        private _autorefresh: HTMLInputElement;
+        private _autorefresh: boolean = false;
         public _innerHTMLView: HTMLTextAreaElement;
         public _editablemode: boolean = false;
         private _editableElement: HTMLElement;
+        private _searchinput: HTMLInputElement;
+        private _stylesEditor: DomExplorerPropertyEditor;
+        private _lengthSearch;
+        private _positionSearch;
+        private _selectorSearch;
+        private _clientHaveMutationObserver: boolean = false;
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
@@ -275,9 +374,12 @@ module VORLON {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this._innerHTMLView = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "innerHTMLView");
+                this._searchinput = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "searchinput");
                 this.styleView = Tools.QuerySelectorById(filledDiv, "styleView");
-                this.setSettings(filledDiv);
+                var domSettings = new DomSettings(this);
+                this.searchDOM();
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
+                this._stylesEditor = new DomExplorerPropertyEditor(this);
                 this._containerDiv.addEventListener('refresh',() => {
                     this.sendCommandToClient('refresh');
                 });
@@ -286,7 +388,9 @@ module VORLON {
                         order: this._selectedNode.node.internalId
                     });
                 });
+
                 this._containerDiv.addEventListener('savehtml',() => {
+                    this._clikedNodeID = this._selectedNode.node.internalId;
                     this.sendCommandToClient('saveinnerHTML', {
                         order: this._selectedNode.node.internalId,
                         innerhtml: this._innerHTMLView.value
@@ -346,14 +450,41 @@ module VORLON {
                     position: '70%'
                 });
                 $('#accordion').accordion({
-                    heightStyle: "content"
+                    //active: false,
+                    //collapsible: true,
+                    heightStyle: "fill",
+                    beforeActivate: (event, ui) => {
+                        if (ui && ui.newHeader && ui.newHeader.context && ui.newHeader.context.textContent && ui.newHeader.context.textContent.toLowerCase() === "html" && this._selectedNode && this._selectedNode.node) {
+                            this.sendCommandToClient('innerHTML', {
+                                order: this._selectedNode.node.internalId
+                            });
+
+                        }
+                    }
                 });
-
-
-
+                $("#accordion .stylessection").trigger('click');
                 this._ready = true;
+                this.sendCommandToClient("getMutationObeserverAvailability");
             });
         }
+
+        private searchDOM() {
+
+            this._searchinput.addEventListener("keydown",(evt) => {
+                if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
+                    evt.preventDefault();
+                    this._selectorSearch = this._searchinput.value;
+                    if (this._selectorSearch === this._searchinput.value) {
+                        this.sendCommandToClient("searchDOMBySelector", { selector: this._searchinput.value, position: this._positionSearch });
+                    }
+                    else {
+                        this._positionSearch = 0;
+                        this.sendCommandToClient("searchDOMBySelector", { selector: this._searchinput.value });
+                    }
+                }
+            });
+        }
+
         public makeEditable(element: HTMLElement): void {
             if (element.contentEditable == "true") { return; }
             var range = document.createRange();
@@ -371,6 +502,7 @@ module VORLON {
             $(element).focus();
             $(element).closest(".treeNodeSelected").addClass("editableselection");
         }
+
         public undoEditable(element: HTMLElement): void {
             this._editablemode = false;
             element.contentEditable = "false";
@@ -378,95 +510,31 @@ module VORLON {
             $(element).closest(".treeNodeSelected").addClass("editableselection");
             this._editableElement = null;
         }
-        private setSettings(filledDiv: HTMLElement) {
-            this._globalload = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "globalload");
-            this._autorefresh = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "autorefresh");
-            this._setSettings();
-            $(this._autorefresh).change(() => {
-                this._saveSettings();
-            });
-            $(this._globalload).change(() => {
-                this._saveSettings();
-                if (this._globalload.checked) {
-                    this.sendCommandToClient('globalload', { value: true });
-                }
-                else {
-                    this.sendCommandToClient('globalload', { value: false });
-                }
-            });
-        }
-        private _saveSettings() {
-            VORLON.Tools.setLocalStorageValue("settings" + Core._sessionID, JSON.stringify({
-                "globalload": this._globalload.checked,
-                "autorefresh": this._autorefresh.checked,
-            }));
-        }
 
-        private _setSettings() {
-            var stringSettings = VORLON.Tools.getLocalStorageValue("settings" + Core._sessionID);
-            if (this._autorefresh && this._globalload && stringSettings) {
-                var settings = JSON.parse(stringSettings);
-                if (settings) {
-                    $(this._globalload).switchButton({ checked: settings.globalload });
-                    $(this._autorefresh).switchButton({ checked: settings.autorefresh });
-                    if (settings.globalload)
-                        this.sendCommandToClient('globalload', { value: true });
-                    return;
-                }
-            }
-            $(this._globalload).switchButton({ checked: false });
-            $(this._autorefresh).switchButton({ checked: false });
-
-        }
-        private _appendSpan(parent: HTMLElement, className: string, value: string): void {
-            var span = document.createElement("span");
-            span.className = className;
-            span.innerHTML = value;
-
-            parent.appendChild(span);
-        }
-
-        private _generateButton(parentNode: HTMLElement, text: string, className: string, attribute?: any) {
-            var button = document.createElement("button");
-            button.innerHTML = text;
-            button.className = className;
-            if (attribute)
-                button.setAttribute(attribute.name, attribute.value);
-            button.setAttribute('button-block', '');
-            return parentNode.appendChild(button);
-        }
-
-        public _insertReceivedObject(receivedObject: any, root: any) {
-            if (root.internalId === this._clikedNodeID) {
-                this._clikedNodeID = null;
-                root = receivedObject;
-                root.hasChildnodes = false;
-                return root;
-            }
-            else {
-                if (root.children && root.children.length) {
-                    for (var index = 0; index < root.children.length; index++) {
-                        var res = this._insertReceivedObject(receivedObject, root.children[index])
-                        if (res) {
-                            root.children[index] = res;
-                            return root;
-                        }
-                    }
-                }
-            }
-
-        }
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-            if (receivedObject.type === "contentchanged" && !this._editablemode) {
+            if (receivedObject.type === "contentchanged" && !this._editablemode && !this._clientHaveMutationObserver) {
                 this.dirtyCheck(receivedObject.content)
             }
+        }
+        public contentChanged() {
+            this._refreshButton.setAttribute('changed', '');
         }
         public setInnerHTMLView(data: any) {
             this._innerHTMLView.value = data.innerHTML;
         }
+
+        public searchDOMByResults(data: any) {
+            this._lengthSearch = data.length,
+            this._selectorSearch = data.selector
+            this._positionSearch = data.position
+        }
+
+        public mutationObeserverAvailability(data: any) {
+            this._clientHaveMutationObserver = data.availability;
+        }
+
         public initDashboard(root: PackagedNode) {
             this._refreshButton.removeAttribute('changed');
-            this._lastContentState = root.rootHTML;
             this._lastReceivedObject = root;
             while (this._treeDiv.hasChildNodes()) {
                 this._treeDiv.removeChild(this._treeDiv.lastChild);
@@ -482,15 +550,21 @@ module VORLON {
             }
         }
 
-        dirtyCheck(content: string) {
-            if (this._lastContentState != content) {
-                this._refreshButton.setAttribute('changed', '');
-                if (this._autorefresh && this._autorefresh.checked) {
-                    this.sendCommandToClient('refresh');
-                }
-            }
-            else this._refreshButton.removeAttribute('changed');
+        public setAutorefresh(value: boolean) {
+            this._autorefresh = value;
         }
+
+        public getContainerDiv(): HTMLElement {
+            return this._containerDiv
+        }
+
+        dirtyCheck(content: string) {
+            this._refreshButton.setAttribute('changed', '');
+            if (this._autorefresh) {
+                this.sendCommandToClient('refresh');
+            }
+        }
+
         hoverNode(internalId: string, unselect: boolean = false) {
             if (!internalId) {
                 this.sendCommandToClient('unselect', {
@@ -511,6 +585,8 @@ module VORLON {
         }
 
         select(selected: DomExplorerNode) {
+            //$("#accordion").accordion("option", "collapsible", true).accordion("option", "active", false);
+            $("#accordion .stylessection ").trigger('click');
             if (this._selectedNode) {
                 this._selectedNode.selected(false);
                 this.sendCommandToClient('unselect', {
@@ -528,7 +604,7 @@ module VORLON {
                 this.sendCommandToClient('select', {
                     order: this._selectedNode.node.internalId
                 });
-                selected.stylesEditor.generateStyles()
+                this._stylesEditor.generateStyles(selected.node, selected.node.internalId);
                 this._innerHTMLView.value = "";
             } else {
                 this._selectedNode = null;
@@ -542,40 +618,58 @@ module VORLON {
             plugin.unselectClientElement();
             plugin.setClientSelectedElement(data.order);
         },
-
+        getMutationObeserverAvailability: function () {
+            var plugin = <DOMExplorer>this;
+            plugin.getMutationObeserverAvailability();
+        },
         style: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setStyle(data.order, data.property, data.newValue);
         },
 
-        globalload: function (data: any) {
+        searchDOMBySelector: function (data: any) {
             var plugin = <DOMExplorer>this;
-            plugin.globalload(data.value);
+            plugin.searchDOMBySelector(data.selector, data.position);
         },
+
+        setSettings: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            if (data.globalload)
+                plugin.globalload(data.globalload);
+            if (data.autoRefresh)
+                plugin.setClientAutoRefresh(data.autoRefresh);
+        },
+
         saveinnerHTML: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.saveInnerHTML(data.order, data.innerhtml);
         },
+
         attribute: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setAttribute(data.order, data.attributeName, data.attributeOldName, data.attributeValue);
         },
+
         setElementValue: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setElementValue(data.order, data.value);
         },
+
         unselect: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.unselectClientElement(data.order);
         },
+
         refreshNode: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.refreshbyId(data.order);
         },
+
         refresh: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.refresh();
         },
+
         innerHTML: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.getInnerHTML(data.order);
@@ -587,6 +681,18 @@ module VORLON {
             var plugin = <DOMExplorer>this;
             plugin.initDashboard(root);
         },
+        contentChanged: function () {
+
+        },
+        searchDOMByResults: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.searchDOMByResults(data);
+
+        },
+        mutationObeserverAvailability: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.mutationObeserverAvailability(data);
+        },
         innerHTML: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setInnerHTMLView(data);
@@ -596,7 +702,6 @@ module VORLON {
             var plugin = <DOMExplorer>this;
             plugin.updateDashboard(node);
         },
-
     }
 
     export class DomExplorerNode {
@@ -607,47 +712,104 @@ module VORLON {
         public node: PackagedNode;
         public contentContainer: HTMLElement;
         public attributes: DomExplorerNodeAttribute[] = [];
-        public stylesEditor: DomExplorerPropertyEditor;
         public childs: DomExplorerNode[] = [];
         plugin: DOMExplorer;
         parent: DomExplorerNode;
 
-        constructor(plugin: DOMExplorer, parent: DomExplorerNode, parentElt: HTMLElement, node: PackagedNode) {
+        constructor(plugin: DOMExplorer, parent: DomExplorerNode, parentElt: HTMLElement, node: PackagedNode, oldNode?: DomExplorerNode) {
             this.parent = parent;
             this.node = node;
             this.plugin = plugin;
-            this.stylesEditor = new DomExplorerPropertyEditor(parentElt, node.styles, plugin, node.internalId);
-            this.render(parentElt);
+            if (oldNode) {
+                this.parent = oldNode.parent;
+                this.element = oldNode.element;
+                this.element.innerHTML = "";
+                this.render(parentElt, true);
+            }
+            else {
+                this.render(parentElt);
+            }
         }
 
         public dispose() {
-            //TODO cleanup references & childs
+            for (var i = 0, l = this.childs.length; i < l; i++) {
+                this.childs[i].dispose();
+            }
+
+            this.plugin = null;
+            this.parent = null;
+            this.element = null;
+            this.header = null;
+            this.headerAttributes = null;
+            this.contentContainer = null;
         }
 
 
         public update(node: PackagedNode) {
             this.plugin._refreshButton.removeAttribute('changed');
-            var b = this.plugin._insertReceivedObject(node, this.plugin._rootNode.node);
-            this.plugin.initDashboard(this.plugin._rootNode.node);
+            var newNode = this._insertReceivedObject(node, this.plugin._rootNode);
 
+            if (node.highlightElementID)
+                this.openNode(node.highlightElementID);
+        }
+        private _insertReceivedObject(receivedObject: PackagedNode, root: DomExplorerNode): DomExplorerNode {
+            if ((root && root.node && root.node.internalId === this.plugin._clikedNodeID) || (this.plugin._clikedNodeID === null && root.node.internalId === receivedObject.internalId)) {
+                this.plugin._clikedNodeID = null;
+                if (root.parent === null) {
+                    var newNode = new DomExplorerNode(root.plugin, null, this.plugin._treeDiv, receivedObject, root);
+                }
+                else {
+                    var newNode = new DomExplorerNode(root.plugin, root.parent, root.parent.element, receivedObject, root);
+                }
+                root.childs = newNode.childs;
+                root.node.hasChildNodes = false;
+                return root;
+            }
+            else {
+                if (root && root.childs && root.childs.length) {
+                    for (var index = 0; index < root.childs.length; index++) {
+                        var res = this._insertReceivedObject(receivedObject, root.childs[index])
+                        if (res) {
+                            root.childs.length[index] = res;
+                            return root;
+                        }
+                    }
+                }
+            }
+        }
+
+        openNode(highlightElementID: string) {
+            $('#plusbtn' + highlightElementID).trigger('click');
+            $('.treeNodeSelected').removeClass('treeNodeSelected');
+            var domnode = $('#domNode' + highlightElementID);
+            if (domnode.length == 0) {
+                return;
+            }
+
+            domnode.addClass('treeNodeSelected');
+            var container = $(this.plugin._treeDiv);
+            container.animate({ scrollTop: domnode.offset().top - container.offset().top + container.scrollTop() });
         }
 
         selected(selected: boolean) {
             if (selected) {
+                $('.treeNodeSelected').removeClass('treeNodeSelected');
                 Tools.AddClass(this.element, 'treeNodeSelected');
             } else {
-                Tools.RemoveClass(this.element, 'treeNodeSelected');
+                $('.treeNodeSelected').removeClass('treeNodeSelected');
             }
         }
 
-        render(parent: HTMLElement) {
-            if (this.node.type == "3") {
-                this.renderTextNode(parent);
+        render(parent: HTMLElement, isUpdate: boolean = false) {
+            if (this.node.name === "#comment") {
+                this.renderCommentNode(parent, isUpdate);
+            }
+            else if (this.node.type == "3") {
+                this.renderTextNode(parent, isUpdate);
             } else {
-                this.renderDOMNode(parent);
+                this.renderDOMNode(parent, isUpdate);
             }
         }
-
         sendTextToClient() {
             this.plugin.sendCommandToClient('setElementValue', {
                 value: this.element.innerHTML,
@@ -655,11 +817,29 @@ module VORLON {
             });
             this.plugin.undoEditable(this.element);
         }
-
-        renderTextNode(parentElt: HTMLElement) {
+        renderCommentNode(parentElt: HTMLElement, isUpdate: boolean = false) {
             if (DomExplorerNode._spaceCheck.test(this.node.content)) {
-                var textNode = new FluentDOM('span', 'nodeTextContent', parentElt);
-                this.element = textNode.element;
+
+                if (!isUpdate) {
+                    var textNode = new FluentDOM('span', 'nodeTextContent nodeComment', parentElt);
+                    this.element = textNode.element;
+                }
+                else {
+                    this.element.innerHTML = "";
+                }
+                textNode.text(this.node.content.trim()).editable(false);
+            }
+        }
+        renderTextNode(parentElt: HTMLElement, isUpdate: boolean = false) {
+            if (DomExplorerNode._spaceCheck.test(this.node.content)) {
+
+                if (!isUpdate) {
+                    var textNode = new FluentDOM('span', 'nodeTextContent', parentElt);
+                    this.element = textNode.element;
+                }
+                else {
+                    this.element.innerHTML = "";
+                }
                 textNode.text(this.node.content.trim())
                     .editable(false)
                     .blur(() => this.sendTextToClient())
@@ -674,12 +854,24 @@ module VORLON {
             }
         }
 
-        renderDOMNode(parentElt: HTMLElement) {
+        renderDOMNode(parentElt: HTMLElement, isUpdate: boolean = false) {
             parentElt.setAttribute('data-has-children', '');
-            var root = new FluentDOM('DIV', 'domNode', parentElt);
-            this.element = root.element;
+            if (!isUpdate) {
+                var root = new FluentDOM('DIV', 'domNode', parentElt);
+                this.element = root.element;
+            }
+            else {
+                this.element.innerHTML = "";
+            }
+            this.element.id = "domNode" + this.node.internalId;
+            this.renderDOMNodeContent();
+        }
+
+        renderDOMNodeContent() {
+            var root = FluentDOM.for(this.element);
             root.append('BUTTON', 'treeNodeButton',(nodeButton) => {
-                if (this.node.hasChildNodes) {
+                nodeButton.element.id = "plusbtn" + this.node.internalId;
+                if (this.node.hasChildNodes && (!this.node.children || this.node.children.length === 0)) {
                     Tools.AddClass(this.element, "collapsed");
                     nodeButton.attr("data-collapsed", "");
                 } else {
@@ -687,7 +879,8 @@ module VORLON {
                 }
                 nodeButton.attr('button-block', '');
                 nodeButton.click(() => {
-                    if (this.node.hasChildNodes) {
+                    if (this.node.hasChildNodes && !nodeButton.element.className.match('loading')) {
+                        Tools.AddClass(nodeButton.element, "loading");
                         this.plugin._clikedNodeID = this.node.internalId;
                         this.plugin.sendCommandToClient('refreshNode', {
                             order: this.node.internalId
@@ -695,6 +888,7 @@ module VORLON {
                     }
                 });
             });
+
             var that = this;
             var menu = function (idtarget) {
                 $('.b-m-mpanel').remove();
@@ -774,10 +968,6 @@ module VORLON {
             }
             // Main node
 
-            //this._generateColorfullLink(linkText, receivedObject);
-
-            //root.className = first ? "firstTreeNodeText" : "treeNodeText";
-
             // Tools
             if (this.node.id) {
                 root.createChild("span", "treeNodeTools fa fa-terminal").click(() => {
@@ -791,6 +981,56 @@ module VORLON {
         addAttribute(name: string, value: string) {
             var attr = new DomExplorerNodeAttribute(this, name, value);
             this.attributes.push(attr);
+        }
+    }
+
+    export class DomSettings {
+        private _plugin: DOMExplorer;
+        private _globalload: HTMLInputElement;
+        private _autorefresh: HTMLInputElement;
+        constructor(plugin: DOMExplorer) {
+            this._plugin = plugin;
+            this.setSettings(this._plugin.getContainerDiv());
+        }
+
+        private setSettings(filledDiv: HTMLElement) {
+            this._globalload = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "globalload");
+            this._autorefresh = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "autorefresh");
+            this._setSettings();
+            this.refreshClient();
+            $(this._autorefresh).change(() => {
+                this._saveSettings();
+            });
+            $(this._globalload).change(() => {
+                this._saveSettings();
+            });
+        }
+        public refreshClient() {
+            this._plugin.sendCommandToClient('setSettings', { globalload: this._globalload.checked, autoRefresh: this._autorefresh.checked });
+        }
+        private _setSettings() {
+            var stringSettings = VORLON.Tools.getLocalStorageValue("settings" + Core._sessionID);
+            if (this._autorefresh && this._globalload && stringSettings) {
+                var settings = JSON.parse(stringSettings);
+                if (settings) {
+                    $(this._globalload).switchButton({ checked: settings.globalload });
+                    $(this._autorefresh).switchButton({ checked: settings.autorefresh });
+                    if (settings.globalload)
+                        this._plugin.sendCommandToClient('globalload', { value: true });
+                    return;
+                }
+            }
+            $(this._globalload).switchButton({ checked: false });
+            $(this._autorefresh).switchButton({ checked: false });
+            this._plugin.setAutorefresh(this._autorefresh.checked);
+        }
+        private _saveSettings() {
+            this.refreshClient();
+            this._plugin.setAutorefresh(this._autorefresh.checked);
+            VORLON.Tools.setLocalStorageValue("settings" + Core._sessionID, JSON.stringify({
+                "globalload": this._globalload.checked,
+                "autorefresh": this._autorefresh.checked,
+            }));
         }
     }
 
@@ -908,15 +1148,13 @@ module VORLON {
     }
 
     export class DomExplorerPropertyEditor {
-        private parent: HTMLElement = null;
-        private styles: Array<any> = [];
+        //private parent: HTMLElement = null;
+        public styles: Array<DomExplorerPropertyEditorItem> = [];
+        public node: PackagedNode
         public plugin: DOMExplorer;
         private internalId: string;
-        constructor(parent: HTMLElement, styles: any, plugin: DOMExplorer, internalId: string) {
-            this.parent = parent;
-            this.styles = styles;
+        constructor(plugin: DOMExplorer) {
             this.plugin = plugin;
-            this.internalId = internalId;
         }
 
         private _generateButton(parentNode: HTMLElement, text: string, className: string, attribute?: any) {
@@ -929,26 +1167,22 @@ module VORLON {
             return parentNode.appendChild(button);
         }
 
-        public generateStyles(): void {
+        public generateStyles(node: PackagedNode, internalId: string): void {
+            this.node = node;
+            this.internalId = internalId;
+            this.styles = [];
             while (this.plugin.styleView.hasChildNodes()) {
                 this.plugin.styleView.removeChild(this.plugin.styleView.lastChild);
             }
 
             // Current styles
-            for (var index = 0; index < this.styles.length; index++) {
-                var style = this.styles[index];
+            for (var index = 0; index < node.styles.length; index++) {
+                var style = node.styles[index];
                 var splits = style.split(":");
-                new DomExplorerPropertyEditorItem(this, splits[0], splits[1], this.internalId);
-            }
-            if (this.plugin._newAppliedStyles[this.internalId]) {
-                var newProps = this.plugin._newAppliedStyles[this.internalId];
-                for (var index = 0; index < newProps.length; index++) {
-                    var currentObj = newProps[index];
-                    new DomExplorerPropertyEditorItem(this, currentObj.property, currentObj.newValue, this.internalId);
-                }
+                this.styles.push(new DomExplorerPropertyEditorItem(this, splits[0], splits[1], this.internalId));
             }
             // Append add style button
-            this._generateButton(this.plugin.styleView, "+", "styleButton").addEventListener('click',(e) => {
+            this._generateButton(this.plugin.styleView, "+", "styleButton", null).addEventListener('click',(e) => {
                 new DomExplorerPropertyEditorItem(this, "property", "value", this.internalId, true);
                 this.plugin.styleView.appendChild(<HTMLElement>e.target);
             });
@@ -958,10 +1192,14 @@ module VORLON {
 
     export class DomExplorerPropertyEditorItem {
         private parent: DomExplorerPropertyEditor;
-
-        constructor(parent: DomExplorerPropertyEditor, name: string, value: string, internalId: string, editableLabel = false) {
-            this.parent = parent;
-            this._generateStyle(name, value, internalId, editableLabel);
+        private name: string;
+        private value: string;
+        constructor(parent: DomExplorerPropertyEditor, name: string, value: string, internalId: string, editableLabel: boolean = false, generate: boolean = true) {
+            this.parent = parent
+            this.name = name;
+            this.value = value;
+            if (generate)
+                this._generateStyle(name, value, internalId, editableLabel);
         }
         private _generateStyle(property: string, value: string, internalId: string, editableLabel = false): void {
             var wrap = document.createElement("div");
@@ -1003,25 +1241,25 @@ module VORLON {
                 if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
                     //Create the properties object of elements.
                     var propertyObject: any = {};
-                    propertyObject.property = label.innerHTML;
+                    propertyObject.property = label.innerHTML.trim();
                     propertyObject.newValue = valueElement.innerHTML;
-                    if (this.parent.plugin._newAppliedStyles[internalId] !== undefined) {
-                        var propsArr = this.parent.plugin._newAppliedStyles[internalId];
-                        //check if property exists in array
-                        for (var index = 0; index < propsArr.length; index++) {
-                            var propObj = propsArr[index];
-                            if (propObj.property === propertyObject.property) {
-                                propObj.newValue = propertyObject.newValue;
-                                propertyObject = propObj;
-                                propsArr.splice(index, 1);
-                                break;
-                            }
+                    var propsArr = this.parent.styles;
+                    //check if property exists in array
+                    var found = false;
+                    for (var index = 0; index < this.parent.styles.length; index++) {
+                        var propObj = this.parent.styles[index];
+                        if (propObj.name === propertyObject.property) {
+                            this.parent.styles[index].value = propertyObject.newValue;
+                            found = true;
+                            break;
                         }
-                        propsArr.push(propertyObject);
-                    } else {
-                        var proArr = [];
-                        proArr.push(propertyObject);
-                        this.parent.plugin._newAppliedStyles[internalId] = proArr;
+                    }
+                    if (!found) {
+                        this.parent.styles.push(new DomExplorerPropertyEditorItem(this.parent, propertyObject.property, propertyObject.newValue, internalId, false, false));
+                    }
+                    this.parent.node.styles = [];
+                    for (var index = 0; index < this.parent.styles.length; index++) {
+                        this.parent.node.styles.push(this.parent.styles[index].name + ":" + this.parent.styles[index].value);
                     }
                     this.parent.plugin.sendCommandToClient('style', {
                         property: label.innerHTML,
@@ -1056,6 +1294,7 @@ module VORLON {
         hasChildNodes: boolean;
         rootHTML: any;
         children: Array<any>;
+        highlightElementID?: string
     }
     // Register
     Core.RegisterPlugin(new DOMExplorer());

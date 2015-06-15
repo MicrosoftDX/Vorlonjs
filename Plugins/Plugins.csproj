@@ -92,6 +92,12 @@
     <Content Include="Vorlon\plugins\interactiveConsole\control.css.map">
       <DependentUpon>control.css</DependentUpon>
     </Content>
+    <Content Include="Vorlon\plugins\ngInspector\control.css" />
+    <Content Include="Vorlon\plugins\ngInspector\control.html" />
+    <Content Include="Vorlon\plugins\ngInspector\control.less" />
+    <Content Include="Vorlon\plugins\ngInspector\control.css.map">
+      <DependentUpon>control.css</DependentUpon>
+    </Content>
     <Content Include="Vorlon\plugins\networkMonitor\control.less" />
     <Content Include="Vorlon\plugins\resourcesExplorer\control.less" />
     <None Include="Web.Debug.config">
@@ -113,6 +119,9 @@
     <Content Include="Vorlon\plugins\modernizrReport\control.css" />
     <Content Include="Vorlon\plugins\modernizrReport\control.html" />
     <Content Include="Vorlon\plugins\modernizrReport\modernizr.js" />
+    <Content Include="Vorlon\plugins\ngInspector\control.min.css">
+      <DependentUpon>control.css</DependentUpon>
+    </Content>
     <Content Include="Vorlon\plugins\objectExplorer\control.css" />
     <Content Include="Vorlon\plugins\objectExplorer\control.html" />
     <Content Include="Vorlon\plugins\xhrPanel\control.html" />
@@ -124,6 +133,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="libs\node.d.ts" />
     <TypeScriptCompile Include="libs\socket.io.d.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\ngInspector\vorlon.ngInspector.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\networkMonitor\vorlon.networkMonitor.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\resourcesExplorer\vorlon.resourcesExplorer.ts" />
@@ -146,6 +156,8 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
     <TypeScriptModuleKind>none</TypeScriptModuleKind>
+    <TypeScriptSourceMap>False</TypeScriptSourceMap>
+    <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

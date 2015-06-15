@@ -26,6 +26,10 @@
         height: 100%;
     }
 
+    .panel-right {
+        overflow: hidden;
+    }
+
     .tree-view,
     .style-view {
         padding: 0;
@@ -51,10 +55,17 @@
             .ui-accordion-header {
                 font-family: "Menlo","Consolas","Lucida Console",Courier,monospace;
                 border: none;
+                height: 36px;
+                margin: 0;
+                padding-top: 10px;
+                border-bottom: 1px solid #CCC;
             }
 
             .ui-accordion-content {
                 padding: 0;
+                min-height: ~"calc(100% - 108px)";
+                overflow-x: hidden;
+                overflow-y: auto;
             }
         }
     }
@@ -106,6 +117,14 @@
             > * {
                 border-radius: 0.25em;
             }
+
+            #searchinput {
+                /*display: none;*/
+                position: absolute;
+                right: 0.25em;
+                top: 0.25em;
+                min-width: 220px;
+            }
         }
     }
 
@@ -129,14 +148,31 @@
         outline: none;
 
         &:before {
-            content: "-";   
-            outline: none;         
+            content: "-";
+            outline: none;
+        }
+
+        &.loading {
+            border-color: transparent;
+
+            &:before {
+                -webkit-animation: fa-spin 2s infinite linear;
+                animation: fa-spin 2s infinite linear;
+                font-family: 'FontAwesome';
+                content: "\f110";
+                outline: none;
+            }
         }
 
         &[data-collapsed]:before {
             content: "+";
             vertical-align: middle;
             outline: none;
+        }
+
+        &[data-collapsed] ~ .treeNodeHeader .closetag:after {
+            content: '...';
+            color: black;
         }
 
         &[data-collapsed] ~ .nodeContentContainer {
@@ -148,7 +184,7 @@
         }
 
         &:focus {
-            outline: 1px dotted #000;
+            /*outline: 1px dotted #000;*/
         }
     }
 
@@ -195,7 +231,7 @@
     .nodeContentContainer {
         padding-left: 20px;
 
-        &[data-has-children]{
+        &[data-has-children] {
             border-left: 1px solid #EEE;
             margin-left: -2px;
         }
@@ -220,11 +256,7 @@
         }
     }
 
-    .treeNodeButton[data-collapsed] ~ .treeNodeHeader {
-        .nodeAttribute, .fa-plus-circle {
-            display: none;
-        }
-    }
+
 
     [data-hovered-tag] > .treeNodeHeader,
     [data-hovered-tag] > .nodeContentContainer > .treeNodeClosingText .nodeName {
@@ -269,6 +301,18 @@
 
     .nodeTextContent {
         color: @nodeTextColor;
+
+        &.nodeComment {
+            color: #3fa83f;
+
+            &:before {
+                content: '<!--';
+            }
+
+            &:after {
+                content: '--!>';
+            }
+        }
     }
 
     .treeNodeClosingText {
@@ -361,6 +405,10 @@ body .b-m-mpanel {
         padding: 10px;
         font-size: 10pt;
         margin: 0;
+
+        img {
+            display: none;
+        }
     }
 
     .b-m-ifocus {

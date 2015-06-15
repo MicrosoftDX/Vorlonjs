@@ -10,6 +10,7 @@ var fakeredis = require("fakeredis");
 var winstonDisplay = require("winston-logs-display");
 import redisConfigImport = require("../config/vorlon.redisconfig");
 var redisConfig = redisConfigImport.VORLON.RedisConfig;
+import httpConfig = require("../config/vorlon.httpconfig"); 
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
@@ -23,6 +24,7 @@ export module VORLON {
         private _io: any;
         private _redisApi: any;
         private _log: winston.LoggerInstance;
+        private http: httpConfig.VORLON.HttpConfig;
 
         constructor() {
             //LOGS      
@@ -74,6 +76,9 @@ export module VORLON {
                     if (err) { throw err; }
                 });
             }
+
+            //SSL
+            this.http = new httpConfig.VORLON.HttpConfig();
         }
 
         public addRoutes(app: express.Express): void {
@@ -206,11 +211,11 @@ export module VORLON {
                     }
                 }
                 
-                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"http://' + req.headers.host + '/vorlon/plugins"');
+                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"'+ this.http.protocol +'://' + req.headers.host + '/vorlon/plugins"');
                 javascriptFile += "\r" + vorlonpluginfiles;
                 
                 if(autostart){
-                    javascriptFile += "\r (function() { VORLON.Core.Start('http://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
+                    javascriptFile += "\r (function() { VORLON.Core.Start('" + this.http.protocol +"://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
                 }
                 
                 res.header('Content-Type', 'application/javascript');

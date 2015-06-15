@@ -10,7 +10,7 @@
         listenClientId: string;
         waitingEvents?: number;
     }
-    
+
     export interface VorlonMessage {
         metadata: VorlonMessageMetadata;
         command?: string;
@@ -31,7 +31,7 @@
         public onIdentifyReceived: (id: string) => void;
         public onWaitingEventsReceived: (message: VorlonMessage) => void;
         public onStopListenReceived: () => void;
-        public onRefreshClients: () => void;        
+        public onRefreshClients: () => void;
 
         public onError: (err: Error) => void;
 
@@ -76,7 +76,7 @@
 
                 this._socket.on('message', message => {
                     var received = <VorlonMessage>JSON.parse(message);
-                    
+
                     if (this.onRealtimeMessageReceived) {
                         this.onRealtimeMessageReceived(received);
                     }
@@ -162,7 +162,7 @@
             } else {
                 if (Core._listenClientId === "" && messageType === "message") {
                     if (incrementVisualIndicator) {
-                        this._waitingEvents++;                        
+                        this._waitingEvents++;
                         this.sendWaitingEvents(pluginID, this._waitingEvents);
                     }
                 } else {

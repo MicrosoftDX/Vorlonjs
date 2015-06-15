@@ -44,6 +44,7 @@
   </head>
   <body>
     <h1 id="mainTitle">Vorlon.JS Test Page</h1>
+      <!--<div>this is a comment</div>-->
     <p>
       This test page includes the vorlon client script. Ensure you are running the Vorlon.JS server, as explained <a href="http://vorlonjs.com/documentation">in the Vorlon.JS docs</a>. Then open the <a href="http://localhost:1337/dashboard">Vorlon.JS dashboard</a> and refresh this page.
     </p>
@@ -58,7 +59,8 @@
     <button onclick="console.error('This is a', 'error', 'message !')">console.error()</button>
     <button onclick="intenseLog()">intense console log</button>
     <button onclick="console.dir(window.samplePageObjectTest)">console.dir()</button>
-
+    <button onclick="console.dir(document.body)">console.dir(document.body)</button>
+  
     <h2>Dom Explorer</h2>
     <p>You can inspect the DOM of this page from the Vorlon.JS dashboard. Here is some html with inline styles, and css styles applied.
     <div>
@@ -68,7 +70,7 @@
         <p>This text is styled by css</p>
       </div>
       <div id="test2" style="font-family: monospace">
-        <p>This text has inline styles</p>
+        <p id="searchsample">This text has inline styles</p>
       </div>
       <div id="test3" class="class1 class2">
         <p>This text has some classes</p>
