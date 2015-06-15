@@ -44,6 +44,7 @@ export module VORLON {
                         level: 'debug',
                         handleExceptions: true,
                         json: false,
+                        timestamp: true,
                         colorize: true
                     }),
                     new winston.transports.File({ filename: 'vorlonjs.log' })
@@ -76,7 +77,6 @@ export module VORLON {
                     if (err) { throw err; }
                 });
             }
-
             //SSL
             this.http = new httpConfig.VORLON.HttpConfig();
         }
@@ -86,15 +86,15 @@ export module VORLON {
                 this.json(res, this.guid());
             });
 
-            app.get("/api/reset/:idSession", (req: any, res: any) => {
+            app.get("/api/reset/:idSession",(req: any, res: any) => {
                 var session = this.sessions[req.params.idSession];
-                if(session && session.connectedClients){
+                if (session && session.connectedClients) {
                     for (var client in session.connectedClients) {
                         delete session.connectedClients[client];
                     }
                 }
                 delete this.sessions[req.params.idSession];
-                res.writeHead(200, {  });
+                res.writeHead(200, {});
                 res.end();
             });
 
@@ -105,7 +105,7 @@ export module VORLON {
                     var nbClients = 0;
                     for (var client in session.connectedClients) {
                         var currentclient = session.connectedClients[client];
-                        if(currentclient.opened) {
+                        if (currentclient.opened) {
                             var name = tools.VORLON.Tools.GetOperatingSystem(currentclient.ua);
                             clients.push({ "clientid": currentclient.clientId, "displayid": currentclient.displayId, "waitingevents": currentclient.waitingevents, "name": name });
                             nbClients++;
@@ -144,7 +144,7 @@ export module VORLON {
             });
 
             app.get("/vorlon.max.js/",(req: any, res: any) => {
-              res.redirect("/vorlon.max.js/default");
+                res.redirect("/vorlon.max.js/default");
             });
 
             app.get("/vorlon.max.js/:idsession",(req: any, res: any) => {
@@ -152,35 +152,35 @@ export module VORLON {
             });
 
             app.get("/vorlon.js/",(req: any, res: any) => {
-              res.redirect("/vorlon.js/default");
+                res.redirect("/vorlon.js/default");
             });
 
             app.get("/vorlon.js/:idsession",(req: any, res: any) => {
                 this._sendVorlonJSFile(true, req, res);
             });
-            
+
             app.get("/vorlon.max.autostartdisabled.js/",(req: any, res: any) => {
-              this._sendVorlonJSFile(false, req, res, false);
+                this._sendVorlonJSFile(false, req, res, false);
             });
-            
-             app.get("/vorlon.autostartdisabled.js/",(req: any, res: any) => {
-              this._sendVorlonJSFile(true, req, res, false);
+
+            app.get("/vorlon.autostartdisabled.js/",(req: any, res: any) => {
+                this._sendVorlonJSFile(true, req, res, false);
             });
 
             //DisplayLogs
             winstonDisplay(app, this._log);
         }
 
-        private _sendVorlonJSFile(ismin: boolean, req: any, res: any, autostart:boolean = true){
+        private _sendVorlonJSFile(ismin: boolean, req: any, res: any, autostart: boolean = true) {
             //Read Socket.io file
             var javascriptFile: string;
-                            
-            fs.readFile(path.join(__dirname, "../public/catalog.json"), "utf8", (err, catalogdata) => {
+
+            fs.readFile(path.join(__dirname, "../public/catalog.json"), "utf8",(err, catalogdata) => {
                 if (err) {
                     this._log.error("ROUTE : Error reading catalon.json file");
                     return;
                 }
-                    
+
                 var catalogstring = catalogdata.toString().replace(/^\uFEFF/, '');
                 console.log(catalogstring);
                 var catalog = JSON.parse(catalogstring);
@@ -188,36 +188,36 @@ export module VORLON {
                 var javascriptFile: string = "";
                                 
                 //read the socket.io file if needed
-                if(catalog.includeSocketIO){
+                if (catalog.includeSocketIO) {
                     javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.3.5.js"));
                 }
 
-                if(ismin){
+                if (ismin) {
                     vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/vorlon-noplugin.js"));
                 }
-                else{
+                else {
                     vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/vorlon-noplugin.max.js"));
                 }
-                
-                for(var pluginid = 0; pluginid < catalog.plugins.length; pluginid++){
+
+                for (var pluginid = 0; pluginid < catalog.plugins.length; pluginid++) {
                     var plugin = catalog.plugins[pluginid];
                     
                     //Read Vorlon.js file
-                    if(ismin){
+                    if (ismin) {
                         vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".min.js"));
                     }
-                    else{
+                    else {
                         vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".js"));
                     }
                 }
-                
-                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"'+ this.http.protocol +'://' + req.headers.host + '/vorlon/plugins"');
+
+                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + this.http.protocol + '://' + req.headers.host + '/vorlon/plugins"');
                 javascriptFile += "\r" + vorlonpluginfiles;
-                
-                if(autostart){
-                    javascriptFile += "\r (function() { VORLON.Core.Start('" + this.http.protocol +"://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
+
+                if (autostart) {
+                    javascriptFile += "\r (function() { VORLON.Core.Start('" + this.http.protocol + "://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
                 }
-                
+
                 res.header('Content-Type', 'application/javascript');
                 res.send(javascriptFile);
             });
@@ -230,15 +230,14 @@ export module VORLON {
 
             //Redis
             var redisConfig = redisConfigImport.VORLON.RedisConfig;
-			if (redisConfig.fackredis === false)
-			{
-				var pub = redis.createClient(redisConfig._redisPort, redisConfig._redisMachine);
-				pub.auth(redisConfig._redisPassword);
-				var sub = redis.createClient(redisConfig._redisPort, redisConfig._redisMachine);
-				sub.auth(redisConfig._redisPassword);
-				var socketredis = require("socket.io-redis");
-				io.adapter(socketredis({ pubClient: pub, subClient: sub }));
-			}
+            if (redisConfig.fackredis === false) {
+                var pub = redis.createClient(redisConfig._redisPort, redisConfig._redisMachine);
+                pub.auth(redisConfig._redisPassword);
+                var sub = redis.createClient(redisConfig._redisPort, redisConfig._redisMachine);
+                sub.auth(redisConfig._redisPassword);
+                var socketredis = require("socket.io-redis");
+                io.adapter(socketredis({ pubClient: pub, subClient: sub }));
+            }
             //Listen on /
             io.on("connection", socket => {
                 this.addClient(socket);
@@ -338,7 +337,7 @@ export module VORLON {
                         //Send message if _clientID = clientID selected by dashboard
                         if (session && receiveMessage.metadata.clientId === session.currentClientId) {
                             dashboard.emit("message", message);
-                            //this._log.info("PLUGIN : " + receiveMessage._pluginID + " message receive from clientid " + receiveMessage._clientId + " send to dashboard for session id :" + receiveMessage._sessionId, { type: "PLUGIN", session: receiveMessage._sessionId });
+                            this._log.info("PLUGIN : " + receiveMessage.metadata.pluginID + " message receive from clientid " + receiveMessage.metadata.clientId + " send command '"+ receiveMessage.command +"' to dashboard for session id :" + receiveMessage.metadata.sessionId , { type: "PLUGIN", session: receiveMessage.metadata.sessionId });
                         }
                         else {
                             this._log.error("PLUGIN : " + receiveMessage.metadata.pluginID + " message from client that must be disconnected clientID = " + receiveMessage.metadata.clientId + " this session " + session.currentClientId, { type: "PLUGIN", session: receiveMessage.metadata.sessionId });
@@ -364,7 +363,7 @@ export module VORLON {
 
             socket.on("disconnect",(message: string) => {
                 //this._log.warn("CLIENT disconnect " + message);
-                 for (var sessionId in this.sessions) {
+                for (var sessionId in this.sessions) {
                     var session = this.sessions[sessionId]
                     for (var clientId in session.connectedClients) {
                         var client = session.connectedClients[clientId];
@@ -384,8 +383,7 @@ export module VORLON {
                         if (receiveMessage.data.socketid === this.sessions[session].connectedClients[client].socket.id) {
                             this.sessions[session].connectedClients[client].opened = false;
                             this._log.info("PLUGIN : Send RefreshClients to Dashboard " + socket.id + " for session " + session + "(" + session + ") ", { type: "PLUGIN", session: session });
-                            if (this.dashboards[session])
-                            {
+                            if (this.dashboards[session]) {
                                 this.dashboards[session].emit("refreshclients");
                             }
                             this._log.info("PLUGIN : Client Close " + socket.id + " for session " + session + "(" + session + ") ", { type: "PLUGIN", session: session });
@@ -468,7 +466,7 @@ export module VORLON {
                     var nbClients = 0;
                     for (var client in session.connectedClients) {
                         var currentclient = session.connectedClients[client];
-                        if(currentclient.opened){
+                        if (currentclient.opened) {
                             currentclient.socket.emit("identify", currentclient.displayId);
                             this._log.info("DASHBOARD : Dashboard send identify " + currentclient.displayId + " to socketid : " + currentclient.socket.id, { type: "DASHBOARD", session: metadata.sessionId });
                             nbClients++;
@@ -557,6 +555,7 @@ export module VORLON {
 
     export interface VorlonMessage {
         metadata: VorlonMessageMetadata;
+        command?: string
         data?: any
     }
 }

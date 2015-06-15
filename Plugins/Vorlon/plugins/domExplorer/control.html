@@ -17,21 +17,21 @@
         </div>
         <div class="style-view-wrapper panel-right">
             <div id="accordion">
-                <h3 class="stylessection">styles</h3>
-                <div>
+                <h3 class="stylessection visible">styles</h3>
+                <div id="stylessection" class="visible">
                     <div id="styleView">
                     </div>
                 </div>
                 <h3 class="htmlsection">html</h3>
-                <div class="innerHTMLViewContainer">
+                <div id="htmlsection">
                     <x-controlbar>
                         <x-action event="gethtml" tabindex="0"><i class="fa fa-refresh"></i></x-action>
                         <x-action event="savehtml" tabindex="0"><i class="fa fa-save"></i></x-action>
                     </x-controlbar>
-                    <textarea style="width:100%;min-height:100px;" id="innerHTMLView"></textarea>
+                    <textarea id="innerHTMLView"></textarea>
                 </div>
-                <h3>settings</h3>
-                <div>
+                <h3 class="settingssection">settings</h3>
+                <div id="settingssection">
                     <div id="settings">
                         <div>
                             Auto refresh
