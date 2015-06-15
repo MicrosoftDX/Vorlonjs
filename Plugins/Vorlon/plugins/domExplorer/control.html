@@ -10,13 +10,14 @@
         <div class="tree-view-wrapper panel-left">
             <x-controlbar>
                 <x-action event="refresh" tabindex="0"><i class="fa fa-circle"></i> Refresh</x-action>
+                <input type="text" placeholder="search node by css selector" id="searchinput" />
             </x-controlbar>
             <div id="treeView"></div>
             <div id="text"></div>
         </div>
         <div class="style-view-wrapper panel-right">
             <div id="accordion">
-                <h3>styles</h3>
+                <h3 class="stylessection">styles</h3>
                 <div>
                     <div id="styleView">
                     </div>
@@ -24,7 +25,7 @@
                 <h3 class="htmlsection">html</h3>
                 <div class="innerHTMLViewContainer">
                     <x-controlbar>
-                        <x-action event="gethtml" tabindex="0"><i class="fa fa-download "></i></x-action>
+                        <x-action event="gethtml" tabindex="0"><i class="fa fa-refresh"></i></x-action>
                         <x-action event="savehtml" tabindex="0"><i class="fa fa-save"></i></x-action>
                     </x-controlbar>
                     <textarea style="width:100%;min-height:100px;" id="innerHTMLView"></textarea>

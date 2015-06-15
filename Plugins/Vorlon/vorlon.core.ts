@@ -10,7 +10,6 @@
         _messageNotifier: any;
         _socketIOWaitCount = 0;
         public debug: boolean = false;
-
         _RetryTimeout = 1002;
 
         public get Messenger(): ClientMessenger {
@@ -121,7 +120,6 @@
                         content = html;
                         Core.Messenger.sendRealtimeMessage('ALL_PLUGINS', {
                             type: 'contentchanged',
-                            content: html
                         }, Core._side, 'message');
                     }
                 }, 2000);
