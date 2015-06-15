@@ -14,6 +14,7 @@ module VORLON {
         private _lastElementSelectedClientSide;
         private _lastReceivedObject = null;
         private _globalloadactive = false;
+        private _autoRefreshActive = false;
         private _overlay: HTMLElement;
         private _observerMutationObserver;
         constructor() {
@@ -122,7 +123,8 @@ module VORLON {
                     mutations.forEach((mutation) => {
                         if ((mutation.target || mutation.target.id != "vorlonOverlay") && !sended && mutation.target.__vorlon && mutation.target.parentElement && mutation.target.parentElement.__vorlon && mutation.target.parentElement.__vorlon.internalId) {
                             setTimeout(() => {
-                                this.refreshbyId(mutation.target.parentElement.__vorlon.internalId);
+                                if (this._autoRefreshActive)
+                                    this.refreshbyId(mutation.target.parentElement.__vorlon.internalId);
                             }, 300);
                         }
                         sended = true;
@@ -268,7 +270,9 @@ module VORLON {
                 this.refresh();
             }
         }
-
+        setClientAutoRefresh(value: boolean): void {
+            this._autoRefreshActive = value;
+        }
         getFirstParentWithInternalId(node) {
             if (!node)
                 return null;
@@ -365,7 +369,7 @@ module VORLON {
                 this._innerHTMLView = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "innerHTMLView");
                 this._searchinput = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "searchinput");
                 this.styleView = Tools.QuerySelectorById(filledDiv, "styleView");
-                new DomSettings(this);
+                var domSettings = new DomSettings(this);
                 this.searchDOM();
                 this._refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
                 this._stylesEditor = new DomExplorerPropertyEditor(this);
@@ -621,9 +625,12 @@ module VORLON {
             plugin.searchDOMBySelector(data.selector, data.position);
         },
 
-        globalload: function (data: any) {
+        setSettings: function (data: any) {
             var plugin = <DOMExplorer>this;
-            plugin.globalload(data.value);
+            if (data.globalload)
+                plugin.globalload(data.globalload);
+            if (data.autoRefresh)
+                plugin.setClientAutoRefresh(data.autoRefresh);
         },
 
         saveinnerHTML: function (data: any) {
@@ -983,18 +990,16 @@ module VORLON {
             this._globalload = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "globalload");
             this._autorefresh = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "autorefresh");
             this._setSettings();
+            this.refreshClient();
             $(this._autorefresh).change(() => {
                 this._saveSettings();
             });
             $(this._globalload).change(() => {
                 this._saveSettings();
-                if (this._globalload.checked) {
-                    this._plugin.sendCommandToClient('globalload', { value: true });
-                }
-                else {
-                    this._plugin.sendCommandToClient('globalload', { value: false });
-                }
             });
+        }
+        public refreshClient() {
+            this._plugin.sendCommandToClient('setSettings', { globalload: this._globalload.checked, autoRefresh: this._autorefresh.checked });
         }
         private _setSettings() {
             var stringSettings = VORLON.Tools.getLocalStorageValue("settings" + Core._sessionID);
@@ -1013,6 +1018,7 @@ module VORLON {
             this._plugin.setAutorefresh(this._autorefresh.checked);
         }
         private _saveSettings() {
+            this.refreshClient();
             this._plugin.setAutorefresh(this._autorefresh.checked);
             VORLON.Tools.setLocalStorageValue("settings" + Core._sessionID, JSON.stringify({
                 "globalload": this._globalload.checked,
