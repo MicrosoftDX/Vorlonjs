@@ -210,6 +210,38 @@ module VORLON {
             if (element)
                 this.sendCommandToDashboard("innerHTML", { internalId: internalId, innerHTML: element.innerHTML });
         }
+        public getStyle(internalId: string) {
+            var element = this._getElementByInternalId(internalId, document.body);
+            if (element) {
+                var styles = getComputedStyle(element);
+                var layoutStyle = <LayoutStyle>{
+                    border: {
+                        rightWidth: styles.borderRightWidth,
+                        leftWidth: styles.borderLeftWidth,
+                        topWidth: styles.borderTopWidth,
+                        bottomWidth: styles.borderBottomWidth,
+                    },
+                    margin: {
+                        bottom: styles.marginBottom,
+                        left: styles.marginLeft,
+                        top: styles.marginTop,
+                        right: styles.marginRight,
+                    },
+                    padding: {
+                        bottom: styles.paddingBottom,
+                        left: styles.paddingLeft,
+                        top: styles.paddingTop,
+                        right: styles.paddingRight,
+                    },
+                    size: {
+                        width: styles.width,
+                        height: styles.height
+                    }
+                };
+
+                this.sendCommandToDashboard("setLayoutStyle", layoutStyle);
+            }
+        }
 
         public saveInnerHTML(internalId: string, innerHTML: string) {
             var element = this._getElementByInternalId(internalId, document.body);
@@ -359,6 +391,10 @@ module VORLON {
         public _rootNode: DomExplorerNode;
         private _autorefresh: boolean = false;
         public _innerHTMLView: HTMLTextAreaElement;
+        private _margincontainer: HTMLElement;
+        private _bordercontainer: HTMLElement;
+        private _paddingcontainer: HTMLElement;
+        private _sizecontainer: HTMLElement;
         public _editablemode: boolean = false;
         private _editableElement: HTMLElement;
         private _searchinput: HTMLInputElement;
@@ -374,6 +410,12 @@ module VORLON {
                 this._containerDiv = filledDiv;
                 this._treeDiv = Tools.QuerySelectorById(filledDiv, "treeView");
                 this._innerHTMLView = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "innerHTMLView");
+
+                this._margincontainer = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "margincontainer");
+                this._bordercontainer = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "bordercontainer");
+                this._paddingcontainer = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "paddingcontainer");
+                this._sizecontainer = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "sizecontainer");
+
                 this._searchinput = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "searchinput");
                 this.styleView = Tools.QuerySelectorById(filledDiv, "styleView");
                 var domSettings = new DomSettings(this);
@@ -384,7 +426,7 @@ module VORLON {
                     this.sendCommandToClient('refresh');
                 });
                 this._containerDiv.addEventListener('gethtml',() => {
-                    this.sendCommandToClient('innerHTML', {
+                    this.sendCommandToClient('getInnerHTML', {
                         order: this._selectedNode.node.internalId
                     });
                 });
@@ -453,8 +495,13 @@ module VORLON {
                     $('.visible', elt.target.parentElement).removeClass('visible');
                     $('#' + elt.target.className, elt.target.parentElement).addClass('visible');
                     elt.target.classList.add('visible');
-                    if (elt.target.className === "htmlsection") {
-                        this.sendCommandToClient('innerHTML', {
+                    if (elt.target.className.indexOf("htmlsection") !== -1) {
+                        this.sendCommandToClient('getInnerHTML', {
+                            order: this._selectedNode.node.internalId
+                        });
+                    }
+                    else if (elt.target.className.indexOf("layoutsection") !== -1) {
+                        this.sendCommandToClient('getStyle', {
                             order: this._selectedNode.node.internalId
                         });
                     }
@@ -517,6 +564,23 @@ module VORLON {
         }
         public setInnerHTMLView(data: any) {
             this._innerHTMLView.value = data.innerHTML;
+        }
+
+        public setLayoutStyle(data: LayoutStyle) {
+            this._margincontainer.parentElement.parentElement.classList.remove('hide');
+            $('.top', this._margincontainer).html(data.margin.top);
+            $('.bottom', this._margincontainer).html(data.margin.bottom);
+            $('.left', this._margincontainer).html(data.margin.left);
+            $('.right', this._margincontainer).html(data.margin.right);
+            $('.top', this._bordercontainer).html(data.border.topWidth);
+            $('.bottom', this._bordercontainer).html(data.border.bottomWidth);
+            $('.left', this._bordercontainer).html(data.border.leftWidth);
+            $('.right', this._bordercontainer).html(data.border.rightWidth);
+            $('.top', this._paddingcontainer).html(data.padding.top);
+            $('.bottom', this._paddingcontainer).html(data.padding.bottom);
+            $('.left', this._paddingcontainer).html(data.padding.left);
+            $('.right', this._paddingcontainer).html(data.padding.right);
+            $(this._sizecontainer).html(data.size.width + " x " + data.size.height);
         }
 
         public searchDOMByResults(data: any) {
@@ -583,6 +647,7 @@ module VORLON {
         select(selected: DomExplorerNode) {
             //$("#accordion").accordion("option", "collapsible", true).accordion("option", "active", false);
             $("#accordion .stylessection ").trigger('click');
+            this._margincontainer.parentElement.parentElement.classList.add('hide');
             if (this._selectedNode) {
                 this._selectedNode.selected(false);
                 this.sendCommandToClient('unselect', {
@@ -666,9 +731,13 @@ module VORLON {
             plugin.refresh();
         },
 
-        innerHTML: function (data: any) {
+        getInnerHTML: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.getInnerHTML(data.order);
+        },
+        getStyle: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.getStyle(data.order);
         },
     }
 
@@ -693,7 +762,10 @@ module VORLON {
             var plugin = <DOMExplorer>this;
             plugin.setInnerHTMLView(data);
         },
-
+        setLayoutStyle: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.setLayoutStyle(data);
+        },
         refreshNode: function (node: PackagedNode) {
             var plugin = <DOMExplorer>this;
             plugin.updateDashboard(node);
@@ -893,7 +965,7 @@ module VORLON {
                         {
                             text: "Edit content as HTML", icon: "", alias: "1-1", action: () => {
                                 that.parent.plugin.select(that);
-                                that.parent.plugin.sendCommandToClient('innerHTML', {
+                                that.parent.plugin.sendCommandToClient('getInnerHTML', {
                                     order: that.plugin._selectedNode.node.internalId
                                 });
                                 $("#accordion .htmlsection").trigger('click');
@@ -1076,7 +1148,7 @@ module VORLON {
                         {
                             text: "Edit content as HTML", alias: "1-3", icon: "", action: () => {
                                 that.parent.plugin.select(that.parent);
-                                that.parent.plugin.sendCommandToClient('innerHTML', {
+                                that.parent.plugin.sendCommandToClient('getInnerHTML', {
                                     order: that.parent.plugin._selectedNode.node.internalId
                                 });
                                 $("#accordion .htmlsection").trigger('click');
@@ -1278,6 +1350,30 @@ module VORLON {
 
     }
 
+    export interface LayoutStyle {
+        border: {
+            rightWidth: string;
+            leftWidth: string;
+            topWidth: string;
+            bottomWidth: string;
+        };
+        margin: {
+            bottom: string;
+            left: string;
+            top: string;
+            right: string;
+        };
+        padding: {
+            bottom: string;
+            left: string;
+            top: string;
+            right: string;
+        };
+        size: {
+            width: string;
+            height: string
+        }
+    }
     export interface PackagedNode {
         id: string;
         type: string;
