@@ -1,5 +1,5 @@
 ﻿{
-    "useSSL": true,
+    "useSSL": false,
     "SSLkey": "cert/server.key",
     "SSLcert": "cert/server.crt",
     "includeSocketIO": true,
