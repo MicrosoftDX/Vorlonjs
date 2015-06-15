@@ -356,8 +356,10 @@ export module VORLON {
                 if (dashboard != null) {
                     dashboard.emit("waitingevents", message);
                     var session = this.sessions[receiveMessage.metadata.sessionId];
-                    var client = session.connectedClients[receiveMessage.metadata.clientId];
-                    client.waitingevents = receiveMessage.metadata.waitingEvents;
+                    if (session && session.connectedClients) {
+                        var client = session.connectedClients[receiveMessage.metadata.clientId];
+                        client.waitingevents = receiveMessage.metadata.waitingEvents;
+                    }
                 }
             });
 
