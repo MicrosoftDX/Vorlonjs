@@ -37,35 +37,48 @@
 
     #accordion {
         height: 100%;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-flex-direction: column;
+        flex-direction: column;
 
-        .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
-            background: #eee;
-        }
-
-        .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
-            background: #CCC;
-        }
-
-        .ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br,
-        .ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr {
-            border-radius: 0;
-        }
-
-        &.ui-accordion {
-            .ui-accordion-header {
-                font-family: "Menlo","Consolas","Lucida Console",Courier,monospace;
-                border: none;
-                height: 36px;
-                margin: 0;
-                padding-top: 10px;
-                border-bottom: 1px solid #CCC;
+        #htmlsection, #settingssection, #stylessection {
+            &.visible {
+                display: block;
             }
 
-            .ui-accordion-content {
-                padding: 0;
-                min-height: ~"calc(100% - 108px)";
-                overflow-x: hidden;
-                overflow-y: auto;
+            display: none;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+        }
+
+        #htmlsection {
+            &.visible {
+                display: -webkit-flex;
+                display: flex;
+                -webkit-flex-direction: column;
+                flex-direction: column;
+            }
+
+            #innerHTMLView {
+                height: 100%;
+                -webkit-flex: 1;
+                flex: 1;
+                width: 100%;                
+            }
+        }
+
+        h3 {
+            font-family: "Menlo","Consolas","Lucida Console",Courier,monospace;
+            background: #eee;
+            padding: 10px;
+            margin: 0;
+            cursor: pointer;
+            border-bottom: 1px solid #CCC;
+
+            &.visible {
+                background: #CCC;
             }
         }
     }
@@ -96,8 +109,8 @@
         }
     }
 
-    .innerHTMLViewContainer {
-        .filter-btn {
+    #htmlsection {
+        /*.filter-btn {
             border-radius: 0;
             background-color: transparent;
             width: 32px;
@@ -105,7 +118,7 @@
             margin-left: 2px;
             background-color: #333;
             color: white;
-        }
+        }*/
     }
 
     .tree-view-wrapper {

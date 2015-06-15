@@ -449,20 +449,16 @@ module VORLON {
                     limit: 50,
                     position: '70%'
                 });
-                $('#accordion').accordion({
-                    //active: false,
-                    //collapsible: true,
-                    heightStyle: "fill",
-                    beforeActivate: (event, ui) => {
-                        if (ui && ui.newHeader && ui.newHeader.context && ui.newHeader.context.textContent && ui.newHeader.context.textContent.toLowerCase() === "html" && this._selectedNode && this._selectedNode.node) {
-                            this.sendCommandToClient('innerHTML', {
-                                order: this._selectedNode.node.internalId
-                            });
-
-                        }
+                $("#accordion h3", this._containerDiv).click((elt) => {
+                    $('.visible', elt.target.parentElement).removeClass('visible');
+                    $('#' + elt.target.className, elt.target.parentElement).addClass('visible');
+                    elt.target.classList.add('visible');
+                    if (elt.target.className === "htmlsection") {
+                        this.sendCommandToClient('innerHTML', {
+                            order: this._selectedNode.node.internalId
+                        });
                     }
                 });
-                $("#accordion .stylessection").trigger('click');
                 this._ready = true;
                 this.sendCommandToClient("getMutationObeserverAvailability");
             });
