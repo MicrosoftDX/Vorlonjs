@@ -355,7 +355,7 @@ a {
   height: 100vh;
   position: relative;
 }
-.dashboard-plugins-container .collaspseBtn {
+.dashboard-plugins-container .expandBtn {
   height: 24px;
   width: 30px;
   float: right;
