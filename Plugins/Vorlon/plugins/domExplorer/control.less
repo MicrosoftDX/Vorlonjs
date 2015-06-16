@@ -193,6 +193,7 @@
     }
 
     #treeView {
+        display: none;
         height: ~"calc(100% - 36px)";
         overflow-x: none;
         overflow-y: auto;
@@ -235,7 +236,38 @@
     }
 
     .tree-view-wrapper {
+        position: relative;
+        .domload-spinner {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            width: 100%;
+            background-color: #CCC;
+
+            .fa-spinner {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+            }
+        }
+
+        &.active {
+
+            .domload-spinner {
+                display: none;
+            }
+
+            > x-controlbar,
+            #treeView {
+                display: block;
+            }
+        }
+
         > x-controlbar {
+            display: none;
             border-top: none;
             border-left: none;
             border-right: none;
