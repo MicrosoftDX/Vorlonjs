@@ -366,6 +366,7 @@ a {
   margin-top: 3px;
   border-radius: 3px;
   cursor: pointer;
+  color: #999;
 }
 .dashboard-plugins-overlay {
   position: absolute;
