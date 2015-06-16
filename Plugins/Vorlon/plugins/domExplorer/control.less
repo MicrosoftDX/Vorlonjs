@@ -45,6 +45,7 @@
         .accordion-section {
             &.visible {
                 display: block;
+                overflow: auto;
             }
 
             display: none;
@@ -199,8 +200,12 @@
     }
 
     #treeView,
-    #styleView, #settings {
+    #styleView, #settings, #computedsection {
         padding: 15px;
+    }
+
+    #computedsection {
+        overflow: auto;
     }
 
     #settings {

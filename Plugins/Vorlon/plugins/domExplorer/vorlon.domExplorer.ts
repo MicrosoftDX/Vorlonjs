@@ -210,36 +210,60 @@ module VORLON {
             if (element)
                 this.sendCommandToDashboard("innerHTML", { internalId: internalId, innerHTML: element.innerHTML });
         }
+
+        public getComputedStyleById(internalId: string) {
+
+            var element = this._getElementByInternalId(internalId, document.body);
+            if (element) {
+                var winObject = document.defaultView || window;
+                if (winObject.getComputedStyle) {
+                    var styles = winObject.getComputedStyle(element);
+                    var l = []
+                    for (var style in styles) {
+                        if (isNaN(parseInt(style, 10))) {
+                            if (style == "parentRule" || style == "length" || style == "cssText" || typeof styles[style] == 'function')
+                                continue;
+                            if (styles[style])
+                                l.push({ name: style, value: styles[style] });
+                        }
+                    }
+                    this.sendCommandToDashboard("setComputedStyle", l);
+                }
+            }
+        }
         public getStyle(internalId: string) {
             var element = this._getElementByInternalId(internalId, document.body);
             if (element) {
-                var styles = getComputedStyle(element);
-                var layoutStyle = <LayoutStyle>{
-                    border: {
-                        rightWidth: styles.borderRightWidth,
-                        leftWidth: styles.borderLeftWidth,
-                        topWidth: styles.borderTopWidth,
-                        bottomWidth: styles.borderBottomWidth,
-                    },
-                    margin: {
-                        bottom: styles.marginBottom,
-                        left: styles.marginLeft,
-                        top: styles.marginTop,
-                        right: styles.marginRight,
-                    },
-                    padding: {
-                        bottom: styles.paddingBottom,
-                        left: styles.paddingLeft,
-                        top: styles.paddingTop,
-                        right: styles.paddingRight,
-                    },
-                    size: {
-                        width: styles.width,
-                        height: styles.height
-                    }
-                };
+                var winObject = document.defaultView || window;
+                if (winObject.getComputedStyle) {
+                    var styles = winObject.getComputedStyle(element);
+                    var layoutStyle = <LayoutStyle>{
+                        border: {
+                            rightWidth: styles.borderRightWidth,
+                            leftWidth: styles.borderLeftWidth,
+                            topWidth: styles.borderTopWidth,
+                            bottomWidth: styles.borderBottomWidth,
+                        },
+                        margin: {
+                            bottom: styles.marginBottom,
+                            left: styles.marginLeft,
+                            top: styles.marginTop,
+                            right: styles.marginRight,
+                        },
+                        padding: {
+                            bottom: styles.paddingBottom,
+                            left: styles.paddingLeft,
+                            top: styles.paddingTop,
+                            right: styles.paddingRight,
+                        },
+                        size: {
+                            width: styles.width,
+                            height: styles.height
+                        }
+                    };
 
-                this.sendCommandToDashboard("setLayoutStyle", layoutStyle);
+                    this.sendCommandToDashboard("setLayoutStyle", layoutStyle);
+                }
             }
         }
 
@@ -384,6 +408,7 @@ module VORLON {
         private _containerDiv: HTMLElement;
         public _treeDiv: HTMLElement;
         public styleView: HTMLElement;
+        private _computedsection: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
         public _refreshButton: Element;
         public _clikedNodeID = null;
@@ -415,6 +440,7 @@ module VORLON {
                 this._bordercontainer = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "bordercontainer");
                 this._paddingcontainer = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "paddingcontainer");
                 this._sizecontainer = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "sizecontainer");
+                this._computedsection = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "computedsection");
 
                 this._searchinput = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "searchinput");
                 this.styleView = Tools.QuerySelectorById(filledDiv, "styleView");
@@ -505,6 +531,11 @@ module VORLON {
                             order: this._selectedNode.node.internalId
                         });
                     }
+                    else if (elt.target.className.indexOf("computedsection") !== -1) {
+                        this.sendCommandToClient('getComputedStyleById', {
+                            order: this._selectedNode.node.internalId
+                        });
+                    }
                 });
                 this._ready = true;
                 this.sendCommandToClient("getMutationObeserverAvailability");
@@ -565,7 +596,20 @@ module VORLON {
         public setInnerHTMLView(data: any) {
             this._innerHTMLView.value = data.innerHTML;
         }
-
+        public setComputedStyle(data: Array<any>) {
+            this._computedsection
+            if (data && data.length) {
+                data.forEach((item) => {
+                    var root = new FluentDOM('div', 'styleWrap', this._computedsection);
+                    root.append('span', 'styleLabel',(span) => {
+                        span.text(item.name);
+                    });
+                    root.append('span', 'styleValue',(span) => {
+                        span.text(item.value);
+                    });
+                })
+            }
+        }
         public setLayoutStyle(data: LayoutStyle) {
             this._margincontainer.parentElement.parentElement.classList.remove('hide');
             $('.top', this._margincontainer).html(data.margin.top);
@@ -585,7 +629,7 @@ module VORLON {
                 w = w.split('.')[0] + 'px';
             }
             var h = data.size.height;
-            if (h && h.indexOf('.')!==-1) {
+            if (h && h.indexOf('.') !== -1) {
                 h = h.split('.')[0] + 'px';
             }
             $(this._sizecontainer).html(w + " x " + h);
@@ -747,6 +791,10 @@ module VORLON {
             var plugin = <DOMExplorer>this;
             plugin.getStyle(data.order);
         },
+        getComputedStyleById: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.getComputedStyleById(data.order);
+        },
     }
 
     DOMExplorer.prototype.DashboardCommands = {
@@ -773,6 +821,10 @@ module VORLON {
         setLayoutStyle: function (data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setLayoutStyle(data);
+        },
+        setComputedStyle: function (data: any) {
+            var plugin = <DOMExplorer>this;
+            plugin.setComputedStyle(data);
         },
         refreshNode: function (node: PackagedNode) {
             var plugin = <DOMExplorer>this;
