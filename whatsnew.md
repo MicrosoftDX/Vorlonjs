@@ -15,6 +15,8 @@
 		- settings panel to define behavior
 		- search nodes by css selectors
 		- refresh through MutationObserver, if available in client browser
+		- new computed styles panel
+		- layout panel
 	- Improvements on console plugin
 		- history for commands
 		- support for logging objects and console.dir
