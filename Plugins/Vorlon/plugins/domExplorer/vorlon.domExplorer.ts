@@ -219,12 +219,12 @@ module VORLON {
                     var styles = winObject.getComputedStyle(element);
                     var l = [];
                     for (var style in styles) {
-                        if (isNaN(style) && style !== "parentRule" && style !== "length" && style !== "cssText" && typeof styles[style] !== 'function' && styles[style] ) {
+                        if (isNaN(style) && style !== "parentRule" && style !== "length" && style !== "cssText" && typeof styles[style] !== 'function' && styles[style]) {
 
                             l.push({ name: style, value: styles[style] });
                         }
                     }
-                
+
                     this.sendCommandToDashboard("setComputedStyle", l);
                 }
             }
@@ -480,7 +480,7 @@ module VORLON {
                             }
                         }
                         else {
-                            parent.parentElement.parentElement.setAttribute('data-hovered-tag', '');
+                            parent.parentElement.setAttribute('data-hovered-tag', '');
                             var id = $(parent).data('internalid');
                             if (id) {
                                 this.hoverNode(id);
@@ -492,7 +492,7 @@ module VORLON {
                 this.treeDiv.addEventListener('mouseleave',(e: Event) => {
                     var node = <HTMLElement>e.target;
                     if (node.className.match('treeNodeHeader') || node.parentElement.className.match('treeNodeClosingText')) {
-                        var hovered = this.treeDiv.querySelector('[data-hovered-tag]')
+                        var hovered = this.treeDiv.querySelector('[data-hovered-tag]');
                         if (hovered) hovered.removeAttribute('data-hovered-tag');
                         var id = $(node).data('internalid');
                         if (id) {
