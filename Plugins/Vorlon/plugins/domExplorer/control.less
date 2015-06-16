@@ -382,16 +382,16 @@
         }
     }
 
-
-
-    [data-hovered-tag] > .treeNodeHeader,
-    [data-hovered-tag] > .nodeContentContainer > .treeNodeClosingText .nodeName {
-        background: cyan;
+    [data-hovered-tag] {
+        > .treeNodeHeader, > .nodeContentContainer, > .treeNodeClosingText .openclosingtag, > .treeNodeClosingText .nodeName, > .treeNodeClosingText .closetag {
+            background: cyan !important;
+        }
     }
+
 
     .treeNodeSelected,
     .treeNodeSelected .treeNodeClosingText .nodeName {
-        background: yellow !important;
+        background-color: yellow;
     }
 
     .editableselection {
@@ -443,7 +443,7 @@
 
     .treeNodeClosingText {
         display: inline-block;
-        cursor: default;
+        cursor: pointer;
 
         .openclosingtag {
             color: @bracketColor;
