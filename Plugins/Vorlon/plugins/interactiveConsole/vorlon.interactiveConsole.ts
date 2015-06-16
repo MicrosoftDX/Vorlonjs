@@ -77,7 +77,7 @@
                     } else if (propertyType === 'null') {
                         res.properties.push({ name: p, val: null });
                     } else if (propertyType === 'object') {
-                        if (deepness > 10) {
+                        if (deepness > 5) {
                             res.properties.push({ name: p, val: "Vorlon cannot inspect deeper, try inspecting the proper object directly" });
                         } else {
                             res.properties.push({ name: p, val: this.inspect(objValue, objValue, deepness + 1) });
@@ -124,7 +124,11 @@
                 if (typeof msg === 'string' || typeof msg === 'number') {
                     resmessages.push(msg);
                 } else {
-                    resmessages.push(this.inspect(msg, msg, 0));
+                    if (msg == window || msg == document) {
+                        resmessages.push('VORLON : object cannot be inspected, too big...');
+                    } else {
+                        resmessages.push(this.inspect(msg, msg, 0));
+                    }
                 }
             }
             return resmessages;
