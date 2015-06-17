@@ -23,7 +23,7 @@ The last step is to enable Vorlon.JS by adding this to your app:
 
 ## SSL Support
 
-if you want to run the server with SSL support proceed as follows:
+If you want to run the server with SSL support proceed as follows:
 
 1. Install Vorlonjs following the steps in Easy Setup
 2. Navigate to the installation folder
@@ -35,7 +35,7 @@ if you want to run the server with SSL support proceed as follows:
 ```console
 [Windows]
 C:\>cd %HOMEPATH%\node_modules\vorlon
-C:\Users\Username\node_modules\vorlon>notepad Server/public/catalog.json
+C:\Users\Username\node_modules\vorlon>notepad Server/config.json
 
 ## JSON FILE ##
 {
@@ -44,11 +44,12 @@ C:\Users\Username\node_modules\vorlon>notepad Server/public/catalog.json
     "SSLcert": "cert/server.crt",
     "includeSocketIO": true,
     "plugins": [
-        { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername" : "interactiveConsole"},
-        { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername" : "domExplorer" },
-        { "id": "MODERNIZR", "name": "Modernizr","panel": "bottom", "foldername" : "modernizrReport" },
-        { "id" : "OBJEXPLORER", "name" : "Obj. Explorer","panel": "top", "foldername" : "objectExplorer" },
-        { "id" : "XHRPANEL", "name" : "XHR","panel": "top", "foldername" : "xhrPanel" }
+        { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername" : "interactiveConsole", "enabled": true},
+        { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername" : "domExplorer", "enabled": true },
+        { "id": "MODERNIZR", "name": "Modernizr","panel": "bottom", "foldername" : "modernizrReport", "enabled": true },
+        { "id" : "OBJEXPLORER", "name" : "Obj. Explorer","panel": "top", "foldername" : "objectExplorer", "enabled": true },
+        { "id" : "XHRPANEL", "name" : "XHR","panel": "top", "foldername" : "xhrPanel", "enabled": true },
+        { "id" : "NGINSPECTOR", "name" : "ngInspector","panel": "top", "foldername" : "ngInspector", "enabled": false  }
     ]
 }
 
