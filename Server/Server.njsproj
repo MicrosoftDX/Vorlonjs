@@ -29,7 +29,7 @@
     <OutputPath>.</OutputPath>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
-    <ProjectView>ProjectFiles</ProjectView>
+    <ProjectView>ShowAllFiles</ProjectView>
     <NodejsPort>1337</NodejsPort>
     <TypeScriptSourceMap>False</TypeScriptSourceMap>
     <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
@@ -85,7 +85,14 @@
     <Content Include="public\javascripts\jquery-1.10.2.min.map" />
     <Content Include="public\stylesheets\bootstrap.css" />
     <Content Include="public\stylesheets\bootstrap.min.css" />
+    <Content Include="public\stylesheets\components\base.styl" />
+    <Content Include="public\stylesheets\components\buttons.styl" />
+    <Content Include="public\stylesheets\components\dashboard.styl" />
+    <Content Include="public\stylesheets\components\resize.styl" />
+    <Content Include="public\stylesheets\components\sidebar.styl" />
     <Content Include="public\stylesheets\contextMenu.css" />
+    <Content Include="public\stylesheets\globals\reset.styl" />
+    <Content Include="public\stylesheets\globals\variables.styl" />
     <Content Include="public\stylesheets\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="public\stylesheets\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="public\stylesheets\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -115,6 +122,15 @@
     <Content Include="README.md" />
     <Content Include="views\dashboard.jade" />
     <Content Include="views\getsession.jade" />
+    <Content Include="views\includes\dashboard-initial.jade" />
+    <Content Include="views\includes\dashboard-plugins.jade" />
+    <Content Include="views\includes\plugins\console-logs.jade" />
+    <Content Include="views\includes\plugins\console.jade" />
+    <Content Include="views\includes\plugins\dom-explorer-style.jade" />
+    <Content Include="views\includes\plugins\dom-explorer-tree.jade" />
+    <Content Include="views\includes\plugins\dom-explorer.jade" />
+    <Content Include="views\includes\plugins\modernizr.jade" />
+    <Content Include="views\includes\sidebar.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\login.jade" />
     <Content Include="Web.config" />
@@ -131,6 +147,8 @@
     <Folder Include="public\fonts\fontawesome\" />
     <Folder Include="public\fonts\fontawesome\css\" />
     <Folder Include="public\fonts\fontawesome\fonts\" />
+    <Folder Include="public\stylesheets\components\" />
+    <Folder Include="public\stylesheets\globals\" />
     <Folder Include="public\stylesheets\images\" />
     <Folder Include="public\vorlon\plugins\" />
     <Folder Include="public\vorlon\plugins\domExplorer\" />
@@ -158,6 +176,8 @@
     <Folder Include="Scripts\typings\socket.io\" />
     <Folder Include="Scripts\typings\stylus\" />
     <Folder Include="Scripts\typings\vorlon\" />
+    <Folder Include="views\includes\" />
+    <Folder Include="views\includes\plugins\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="public\javascripts\_references.js" />

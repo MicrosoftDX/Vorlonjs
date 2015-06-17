@@ -37,40 +37,163 @@
 
     #accordion {
         height: 100%;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-flex-direction: column;
+        flex-direction: column;
 
-        .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
-            background: #eee;
-        }
-
-        .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
-            background: #CCC;
-        }
-
-        .ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br,
-        .ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr {
-            border-radius: 0;
-        }
-
-        &.ui-accordion {
-            .ui-accordion-header {
-                font-family: "Menlo","Consolas","Lucida Console",Courier,monospace;
-                border: none;
-                height: 36px;
-                margin: 0;
-                padding-top: 10px;
-                border-bottom: 1px solid #CCC;
+        .accordion-section {
+            &.visible {
+                display: block;
+                overflow: auto;
             }
 
-            .ui-accordion-content {
-                padding: 0;
-                min-height: ~"calc(100% - 108px)";
-                overflow-x: hidden;
-                overflow-y: auto;
+            display: none;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+        }
+
+        #htmlsection.accordion-section {
+            &.visible {
+                display: -webkit-flex;
+                display: flex;
+                -webkit-flex-direction: column;
+                flex-direction: column;
+            }
+
+            #innerHTMLView {
+                height: 100%;
+                -webkit-flex: 1;
+                flex: 1;
+                width: 100%;
+            }
+        }
+
+        #layoutsection {
+            /*padding: 20px;*/
+            position: relative;
+            overflow: hidden;
+
+            &.hide {
+                display: none;
+            }
+
+            .label {
+                top: 0;
+                left: 0;
+                position: absolute;
+                margin-top: 2px;
+                margin-left: 4px;
+                font-size: 7pt;
+            }
+
+            .margin {
+                width: 320px;
+                height: 150px;
+                border: 1px dashed black;
+                left: 50%;
+                margin-left: -160px;
+                position: absolute;
+                top: 50%;
+                margin-top: -75px;
+
+                .container {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                }
+
+                .top {
+                    left: 50%;
+                    position: relative;
+                    margin-left: -10px;
+                }
+
+                .left {
+                    top: 50%;
+                    left: 2px;
+                    position: absolute;
+                    margin-top: -10px;
+                    -moz-transform: rotate(-90deg);
+                    -ms-transform: rotate(-90deg);
+                    -o-transform: rotate(-90deg);
+                    -webkit-transform: rotate(-90deg);
+                    transform: rotate(-90deg);
+                }
+
+                .right {
+                    top: 50%;
+                    right: 2px;
+                    position: absolute;
+                    margin-top: -10px;
+                    -moz-transform: rotate(90deg);
+                    -ms-transform: rotate(90deg);
+                    -o-transform: rotate(90deg);
+                    -webkit-transform: rotate(90deg);
+                    transform: rotate(90deg);
+                }
+
+                .bottom {
+                    left: 50%;
+                    bottom: 0;
+                    position: absolute;
+                    margin-left: -10px;
+                }
+
+                .border {
+                    top: 0;
+                    width: 260px;
+                    height: 110px;
+                    margin-top: 20px;
+                    margin-left: 30px;
+                    border: 1px solid black;
+                    background-color: #adadad;
+                    position: absolute;
+
+                    .padding {
+                        top: 0;
+                        margin-top: 20px;
+                        margin-left: 30px;
+                        width: 200px;
+                        height: 70px;
+                        background-color: #CCC;
+                        border: 1px solid black;
+                        position: absolute;
+
+                        .size {
+                            top: 0;
+                            position: absolute;
+                            margin-top: 20px;
+                            margin-left: 30px;
+                            border: 1px solid black;
+                            width: 140px;
+                            height: 30px;
+                            text-align: center;
+                            line-height: 27px;
+                        }
+                    }
+                }
+            }
+        }
+
+        h3 {
+            font-family: "Menlo","Consolas","Lucida Console",Courier,monospace;
+            background: #eee;
+            padding: 10px;
+            margin: 0;
+            cursor: pointer;
+            border-bottom: 1px solid #CCC;
+            height: 36px;
+
+            &.visible {
+                background: #CCC;
             }
         }
     }
 
     #treeView {
+        display: none;
         height: ~"calc(100% - 36px)";
         overflow-x: none;
         overflow-y: auto;
@@ -79,8 +202,12 @@
     }
 
     #treeView,
-    #styleView, #settings {
+    #styleView, #settings, #computedsection {
         padding: 15px;
+    }
+
+    #computedsection {
+        overflow: auto;
     }
 
     #settings {
@@ -96,8 +223,8 @@
         }
     }
 
-    .innerHTMLViewContainer {
-        .filter-btn {
+    #htmlsection {
+        /*.filter-btn {
             border-radius: 0;
             background-color: transparent;
             width: 32px;
@@ -105,11 +232,42 @@
             margin-left: 2px;
             background-color: #333;
             color: white;
-        }
+        }*/
     }
 
     .tree-view-wrapper {
+        position: relative;
+        .domload-spinner {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            width: 100%;
+            background-color: #CCC;
+
+            .fa-spinner {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+            }
+        }
+
+        &.active {
+
+            .domload-spinner {
+                display: none;
+            }
+
+            > x-controlbar,
+            #treeView {
+                display: block;
+            }
+        }
+
         > x-controlbar {
+            display: none;
             border-top: none;
             border-left: none;
             border-right: none;
@@ -256,16 +414,16 @@
         }
     }
 
-
-
-    [data-hovered-tag] > .treeNodeHeader,
-    [data-hovered-tag] > .nodeContentContainer > .treeNodeClosingText .nodeName {
-        background: cyan;
+    [data-hovered-tag] {
+        > .treeNodeHeader, > .nodeContentContainer, > .treeNodeClosingText .openclosingtag, > .treeNodeClosingText .nodeName, > .treeNodeClosingText .closetag {
+            background: cyan !important;
+        }
     }
+
 
     .treeNodeSelected,
     .treeNodeSelected .treeNodeClosingText .nodeName {
-        background: yellow !important;
+        background-color: yellow;
     }
 
     .editableselection {
@@ -296,7 +454,7 @@
 
     .firstTreeNodeText {
         text-decoration: none;
-        padding-left: 0px;
+        padding-left: 0;
     }
 
     .nodeTextContent {
@@ -317,7 +475,7 @@
 
     .treeNodeClosingText {
         display: inline-block;
-        cursor: default;
+        cursor: pointer;
 
         .openclosingtag {
             color: @bracketColor;

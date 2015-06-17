@@ -351,8 +351,59 @@ a {
   border-radius: 10px;
   text-align: center;
 }
-.dashboard-plugins {
+.dashboard-plugins-container {
   height: 100vh;
+  position: relative;
+}
+.dashboard-plugins-container .expandBtn {
+  height: 24px;
+  width: 30px;
+  float: right;
+  text-align: center;
+  line-height: 24px;
+  border: 1px solid #ccc;
+  margin-right: 5px;
+  margin-top: 3px;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #999;
+}
+.dashboard-plugins-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ddd;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity;
+  transition-duration: 500ms;
+  transition-timing: ease-out;
+  font-size: 16px;
+}
+.dashboard-plugins-overlay .message {
+  text-align: center;
+  max-width: 80%;
+  margin: auto;
+  margin-top: calc(26% - 50px);
+h4
+}
+.dashboard-plugins-overlay .message h1 {
+  font-size: 36px;
+  color: #6b2d81;
+}
+.dashboard-plugins-overlay .message h3 {
+  font-size: 16px;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+.dashboard-plugins-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.dashboard-plugins {
+  height: 100%;
 }
 .dashboard-plugins .panel-top,
 .dashboard-plugins .panel-bottom {

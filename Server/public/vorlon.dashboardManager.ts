@@ -2,13 +2,13 @@
 /// <reference path="../Scripts/typings/vorlon/vorlon.clientMessenger.d.ts" /> 
 /// <reference path="../Scripts/typings/vorlon/vorlon.plugin.d.ts" /> 
 module VORLON {
+    declare var $: any;
     export class DashboardManager {
         private _catalogUrl: string = "/catalog.json";
         static ListenClientid: string;
         static ListenClientDisplayid: string;
         static SessionId: string;
         static ClientList: Array<any>;
-
         constructor(sessionid: string, listenClientid: string) {
             DashboardManager.SessionId = sessionid;
             DashboardManager.ListenClientid = listenClientid;
@@ -78,7 +78,6 @@ module VORLON {
                                     divPluginTopTabs.appendChild(plugintab);
                                 }
                             }
-
                             var pluginscript = document.createElement("script");
                             pluginscript.setAttribute("src", "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".min.js");
 
@@ -97,7 +96,23 @@ module VORLON {
                             };
                             document.body.appendChild(pluginscript);
                         }
+                        var collaspseBtn = document.createElement('div');
+                        collaspseBtn.className = "fa fa-expand expandBtn";
+                        divPluginBottomTabs.appendChild(collaspseBtn);
+                        collaspseBtn.addEventListener('click',() => {
+                            divPluginsBottom.style.height = 'calc(100% - 58px)';
+                            divPluginsTop.style.height = '50px';
+                            $('.hsplitter', divPluginsTop.parentElement).css('top', '50px');
+                        });
 
+                        var collaspseTopBtn = document.createElement('div');
+                        collaspseTopBtn.className = "fa fa-expand expandBtn";
+                        divPluginTopTabs.appendChild(collaspseTopBtn);
+                        collaspseTopBtn.addEventListener('click',() => {
+                            divPluginsBottom.style.height = '50px';
+                            divPluginsTop.style.height = 'calc(100% - 58px)';
+                            $('.hsplitter', divPluginsTop.parentElement).css('top', 'calc(100% - 58px)');
+                        });
                         DashboardManager.UpdateClientInfo();
                     }
                 }

@@ -1,6 +1,13 @@
-section.dashboard-plugins
-  section.panel-top#pluginsPaneTop
-    header.tab-bar.cf#pluginsListPaneTop
+section.dashboard-plugins-container
+  section.dashboard-plugins
+    section.panel-top#pluginsPaneTop
+      header.tab-bar.cf#pluginsListPaneTop
 
-  section.panel-bottom#pluginsPaneBottom
-    header.tab-bar.cf#pluginsListPaneBottom
+    section.panel-bottom#pluginsPaneBottom
+      header.tab-bar.cf#pluginsListPaneBottom
+  section.dashboard-plugins-overlay
+    div.message 
+      h1 Welcome to VorlonJS !
+      h3 to get started, you must add a reference to client script in the page of your website, like this :
+      h4 &lt;script src=&quot;http://localhost:1337/vorlon.js&quot;&gt;&lt;/script&gt;
+      h3 once your page will load, the client will appear in the sidebar on the left. Click on it to start inspecting your website. 
