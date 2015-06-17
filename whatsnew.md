@@ -21,6 +21,7 @@
 		- history for commands
 		- support for logging objects and console.dir
 		- filtering on console entries
+	- Moving catalog.json to /server/config.json
 - Core
 	- New option to remove socket.io from vorlon.js in catalog.json file
 	- Simplified plugin description in catalog.json file
