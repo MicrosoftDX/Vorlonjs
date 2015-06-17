@@ -574,10 +574,6 @@ module VORLON {
             this._innerHTMLView.value = data.innerHTML;
         }
 
-        public contentchangeMutObs() {
-            this.dirtyCheck();
-        }
-
         public setComputedStyle(data: Array<any>) {
             if (data && data.length) {
                 data.forEach((item) => {
@@ -797,10 +793,7 @@ module VORLON {
             var plugin = <DOMExplorer>this;
             plugin.setInnerHTMLView(data);
         },
-        contentchangeMutObs(data: any) {
-            var plugin = <DOMExplorer>this;
-            plugin.contentchangeMutObs();
-        },
+      
         setLayoutStyle(data: any) {
             var plugin = <DOMExplorer>this;
             plugin.setLayoutStyle(data);
