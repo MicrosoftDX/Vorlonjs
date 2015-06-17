@@ -648,6 +648,7 @@ module VORLON {
             }
             if (this._rootNode)
                 this._rootNode.dispose();
+            this.treeDiv.parentElement.classList.add('active');
             this._rootNode = new DomExplorerNode(this, null, this.treeDiv, root);
         }
 
@@ -788,7 +789,7 @@ module VORLON {
         getComputedStyleById(data: any) {
             var plugin = <DOMExplorer>this;
             plugin.getComputedStyleById(data.order);
-        },
+        }
     }
 
     DOMExplorer.prototype.DashboardCommands = {
@@ -823,7 +824,7 @@ module VORLON {
         refreshNode(node: PackagedNode) {
             var plugin = <DOMExplorer>this;
             plugin.updateDashboard(node);
-        },
+        }
     }
 
     export class DomExplorerNode {
