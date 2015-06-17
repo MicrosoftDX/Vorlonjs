@@ -14,7 +14,6 @@ module VORLON {
         private _lastElementSelectedClientSide;
         private _lastReceivedObject = null;
         private _globalloadactive = false;
-        private _autoRefreshActive = false;
         private _overlay: HTMLElement;
         private _observerMutationObserver;
         constructor() {
@@ -115,32 +114,6 @@ module VORLON {
                     node.__vorlon = <any> {};
                 }
                 node.__vorlon.internalId = packagedNode.internalId;
-            }
-            var mutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
-            if (mutationObserver && !node.__vorlon._observerMutationObserver) {
-                if (node.tagName === "BODY") {
-                    mutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
-                    var config = { attributes: true, childList: true, subtree: true, characterData: true };
-                    node.__vorlon._observerMutationObserver = new mutationObserver((mutations) => {
-                        var sended = false;
-                        mutations.forEach((mutation) => {
-                            if (mutation.target && mutation.target.__vorlon && mutation.target.__vorlon.ignore) {
-                                return;
-                            }
-                            if (mutation.target && !sended && mutation.target.__vorlon && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId) {
-                                setTimeout(() => {
-                                    if (this._autoRefreshActive) {
-                                        this.refreshbyId(mutation.target.parentNode.__vorlon.internalId);
-                                    } else {
-                                        this.sendCommandToDashboard('contentchangeMutObs');
-                                    }
-                                }, 300);
-                            }
-                            sended = true;
-                        });
-                    });
-                    node.__vorlon._observerMutationObserver.observe(node, config);
-                }
             }
             return packagedNode;
         }
@@ -331,9 +304,6 @@ module VORLON {
             if (this._globalloadactive) {
                 this.refresh();
             }
-        }
-        setClientAutoRefresh(value: boolean): void {
-            this._autoRefreshActive = value;
         }
         getFirstParentWithInternalId(node) {
             if (!node)
@@ -588,6 +558,14 @@ module VORLON {
             if (receivedObject.type === "contentchanged" && !this._editablemode && !this._clientHaveMutationObserver) {
                 this.dirtyCheck();
             }
+            else if (receivedObject.type === "contentchanged" && receivedObject.internalId !== null && this._clientHaveMutationObserver) {
+                if (this._autorefresh)
+                    this.sendCommandToClient('refreshNode', {
+                        order: receivedObject.internalId
+                    });
+                else
+                    this.dirtyCheck();
+            }
         }
         public contentChanged() {
             this.refreshButton.setAttribute('changed', '');
@@ -750,10 +728,8 @@ module VORLON {
 
         setSettings(data: any) {
             var plugin = <DOMExplorer>this;
-            if (data.globalload != null)
+            if (data && data.globalload != null)
                 plugin.globalload(data.globalload);
-            if (data.autoRefresh != null)
-                plugin.setClientAutoRefresh(data.autoRefresh);
         },
 
         saveinnerHTML(data: any) {
@@ -1138,7 +1114,7 @@ module VORLON {
             });
         }
         public refreshClient() {
-            this._plugin.sendCommandToClient('setSettings', { globalload: this._globalload.checked, autoRefresh: this._autorefresh.checked });
+            this._plugin.sendCommandToClient('setSettings', { globalload: this._globalload.checked });
         }
         private loadSettings() {
             var stringSettings = Tools.getLocalStorageValue("settings" + Core._sessionID);
@@ -1149,6 +1125,7 @@ module VORLON {
                     $(this._autorefresh).switchButton({ checked: settings.autorefresh });
                     if (settings.globalload)
                         this._plugin.sendCommandToClient('globalload', { value: true });
+                    this._plugin.setAutorefresh(settings.autorefresh);
                     return;
                 }
             }
