@@ -1,6 +1,7 @@
 ## 0.0.15 [Work in progress]
 
 - Plugins
+    - Plugins are now split into 2 files (client and dashboard)
 	- New plugin: XHR Panel to track xhr calls
 	- Add envelope and commands for messages between dashboard and client
 	- New control bar component available for plugins

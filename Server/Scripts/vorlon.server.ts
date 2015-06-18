@@ -204,10 +204,10 @@ export module VORLON {
                     
                     //Read Vorlon.js file
                     if (ismin) {
-                        vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".min.js"));
+                        vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".client.min.js"));
                     }
                     else {
-                        vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".js"));
+                        vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".client.js"));
                     }
                 }
 
@@ -215,7 +215,7 @@ export module VORLON {
                 javascriptFile += "\r" + vorlonpluginfiles;
 
                 if (autostart) {
-                    javascriptFile += "\r (function() { VORLON.Core.Start('" + this.http.protocol + "://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
+                    javascriptFile += "\r (function() { VORLON.Core.StartClientSide('" + this.http.protocol + "://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
                 }
 
                 res.header('Content-Type', 'application/javascript');

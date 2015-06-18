@@ -1,7 +1,8 @@
 ﻿module VORLON {
 
     export class _Core {
-        _plugins = new Array<Plugin>();
+        _clientPlugins = new Array<ClientPlugin>();
+        _dashboardPlugins = new Array<DashboardPlugin>();
         _messenger: ClientMessenger;
         _sessionID: string;
         _listenClientId: string;
@@ -16,57 +17,42 @@
             return Core._messenger;
         }
 
-        public get Plugins(): Array<Plugin> {
-            return Core._plugins;
+        public get ClientPlugins(): Array<ClientPlugin> {
+            return Core._clientPlugins;
+        }
+        
+        public get DashboardPlugins(): Array<DashboardPlugin> {
+            return Core._dashboardPlugins;
         }
 
-        public RegisterPlugin(plugin: Plugin): void {
-            Core._plugins.push(plugin);
+        public RegisterClientPlugin(plugin: ClientPlugin): void {
+            Core._clientPlugins.push(plugin);
         }
-
-        public Start(serverUrl = "'http://localhost:1337/'", sessionId = "", listenClientId = "", divMapper: (string) => HTMLDivElement = null): void {
+        
+        public RegisterDashboardPlugin(plugin: DashboardPlugin): void {
+            Core._dashboardPlugins.push(plugin);
+        }
+        
+        public StartClientSide(serverUrl = "'http://localhost:1337/'", sessionId = "", listenClientId = ""): void {
             Core._side = RuntimeSide.Client;
             Core._sessionID = sessionId;
             Core._listenClientId = listenClientId;
-
-            if (!serverUrl) {
-                Core._side = RuntimeSide.Both;
-            }
-
-            if (divMapper) {
-                Core._side = RuntimeSide.Dashboard;
-                
-                /* Notification elements */
-                Core._errorNotifier = document.createElement('x-notify');
-                Core._errorNotifier.setAttribute('type', 'error');
-                Core._errorNotifier.setAttribute('position', 'top');
-                Core._errorNotifier.setAttribute('duration', 5000);
-
-                Core._messageNotifier = document.createElement('x-notify');
-                Core._messageNotifier.setAttribute('position', 'top');
-                Core._messageNotifier.setAttribute('duration', 4000);
-
-                document.body.appendChild(Core._errorNotifier);
-                document.body.appendChild(Core._messageNotifier);
-            }
-            
+           
             // Checking socket.io
-            if (Core._side !== RuntimeSide.Both) {
-                if ((<any>window).io === undefined) {
+            if ((<any>window).io === undefined) {
 
-                    if (this._socketIOWaitCount < 10) {
-                        this._socketIOWaitCount++;
-                        // Let's wait a bit just in case socket.io was loaded asynchronously
-                        setTimeout(function () {
-                            console.log("Vorlon.js: waiting for socket.io to load...");
-                            Core.Start(serverUrl, sessionId, listenClientId, divMapper);
-                        }, 1000);
-                    } else {
-                        console.log("Vorlon.js: please load socket.io before referencing vorlon.js or use includeSocketIO = true in your catalog.json file.");
-                        Core.ShowError("Vorlon.js: please load socket.io before referencing vorlon.js or use includeSocketIO = true in your catalog.json file.", 0);
-                    }
-                    return;
+                if (this._socketIOWaitCount < 10) {
+                    this._socketIOWaitCount++;
+                    // Let's wait a bit just in case socket.io was loaded asynchronously
+                    setTimeout(function () {
+                        console.log("Vorlon.js: waiting for socket.io to load...");
+                        Core.StartClientSide(serverUrl, sessionId, listenClientId);
+                    }, 1000);
+                } else {
+                    console.log("Vorlon.js: please load socket.io before referencing vorlon.js or use includeSocketIO = true in your catalog.json file.");
+                    Core.ShowError("Vorlon.js: please load socket.io before referencing vorlon.js or use includeSocketIO = true in your catalog.json file.", 0);
                 }
+                return;
             }
 
             // Cookie
@@ -95,43 +81,101 @@
             Core.Messenger.sendRealtimeMessage("", heloMessage, Core._side, "helo");
 
             // Launch plugins
-            for (var index = 0; index < Core._plugins.length; index++) {
-                var plugin = Core._plugins[index];
-                Core._startPlugin(Core._plugins[index], divMapper);
-            }
-
-            if (Core._side === RuntimeSide.Client) { // handle client disconnection
-                window.addEventListener("beforeunload", function () {
-                    Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
-                }, false);
-
-                // Start global dirty check
-                var content;
-                if (document.body)
-                    content = document.body.innerHTML;
-                setInterval(() => {
-                    if (!content) {
-                        if (document.body)
-                            content = document.body.innerHTML;
-                        return;
-                    }
-                    var html = document.body.innerHTML
-                    if (content != html) {
-                        content = html;
-                        Core.Messenger.sendRealtimeMessage('ALL_PLUGINS', {
-                            type: 'contentchanged',
-                        }, Core._side, 'message');
-                    }
-                }, 2000);
-            }
-        }
-
-        private _startPlugin(plugin: Plugin, divMapper: (string) => HTMLDivElement = null) {
-            if (Core._side === RuntimeSide.Both || Core._side === RuntimeSide.Client) {
+            for (var index = 0; index < Core._clientPlugins.length; index++) {
+                var plugin = Core._clientPlugins[index];
                 plugin.startClientSide();
             }
 
-            if (Core._side === RuntimeSide.Both || Core._side === RuntimeSide.Dashboard) {
+            // Handle client disconnect
+            window.addEventListener("beforeunload", function () {
+                Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
+            }, false);
+
+            // Start global dirty check
+            var content;
+            if (document.body)
+                content = document.body.innerHTML;
+            setInterval(() => {
+                if (!content) {
+                    if (document.body)
+                        content = document.body.innerHTML;
+                    return;
+                }
+                var html = document.body.innerHTML
+                if (content != html) {
+                    content = html;
+                    Core.Messenger.sendRealtimeMessage('ALL_PLUGINS', {
+                        type: 'contentchanged',
+                    }, Core._side, 'message');
+                }
+            }, 2000);
+        
+        }
+
+        public StartDashboardSide(serverUrl = "'http://localhost:1337/'", sessionId = "", listenClientId = "", divMapper: (string) => HTMLDivElement = null): void {
+            Core._side = RuntimeSide.Dashboard;
+            Core._sessionID = sessionId;
+            Core._listenClientId = listenClientId;
+
+            /* Notification elements */
+            Core._errorNotifier = document.createElement('x-notify');
+            Core._errorNotifier.setAttribute('type', 'error');
+            Core._errorNotifier.setAttribute('position', 'top');
+            Core._errorNotifier.setAttribute('duration', 5000);
+
+            Core._messageNotifier = document.createElement('x-notify');
+            Core._messageNotifier.setAttribute('position', 'top');
+            Core._messageNotifier.setAttribute('duration', 4000);
+
+            document.body.appendChild(Core._errorNotifier);
+            document.body.appendChild(Core._messageNotifier);
+            
+            // Checking socket.io
+            if ((<any>window).io === undefined) {
+
+                if (this._socketIOWaitCount < 10) {
+                    this._socketIOWaitCount++;
+                    // Let's wait a bit just in case socket.io was loaded asynchronously
+                    setTimeout(function () {
+                        console.log("Vorlon.js: waiting for socket.io to load...");
+                        Core.StartDashboardSide(serverUrl, sessionId, listenClientId, divMapper);
+                    }, 1000);
+                } else {
+                    console.log("Vorlon.js: please load socket.io before referencing vorlon.js or use includeSocketIO = true in your catalog.json file.");
+                    Core.ShowError("Vorlon.js: please load socket.io before referencing vorlon.js or use includeSocketIO = true in your catalog.json file.", 0);
+                }
+                return;
+            }
+            
+
+            // Cookie
+            var clientId = Tools.ReadCookie("vorlonJS_clientId");
+            if (!clientId) {
+                clientId = Tools.CreateGUID();
+
+                Tools.CreateCookie("vorlonJS_clientId", clientId, 1);
+            }
+
+            // Creating the messenger
+            Core._messenger = new ClientMessenger(Core._side, serverUrl, sessionId, clientId, listenClientId);
+
+            // Connect messenger to dispatcher
+            Core.Messenger.onRealtimeMessageReceived = Core._Dispatch;
+            Core.Messenger.onHeloReceived = Core._OnIdentificationReceived;
+            Core.Messenger.onIdentifyReceived = Core._OnIdentifyReceived;
+            Core.Messenger.onStopListenReceived = Core._OnStopListenReceived;
+            Core.Messenger.onError = Core._OnError;
+
+            // Say 'helo'
+            var heloMessage = {
+                ua: navigator.userAgent
+            };
+
+            Core.Messenger.sendRealtimeMessage("", heloMessage, Core._side, "helo");
+
+            // Launch plugins
+            for (var index = 0; index < Core._dashboardPlugins.length; index++) {
+                var plugin = Core._dashboardPlugins[index];
                 plugin.startDashboardSide(divMapper ? divMapper(plugin.getID()) : null);
             }
         }
@@ -214,8 +258,8 @@
 
             if (Core._side === RuntimeSide.Client) {
                 // Refresh plugins
-                for (var index = 0; index < Core._plugins.length; index++) {
-                    var plugin = Core._plugins[index];
+                for (var index = 0; index < Core._clientPlugins.length; index++) {
+                    var plugin = Core._clientPlugins[index];
                     plugin.refresh();
                 }
             } else {
@@ -224,7 +268,7 @@
             }
         }
 
-        private _RetrySendingRealtimeMessage(plugin: Plugin, message: VorlonMessage) {
+        private _RetrySendingRealtimeMessage(plugin: DashboardPlugin, message: VorlonMessage) {
             setTimeout(() => {
                 if (plugin.isReady()) {
                     Core._DispatchFromClientPluginMessage(plugin, message);
@@ -242,12 +286,21 @@
             }
 
             if (message.metadata.pluginID == 'ALL_PLUGINS') {
-                Core._plugins.forEach((plugin) => {
+                Core._clientPlugins.forEach((plugin) => {
+                    Core._DispatchPluginMessage(plugin, message);
+                });
+                Core._dashboardPlugins.forEach((plugin) => {
                     Core._DispatchPluginMessage(plugin, message);
                 });
             }
             else {
-                Core._plugins.forEach((plugin) => {
+                Core._clientPlugins.forEach((plugin) => {
+                    if (plugin.getID() === message.metadata.pluginID) {
+                        Core._DispatchPluginMessage(plugin, message);
+                        return;
+                    }
+                });
+                Core._dashboardPlugins.forEach((plugin) => {
                     if (plugin.getID() === message.metadata.pluginID) {
                         Core._DispatchPluginMessage(plugin, message);
                         return;
@@ -256,20 +309,20 @@
             }
         }
 
-        private _DispatchPluginMessage(plugin: Plugin, message: VorlonMessage): void {
+        private _DispatchPluginMessage(plugin: BasePlugin, message: VorlonMessage): void {
             plugin.trace('received ' + JSON.stringify(message));
             if (message.metadata.side === RuntimeSide.Client) {
                 if (!plugin.isReady()) { // Plugin is not ready, let's try again later
-                    Core._RetrySendingRealtimeMessage(plugin, message);
+                    Core._RetrySendingRealtimeMessage(<DashboardPlugin>plugin, message);
                 } else {
-                    Core._DispatchFromClientPluginMessage(plugin, message);
+                    Core._DispatchFromClientPluginMessage(<DashboardPlugin>plugin, message);
                 }
             } else {
-                Core._DispatchFromDashboardPluginMessage(plugin, message);
+                Core._DispatchFromDashboardPluginMessage(<ClientPlugin>plugin, message);
             }
         }
 
-        private _DispatchFromClientPluginMessage(plugin: Plugin, message: VorlonMessage): void {
+        private _DispatchFromClientPluginMessage(plugin: DashboardPlugin, message: VorlonMessage): void {
             if (message.command && plugin.DashboardCommands) {
                 var command = plugin.DashboardCommands[message.command];
                 if (command) {
@@ -280,7 +333,7 @@
             plugin.onRealtimeMessageReceivedFromClientSide(message.data);
         }
 
-        private _DispatchFromDashboardPluginMessage(plugin: Plugin, message: VorlonMessage): void {
+        private _DispatchFromDashboardPluginMessage(plugin: ClientPlugin, message: VorlonMessage): void {
             if (message.command && plugin.ClientCommands) {
                 var command = plugin.ClientCommands[message.command];
                 if (command) {

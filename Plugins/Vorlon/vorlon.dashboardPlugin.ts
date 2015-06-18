@@ -1,24 +1,12 @@
 ﻿module VORLON {
-    export class Plugin {
+    export class DashboardPlugin extends BasePlugin {
         public htmlFragmentUrl;
         public cssStyleSheetUrl;
 
-        public loadingDirectory = "vorlon/plugins";
-        public name;
-
-        public _ready = true;
-        protected _id = "";
-        protected _debug: boolean;
-        public _type = PluginType.OneOne;
-        public trace : (msg) => void;
-        protected traceLog = (msg) => { console.log(msg); };
-        private traceNoop = (msg) => { };
-        public ClientCommands: any;
         public DashboardCommands: any;
-        //public trace = function(msg){}
 
         constructor(name: string, htmlFragmentUrl: string, cssStyleSheetUrl: string) {
-            this.name = name;
+            super(name);
             this.htmlFragmentUrl = htmlFragmentUrl;
             this.cssStyleSheetUrl = cssStyleSheetUrl;
             this.debug = Core.debug;
@@ -49,10 +37,8 @@
             return this._ready;
         }
 
-        public startClientSide(): void { }
         public startDashboardSide(div: HTMLDivElement): void { }
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void { }
-        public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void { }
 
         public sendToClient(data: any){
             if (Core.Messenger)
@@ -71,29 +57,13 @@
                 this.trace(this.getID() + ' send command to plugin client ' + command);
                 Core.Messenger.sendRealtimeMessage(pluginId, data, RuntimeSide.Dashboard, "protocol", incrementVisualIndicator, command);
             }
-        }
+        }              
         
-        public sendToDashboard(data: any, incrementVisualIndicator: boolean = false){
-            if (Core.Messenger)
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator);
-        }
-        
-        public sendCommandToDashboard(command: string, data: any = null, incrementVisualIndicator: boolean = false) {
-            if (Core.Messenger) {
-                this.trace(this.getID() + ' send command to dashboard ' + command);
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator, command);
-            }
-        }
-
         public sendCommandToPluginDashboard(pluginId : string, command: string, data: any = null, incrementVisualIndicator: boolean = false) {
             if (Core.Messenger) {
                 this.trace(this.getID() + ' send command to plugin dashboard ' + command);
                 Core.Messenger.sendRealtimeMessage(pluginId, data, RuntimeSide.Client, "protocol", incrementVisualIndicator, command);
             }
-        }
-
-        public refresh(): void {
-            console.error("Please override plugin.refresh()");
         }
 
         public _insertHtmlContentAsync(divContainer: HTMLDivElement, callback: (filledDiv: HTMLDivElement) => void): void {
@@ -134,21 +104,6 @@
                 }
             };
             request.send(null);
-        }
-
-        public _loadNewScriptAsync(scriptName: string, callback: () => void) {
-            var basedUrl = "";
-            if(this.loadingDirectory.indexOf('http') === 0){
-                basedUrl = this.loadingDirectory + "/" + this.name + "/";
-            }
-            else{
-                basedUrl = "/" + this.loadingDirectory + "/" + this.name + "/";
-            }
-            var scriptToLoad = document.createElement("script");
-            scriptToLoad.setAttribute("src", basedUrl + scriptName);
-            scriptToLoad.onload = callback;
-            var first = document.getElementsByTagName('script')[0];
-            first.parentNode.insertBefore(scriptToLoad, first);
         }
 
         private _stripContent(content): string {

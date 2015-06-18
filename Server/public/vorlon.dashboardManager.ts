@@ -79,14 +79,14 @@ module VORLON {
                                 }
                             }
                             var pluginscript = document.createElement("script");
-                            pluginscript.setAttribute("src", "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".min.js");
+                            pluginscript.setAttribute("src", "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".dashboard.min.js");
 
                             pluginscript.onload = (oError) => {
                                 pluginLoaded++;
                                 if (pluginLoaded >= catalog.plugins.length) {
                                     var getUrl = window.location;
                                     var baseUrl = getUrl.protocol + "//" + getUrl.host;
-                                    Core.Start(baseUrl, DashboardManager.SessionId, DashboardManager.ListenClientid, this.divMapper);
+                                    Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, DashboardManager.ListenClientid, this.divMapper);
                                     if (!coreLoaded && !Core.Messenger.onWaitingEventsReceived) {
                                         Core.Messenger.onWaitingEventsReceived = this._onClientUpdateWaitingEvents;
                                         Core.Messenger.onRefreshClients = this._onRefreshClients;
@@ -206,8 +206,8 @@ module VORLON {
             DashboardManager.RefreshClients();
         }
 
-        private _onClientUpdateWaitingEvents(clientid: string, waitingevents: number): void {
-            DashboardManager.UpdateClientWaitingInfo(clientid, waitingevents);
+        private _onClientUpdateWaitingEvents(message: VorlonMessage): void {
+            DashboardManager.UpdateClientWaitingInfo(message.metadata.clientId, message.metadata.waitingEvents);
         }
 
         public static UpdateClientWaitingInfo(clientid: string, waitingevents: number): void {
