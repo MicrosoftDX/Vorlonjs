@@ -154,6 +154,7 @@
     <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.client.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.dashboard.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\vorlon.basePlugin.ts" />
     <TypeScriptCompile Include="Vorlon\vorlon.clientPlugin.ts" />
     <TypeScriptCompile Include="Vorlon\vorlon.dashboardPlugin.ts" />
     <TypeScriptCompile Include="Vorlon\vorlon.tools.ts" />

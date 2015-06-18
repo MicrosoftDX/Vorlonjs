@@ -91,25 +91,59 @@
                 Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
             }, false);
 
-            // Start global dirty check
-            var content;
-            if (document.body)
-                content = document.body.innerHTML;
-            setInterval(() => {
-                if (!content) {
-                    if (document.body)
-                        content = document.body.innerHTML;
-                    return;
-                }
-                var html = document.body.innerHTML
-                if (content != html) {
-                    content = html;
-                    Core.Messenger.sendRealtimeMessage('ALL_PLUGINS', {
-                        type: 'contentchanged',
-                    }, Core._side, 'message');
-                }
-            }, 2000);
-        
+            // Start global dirty check, at this point document is not ready,
+            // little timeout to defer starting dirtycheck
+            setTimeout(() => {
+                this.startClientDirtyCheck();
+            }, 500);
+        }
+
+        public startClientDirtyCheck() {
+            var mutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
+            if (mutationObserver) {
+                if (!document.body.__vorlon)
+                    document.body.__vorlon = {};
+
+                var config = { attributes: true, childList: true, subtree: true, characterData: true };
+                document.body.__vorlon._observerMutationObserver = new mutationObserver((mutations) => {
+                    var sended = false;
+                    mutations.forEach((mutation) => {
+                        if (mutation.target && mutation.target.__vorlon && mutation.target.__vorlon.ignore) {
+                            return;
+                        }
+
+                        if (mutation.target && !sended && mutation.target.__vorlon && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId) {
+                            setTimeout(() => {
+                                var internalId = null;
+                                if (mutation && mutation.target && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId)
+                                    internalId = mutation.target.parentNode.__vorlon.internalId;
+
+                                Core.Messenger.sendRealtimeMessage('ALL_PLUGINS', {
+                                    type: 'contentchanged',
+                                    internalId: internalId
+                                }, Core._side, 'message');
+                            }, 300);
+                        }
+                        sended = true;
+                    });
+                });
+                document.body.__vorlon._observerMutationObserver.observe(document.body, config);
+            } else {
+                console.log("dirty check using html string");
+                var content;
+                if (document.body)
+                    content = document.body.innerHTML;
+
+                setInterval(() => {
+                    var html = document.body.innerHTML;
+                    if (content != html) {
+                        content = html;
+                        Core.Messenger.sendRealtimeMessage('ALL_PLUGINS', {
+                            type: 'contentchanged'
+                        }, Core._side, 'message');
+                    }
+                }, 2000);
+            }
         }
 
         public StartDashboardSide(serverUrl = "'http://localhost:1337/'", sessionId = "", listenClientId = "", divMapper: (string) => HTMLDivElement = null): void {

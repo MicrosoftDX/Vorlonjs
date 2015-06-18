@@ -191,9 +191,17 @@
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
             if (receivedObject.type === "contentchanged" && !this._editablemode && (!this._clientHaveMutationObserver || this._autorefresh == false)) {
-                this.dirtyCheck(receivedObject.content)
+                this.dirtyCheck();
+            } else if (receivedObject.type === "contentchanged" && receivedObject.internalId !== null && this._clientHaveMutationObserver) {
+                if (this._autorefresh)
+                    this.sendCommandToClient('refreshNode', {
+                        order: receivedObject.internalId
+                    });
+                else
+                    this.dirtyCheck();
             }
-        }
+        }        
+
         public contentChanged() {
             this.refreshButton.setAttribute('changed', '');
         }
@@ -274,7 +282,7 @@
             return this._containerDiv;
         }
 
-        dirtyCheck(content: string) {
+        dirtyCheck() {
             this.refreshButton.setAttribute('changed', '');
             if (this._autorefresh) {
                 this.sendCommandToClient('refresh');

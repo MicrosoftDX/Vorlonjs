@@ -6,7 +6,6 @@
         private _internalId = 0;
         private _lastElementSelectedClientSide;
         private _globalloadactive = false;
-        private _autoRefreshActive = false;
         private _overlay: HTMLElement;
         private _observerMutationObserver;
         
@@ -109,29 +108,7 @@
                 }
                 node.__vorlon.internalId = packagedNode.internalId;
             }
-            var mutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
-            if (mutationObserver && !node.__vorlon._observerMutationObserver) {
-                if (node.tagName === "BODY") {
-                    mutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
-                    var config = { attributes: true, childList: true, subtree: true, characterData: true };
-                    node.__vorlon._observerMutationObserver = new mutationObserver((mutations) => {
-                        var sended = false;
-                        mutations.forEach((mutation) => {
-                            if (mutation.target && mutation.target.__vorlon && mutation.target.__vorlon.ignore) {
-                                return;
-                            }
-                            if (mutation.target && !sended && mutation.target.__vorlon && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId) {
-                                setTimeout(() => {
-                                    if (this._autoRefreshActive)
-                                        this.refreshbyId(mutation.target.parentNode.__vorlon.internalId);
-                                }, 300);
-                            }
-                            sended = true;
-                        });
-                    });
-                    node.__vorlon._observerMutationObserver.observe(node, config);
-                }
-            }
+
             return packagedNode;
         }
 
@@ -322,9 +299,7 @@
                 this.refresh();
             }
         }
-        setClientAutoRefresh(value: boolean): void {
-            this._autoRefreshActive = value;
-        }
+
         getFirstParentWithInternalId(node) {
             if (!node)
                 return null;
@@ -416,10 +391,8 @@
 
         setSettings(data: any) {
             var plugin = <DOMExplorerClient>this;
-            if (data.globalload != null)
+            if (data && data.globalload != null)
                 plugin.globalload(data.globalload);
-            if (data.autoRefresh != null)
-                plugin.setClientAutoRefresh(data.autoRefresh);
         },
 
         saveinnerHTML(data: any) {
