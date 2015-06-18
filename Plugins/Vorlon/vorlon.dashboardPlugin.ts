@@ -12,31 +12,6 @@
             this.debug = Core.debug;
         }
 
-        public get Type(): PluginType {
-            return this._type;
-        }
-        
-        public get debug(): boolean {
-            return this._debug;
-        }
-        
-        public set debug(val: boolean) {
-            this._debug = val;
-            if (val){
-                this.trace = this.traceLog;
-            }else{
-                this.trace = this.traceNoop;
-            }
-        }
-
-        public getID(): string {
-            return this._id;
-        }
-
-        public isReady() {
-            return this._ready;
-        }
-
         public startDashboardSide(div: HTMLDivElement): void { }
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void { }
 

@@ -4,10 +4,6 @@ declare module VORLON {
         cssStyleSheetUrl: any;
         DashboardCommands: any;
         constructor(name: string, htmlFragmentUrl: string, cssStyleSheetUrl: string);
-        Type: PluginType;
-        debug: boolean;
-        getID(): string;
-        isReady(): boolean;
         startDashboardSide(div: HTMLDivElement): void;
         onRealtimeMessageReceivedFromClientSide(receivedObject: any): void;
         sendToClient(data: any): void;

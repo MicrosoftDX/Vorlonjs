@@ -186,7 +186,7 @@
 
         private _OnIdentifyReceived(message: string): void {
             //console.log('identify ' + message);
-            if (Core._side == RuntimeSide.Dashboard) {
+            if (Core._side === RuntimeSide.Dashboard) {
                 Core._messageNotifier.innerHTML = message;
                 Core._messageNotifier.show();
             }
@@ -216,7 +216,7 @@
 
         private ShowError(message: string, timeout = 5000) {
 
-            if (Core._side == RuntimeSide.Dashboard) {
+            if (Core._side === RuntimeSide.Dashboard) {
                 Core._errorNotifier.innerHTML = message;
                 Core._errorNotifier.setAttribute('duration', timeout);
                 Core._errorNotifier.show();

@@ -43,7 +43,7 @@
                 });
 
                 document.getElementById("reloadAppWithDebugInfo").addEventListener("click",(e) => {
-                    Core.Messenger.sendRealtimeMessage(this.getID(), { type: MessageType.ReloadWithDebugInfo }, RuntimeSide.Dashboard, "message");
+                    this.sendToClient({ type: MessageType.ReloadWithDebugInfo });
                     (<HTMLElement>document.getElementsByClassName("no-scope-found")[0]).style.display = "none";
                 });
 

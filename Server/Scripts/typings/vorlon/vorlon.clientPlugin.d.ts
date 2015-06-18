@@ -2,10 +2,6 @@ declare module VORLON {
     class ClientPlugin extends BasePlugin {
         ClientCommands: any;
         constructor(name: string);
-        Type: PluginType;
-        debug: boolean;
-        getID(): string;
-        isReady(): boolean;
         startClientSide(): void;
         onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void;
         sendToDashboard(data: any, incrementVisualIndicator?: boolean): void;

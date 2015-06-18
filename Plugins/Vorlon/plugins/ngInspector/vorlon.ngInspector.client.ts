@@ -40,7 +40,7 @@
             this._rootScopes = [];
             this._findRootScopes(document.body);
 
-            Core.Messenger.sendRealtimeMessage(this.getID(), { scopes: this._rootScopes }, RuntimeSide.Client, "message");
+            this.sendToDashboard({ scopes: this._rootScopes }); 
         }
 
         private _findRootScopes(element: Node) {
