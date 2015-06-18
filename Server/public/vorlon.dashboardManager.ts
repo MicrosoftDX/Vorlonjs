@@ -129,7 +129,6 @@ module VORLON {
 
         public static RefreshClients(): void {
             var xhr = new XMLHttpRequest();
-
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
@@ -146,7 +145,19 @@ module VORLON {
 
                         var clientlist = document.createElement("ul");
                         divClientsListPane.appendChild(clientlist);
-
+                        var contains = false;
+                        if (clients && clients.length) {
+                            for (var j = 0; j < clients.length; j++) {
+                                if (clients[j].clientid === DashboardManager.ListenClientid) {
+                                    contains = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!contains || clients.length === 0) {
+                            var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+                            VORLON.Tools.RemoveClass(elt, 'hidden');
+                        }
                         if (clients.length === 0) {
                             DashboardManager.ResetDashboard(false);
                         }

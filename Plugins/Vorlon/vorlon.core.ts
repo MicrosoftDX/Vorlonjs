@@ -109,18 +109,48 @@
                 var content;
                 if (document.body)
                     content = document.body.innerHTML;
-                setInterval(() => {
+                var interval = setInterval(() => {
                     if (!content) {
                         if (document.body)
                             content = document.body.innerHTML;
                         return;
                     }
-                    var html = document.body.innerHTML
-                    if (content != html) {
-                        content = html;
-                        Core.Messenger.sendRealtimeMessage('ALL_PLUGINS', {
-                            type: 'contentchanged',
-                        }, Core._side, 'message');
+                    var mutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
+                    if (mutationObserver) {
+                        clearInterval(interval);
+                        if (!document.body.__vorlon)
+                            document.body.__vorlon = {};
+                        var config = { attributes: true, childList: true, subtree: true, characterData: true };
+                        document.body.__vorlon._observerMutationObserver = new mutationObserver((mutations) => {
+                            var sended = false;
+                            mutations.forEach((mutation) => {
+                                if (mutation.target && mutation.target.__vorlon && mutation.target.__vorlon.ignore) {
+                                    return;
+                                }
+                                if (mutation.target && !sended && mutation.target.__vorlon && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId) {
+                                    setTimeout(() => {
+                                        var internalId = null;
+                                        if (mutation && mutation.target && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId)
+                                            internalId = mutation.target.parentNode.__vorlon.internalId;
+                                        Core.Messenger.sendRealtimeMessage('ALL_PLUGINS', {
+                                            type: 'contentchanged',
+                                            internalId: internalId
+                                        }, Core._side, 'message');
+                                    }, 300);
+                                }
+                                sended = true;
+                            });
+                        });
+                        document.body.__vorlon._observerMutationObserver.observe(document.body, config);
+
+                    } else {
+                        var html = document.body.innerHTML;
+                        if (content != html) {
+                            content = html;
+                            Core.Messenger.sendRealtimeMessage('ALL_PLUGINS', {
+                                type: 'contentchanged'
+                            }, Core._side, 'message');
+                        }
                     }
                 }, 2000);
             }
