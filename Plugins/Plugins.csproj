@@ -81,6 +81,8 @@
     <Content Include="Vorlon\plugins\interactiveConsole\control.min.css">
       <DependentUpon>control.css</DependentUpon>
     </Content>
+    <Content Include="Vorlon\plugins\sample\control.css" />
+    <Content Include="Vorlon\plugins\sample\control.html" />
     <Content Include="Vorlon\plugins\xhrPanel\control.less" />
     <Content Include="Vorlon\plugins\domExplorer\control.less" />
     <Content Include="Vorlon\plugins\domExplorer\control.css.map">
@@ -96,6 +98,9 @@
     <Content Include="Vorlon\plugins\ngInspector\control.css.map">
       <DependentUpon>control.css</DependentUpon>
     </Content>
+    <Content Include="Vorlon\plugins\modernizrReport\control.less" />
+    <Content Include="Vorlon\plugins\objectExplorer\control.less" />
+    <Content Include="Vorlon\plugins\sample\README.md" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -129,16 +134,32 @@
   <ItemGroup>
     <TypeScriptCompile Include="libs\node.d.ts" />
     <TypeScriptCompile Include="libs\socket.io.d.ts" />
-    <TypeScriptCompile Include="Vorlon\plugins\ngInspector\vorlon.ngInspector.ts" />
-    <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.ts" />
-    <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\domExplorer\vorlon.domExplorer.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\domExplorer\vorlon.domExplorer.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\domExplorer\vorlon.domExplorer.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\modernizrReport\vorlon.modernizrReport.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\modernizrReport\vorlon.modernizrReport.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\modernizrReport\vorlon.modernizrReport.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\ngInspector\vorlon.ngInspector.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\ngInspector\vorlon.ngInspector.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\ngInspector\vorlon.ngInspector.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\sample\vorlon.sample.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\sample\vorlon.sample.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\vorlon.basePlugin.ts" />
+    <TypeScriptCompile Include="Vorlon\vorlon.clientPlugin.ts" />
+    <TypeScriptCompile Include="Vorlon\vorlon.dashboardPlugin.ts" />
     <TypeScriptCompile Include="Vorlon\vorlon.tools.ts" />
-    <TypeScriptCompile Include="Vorlon\plugins\domExplorer\vorlon.domExplorer.ts" />
-    <TypeScriptCompile Include="Vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.ts" />
-    <TypeScriptCompile Include="Vorlon\plugins\modernizrReport\vorlon.modernizrReport.ts" />
     <TypeScriptCompile Include="Vorlon\vorlon.clientMessenger.ts" />
     <TypeScriptCompile Include="Vorlon\vorlon.enums.ts" />
-    <TypeScriptCompile Include="Vorlon\vorlon.plugin.ts" />
     <TypeScriptCompile Include="Vorlon\vorlon.core.ts" />
   </ItemGroup>
   <ItemGroup />

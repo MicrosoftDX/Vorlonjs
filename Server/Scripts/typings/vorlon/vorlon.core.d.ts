@@ -17,6 +17,7 @@ declare module VORLON {
         RegisterClientPlugin(plugin: ClientPlugin): void;
         RegisterDashboardPlugin(plugin: DashboardPlugin): void;
         StartClientSide(serverUrl?: string, sessionId?: string, listenClientId?: string): void;
+        startClientDirtyCheck(): void;
         StartDashboardSide(serverUrl?: string, sessionId?: string, listenClientId?: string, divMapper?: (string) => HTMLDivElement): void;
         private _OnStopListenReceived();
         private _OnIdentifyReceived(message);
