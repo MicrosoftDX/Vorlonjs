@@ -11,9 +11,9 @@
 		- Attributes display and edit
 		- Hover coloration
 		- Edit content as HTML
-		- right click context menu on DOM node (with shortcust to attribute, HTML edit, ...)
+		- right click context menu on DOM node (with shortcuts to attribute, HTML edit, ...)
 		- settings panel to define behavior
-		- search nodes by css selectors
+		- search nodes by CSS selectors
 		- refresh through MutationObserver, if available in client browser
 		- view layout info (margin, padding, size)
 		- computed styles panel 
