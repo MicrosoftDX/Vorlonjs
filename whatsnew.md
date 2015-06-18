@@ -2,7 +2,7 @@
 
 - Plugins
 	- New plugin: XHR Panel to track xhr calls
-	- Add enveloppe and commands for messages between dashboard and client
+	- Add envelope and commands for messages between dashboard and client
 	- New control bar component available for plugins
 	- Moving all CSS to LESS
 	- Huge improvements for DOM Explorer
