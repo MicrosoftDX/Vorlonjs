@@ -1,5 +1,5 @@
 ﻿module VORLON {
-    
+
     export class InteractiveConsoleClient extends ClientPlugin {
         _cache = [];
         _pendingEntries: ConsoleEntry[] = [];
@@ -42,7 +42,7 @@
             };
 
             if (proto && proto != this._objPrototype)
-                res.proto = this.inspect(proto, context, deepness+1);
+                res.proto = this.inspect(proto, context, deepness + 1);
 
             for (var i = 0, l = objProperties.length; i < l; i++) {
                 var p = objProperties[i];
@@ -160,11 +160,11 @@
 
         public startClientSide(): void {
             // Overrides clear, log, error and warn
-            this._hooks.clear = Tools.Hook(window.console, "clear", (): void => {
+            this._hooks.clear = Tools.Hook(window.console, "clear",(): void => {
                 this.clearClientConsole();
             });
 
-            this._hooks.dir = Tools.Hook(window.console, "dir", (message: string): void => {
+            this._hooks.dir = Tools.Hook(window.console, "dir",(message: string): void => {
                 var messages = arguments;
                 var data = {
                     messages: this.getMessages(arguments[0]),
@@ -174,7 +174,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.log = Tools.Hook(window.console, "log", (message: string): void => {
+            this._hooks.log = Tools.Hook(window.console, "log",(message: string): void => {
                 var messages = arguments;
                 var data = {
                     messages: this.getMessages(arguments[0]),
@@ -184,7 +184,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.debug = Tools.Hook(window.console, "debug", (message: string): void => {
+            this._hooks.debug = Tools.Hook(window.console, "debug",(message: string): void => {
                 var data = {
                     messages: this.getMessages(arguments[0]),
                     type: "debug"
@@ -193,7 +193,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.info = Tools.Hook(window.console, "info", (message: string): void => {
+            this._hooks.info = Tools.Hook(window.console, "info",(message: string): void => {
                 var data = {
                     messages: this.getMessages(arguments[0]),
                     type: "info"
@@ -202,7 +202,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.warn = Tools.Hook(window.console, "warn", (message: string): void => {
+            this._hooks.warn = Tools.Hook(window.console, "warn",(message: string): void => {
                 var data = {
                     messages: this.getMessages(arguments[0]),
                     type: "warn"
@@ -211,7 +211,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.error = Tools.Hook(window.console, "error", (message: string): void => {
+            this._hooks.error = Tools.Hook(window.console, "error",(message: string): void => {
                 var data = {
                     messages: this.getMessages(arguments[0]),
                     type: "error"
@@ -235,6 +235,15 @@
 
                 return error;
             });
+
+            window.addEventListener('error', () => {
+                var err = arguments[0];
+                
+                if (err.error) {
+                    //this.addEntry({ messages: [err.error.message], type: "exception" });
+                    this.addEntry({ messages: [err.error.stack], type: "exception" });
+                }
+            });
         }
 
         public clearClientConsole() {
@@ -254,12 +263,12 @@
             this.sendCommandToDashboard("clear");
 
             //delay sending cache to dashboard to let other plugins load...
-            setTimeout(() => { 
+            setTimeout(() => {
                 this.batchSend(this._cache);
             }, 300);
         }
     }
-    
+
     InteractiveConsoleClient.prototype.ClientCommands = {
         order: function (data: any) {
             var plugin = <InteractiveConsoleClient>this;
