@@ -26,7 +26,7 @@
         private _positionSearch;
         private _selectorSearch;
         private _clientHaveMutationObserver: boolean = false;
-
+        private _localstorageview: HTMLElement;
         constructor() {
             super("domExplorer", "control.html", "control.css");
             this._id = "DOM";
@@ -45,6 +45,7 @@
                 this._paddingcontainer = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "paddingcontainer");
                 this._sizecontainer = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "sizecontainer");
                 this._computedsection = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "computedsection");
+                this._localstorageview = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "localstorageview");
 
                 this._searchinput = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "searchinput");
                 this.styleView = Tools.QuerySelectorById(filledDiv, "styleView");
@@ -55,12 +56,14 @@
                 this._containerDiv.addEventListener('refresh',() => {
                     this.sendCommandToClient('refresh');
                 });
+                this._containerDiv.addEventListener('getlocalstorage',() => {
+                    this.sendCommandToClient('getLocalSotrage');
+                });
                 this._containerDiv.addEventListener('gethtml',() => {
                     this.sendCommandToClient('getInnerHTML', {
                         order: this._selectedNode.node.internalId
                     });
                 });
-
                 this._containerDiv.addEventListener('savehtml',() => {
                     this.clikedNodeID = this._selectedNode.node.internalId;
                     this.sendCommandToClient('saveinnerHTML', {
@@ -139,6 +142,9 @@
                         this.sendCommandToClient('getComputedStyleById', {
                             order: this._selectedNode.node.internalId
                         });
+                    }
+                    else if (elt.target.className.indexOf("localstoragesection") !== -1) {
+                        this.sendCommandToClient('getLocalSotrage');
                     }
                 });
                 this._ready = true;
@@ -267,7 +273,22 @@
             this.treeDiv.parentElement.classList.add('active');
             this._rootNode = new DomExplorerNode(this, null, this.treeDiv, root);
         }
-
+        public setLocalStorage(data: Array<any>) {
+            this._localstorageview.innerHTML = "";
+            if (data && data.length) {
+                data.forEach((item) => {
+                    var root = new FluentDOM('div', 'styleWrap', this._localstorageview);
+                    root.append('span', 'styleLabel', (span) => {
+                        span.text(item.key);
+                    });
+                    root.append('span', 'styleValue', (span) => {
+                        span.text(item.value);
+                    });
+                });
+            } else {
+                this._localstorageview.innerHTML = "the local storage is empty";
+            }
+        }
         public updateDashboard(node: PackagedNode) {
             if (this._rootNode) {
                 this._rootNode.update(node);
@@ -343,6 +364,10 @@
         },
         contentChanged() {
 
+        },
+        setLocalStorage(data: Array<any>) {
+            var plugin = <DOMExplorerDashboard>this;
+            plugin.setLocalStorage(data);
         },
         searchDOMByResults(data: any) {
             var plugin = <DOMExplorerDashboard>this;

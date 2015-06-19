@@ -8,7 +8,7 @@
         private _globalloadactive = false;
         private _overlay: HTMLElement;
         private _observerMutationObserver;
-        
+
         constructor() {
             super("domExplorer");
             this._id = "DOM";
@@ -85,7 +85,7 @@
                 classes: node.className,
                 content: null,
                 hasChildNodes: false,
-                attributes: node.attributes ? Array.prototype.map.call(node.attributes, (attr) => {
+                attributes: node.attributes ? Array.prototype.map.call(node.attributes,(attr) => {
                     return [attr.name, attr.value];
                 }) : [],
                 styles: DOMExplorerClient.GetAppliedStyles(node),
@@ -199,6 +199,19 @@
                 }
             }
         }
+
+        public getLocalSotrage() {
+            var listItems = [];
+            if (window && window.localStorage && localStorage.length) {
+                for (var i = 0, len = localStorage.length; i < len; i++) {
+                    var key = localStorage.key(i);
+                    var value = localStorage[key];
+                    listItems.push({ key: key, value: value });
+                }
+            }
+            this.sendCommandToDashboard("setLocalStorage", listItems);
+        }
+
         public getStyle(internalId: string) {
             var element = this._getElementByInternalId(internalId, document.body);
             if (element) {
@@ -436,6 +449,10 @@
         getComputedStyleById(data: any) {
             var plugin = <DOMExplorerClient>this;
             plugin.getComputedStyleById(data.order);
+        },
+        getLocalSotrage() {
+            var plugin = <DOMExplorerClient>this;
+            plugin.getLocalSotrage();
         }
     }
 
