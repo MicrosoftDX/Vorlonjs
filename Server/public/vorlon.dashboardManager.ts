@@ -108,6 +108,15 @@ module VORLON {
                             };
                             document.body.appendChild(pluginscript);
                         }
+                        
+                        var addPluginBtn = document.createElement('div');
+                        addPluginBtn.className = "tab";
+                        addPluginBtn.innerText = "+";
+                        divPluginTopTabs.appendChild(addPluginBtn);
+                        addPluginBtn.addEventListener('click',() => {
+                            window.open("http://www.vorlonjs.io/plugins", "_blank");
+                        });
+                        
                         var collaspseBtn = document.createElement('div');
                         collaspseBtn.className = "fa fa-expand expandBtn";
                         divPluginBottomTabs.appendChild(collaspseBtn);
