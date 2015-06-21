@@ -5,32 +5,70 @@
     <link href="control.css" rel="stylesheet" />
 </head>
 <body>
-    <div id="DOMExplorerContainer" class="dom-explorer-container code-text">
+    <div id="DOMExplorerContainer" class="dom-explorer-container">
 
         <div class="tree-view-wrapper panel-left">
             <x-controlbar>
                 <x-action event="refresh" tabindex="0"><i class="fa fa-circle"></i> Refresh</x-action>
+                <input type="text" placeholder="search node by css selector" id="searchinput" />
             </x-controlbar>
-            <div id="treeView"></div>
-            <div id="text"></div>
+            <div id="treeView" class="code-text"></div>
+            <div class="domload-spinner">
+                <div class="fa fa-spinner fa-spin fa-3x"></div>
+            </div>
         </div>
-        <div class="style-view-wrapper panel-right">
+        <div class="style-view-wrapper panel-right code-text">
             <div id="accordion">
-                <h3>styles</h3>
-                <div>
+                <h3 class="stylessection visible">styles</h3>
+                <div id="stylessection" class="visible accordion-section">
                     <div id="styleView">
                     </div>
                 </div>
+                <h3 class="layoutsection">layout</h3>
+                <div id="layoutsection" class="accordion-section hide">
+                    <div class="margin">
+                        <div class="label">margin</div>
+                        <div class="container" id="margincontainer">
+                            <div class="top"></div>
+                            <div class="bottom"></div>
+                            <div class="right"></div>
+                            <div class="left"></div>
+                        </div>
+                        <div class="border">
+                            <div class="label">border</div>
+                            <div class="container" id="bordercontainer">
+                                <div class="top"></div>
+                                <div class="bottom"></div>
+                                <div class="right"></div>
+                                <div class="left"></div>
+                            </div>
+                            <div class="padding">
+                                <div class="label">padding</div>
+                                <div class="container" id="paddingcontainer">
+                                    <div class="top"></div>
+                                    <div class="bottom"></div>
+                                    <div class="right"></div>
+                                    <div class="left"></div>
+                                </div>
+                                <div class="size" id="sizecontainer">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="computedsection">Computed styles</h3>
+                <div id="computedsection" class="accordion-section"></div>
                 <h3 class="htmlsection">html</h3>
-                <div class="innerHTMLViewContainer">
+                <div id="htmlsection" class="accordion-section">
                     <x-controlbar>
-                        <x-action event="gethtml" tabindex="0"><i class="fa fa-download "></i></x-action>
+                        <x-action event="gethtml" tabindex="0"><i class="fa fa-refresh"></i></x-action>
                         <x-action event="savehtml" tabindex="0"><i class="fa fa-save"></i></x-action>
                     </x-controlbar>
-                    <textarea style="width:100%;min-height:100px;" id="innerHTMLView"></textarea>
+                    <textarea id="innerHTMLView"></textarea>
                 </div>
-                <h3>settings</h3>
-                <div>
+                <h3 class="settingssection">settings</h3>
+                <div id="settingssection" class="accordion-section">
                     <div id="settings">
                         <div>
                             Auto refresh

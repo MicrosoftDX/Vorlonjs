@@ -2,7 +2,7 @@
 
 - Plugins
 	- New plugin: XHR Panel to track xhr calls
-	- Add enveloppe and commands for messages between dashboard and client
+	- Add envelope and commands for messages between dashboard and client
 	- New control bar component available for plugins
 	- Moving all CSS to LESS
 	- Huge improvements for DOM Explorer
@@ -11,12 +11,17 @@
 		- Attributes display and edit
 		- Hover coloration
 		- Edit content as HTML
-		- right click context menu on DOM node (with shortcust to attribute, HTML edit, ...)
+		- right click context menu on DOM node (with shortcuts to attribute, HTML edit, ...)
 		- settings panel to define behavior
+		- search nodes by CSS selectors
+		- refresh through MutationObserver, if available in client browser
+		- view layout info (margin, padding, size)
+		- computed styles panel 
 	- Improvements on console plugin
 		- history for commands
 		- support for logging objects and console.dir
 		- filtering on console entries
+	- Moving catalog.json to /server/config.json
 - Core
 	- New option to remove socket.io from vorlon.js in catalog.json file
 	- Simplified plugin description in catalog.json file
