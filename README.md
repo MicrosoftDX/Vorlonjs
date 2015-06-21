@@ -31,7 +31,7 @@ If you want to run the server with SSL support proceed as follows:
 4. In JSON file set to true 
 5. If you want to replace our localhost certificate should only change the path of the files with the private key and certificate
 6. Exit and save JSON file
-7. 
+
 ```console
 [Windows]
 C:\>cd %HOMEPATH%\node_modules\vorlon
@@ -40,8 +40,8 @@ C:\Users\Username\node_modules\vorlon>notepad Server/config.json
 ## JSON FILE ##
 {
     "useSSL": true,
-    "SSLkey": "cert/server.key",
-    "SSLcert": "cert/server.crt",
+    "SSLkey": "server/cert/server.key",
+    "SSLcert": "server/cert/server.crt",
     "includeSocketIO": true,
     "plugins": [
         { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername" : "interactiveConsole", "enabled": true},
