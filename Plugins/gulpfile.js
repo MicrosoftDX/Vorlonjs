@@ -66,6 +66,8 @@ gulp.task('scripts', ['typescript-to-js'], function () {
             './**/vorlon.modernizrReport.js',
             './**/objectExplorer/vorlon.objectExplorer.js',
             './**/xhrPanel/vorlon.xhrPanel.js',
+            './**/networkMonitor/vorlon.networkMonitor.js',
+            './**/resourcesExplorer/vorlon.resourcesExplorer.js',
             './**/vorlon.ngInspector.js',
             './**/sample/vorlon.sample.js'
         ])
