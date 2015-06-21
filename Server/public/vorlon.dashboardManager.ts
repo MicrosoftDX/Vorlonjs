@@ -4,7 +4,7 @@
 module VORLON {
     declare var $: any;
     export class DashboardManager {
-        private _catalogUrl: string = "/catalog.json";
+        private _catalogUrl: string = "/config.json";
         static ListenClientid: string;
         static ListenClientDisplayid: string;
         static SessionId: string;
@@ -46,10 +46,22 @@ module VORLON {
                         }
 
                         var pluginLoaded = 0;
+                        var pluginstoload = 0;
+                        
+                        //Cleaning unwanted plugins
+                        for(var i = 0; i < catalog.plugins.length; i++){
+                            if(catalog.plugins[i].enabled){
+                                pluginstoload ++;
+                            }
+                        }
 
                         for (var i = 0; i < catalog.plugins.length; i++) {
                             var plugin = catalog.plugins[i];
-
+                            
+                            if(!plugin.enabled){
+                                continue;
+                            }
+                            
                             var existingLocation = document.querySelector('[data-plugin=' + plugin.id + ']');
 
                             if (!existingLocation) {
@@ -83,7 +95,7 @@ module VORLON {
 
                             pluginscript.onload = (oError) => {
                                 pluginLoaded++;
-                                if (pluginLoaded >= catalog.plugins.length) {
+                                if (pluginLoaded >= pluginstoload) {
                                     var getUrl = window.location;
                                     var baseUrl = getUrl.protocol + "//" + getUrl.host;
                                     Core.Start(baseUrl, DashboardManager.SessionId, DashboardManager.ListenClientid, this.divMapper);
