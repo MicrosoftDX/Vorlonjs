@@ -81,6 +81,12 @@ gulp.task('scripts', ['typescript-to-js'], function () {
             './**/vorlon.ngInspector.interfaces.js',
             './**/vorlon.ngInspector.client.js',
             './**/vorlon.ngInspector.dashboard.js',
+            './**/networkMonitor/vorlon.networkMonitor.interfaces.js',
+            './**/networkMonitor/vorlon.networkMonitor.client.js',
+            './**/networkMonitor/vorlon.networkMonitor.dashboard.js',
+            './**/resourcesExplorer/vorlon.resourcesExplorer.interfaces.js',
+            './**/resourcesExplorer/vorlon.resourcesExplorer.client.js',
+            './**/resourcesExplorer/vorlon.resourcesExplorer.dashboard.js',
             './**/sample/vorlon.sample.client.js',
             './**/sample/vorlon.sample.dashboard.js'
         ])
