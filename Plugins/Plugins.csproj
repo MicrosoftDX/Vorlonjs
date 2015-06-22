@@ -81,6 +81,8 @@
     <Content Include="Vorlon\plugins\interactiveConsole\control.min.css">
       <DependentUpon>control.css</DependentUpon>
     </Content>
+    <Content Include="Vorlon\plugins\networkMonitor\control.html" />
+    <Content Include="Vorlon\plugins\resourcesExplorer\control.html" />
     <Content Include="Vorlon\plugins\sample\control.css" />
     <Content Include="Vorlon\plugins\sample\control.html" />
     <Content Include="Vorlon\plugins\xhrPanel\control.less" />
@@ -101,6 +103,8 @@
     <Content Include="Vorlon\plugins\modernizrReport\control.less" />
     <Content Include="Vorlon\plugins\objectExplorer\control.less" />
     <Content Include="Vorlon\plugins\sample\README.md" />
+    <Content Include="Vorlon\plugins\networkMonitor\control.less" />
+    <Content Include="Vorlon\plugins\resourcesExplorer\control.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -143,12 +147,18 @@
     <TypeScriptCompile Include="Vorlon\plugins\modernizrReport\vorlon.modernizrReport.client.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\modernizrReport\vorlon.modernizrReport.dashboard.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\modernizrReport\vorlon.modernizrReport.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\networkMonitor\vorlon.networkMonitor.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\networkMonitor\vorlon.networkMonitor.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\networkMonitor\vorlon.networkMonitor.interfaces.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\ngInspector\vorlon.ngInspector.client.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\ngInspector\vorlon.ngInspector.dashboard.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\ngInspector\vorlon.ngInspector.interfaces.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.client.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.dashboard.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\resourcesExplorer\vorlon.resourcesExplorer.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\resourcesExplorer\vorlon.resourcesExplorer.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\resourcesExplorer\vorlon.resourcesExplorer.interfaces.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\sample\vorlon.sample.client.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\sample\vorlon.sample.dashboard.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.client.ts" />

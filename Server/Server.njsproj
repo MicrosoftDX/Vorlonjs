@@ -68,8 +68,8 @@
     <Content Include="cert\server.crt" />
     <Content Include="cert\server.csr" />
     <Content Include="cert\server.key" />
+    <Content Include="config.json" />
     <Content Include="package.json" />
-    <Content Include="public\catalog.json" />
     <Content Include="public\fonts\fontawesome\css\font-awesome.css" />
     <Content Include="public\fonts\fontawesome\css\font-awesome.min.css" />
     <Content Include="public\fonts\fontawesome\fonts\fontawesome-webfont.eot" />
