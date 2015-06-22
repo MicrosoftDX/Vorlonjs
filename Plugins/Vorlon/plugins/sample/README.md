@@ -9,10 +9,11 @@ You can use this as a starting point for your own plugins.
 To enable the sample plugin:
 
 1. Clone this github repo if you haven't already (`git clone git@github.com/MicrosoftDX/Vorlonjs`)
-2. Modify `Server/public/catalog.json` to add the plugin, so it looks like this:
+2. Modify `Server/config.json` to add the plugin, so it looks like this:
 
 ```json
 {
+    "includeSocketIO": true,
     "plugins": [
         { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername" :  "interactiveConsole"},
         { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername" : "domExplorer" },
@@ -27,6 +28,6 @@ To enable the sample plugin:
 
 ## Modifying the plugin
 
-The plugin extends from VORLON.Plugin, as defined in `Plugins/Vorlon/vorlon.plugin.ts` so you can see what methods are available for your plugin from there. You May also wish to look at the other existing plugins in `Plugins/Vorlon/plugins` for ideas.
+The plugin is based on two files (one for the client and one for the dashboard) who respectively extend from VORLON.ClientPlugin and VORLON.DashboardPlugin, as defined in `Plugins/Vorlon/vorlon.clientPlugin.ts` and `Plugins/Vorlon/vorlon.dashboardPlugin.ts` so you can see what methods are available for your plugin from there. You may also wish to look at the other existing plugins in `Plugins/Vorlon/plugins` for ideas.
 
 `control.html` will be inserted into the dashboard, as will `dashboard.css`.
