@@ -9,6 +9,6 @@
         { "id": "MODERNIZR", "name": "Modernizr", "panel": "bottom", "foldername": "modernizrReport", "enabled": true },
         { "id": "OBJEXPLORER", "name": "Obj. Explorer", "panel": "top", "foldername": "objectExplorer", "enabled": true },
         { "id": "XHRPANEL", "name": "XHR", "panel": "top", "foldername": "xhrPanel", "enabled": true },
-        { "id": "NGINSPECTOR", "name": "Ng. Inspector", "panel": "top", "foldername": "ngInspector", "enabled": false }
+        { "id": "NGINSPECTOR", "name": "Ng. Inspector", "panel": "top", "foldername": "ngInspector", "enabled": true }
     ]
 }
