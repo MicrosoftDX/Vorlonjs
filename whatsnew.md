@@ -1,6 +1,7 @@
 ## 0.0.15 [Work in progress]
 
 - Plugins
+    - Plugins are now split into 2 files (client and dashboard)
 	- New plugin: XHR Panel to track xhr calls
 	- Add envelope and commands for messages between dashboard and client
 	- New control bar component available for plugins
@@ -21,6 +22,7 @@
 		- history for commands
 		- support for logging objects and console.dir
 		- filtering on console entries
+		- support for window.onerror
 	- Moving catalog.json to /server/config.json
 - Core
 	- New option to remove socket.io from vorlon.js in catalog.json file

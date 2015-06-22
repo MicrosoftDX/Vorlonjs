@@ -91,14 +91,14 @@ module VORLON {
                                 }
                             }
                             var pluginscript = document.createElement("script");
-                            pluginscript.setAttribute("src", "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".min.js");
+                            pluginscript.setAttribute("src", "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".dashboard.min.js");
 
                             pluginscript.onload = (oError) => {
                                 pluginLoaded++;
                                 if (pluginLoaded >= pluginstoload) {
                                     var getUrl = window.location;
                                     var baseUrl = getUrl.protocol + "//" + getUrl.host;
-                                    Core.Start(baseUrl, DashboardManager.SessionId, DashboardManager.ListenClientid, this.divMapper);
+                                    Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, DashboardManager.ListenClientid, this.divMapper);
                                     if (!coreLoaded && !Core.Messenger.onWaitingEventsReceived) {
                                         Core.Messenger.onWaitingEventsReceived = this._onClientUpdateWaitingEvents;
                                         Core.Messenger.onRefreshClients = this._onRefreshClients;
@@ -150,6 +150,7 @@ module VORLON {
 
         public static RefreshClients(): void {
             var xhr = new XMLHttpRequest();
+
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
@@ -166,6 +167,7 @@ module VORLON {
 
                         var clientlist = document.createElement("ul");
                         divClientsListPane.appendChild(clientlist);
+
                         var contains = false;
                         if (clients && clients.length) {
                             for (var j = 0; j < clients.length; j++) {
@@ -179,6 +181,7 @@ module VORLON {
                             var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
                             VORLON.Tools.RemoveClass(elt, 'hidden');
                         }
+
                         if (clients.length === 0) {
                             DashboardManager.ResetDashboard(false);
                         }
@@ -238,8 +241,8 @@ module VORLON {
             DashboardManager.RefreshClients();
         }
 
-        private _onClientUpdateWaitingEvents(clientid: string, waitingevents: number): void {
-            DashboardManager.UpdateClientWaitingInfo(clientid, waitingevents);
+        private _onClientUpdateWaitingEvents(message: VorlonMessage): void {
+            DashboardManager.UpdateClientWaitingInfo(message.metadata.clientId, message.metadata.waitingEvents);
         }
 
         public static UpdateClientWaitingInfo(clientid: string, waitingevents: number): void {
@@ -269,3 +272,4 @@ module VORLON {
         }
     }
 }
+
