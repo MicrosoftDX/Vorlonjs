@@ -974,3 +974,4 @@
     // Register
     Core.RegisterDashboardPlugin(new DOMExplorerDashboard());
 }
+
