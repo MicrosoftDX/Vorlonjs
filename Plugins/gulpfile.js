@@ -43,7 +43,9 @@ gulp.task('scripts-noplugin', ['typescript-to-js'], function() {
     return gulp.src([
             'release/vorlon.tools.js',
             'release/vorlon.enums.js',
-            'release/vorlon.plugin.js',
+            'release/vorlon.basePlugin.js',
+            'release/vorlon.clientPlugin.js',
+            'release/vorlon.dashboardPlugin.js',
             'release/vorlon.clientMessenger.js',
             'release/vorlon.core.js'
         ])
@@ -61,13 +63,26 @@ gulp.task('scripts-noplugin', ['typescript-to-js'], function() {
  */
 gulp.task('scripts', ['typescript-to-js'], function () {
     return gulp.src([
-            './**/vorlon.interactiveConsole.js',
-            './**/vorlon.domExplorer.js',
-            './**/vorlon.modernizrReport.js',
-            './**/objectExplorer/vorlon.objectExplorer.js',
-            './**/xhrPanel/vorlon.xhrPanel.js',
-            './**/vorlon.ngInspector.js',
-            './**/sample/vorlon.sample.js'
+            './**/vorlon.interactiveConsole.interfaces.js',
+            './**/vorlon.interactiveConsole.client.js',
+            './**/vorlon.interactiveConsole.dashboard.js',
+            './**/vorlon.domExplorer.interfaces.js',
+            './**/vorlon.domExplorer.client.js',
+            './**/vorlon.domExplorer.dashboard.js',
+            './**/vorlon.modernizrReport.interfaces.js',
+            './**/vorlon.modernizrReport.client.js',
+            './**/vorlon.modernizrReport.dashboard.js',
+            './**/objectExplorer/vorlon.objectExplorer.interfaces.js',
+            './**/objectExplorer/vorlon.objectExplorer.client.js',
+            './**/objectExplorer/vorlon.objectExplorer.dashboard.js',
+            './**/xhrPanel/vorlon.xhrPanel.interfaces.js',
+            './**/xhrPanel/vorlon.xhrPanel.client.js',
+            './**/xhrPanel/vorlon.xhrPanel.dashboard.js',
+            './**/vorlon.ngInspector.interfaces.js',
+            './**/vorlon.ngInspector.client.js',
+            './**/vorlon.ngInspector.dashboard.js',
+            './**/sample/vorlon.sample.client.js',
+            './**/sample/vorlon.sample.dashboard.js'
         ])
         .pipe(rename(function (path) {
                 path.extname = ".min.js";
@@ -104,7 +119,7 @@ gulp.task('copyPlugins', function () {
 
 gulp.task('copyDTS', function () {
 
-    gulp.src(['Vorlon/**/*.d.ts']).pipe(gulp.dest('../Server/Scripts/typings/Vorlon'));
+    gulp.src(['release/*.d.ts']).pipe(gulp.dest('../Server/Scripts/typings/Vorlon'));
 
 });
 

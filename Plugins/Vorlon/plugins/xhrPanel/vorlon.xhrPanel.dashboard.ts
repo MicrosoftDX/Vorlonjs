@@ -1,19 +1,14 @@
 module VORLON {
-    export interface NetworkEntry{
-        id: string;
-        url: string;
-        status : number;
-        statusText : string;
-        method: string;
-        responseType: string;
-        responseHeaders : any;
-        requestHeaders: any[];
-        readyState: number;
-    }
-    
-    export class XHRPanel extends Plugin {
+
+    export class XHRPanelDashboard extends DashboardPlugin {
         public hooked: boolean = false;
         public cache: Array<NetworkEntry> = [];
+        public _itemsContainer: HTMLElement
+        public _dashboardDiv: HTMLDivElement;
+        public _clearButton: HTMLButtonElement;
+        public _startStopButton: HTMLButtonElement;
+        public _startStopButtonState: HTMLElement;
+        public _dashboardItems: any;
 
         constructor() {
             super("xhrPanel", "control.html", "control.css");
@@ -21,135 +16,11 @@ module VORLON {
             this._ready = false;        
         }
             
-        public refresh(): void {
-            this.sendStateToDashboard();
-            this.sendCacheToDashboard();
-        }
-
-        public sendStateToDashboard() {
-            this.sendCommandToDashboard('state', { hooked: this.hooked });
-        }
-
-        public sendCacheToDashboard() {
-            for (var i = 0, l = this.cache.length; i < l; i++) {
-                this.sendCommandToDashboard('xhr', this.cache[i]);
-            }
-        }
-
-        public clearClientCache() {
-            this.cache = [];
-        }
-
-        // This code will run on the client //////////////////////
-
-        public startClientSide(): void {
-            //this.setupXMLHttpRequestHook();
-        }
-
-        public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {            
-        }
-
-        public setupXMLHttpRequestHook(){
-
-            var w = <any>window;
-            w.___XMLHttpRequest = w.XMLHttpRequest;
-            var XmlHttpRequestProxy = () => {
-                var xhr = new w.___XMLHttpRequest();
-                var data = {
-                    id: VORLON.Tools.CreateGUID(),
-                    url: null,
-                    status : null,
-                    statusText : null,
-                    method: null,
-                    responseType: null,
-                    responseHeaders : null,
-                    requestHeaders : [],
-                    readyState: 0,
-                }
-                this.cache.push(data);
-                xhr.__open = xhr.open;
-                xhr.__send = xhr.send;
-                xhr.__setRequestHeader = xhr.setRequestHeader;
-                
-                //todo catch send to get posted data
-                //see https://msdn.microsoft.com/en-us/library/hh772834(v=vs.85).aspx
-                
-                xhr.open = () => {
-                    data.method = arguments[0];
-                    data.url = arguments[1];
-                    this.trace('request for ' + data.url);
-                    this.sendCommandToDashboard('xhr', data);
-                    
-                    xhr.__open.apply(xhr, arguments);
-                    return xhr.__open.apply(xhr, arguments);
-                }
-                
-                xhr.setRequestHeader = () => {
-                    var header = {
-                        name : arguments[0],
-                        value : arguments[1]
-                    }
-                    data.requestHeaders.push(header);
-                    return xhr.__setRequestHeader.apply(xhr, arguments);
-                }
-
-                xhr.addEventListener('readystatechange', () => {
-                    data.readyState = xhr.readyState;
-                    this.trace('STATE CHANGED ' + data.readyState);
-
-                    if (data.readyState === 4){
-                        data.responseType = xhr.responseType;
-                        data.status = xhr.status;    
-                        data.statusText = xhr.statusText;
-                        
-                        if (xhr.getAllResponseHeaders)    
-                            data.responseHeaders = xhr.getAllResponseHeaders();
-                        
-                        this.trace('LOADED !!!');
-                    }
-                    this.sendCommandToDashboard('xhr', data);
-                });
-
-                return xhr;
-            }
-            w.XMLHttpRequest = XmlHttpRequestProxy;
-            this.hooked = true;
-            this.sendStateToDashboard();
-        }
-
-        public removeXMLHttpRequestHook() {
-            if (this.hooked) {
-                this.trace('xhrPanel remove hook');
-                var w = <any>window;
-                w.XMLHttpRequest = w.___XMLHttpRequest;
-                this.hooked = false;
-                this.sendStateToDashboard();
-            }
-        }
-
-        private _render(tagname: string, parentNode:HTMLElement, classname?:string, value?: string): HTMLElement {
-            var elt = document.createElement(tagname);
-            elt.className = classname || '';
-            if (value)
-                elt.innerHTML = value;
-            parentNode.appendChild(elt);
-            return elt;
-        }
-        
         private _mapAction(selector: string, onClick: (button: HTMLElement) => void) {
             var button = <HTMLElement>this._dashboardDiv.querySelector(selector);
             button.addEventListener("click", () => onClick(button));
             return button;
         }
-
-        // This code will run on the dashboard //////////////////////
-        
-        public _itemsContainer: HTMLElement
-        public _dashboardDiv: HTMLDivElement;
-        public _clearButton: HTMLButtonElement;
-        public _startStopButton: HTMLButtonElement;
-        public _startStopButtonState: HTMLElement;
-        public _dashboardItems: any;
         
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._dashboardDiv = div;
@@ -197,28 +68,9 @@ module VORLON {
         } 
     }
 
-    XHRPanel.prototype.ClientCommands = {
-        start: function (data: any) {
-            var plugin = <XHRPanel>this;
-            plugin.setupXMLHttpRequestHook();
-        },
-        stop: function (data: any) {
-            var plugin = <XHRPanel>this;
-            plugin.removeXMLHttpRequestHook();
-        },
-        getState: function (data: any) {
-            var plugin = <XHRPanel>this;
-            plugin.sendStateToDashboard();
-        },
-        clear: function (data: any) {
-            var plugin = <XHRPanel>this;
-            plugin.clearClientCache();
-        }
-    };
-
-    XHRPanel.prototype.DashboardCommands = {
+    XHRPanelDashboard.prototype.DashboardCommands = {
         state: function (data: any) {
-            var plugin = <XHRPanel>this;
+            var plugin = <XHRPanelDashboard>this;
             plugin.hooked = data.hooked;
             plugin._startStopButtonState.classList.remove('fa-spin');
             plugin._startStopButtonState.classList.remove('fa-spinner');
@@ -233,7 +85,7 @@ module VORLON {
             }
         },
         xhr: function (data: any) {
-            var plugin = <XHRPanel>this;
+            var plugin = <XHRPanelDashboard>this;
             plugin.processNetworkItem(<NetworkEntry>data);
         }
     };
@@ -283,5 +135,5 @@ module VORLON {
         }
 
     //Register the plugin with vorlon core
-    Core.RegisterPlugin(new XHRPanel());
+    Core.RegisterDashboardPlugin(new XHRPanelDashboard());
 }

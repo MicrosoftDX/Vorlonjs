@@ -82,6 +82,10 @@
     <Content Include="public\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="public\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="public\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="public\images\favicon.png" />
+    <Content Include="public\images\icon-resize-horiz.svg" />
+    <Content Include="public\images\vorlon-logo-white.svg" />
+    <Content Include="public\images\VorlonLogo_Pixel_Large.svg" />
     <Content Include="public\javascripts\jquery-1.10.2.min.map" />
     <Content Include="public\stylesheets\bootstrap.css" />
     <Content Include="public\stylesheets\bootstrap.min.css" />
@@ -147,6 +151,7 @@
     <Folder Include="public\fonts\fontawesome\" />
     <Folder Include="public\fonts\fontawesome\css\" />
     <Folder Include="public\fonts\fontawesome\fonts\" />
+    <Folder Include="public\images\" />
     <Folder Include="public\stylesheets\components\" />
     <Folder Include="public\stylesheets\globals\" />
     <Folder Include="public\stylesheets\images\" />

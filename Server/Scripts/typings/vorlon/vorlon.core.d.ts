@@ -1,20 +1,34 @@
 declare module VORLON {
-    class Core {
-        static _plugins: Plugin[];
-        static _messenger: ClientMessenger;
-        static _sessionID: string;
-        static _listenClientId: string;
-        static _side: RuntimeSide;
-        static _RetryTimeout: number;
-        static Messenger: ClientMessenger;
-        static Plugins: Array<Plugin>;
-        static RegisterPlugin(plugin: Plugin): void;
-        static Start(serverUrl?: string, sessionId?: string, listenClientId?: string, divMapper?: (string) => HTMLDivElement): void;
-        private static _OnStopListenReceived();
-        private static _OnIdentifyReceived(message);
-        private static _OnError(err);
-        private static _OnIdentificationReceived(id);
-        private static _RetrySendingRealtimeMessage(plugin, receivedObject);
-        private static _Dispatch(pluginID, receivedObject);
+    class _Core {
+        _clientPlugins: ClientPlugin[];
+        _dashboardPlugins: DashboardPlugin[];
+        _messenger: ClientMessenger;
+        _sessionID: string;
+        _listenClientId: string;
+        _side: RuntimeSide;
+        _errorNotifier: any;
+        _messageNotifier: any;
+        _socketIOWaitCount: number;
+        debug: boolean;
+        _RetryTimeout: number;
+        Messenger: ClientMessenger;
+        ClientPlugins: Array<ClientPlugin>;
+        DashboardPlugins: Array<DashboardPlugin>;
+        RegisterClientPlugin(plugin: ClientPlugin): void;
+        RegisterDashboardPlugin(plugin: DashboardPlugin): void;
+        StartClientSide(serverUrl?: string, sessionId?: string, listenClientId?: string): void;
+        startClientDirtyCheck(): void;
+        StartDashboardSide(serverUrl?: string, sessionId?: string, listenClientId?: string, divMapper?: (string) => HTMLDivElement): void;
+        private _OnStopListenReceived();
+        private _OnIdentifyReceived(message);
+        private ShowError(message, timeout?);
+        private _OnError(err);
+        private _OnIdentificationReceived(id);
+        private _RetrySendingRealtimeMessage(plugin, message);
+        private _Dispatch(message);
+        private _DispatchPluginMessage(plugin, message);
+        private _DispatchFromClientPluginMessage(plugin, message);
+        private _DispatchFromDashboardPluginMessage(plugin, message);
     }
+    var Core: _Core;
 }

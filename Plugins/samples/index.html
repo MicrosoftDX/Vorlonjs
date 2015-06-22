@@ -51,6 +51,7 @@
 
     <h2>Console Logging</h2>
     <p>Console messages get logged to the Vorlon.JS dashboard. Try it!</p>
+    <button onclick="oupsss()">trigger error</button>
     <button onclick="console.log('This is a simple log message !')">simple console.log()</button>
     <button onclick="console.log('This is a', 'log', 'message !', window.samplePageObjectTest)">complex console.log()</button>
     <button onclick="console.debug('This is a', 'debug', 'message !')">console.debug()</button>
@@ -102,6 +103,12 @@
                 console.log('hey ' + i + ' !');
             }
         }
+
+        function oupsss() {
+            var test = null;
+            test.someValue = "will cause error...";
+        }
+
         var SampleObjBase = function () {
 
         }
