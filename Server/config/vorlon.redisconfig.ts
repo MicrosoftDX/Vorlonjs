@@ -4,6 +4,5 @@
         static _redisPort = 6379;
         static _redisMachine = "";
         static _redisPassword = "";
-        
     }
 }

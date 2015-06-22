@@ -4,7 +4,9 @@ import stylus = require("stylus");
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
+import vauth = require("./vorlon.authentication");
 import httpConfig = require("../config/vorlon.httpconfig"); 
+
 
 export module VORLON {
     export class WebServer {
@@ -14,10 +16,8 @@ export module VORLON {
         private _session = require("express-session");
         private _json = require("json");
         private _multer = require("multer");
-        private _passport = require('passport');
-        private _localStrategy = require('passport-local').Strategy;
+       // private _flash = require('connect-flash');
 
-        static DisableLogin = true;
         private _components: Array<iwsc.VORLON.IWebServerComponent>;
         private http: httpConfig.VORLON.HttpConfig;
         private _app: express.Express;
@@ -29,9 +29,6 @@ export module VORLON {
         }
 
         public init(): void {
-            //Initialize login management
-            this.initializeLogin();
-
             for (var id in this._components) {
                 var component = this._components[id];
                 component.addRoutes(this._app);
@@ -61,15 +58,17 @@ export module VORLON {
             app.use(this._cookieParser);
             app.use(this._favicon);
             app.use(this._session({
-                secret: '1th3is4is3as2e5cr6ec7t7keyf23or1or5lon5',
+               // secret: '1th3is4is3as2e5cr6ec7t7keyf23or1or5lon5',
+                expires: false,
                 saveUninitialized: true,
                 resave: true }));
             app.use(this._bodyParser.json());
             app.use(this._bodyParser.urlencoded({ extended: true }));
             app.use(this._multer());
-            app.use(this._passport.initialize());
-            app.use(this._passport.session());
-
+            app.use(vauth.VORLON.Authentication.Passport.initialize());
+            app.use(vauth.VORLON.Authentication.Passport.session());
+           // app.use(this._flash());
+          
             //Authorization CORS
             //Ressource : http://enable-cors.org
             app.use((req, res, next) => {
@@ -77,6 +76,8 @@ export module VORLON {
                 res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
                 next();
             });
+            
+            vauth.VORLON.Authentication.initAuthentication();
 
             if (this.http.useSSL) {
                 this.http.httpModule = this.http.httpModule.createServer(this.http.options, app).listen(app.get('port'), () => {
@@ -96,48 +97,6 @@ export module VORLON {
 
         public get httpServer(){
             return this.http.httpModule;
-        }
-
-        private initializeLogin(): void {
-
-            this._passport.use(new this._localStrategy(
-                {   // set the field name here
-                    usernameField: 'username',
-                    passwordField: 'password'
-                },
-                function (username, password, done) {
-
-                    if (username === "vorlon" && password === "vorlon") {
-                        return done(null, { "id": "1", "username": "vorlon" });
-                    }
-                    else {
-                        return done(null, false, { message: "The user is not exist" });
-                    }
-                }
-                ));
-
-            this._passport.serializeUser(function (user, done) {
-                done(null, user.id);
-            });
-
-            this._passport.deserializeUser(function (id, done) {
-                if (id === "1") {
-                    return done(null, { "id": "1", "username": "vorlon" });
-                }
-                else {
-                    return done(new Error('User ' + id + ' does not exist'));
-                }
-            });
-        }
-
-        //middleware for authentication
-        static RequireAuth(req, res, next) {
-            // check if the user is logged in
-            if (!WebServer.DisableLogin && !req.isAuthenticated()) {
-                //req.session.messages = "You need to login to view this page";
-                res.redirect('/login');
-            }
-            next();
         }
     }
 }

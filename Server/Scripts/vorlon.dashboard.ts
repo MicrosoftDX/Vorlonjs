@@ -5,32 +5,32 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
 import ws = require("./vorlon.webServer");
+import vauth = require("./vorlon.authentication");
 
 export module VORLON {
     export class Dashboard implements iwsc.VORLON.IWebServerComponent {
-        private _passport = require('passport');
-
         constructor() {
             //Nothing for now
         }
 
         public addRoutes(app: express.Express): void {
-            //Get
-            //app.route('/').get(this.getsession);
-            //app.route('/login').get(this.login);
-            //app.route('/dashboard').get(ws.VORLON.WebServer.RequireAuth, this.getsession);
-            //app.route('/getsession').get(this.getsession);
+            app.route('/').get(vauth.VORLON.Authentication.ensureAuthenticated, this.defaultDashboard);
+            app.route('/dashboard').get(vauth.VORLON.Authentication.ensureAuthenticated,this.defaultDashboard);
+            app.route('/dashboard/').get(vauth.VORLON.Authentication.ensureAuthenticated,this.defaultDashboard);
 
-            app.route('/').get(this.defaultDashboard);
-            app.route('/dashboard').get(this.defaultDashboard);
-            app.route('/dashboard/').get(this.defaultDashboard);
-
-            app.route('/dashboard/:sessionid').get(this.dashboard);
-            app.route('/dashboard/:sessionid/reset').get(this.dashboardServerReset);
-            app.route('/dashboard/:sessionid/:clientid').get(this.dashboardWithClient);
-
-            //Post
-            app.route('/login').post(this.loginPost);
+            app.route('/dashboard/:sessionid').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboard);
+            app.route('/dashboard/:sessionid/reset').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboardServerReset);
+            app.route('/dashboard/:sessionid/:clientid').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboardWithClient);
+            
+            //login
+            app.post('/login',   
+                    vauth.VORLON.Authentication.Passport.authenticate('local', 
+                        { failureRedirect: '/login',
+                          successRedirect: '/',
+                          failureFlash: false })
+                );
+            
+           app.route('/login').get(this.login);     
         }
 
         public start(httpServer: http.Server): void {
@@ -53,6 +53,10 @@ export module VORLON {
         private getsession(req: express.Request, res: express.Response) {
             res.render('getsession', { title: 'Get Session' });
         }
+        
+        private login(req: express.Request, res: express.Response) {
+            res.render('login', { message: 'Please login' });
+        }
 
         private dashboardServerReset(req: any, res: any) {
             var sessionid = req.params.sessionid;
@@ -67,48 +71,6 @@ export module VORLON {
 
             xhr.open("GET", "http://" + req.headers.host + "/api/reset/" + sessionid);
             xhr.send();
-        }
-
-        private login(req: express.Request, res: express.Response) {
-            if (req.user) {
-                // already logged in
-                res.redirect('/');
-            } else {
-                // not logged in, show the login form, remember to pass the message
-                // for displaying when error happens
-                res.render('login', { message: "Please login" });
-            }
-        }
-
-        private loginPost(req, res, next) {
-            // ask passport to authenticate
-            this._passport.authenticate('local', function (err, user, info) {
-                if (err) {
-                    // if error happens
-                    return next(err);
-                }
-
-                if (!user) {
-                    // if authentication fail, get the error message that we set
-                    // from previous (info.message) step, assign it into to
-                    // req.session and redirect to the login page again to display
-                    //req.session.messages = info.message;
-                    return res.redirect('/login');
-                }
-
-                // if everything's OK
-                req.logIn(user, function (err) {
-                    if (err) {
-                        //req.session.messages = "Error";
-                        return next(err);
-                    }
-
-                    // set the message
-                    req.session.messages = "Login successfully";
-                    return res.redirect('/');
-                });
-
-            })(req, res, next);
         }
     }
 };

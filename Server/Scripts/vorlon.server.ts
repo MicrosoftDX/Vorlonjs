@@ -166,24 +166,43 @@ export module VORLON {
             app.get("/vorlon.autostartdisabled.js/",(req: any, res: any) => {
                 this._sendVorlonJSFile(true, req, res, false);
             });
+            
+            app.get("/config.json",(req: any, res: any) => {
+                this._sendConfigJson(req, res);
+            });
 
             //DisplayLogs
             winstonDisplay(app, this._log);
+        }
+        
+        private _sendConfigJson(req: any, res: any) {
+           
+            fs.readFile(path.join(__dirname, "../config.json"), "utf8",(err, catalogdata) => {
+                if (err) {
+                    this._log.error("ROUTE : Error reading config.json file");
+                    return;
+                }
+
+                var configstring = catalogdata.toString().replace(/^\uFEFF/, '');
+                
+                res.header('Content-Type', 'application/json');
+                res.send(configstring);
+            });
         }
 
         private _sendVorlonJSFile(ismin: boolean, req: any, res: any, autostart: boolean = true) {
             //Read Socket.io file
             var javascriptFile: string;
 
-            fs.readFile(path.join(__dirname, "../public/catalog.json"), "utf8",(err, catalogdata) => {
+            fs.readFile(path.join(__dirname, "../config.json"), "utf8",(err, catalogdata) => {
                 if (err) {
-                    this._log.error("ROUTE : Error reading catalon.json file");
+                    this._log.error("ROUTE : Error reading config.json file");
                     return;
                 }
 
-                var catalogstring = catalogdata.toString().replace(/^\uFEFF/, '');
-                console.log(catalogstring);
-                var catalog = JSON.parse(catalogstring);
+                var configstring = catalogdata.toString().replace(/^\uFEFF/, '');
+                console.log(configstring);
+                var catalog = JSON.parse(configstring);
                 var vorlonpluginfiles: string = "";
                 var javascriptFile: string = "";
                                 

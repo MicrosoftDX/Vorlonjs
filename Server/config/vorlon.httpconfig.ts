@@ -11,7 +11,7 @@ export module VORLON {
         public options;
 
         public constructor() {            
-            var catalogdata: string = fs.readFileSync(path.join(__dirname, "../public/catalog.json"), "utf8");            
+            var catalogdata: string = fs.readFileSync(path.join(__dirname, "../config.json"), "utf8");            
             var catalogstring = catalogdata.toString().replace(/^\uFEFF/, '');
             var catalog = JSON.parse(catalogstring);
 
