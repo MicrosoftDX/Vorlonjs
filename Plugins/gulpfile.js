@@ -87,6 +87,9 @@ gulp.task('scripts', ['typescript-to-js'], function () {
             './**/resourcesExplorer/vorlon.resourcesExplorer.interfaces.js',
             './**/resourcesExplorer/vorlon.resourcesExplorer.client.js',
             './**/resourcesExplorer/vorlon.resourcesExplorer.dashboard.js',
+            './**/wappalyzerReport/vorlon.wappalyzerReport.interfaces.js',
+            './**/wappalyzerReport/vorlon.wappalyzerReport.client.js',
+            './**/wappalyzerReport/vorlon.wappalyzerReport.dashboard.js',
             './**/sample/vorlon.sample.client.js',
             './**/sample/vorlon.sample.dashboard.js'
         ])
