@@ -2,7 +2,11 @@
 
 - Plugins
     - Plugins are now split into 2 files (client and dashboard)
-	- New plugins: XHR Panel to track xhr calls, Network Monitor to render performances data and Resources Explorer to display local/session storage and cookies variables
+	- New plugins: 
+	        - XHR Panel to track xhr calls
+	        - Network Monitor to render performances data
+	        - Resources Explorer to display local/session storage and cookies variables
+	        - ngInspector to analyze your Angular's scopes
 	- Add envelope and commands for messages between dashboard and client
 	- New control bar component available for plugins
 	- Moving all CSS to LESS
