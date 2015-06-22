@@ -18,6 +18,7 @@
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
             var barColors = {
+                background: "rgb(211,211,211)",
                 blocked: "rgb(204, 204, 204)",
                 thirdParty: "rgb(0, 0, 0)",
                 redirect: "rgb(255, 221, 0)",
@@ -57,6 +58,8 @@
                 tdResourceDuration.className = "network-log-list-right";
                 tdResourceTimeline.style.width = "400px";
                 tdResourceTimeline.style.position = 'relative';
+
+                tdResourceTimeline.appendChild(this.createBar(entry.startTime / scaleFactor, entry.duration / scaleFactor, barColors.background));
 
                 if (entry.redirectDuration > 0) {
                     tdResourceTimeline.appendChild(this.createBar(entry.redirectStart / scaleFactor, entry.redirectDuration / scaleFactor, barColors.redirect));

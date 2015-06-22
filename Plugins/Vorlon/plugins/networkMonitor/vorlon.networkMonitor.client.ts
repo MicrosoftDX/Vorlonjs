@@ -15,6 +15,7 @@
             var entries = window.performance.getEntries();
             //console.log(entries);
 
+            this.performanceItems = [];
             for (var i = 0; i < entries.length; i++) {
                 this.performanceItems.push({
                     name: entries[i].name,
