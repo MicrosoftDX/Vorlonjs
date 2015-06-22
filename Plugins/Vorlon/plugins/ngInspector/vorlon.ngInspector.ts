@@ -421,7 +421,10 @@
                 }
 
                 if (scopes[i].$children.length > 0) {
-                    return this._findScopeById(scopes[i].$children, scopeId);
+                    var child = this._findScopeById(scopes[i].$children, scopeId);
+                    if (child) {
+                        return child;
+                    }
                 }
             }
 
