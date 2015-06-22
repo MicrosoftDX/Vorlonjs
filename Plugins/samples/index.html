@@ -118,12 +118,23 @@
 
         var SampleObj = function (name) {
             this.objname = name;
+            this.someCustomProp = "test";
         }
         SampleObj.prototype = new SampleObjBase();
 
         SampleObj.prototype.anotherFunction = function (dummy) {
 
         }
+
+        Object.defineProperty(SampleObj.prototype, 'someCustomProp', {
+            enumerable: false,
+            get: function () {
+                return this._someProp;
+            },
+            set: function (val) {
+                this._someProp = val;
+            }
+        })
 
         window.samplePageObjectTest = new SampleObj('a test for object description');
         window.samplePageObjectTest.testForArray = [1, 2, 3, 4, 5, 6];

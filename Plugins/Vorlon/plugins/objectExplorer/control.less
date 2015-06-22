@@ -20,32 +20,32 @@
             height: @searchBoxHeight;
             border-bottom: 1px solid #EEE;
             display: flex;
-            
-            .panel{
+
+            .panel {
                 position: relative;
-                
-                input{
+
+                input {
                     width: 100%;
                     padding-left: 30px;
                 }
-                
+
                 i {
-                  left:10px;
-                  top:0;
-                  line-height: 27px;
-                  color:#CCC;
-                  position:absolute;
+                    left: 10px;
+                    top: 0;
+                    line-height: 27px;
+                    color: #CCC;
+                    position: absolute;
                 }
             }
-            
-            .searchPanel{
+
+            .searchPanel {
                 flex: 1;
             }
-            
-            .filterPanel{
+
+            .filterPanel {
                 width: 20%;
-                min-width: 120px;                
-                margin-left : 4px;
+                min-width: 120px;
+                margin-left: 4px;
             }
         }
 
@@ -64,84 +64,53 @@
         height: 100%;
     }
 
+    .objdescriptor {
+    }
+
+    .expandable {
+        > .expand {
+            cursor: pointer;
+
+            > .expand-btn {
+                color: #777;
+                margin-left: -18px;
+                margin-right: 4px;
+                width: 14px;
+                height: 14px;
+                line-height: 12px;
+                border: 1px solid #999;
+                text-align: center;
+                cursor: pointer;
+                display: inline-block;
+            }
+        }
+
+        > .expand-content {
+            display: none;
+            padding-left: 30px;
+            margin-left: -12px;
+            border-left: 1px solid #DDD;
+        }
+
+        &.expanded {
+            > .expand-content {
+                display: block;
+            }
+        }
+    }
+
     .tree-view {
         padding: 0;
     }
 
-    .treeNodeButton {
-        color: #777;
-        margin-left: -18px;
-        margin-right: 4px;
-        width: 14px;
-        height: 14px;
-        line-height: 12px;
-        border: 1px solid #999;
-        text-align: center;
-        cursor: pointer;
-        display: inline-block;
-    }
+    .property{
+        .prop-name{
 
-    .treeNodeHeader {
-        text-decoration: none;
-        color: #ccc;
-    }
+        }
 
-    .treeNodeSelected {
-        background: rgba(0,183,199,0.1);
-    }
-
-    .treeNodeTools {
-        color: #444;
-        float: right;
-        text-decoration: none;
-    }
-
-    .treeNodeText {
-        text-decoration: none;
-        border-left: 1px solid #eee;
-        padding-left: 26px;
-        margin-left: -12px;
-    }
-
-    .firstTreeNodeText {
-        text-decoration: none;
-        padding-left: 0px;
-    }
-
-    .treeNodeClosingText {
-        border-left: 1px solid #eee;
-        padding-left: 13px;
-    }
-
-    .nodeName {
-        color: #1d0c3d;
-    }
-
-    .nodeTag {
-        color: #1d0c3d;
-    }
-
-    .nodeAttribute {
-        color: #ed2424;
-    }
-
-    .nodeValue {
-        color: #007ca7;
-        margin-left: 6px;
-    }
-
-    .nodeType {
-        color: #BBB;
-        font-style:italic;
-        margin-left: 6px;
-    }
-
-    .attachNode {        
-        text-align: center;
-        cursor: pointer;
-        display: inline;
-        color: #CCC;
-        margin-left: 5px;
-        font-size: 0.8em;
+        .prop-value{
+            color: blue;
+            margin-left: 10px;
+        }
     }
 }
