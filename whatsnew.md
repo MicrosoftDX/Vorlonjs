@@ -28,6 +28,7 @@
 		- filtering on console entries
 		- support for window.onerror
 	- Moving catalog.json to /server/config.json
+	- Adding a '+' tab to go to the plugins documentation on the website
 - Core
 	- New option to remove socket.io from vorlon.js in catalog.json file
 	- Simplified plugin description in catalog.json file
