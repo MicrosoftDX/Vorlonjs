@@ -44,6 +44,9 @@
         }
 
         private _findRootScopes(element: Node) {
+            if(typeof angular == 'undefined')
+                return;
+                
             var rootScope = angular.element(element).scope();
             if (!!rootScope) {
                 var cleanedRootScope = this._cleanScope(rootScope);
@@ -62,6 +65,9 @@
         }
 
         private _findChildrenScopes(element: Node, parentScope: Scope) {
+            if(typeof angular == 'undefined')
+                return;
+                
             for (var i = 0; i < element.childNodes.length; i++) {
                 var childNode = element.childNodes[i];
                 var childScope = angular.element(childNode).scope();
@@ -131,6 +137,9 @@
         }
 
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
+            if(typeof angular == 'undefined')
+                return;
+                
             if (receivedObject.type === MessageType.ReloadWithDebugInfo) {
                 angular.reloadWithDebugInfo();
             }
