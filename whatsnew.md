@@ -1,4 +1,4 @@
-## 0.0.15 [Work in progress]
+## 0.0.15
 
 - Plugins
     - Plugins are now split into 2 files (client and dashboard)
