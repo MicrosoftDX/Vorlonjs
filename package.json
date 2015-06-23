@@ -1,6 +1,6 @@
 {
   "name": "vorlon",
-  "version": "0.0.15-beta",
+  "version": "0.0.15",
   "description": "vorlon",
   "main": "Server/server.js",
   "dependencies": {
