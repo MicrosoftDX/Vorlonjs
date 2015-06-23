@@ -33,3 +33,5 @@
 	- Simplified plugin description in catalog.json file
 - Bugs
 	- Fixing bug preventing tab between plugins
+- Repo
+	- Adding a plugins library for 3rd party plugins
