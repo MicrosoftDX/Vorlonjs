@@ -242,6 +242,11 @@
                 return;
             }
 
+            if (!this.item.contentFetched) {
+                elt.element.innerHTML = '<div class="loader"><span class="fa fa-spin fa-spinner"></span> loading content...</div>';
+                return;
+            }
+
             if (this.item.proto) {
                 elt.append('DIV', 'objdescriptor-prototype expandable',(protoContainer) => {
                     var btn: FluentDOM;
@@ -362,7 +367,9 @@
 
         content: function (data: ObjExplorerObjDescriptor) {
             var plugin = <ObjectExplorerDashboard>this;
-            plugin.setContent(data);
+            if (data) {
+                plugin.setContent(data);
+            }
         }
     }
     // Register

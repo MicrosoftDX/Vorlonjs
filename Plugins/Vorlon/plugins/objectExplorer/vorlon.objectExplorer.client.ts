@@ -32,22 +32,36 @@
         }
 
         private inspect(path: Array<string>, obj: any, context: any): ObjExplorerObjDescriptor {
-            if (!obj)
+            if (obj === undefined)
                 return null;
 
-
-
-            var objProperties = Object.getOwnPropertyNames(obj);
-            var proto = Object.getPrototypeOf(obj);
             var res = <ObjExplorerObjDescriptor>{
                 proto: null,
                 fullpath: path.join('.'),
                 name: path[path.length - 1],
                 functions: [],
                 properties: [],
-                contentFetched: false,
-                type: "object"
+                contentFetched: true,
+                type: typeof obj
             };
+
+            this.trace("inspecting " + res.fullpath + " as " + res.type);
+            if (res.type === "function") {                
+                return res;
+            } else if (obj === null) {
+                res.type = "null";
+                res.value = null;
+                return res;
+            }
+            else if (res.type !== "object") {
+                res.value = obj.toString();
+                return res;
+            }
+
+            
+
+            var objProperties = Object.getOwnPropertyNames(obj);
+            var proto = Object.getPrototypeOf(obj);
 
             if (proto && proto != this._objPrototype)
                 res.proto = this.inspect(path, proto, context);
@@ -81,12 +95,17 @@
                     } else if (propertyType === 'object') {
                         var propPath = JSON.parse(JSON.stringify(path));
                         propPath.push(p);
-                        res.properties.push(<ObjExplorerObjDescriptor>{
+                        var desc = <ObjExplorerObjDescriptor>{
                             name: p,
                             type: propertyType,
                             fullpath: propPath.join('.'),
                             contentFetched: false
-                        });
+                        };
+                        if (objValue === null) {
+                            desc.type = "null";
+                            desc.contentFetched = true;
+                        }
+                        res.properties.push(desc);
                     } else {
                         res.properties.push(<ObjExplorerPropertyDescriptor>{
                             name: p,
@@ -126,23 +145,26 @@
             return res;
         }
 
-
         private _getProperty(propertyPath: string): ObjExplorerObjDescriptor {
             var selectedObj = window;
             var tokens = [this.rootProperty];
+
+            this.trace("getting obj at " + propertyPath);
 
             if (propertyPath && propertyPath !== this.rootProperty) {
                 tokens = propertyPath.split('.');
                 if (tokens && tokens.length) {
                     for (var i = 0, l = tokens.length; i < l; i++) {
                         selectedObj = selectedObj[tokens[i]];
-                        if (!selectedObj)
+                        if (selectedObj === undefined) {
+                            this.trace(tokens[i] + " not found");
                             break;
+                        }
                     }
                 }
             }
 
-            if (!selectedObj) {
+            if (selectedObj === undefined) {
                 console.log('not found');
                 return { type: 'notfound', name: 'not found', val: null, functions: [], properties: [], contentFetched: false, fullpath: null };
             }
@@ -157,30 +179,8 @@
             //this.sendToDashboard({ type: type, path: packagedObject.fullpath, property: packagedObject });
         }
 
-        private _markForRefresh() {
-            if (this._timeoutId) {
-                clearTimeout(this._timeoutId);
-            }
-
-            this._timeoutId = setTimeout(() => {
-                this.refresh();
-            }, 10000);
-        }
-
         public startClientSide(): void {
-            document.addEventListener("DOMContentLoaded",() => {
-                if (Core.Messenger.isConnected) {
-                    document.addEventListener("DOMNodeInserted",() => {
-                        this._markForRefresh();
-                    });
-
-                    document.addEventListener("DOMNodeRemoved",() => {
-                        this._markForRefresh();
-                    });
-                }
-
-                this.refresh();
-            });
+            
         }
 
 

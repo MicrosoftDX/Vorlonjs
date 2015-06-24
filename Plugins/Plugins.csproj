@@ -72,6 +72,7 @@
     <Content Include="release\vorlon.js" />
     <Content Include="release\vorlon.max.js" />
     <Content Include="samples\andyet\index.html" />
+    <Content Include="samples\index.html" />
     <Content Include="Vorlon\plugins\domExplorer\control.min.css">
       <DependentUpon>control.css</DependentUpon>
     </Content>
