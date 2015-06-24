@@ -1,8 +1,12 @@
-## 0.0.15 [Work in progress]
+## 0.0.15
 
 - Plugins
     - Plugins are now split into 2 files (client and dashboard)
-	- New plugin: XHR Panel to track xhr calls
+	- New plugins: 
+		- XHR Panel to track xhr calls
+		- Network Monitor to render performances data
+		- Resources Explorer to display local/session storage and cookies variables
+		- ngInspector to analyze your Angular's scopes
 	- Add envelope and commands for messages between dashboard and client
 	- New control bar component available for plugins
 	- Moving all CSS to LESS
@@ -24,8 +28,11 @@
 		- filtering on console entries
 		- support for window.onerror
 	- Moving catalog.json to /server/config.json
+	- Adding a '+' tab to go to the plugins documentation on the website
 - Core
 	- New option to remove socket.io from vorlon.js in catalog.json file
 	- Simplified plugin description in catalog.json file
 - Bugs
 	- Fixing bug preventing tab between plugins
+- Repo
+	- Adding a plugins library for 3rd party plugins
