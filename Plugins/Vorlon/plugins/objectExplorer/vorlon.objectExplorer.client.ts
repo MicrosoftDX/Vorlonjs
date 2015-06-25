@@ -10,7 +10,6 @@
             super("objectExplorer");
             this._id = "OBJEXPLORER";
             this._ready = false;
-            this.debug = true;
         }
 
         private STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
@@ -56,9 +55,7 @@
             else if (res.type !== "object") {
                 res.value = obj.toString();
                 return res;
-            }
-
-            
+            }            
 
             var objProperties = Object.getOwnPropertyNames(obj);
             var proto = Object.getPrototypeOf(obj);
@@ -68,9 +65,12 @@
 
             for (var i = 0, l = objProperties.length; i < l; i++) {
                 var p = objProperties[i];
+                
                 var propertyType = "";
                 if (p === '__vorlon')
                     continue;
+                var propPath = JSON.parse(JSON.stringify(path));
+                propPath.push(p);
 
                 try {
                     var objValue = context[p];
@@ -78,23 +78,25 @@
                     if (propertyType === 'function') {
                         res.functions.push(<ObjExplorerFunctionDescriptor>{
                             name: p,
+                            fullpath: propPath.join('.'),
                             args: this.getFunctionArgumentNames(objValue)
                         });
                     } else if (propertyType === 'undefined') {
                         res.properties.push(<ObjExplorerPropertyDescriptor>{
                             name: p,
                             type: propertyType,
+                            fullpath: propPath.join('.'),
                             value: undefined
                         });
                     } else if (propertyType === 'null') {
                         res.properties.push(<ObjExplorerPropertyDescriptor>{
                             name: p,
                             type: propertyType,
+                            fullpath: propPath.join('.'),
                             value: null
                         });
                     } else if (propertyType === 'object') {
-                        var propPath = JSON.parse(JSON.stringify(path));
-                        propPath.push(p);
+                        
                         var desc = <ObjExplorerObjDescriptor>{
                             name: p,
                             type: propertyType,
@@ -109,6 +111,7 @@
                     } else {
                         res.properties.push(<ObjExplorerPropertyDescriptor>{
                             name: p,
+                            fullpath: propPath.join('.'),
                             type: propertyType,
                             value: objValue.toString()
                         });
@@ -116,7 +119,12 @@
                 } catch (exception) {
                     this.trace('error reading property ' + p + ' of type ' + propertyType);
                     this.trace(exception);
-                    res.properties.push({ name: p, type: propertyType, val: "oups, Vorlon has an error reading this " + propertyType + " property..." });
+                    res.properties.push({
+                        name: p,
+                        type: propertyType,
+                        fullpath: propPath.join('.'),
+                        val: "oups, Vorlon has an error reading this " + propertyType + " property..."
+                    });
                 }
             }
 

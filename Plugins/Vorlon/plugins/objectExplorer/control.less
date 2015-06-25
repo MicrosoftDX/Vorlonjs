@@ -1,3 +1,5 @@
+@import "../vorlontheme.less";
+
 .plugin-objexplorer {
 
     .obj-explorer-container {
@@ -57,6 +59,7 @@
             bottom: 0;
             padding: 5px 20px 20px 30px;
             overflow: auto;
+            line-height: 1.5em;
         }
     }
 
@@ -65,6 +68,7 @@
     }
 
     .objdescriptor {
+        margin-bottom: 5px;
     }
 
     .expandable {
@@ -72,13 +76,13 @@
             cursor: pointer;
 
             > .expand-btn {
-                color: #777;
+                color: #BBB;
                 margin-left: -18px;
                 margin-right: 4px;
                 width: 14px;
                 height: 14px;
                 line-height: 12px;
-                border: 1px solid #999;
+                border: 1px solid #DDD;
                 text-align: center;
                 cursor: pointer;
                 display: inline-block;
@@ -102,15 +106,30 @@
     .tree-view {
         padding: 0;
     }
+    
+    .objdescriptor>*{
+        margin-bottom: 2px;
+    }
 
     .property{
+    
         .prop-name{
-
         }
 
         .prop-value{
-            color: blue;
+            color: @lightblue;
             margin-left: 10px;
         }
+    }
+
+    .actionicon {
+        margin-left: 0.5em;
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+        color: lighten(@lightpurple, 50%);
+        text-align:center;
+        vertical-align : middle;
     }
 }

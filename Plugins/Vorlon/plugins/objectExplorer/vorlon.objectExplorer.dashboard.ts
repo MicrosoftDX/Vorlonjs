@@ -17,7 +17,6 @@
             super("objectExplorer", "control.html", "control.css");
             this._id = "OBJEXPLORER";
             this._ready = false;
-            this.debug = true;
             this._contentCallbacks = {};
         }
 
@@ -77,13 +76,13 @@
             this._treeDiv.appendChild(loader);
         }
 
-        private setCurrent(path) {
+        public setCurrent(path) {
             if (path !== this._currentPropertyPath)
                 this._filterInput.value = '';
 
             this._searchBoxInput.value = path;
             this._currentPropertyPath = path;
-            this._queryObjectContent(this._currentPropertyPath);
+            this.queryObjectContent(this._currentPropertyPath);
             this._empty();
             this._treeDiv.scrollTop = 0;
             this._addLoader();
@@ -107,9 +106,9 @@
             }
         }
 
-        private _queryObjectContent(objectPath: string) {
-            this.sendCommandToClient("query", {path: objectPath });
-        }        
+        private queryObjectContent(objectPath: string) {
+            this.sendCommandToClient("query", { path: objectPath });
+        }
 
         private _sortedList(list: ObjExplorerObjDescriptor[]) {
             if (list && list.length) {
@@ -144,7 +143,7 @@
         }
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-            
+
         }
 
         public setRoot(obj: ObjExplorerObjDescriptor) {
@@ -171,7 +170,7 @@
         proto: ObjDescriptorControl;
         item: ObjExplorerObjDescriptor;
         plugin: ObjectExplorerDashboard;
-        childs: Array<ObjDescriptorControl>;
+        childs: Array<ObjPropertyControl>;
         isRoot: boolean;
 
         constructor(plugin: ObjectExplorerDashboard, parent: HTMLElement, item: ObjExplorerObjDescriptor, isRoot: boolean = false) {
@@ -182,7 +181,7 @@
             this.item = item;
             this.plugin = plugin;
             this.childs = [];
-            this.render(elt);            
+            this.render(elt);
         }
 
         private clear() {
@@ -218,11 +217,11 @@
             } else {
                 if (item.fullpath.indexOf(this.item.fullpath) === 0) {
                     for (var i = 0, l = this.childs.length; i < l; i++) {
-                        if (this.childs[i].setContent(item)) {
+                        if (this.childs[i].obj && this.childs[i].obj.setContent(item)) {
                             return true;
                         }
                     }
-                }                
+                }
             }
 
             if (this.proto && this.proto.setContent(item)) {
@@ -237,7 +236,7 @@
                 elt = FluentDOM.for(this.element);
 
             this.clear();
-            
+
             if (!this.item) {
                 return;
             }
@@ -274,8 +273,8 @@
                         expandContainer.createChild("SPAN", "expand-label").text("[Methods]");
                     }).click((arg) => {
                         arg.stopPropagation();
-                        Tools.ToggleClass(methodsContainer.element, "expanded", (expanded) => {
-                            expanded? btn.text("-") : btn.text("+");
+                        Tools.ToggleClass(methodsContainer.element, "expanded",(expanded) => {
+                            expanded ? btn.text("-") : btn.text("+");
                         });
                     });
 
@@ -284,7 +283,7 @@
                             itemsContainer.append("DIV", "obj-method",(methodItem) => {
                                 if (this.isRoot)
                                     methodItem.attr("data-propname",(this.item.fullpath + "." + p.name).toLowerCase());
-                    
+
                                 methodItem.createChild("SPAN", "method-name").text(p.name);
                             });
                         });
@@ -295,57 +294,11 @@
             if (this.item.properties && this.item.properties.length) {
                 elt.append('DIV', 'objdescriptor-properties',(propertiesContainer) => {
                     this.item.properties.forEach((p) => {
-                        this.renderProperty(propertiesContainer, p);
-                        
+                        var propctrl = new ObjPropertyControl(this.plugin, propertiesContainer.element, p, this.item, this.isRoot);
+                        this.childs.push(propctrl);
                     });
                 });
             }
-        }
-
-        public renderProperty(container: FluentDOM, prop: ObjExplorerPropertyDescriptor) {
-            if (prop.type !== "object") {
-                container.append("DIV", "property", (propContainer) => {
-                    if (this.isRoot)
-                        propContainer.attr("data-propname",(this.item.fullpath + "." + prop.name).toLowerCase());
-                    propContainer.createChild("SPAN", "prop-name").text(prop.name);
-                    propContainer.createChild("SPAN", "prop-value").text(prop.value);
-                });
-                return;
-            }
-
-            container.append('DIV', 'prop-object expandable', (propContainer) => {
-                var btn: FluentDOM;
-
-                if (this.isRoot)
-                    propContainer.attr("data-propname",(this.item.fullpath + "." + prop.name).toLowerCase());
-
-                propContainer.append("DIV", "expand",(expandContainer) => {
-                    btn = expandContainer.createChild("SPAN", "expand-btn").text("+");
-                    expandContainer.createChild("SPAN", "expand-label").text(prop.name);
-                }).click((arg) => {
-                    arg.stopPropagation();
-                    Tools.ToggleClass(propContainer.element, "expanded", (expanded) => {
-                        if (!expanded) {
-                            btn.text("+");
-                            return;
-                        }
-
-                        btn.text("-");
-                        var elt = propContainer.element.querySelector(".expand-content > .objdescriptor");
-                        if (elt) {
-                            var ctrl = <ObjDescriptorControl>elt.__vorlon;
-                            if (ctrl) {
-                                ctrl.getContent();
-                            }
-                        }
-                    });
-                });
-
-                propContainer.append("DIV", "expand-content",(itemsContainer) => {
-                    var child = new ObjDescriptorControl(this.plugin, itemsContainer.element, <ObjExplorerObjDescriptor>prop);
-                    this.childs.push(child);
-                });
-            });
         }
 
         public getContent() {
@@ -357,6 +310,86 @@
     }
 
     class ObjPropertyControl {
+        parent: HTMLElement;
+        element: FluentDOM;
+        prop: ObjExplorerPropertyDescriptor;
+        obj: ObjDescriptorControl;
+        parentObj: ObjExplorerObjDescriptor;
+        plugin: ObjectExplorerDashboard;
+        public isRoot: boolean = false;
+
+        constructor(plugin: ObjectExplorerDashboard, parent: HTMLElement, prop: ObjExplorerPropertyDescriptor, parentObj: ObjExplorerObjDescriptor, isRoot: boolean) {
+            this.plugin = plugin;
+            this.parent = parent;
+            this.parentObj = parentObj;
+            this.prop = prop;
+            this.isRoot = isRoot;
+            this.element = new FluentDOM("DIV", "property", parent);
+            if (prop.type !== "object") {
+                this.renderValueProperty();
+            } else {
+                this.renderObjectProperty();
+            }
+        }
+
+        public dispose() {
+            this.plugin = null;
+            this.parentObj = null;
+            this.parent = null;
+            this.prop = null;
+            if (this.obj) {
+                this.obj.dispose();
+                this.obj = null;
+            }
+        }
+
+        public renderValueProperty() {
+            if (this.isRoot)
+                this.element.attr("data-propname",(this.prop.fullpath + "." + this.prop.name).toLowerCase());
+            this.element.createChild("SPAN", "prop-name").text(this.prop.name);
+            this.element.createChild("SPAN", "prop-value").text(this.prop.value);
+        }
+
+        public renderObjectProperty() {
+            var btn: FluentDOM;
+
+            this.element.addClass("prop-object");
+            this.element.addClass("expandable");
+            if (this.isRoot)
+                this.element.attr("data-propname",(this.prop.fullpath + "." + this.prop.name).toLowerCase());
+
+            this.element.append("DIV", "expand",(expandContainer) => {
+                btn = expandContainer.createChild("SPAN", "expand-btn").text("+");
+                expandContainer.createChild("SPAN", "expand-label").text(this.prop.name);
+                expandContainer.createChild("SPAN", "makeroot actionicon fa fa-external-link").click((arg) => {
+                    this.plugin.setCurrent(this.prop.fullpath);
+                    arg.stopPropagation();
+                });
+            }).click((arg) => {
+                arg.stopPropagation();
+                Tools.ToggleClass(this.element.element, "expanded",(expanded) => {
+                    if (!expanded) {
+                        btn.text("+");
+                        return;
+                    }
+
+                    btn.text("-");
+                    var elt = this.element.element.querySelector(".expand-content > .objdescriptor");
+                    if (elt) {
+                        var ctrl = <ObjDescriptorControl>elt.__vorlon;
+                        if (ctrl) {
+                            setTimeout(() => {
+                                ctrl.getContent();
+                            }, 0);
+                        }
+                    }
+                });
+            });
+
+            this.element.append("DIV", "expand-content",(itemsContainer) => {
+                this.obj = new ObjDescriptorControl(this.plugin, itemsContainer.element, <ObjExplorerObjDescriptor>this.prop);
+            });
+        }
     }
 
     ObjectExplorerDashboard.prototype.DashboardCommands = {
