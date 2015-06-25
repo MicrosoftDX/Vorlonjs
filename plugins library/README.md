@@ -2,7 +2,7 @@
 
 You will find here all kind of plugins done by the community.
 
-## Wappalyzer
+## [Wappalyzer](wappalyzerReport)
 This plugin uses Wappalyzer to detect "well-known" technologies used in a website implementation. 
 It is based on script tags (to guess js libs for example), meta tags (to guess CMS), HTTP headers (to guess server type), etc. 
 
