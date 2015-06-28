@@ -261,7 +261,7 @@
                     this._searchresults.classList.add('found');
                     this._searchresults.innerHTML = this._positionSearch + "/" + this._lengthSearch;
                 } else {
-                    this._searchresults.classList.remove('noresults');
+                    this._searchresults.classList.remove('found');
                     this._searchresults.classList.add('noresults');
                     this._searchresults.innerHTML = "no results";
                 }
