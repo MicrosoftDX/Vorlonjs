@@ -324,20 +324,23 @@
         }
 
         searchDOMBySelector(selector: string, position: number = 0) {
-            var elements = document.querySelectorAll(selector);
-            if (elements.length) {
-                if (!elements[position])
-                    position = 0;
-                var parentId = this.getFirstParentWithInternalId(elements[position]);
-                if (parentId) {
-                    this.refreshbyId(parentId, this._packageNode(elements[position]).internalId);
-                }
-                if (position < elements.length + 1) {
-                    position++;
+            var length = 0;
+            if (selector) {
+                var elements = document.querySelectorAll(selector);
+                length = elements.length;
+                if (elements.length) {
+                    if (!elements[position])
+                        position = 0;
+                    var parentId = this.getFirstParentWithInternalId(elements[position]);
+                    if (parentId) {
+                        this.refreshbyId(parentId, this._packageNode(elements[position]).internalId);
+                    }
+                    if (position < elements.length + 1) {
+                        position++;
+                    }
                 }
             }
-
-            this.sendCommandToDashboard('searchDOMByResults', { length: elements.length, selector: selector, position: position });
+            this.sendCommandToDashboard('searchDOMByResults', { length: length, selector: selector, position: position });
         }
 
         setAttribute(internaID: string, attributeName: string, attributeOldName: string, attributeValue: string): void {

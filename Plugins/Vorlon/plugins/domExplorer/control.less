@@ -274,17 +274,44 @@
             border-top: none;
             border-left: none;
             border-right: none;
+            position: relative;
 
             > * {
                 border-radius: 0.25em;
             }
 
-            #searchinput {
-                /*display: none;*/
+            .searchContainer {
                 position: absolute;
-                right: 0.25em;
-                top: 0.25em;
-                min-width: 220px;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                display: webkit-flex;
+                display: flex;
+
+                #searchresults {
+                    justify-content: center;
+                    line-height: 30px;
+                    padding-right: 5px;
+                    padding-left: 5px;
+                    color: white;
+                    margin-top: 0.25em;
+                    margin-bottom: 0.25em;
+
+                    &.found {
+                        background-color: black;
+                    }
+
+                    &.noresults {
+                        background-color: #ed2424;
+                    }
+                }
+
+                #searchinput {
+                    justify-content: center;
+                    margin-top: 0.25em;
+                    margin-bottom: 0.25em;
+                    min-width: 220px;
+                }
             }
         }
     }
