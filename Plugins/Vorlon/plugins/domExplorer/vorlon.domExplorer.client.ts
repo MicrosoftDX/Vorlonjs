@@ -90,9 +90,13 @@
                 }) : [],
                 styles: DOMExplorerClient.GetAppliedStyles(node),
                 children: [],
+                isEmpty: false,
                 rootHTML: null,
                 internalId: VORLON.Tools.CreateGUID()
             };
+            if (node.innerHTML === "") {
+                packagedNode.isEmpty = true;
+            }
             if (packagedNode.type == "3" || node.nodeName === "#comment") {
                 if (node.nodeName === "#comment") {
                     packagedNode.name = "#comment";

@@ -336,6 +336,10 @@
             color: black;
         }
 
+        &[data-collapsed] ~ .treeNodeHeader.emptynode .closetag:after {
+            content: '';
+        }
+
         &[data-collapsed] ~ .nodeContentContainer {
             display: none;
         }

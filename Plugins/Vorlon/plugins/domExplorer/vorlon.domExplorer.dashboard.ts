@@ -598,24 +598,28 @@
                     menu("#treeNodeHeader-" + that.node.internalId);
                 });
             });
+            if (this.node.isEmpty) {
+                this.header.classList.add('emptynode');
+            }
+            else {
+                root.append('DIV', 'nodeContentContainer',(container) => {
+                    this.contentContainer = container.element;
+                    if (this.node.hasChildNodes) {
+                        this.contentContainer.id = "vorlon-" + this.node.internalId;
+                    }
 
-            root.append('DIV', 'nodeContentContainer',(container) => {
-                this.contentContainer = container.element;
-                if (this.node.hasChildNodes) {
-                    this.contentContainer.id = "vorlon-" + this.node.internalId;
-                }
-
-                var nodes = this.node.children;
-                if (nodes && nodes.length) {
-                    for (var index = 0; index < nodes.length; index++) {
-                        var child = nodes[index];
-                        if (child.nodeType != 3) {
-                            var node = new DomExplorerNode(this.plugin, this, this.contentContainer, child);
-                            this.childs.push(node);
+                    var nodes = this.node.children;
+                    if (nodes && nodes.length) {
+                        for (var index = 0; index < nodes.length; index++) {
+                            var child = nodes[index];
+                            if (child.nodeType != 3) {
+                                var node = new DomExplorerNode(this.plugin, this, this.contentContainer, child);
+                                this.childs.push(node);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
             if (this.node.name) {
                 if (this.node.name != "input" && this.node.name != "meta" && this.node.name != "link" && this.node.name != "img" && this.node.name != "br" && this.node.name != "hr") {
                     root.append("DIV", "treeNodeClosingText",(footer) => {
