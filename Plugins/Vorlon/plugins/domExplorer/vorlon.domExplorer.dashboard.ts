@@ -21,6 +21,7 @@
         public _editablemode: boolean = false;
         private _editableElement: HTMLElement;
         private _searchinput: HTMLInputElement;
+        private _searchresults: HTMLInputElement;
         private _stylesEditor: DomExplorerPropertyEditor;
         private _lengthSearch;
         private _positionSearch;
@@ -47,6 +48,7 @@
                 this._computedsection = <HTMLTextAreaElement> Tools.QuerySelectorById(filledDiv, "computedsection");
 
                 this._searchinput = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "searchinput");
+                this._searchresults = <HTMLInputElement> Tools.QuerySelectorById(filledDiv, "searchresults");
                 this.styleView = Tools.QuerySelectorById(filledDiv, "styleView");
                 var domSettings = new DomSettings(this);
                 this.searchDOM();
@@ -151,6 +153,9 @@
             this._searchinput.addEventListener("keydown",(evt) => {
                 if (evt.keyCode === 13 || evt.keyCode === 9) { // Enter or tab
                     evt.preventDefault();
+                    this._searchresults.innerHTML = "";
+                    this._searchresults.classList.remove('noresults');
+                    this._searchresults.classList.remove('found');
                     this._selectorSearch = this._searchinput.value;
                     if (this._selectorSearch === this._searchinput.value) {
                         this.sendCommandToClient("searchDOMBySelector", { selector: this._searchinput.value, position: this._positionSearch });
@@ -247,9 +252,24 @@
         }
 
         public searchDOMByResults(data: any) {
-            this._lengthSearch = data.length,
-            this._selectorSearch = data.selector
-            this._positionSearch = data.position
+            this._lengthSearch = data.length;
+            this._selectorSearch = data.selector;
+            this._positionSearch = data.position;
+            if (this._selectorSearch) {
+                if (this._lengthSearch) {
+                    this._searchresults.classList.remove('noresults');
+                    this._searchresults.classList.add('found');
+                    this._searchresults.innerHTML = this._positionSearch + "/" + this._lengthSearch;
+                } else {
+                    this._searchresults.classList.remove('found');
+                    this._searchresults.classList.add('noresults');
+                    this._searchresults.innerHTML = "no results";
+                }
+            }
+            else {
+                this._searchresults.classList.remove('noresults');
+                this._searchresults.classList.remove('noresults');
+            }
         }
 
         public mutationObeserverAvailability(data: any) {
@@ -598,37 +618,46 @@
                     menu("#treeNodeHeader-" + that.node.internalId);
                 });
             });
+            if (this.node.isEmpty) {
+                this.header.classList.add('emptynode');
+            }
+            else {
+                root.append('DIV', 'nodeContentContainer',(container) => {
+                    this.contentContainer = container.element;
+                    if (this.node.hasChildNodes) {
+                        this.contentContainer.id = "vorlon-" + this.node.internalId;
+                    }
 
-            root.append('DIV', 'nodeContentContainer',(container) => {
-                this.contentContainer = container.element;
-                if (this.node.hasChildNodes) {
-                    this.contentContainer.id = "vorlon-" + this.node.internalId;
-                }
-
-                var nodes = this.node.children;
-                if (nodes && nodes.length) {
-                    for (var index = 0; index < nodes.length; index++) {
-                        var child = nodes[index];
-                        if (child.nodeType != 3) {
-                            var node = new DomExplorerNode(this.plugin, this, this.contentContainer, child);
-                            this.childs.push(node);
+                    var nodes = this.node.children;
+                    if (nodes && nodes.length) {
+                        for (var index = 0; index < nodes.length; index++) {
+                            var child = nodes[index];
+                            if (child.nodeType != 3) {
+                                var node = new DomExplorerNode(this.plugin, this, this.contentContainer, child);
+                                this.childs.push(node);
+                            }
                         }
                     }
-                }
-            });
-            if (this.node.name) {
-                root.append("DIV", "treeNodeClosingText",(footer) => {
-                    footer.createChild("SPAN", "openclosingtag").text('</');
-                    footer.createChild("SPAN", "nodeName").text(this.node.name);
-                    footer.createChild("SPAN", "closetag").text('>');
-                    if (!footer.element.dataset)
-                        footer.element.dataset = {};
-                    $(footer.element).data("internalid", this.node.internalId);
-                    footer.element.id = `treeNodeClosingText${ this.node.internalId}`;
-                    footer.element.addEventListener("contextmenu",() => {
-                        menu("#treeNodeClosingText" + this.node.internalId);
-                    });
                 });
+            }
+            if (this.node.name) {
+                if (this.node.name != "input" && this.node.name != "meta" && this.node.name != "link" && this.node.name != "img" && this.node.name != "br" && this.node.name != "hr") {
+                    root.append("DIV", "treeNodeClosingText",(footer) => {
+                        footer.createChild("SPAN", "openclosingtag").text('</');
+                        footer.createChild("SPAN", "nodeName").text(this.node.name);
+                        footer.createChild("SPAN", "closetag").text('>');
+                        if (!footer.element.dataset)
+                            footer.element.dataset = {};
+                        $(footer.element).data("internalid", this.node.internalId);
+                        footer.element.id = `treeNodeClosingText${ this.node.internalId}`;
+                        footer.element.addEventListener("contextmenu",() => {
+                            menu("#treeNodeClosingText" + this.node.internalId);
+                        });
+                    });
+                }
+                else {
+                    (<HTMLElement>  this.header.querySelector('.closetag')).innerHTML = "/>";
+                }
             }
             // Main node
 
