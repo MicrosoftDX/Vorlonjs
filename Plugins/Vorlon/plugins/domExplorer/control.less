@@ -195,7 +195,6 @@
     }
 
     #treeView {
-        display: none;
         height: ~"calc(100% - 36px)";
         overflow-x: none;
         overflow-y: auto;
@@ -258,60 +257,61 @@
         }
 
         &.active {
-
             .domload-spinner {
                 display: none;
             }
-
-            > x-controlbar,
-            #treeView {
-                display: block;
+        }
+        
+        &:not(.active) {
+            > x-controlbar, > #treeView {
+                display: none;
             }
         }
 
-        > x-controlbar {
-            display: none;
+        > x-controlbar {          
             border-top: none;
             border-left: none;
             border-right: none;
-            position: relative;
 
-            > * {
-                border-radius: 0.25em;
+            #searchresults {
+                display: none;
+                position: relative;
+                font-size: 70%;
+                font-weight: bold;
+                text-align: center;
+                
+                &:before {
+                    content: "";
+                    position: absolute;
+                    top: 50%;
+                    right: 0; 
+                    padding: 0 0.75em 0 0;
+                    -webkit-transform: translateY(-50%); 
+                    transform: translateY(-50%);
+                }
+
+                &.found {
+                    display: block;
+                    color: #777;
+                    
+                    &:before {
+                        content: attr(content);
+                    }   
+                }
+
+                &.noresults {
+                    display: block;
+                    color: #ed2424;
+                    
+                    &:before {
+                        content: "0/0";
+                    }
+                }
             }
 
-            .searchContainer {
-                position: absolute;
-                right: 0;
-                top: 0;
-                bottom: 0;
-                display: webkit-flex;
-                display: flex;
-
-                #searchresults {
-                    justify-content: center;
-                    line-height: 30px;
-                    padding-right: 5px;
-                    padding-left: 5px;
-                    color: white;
-                    margin-top: 0.25em;
-                    margin-bottom: 0.25em;
-
-                    &.found {
-                        background-color: black;
-                    }
-
-                    &.noresults {
-                        background-color: #ed2424;
-                    }
-                }
-
-                #searchinput {
-                    justify-content: center;
-                    margin-top: 0.25em;
-                    margin-bottom: 0.25em;
-                    min-width: 220px;
-                }
+            #searchinput {
+                min-width: 220px;
+                margin-left: auto;
             }
         }
     }
