@@ -15,6 +15,13 @@ $ vorlon
 With the server is running, open http://localhost:1337 in your browser to see the Vorlon.JS dashboard.
 ```
 
+### Custom port
+
+```sh
+$ PORT=3000 vorlon
+//Vorlon listening on port 3000
+```
+
 The last step is to enable Vorlon.JS by adding this to your app:
 
 ```html
