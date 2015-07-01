@@ -7,7 +7,6 @@
             //     name   ,  html for dash   css for dash
             super("device", "control.html", "control.css");
             this._ready = true;
-            console.log('Started device plugin...');
         }
 
         //Return unique id for your plugin
@@ -30,22 +29,6 @@
 
         // called to update the HTML with a complete set of data
         public update(data: any): void {
-            console.log('Performing full update...');
-
-            // viewport
-            var viewport = data.viewport;
-            this.setTableValue('aspect-ratio', viewport.aspectRatio);
-            this.setTableValue('width', viewport.width + 'px');
-            this.setTableValue('width-em', viewport.widthEm + 'em');
-            this.setTableValue('meta-viewport-tag', data.metaViewport);
-
-            // screen width
-            var screenWidths = data.screenWidths
-            this.setTableValue('screen-width', screenWidths.screenWidth + 'px');
-            this.setTableValue('screen-available-width', screenWidths.screenAvailWidth + 'px');
-            this.setTableValue('window-inner-width', screenWidths.windowInnerWidth + 'px');
-            this.setTableValue('body-client-width', screenWidths.bodyClientWidth + 'px');
-
             // resolution
             var resolution = data.resolution;
             this.setTableValue('dpi', resolution.dpi);
@@ -59,16 +42,23 @@
 
 
             this.updateResize(data);
-
-            console.log('Full update complete.');
-
         }
 
         // called to update the HTML with a set of data stemming from a window resize
         public updateResize(data: any): void {
-            console.log('Performing resize update...');
+            // viewport
+            var viewport = data.viewport;
+            this.setTableValue('aspect-ratio', viewport.aspectRatio);
+            this.setTableValue('width', viewport.width + 'px');
+            this.setTableValue('width-em', viewport.widthEm + 'em');
+            this.setTableValue('meta-viewport-tag', data.metaViewport);
 
-            console.log('Resize update complete.');
+            // screen width
+            var screenWidths = data.screenWidths
+            this.setTableValue('screen-width', screenWidths.screenWidth + 'px');
+            this.setTableValue('screen-available-width', screenWidths.screenAvailWidth + 'px');
+            this.setTableValue('window-inner-width', screenWidths.windowInnerWidth + 'px');
+            this.setTableValue('body-client-width', screenWidths.bodyClientWidth + 'px');
         }
 
         public setTableValue(cssClass: string, value: string): void {

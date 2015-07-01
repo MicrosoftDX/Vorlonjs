@@ -7,7 +7,6 @@ module VORLON {
         constructor() {
             super("device");
             this._ready = true;
-            console.log('Started device plugin');
         }
 
         //Return unique id for your plugin
@@ -19,43 +18,38 @@ module VORLON {
             // override this method with cleanup work that needs to happen
             // as the user switches between clients on the dashboard
 
-            console.log('Refreshing device information...');
-
-            // console.log('verge', verge);
-            // console.log('res', res);
 
             if (typeof verge === 'undefined' || typeof res === 'undefined') {
-                console.warn('Library missing. Waiting to refresh.');
                 return;
             }
 
             // user agent string
             var userAgent = this.getUserAgent();
-            console.info('User agent:', userAgent);
+            // console.info('User agent:', userAgent);
 
             // meta viewport tag
             var metaViewport = this.getMetaViewport();
-            console.info('Meta viewport:', metaViewport);
+            // console.info('Meta viewport:', metaViewport);
 
             // screen widths
             var screenWidths = this.getScreenWidths();
-            console.info('Screen widths', screenWidths);
+            // console.info('Screen widths', screenWidths);
 
             // screen resolution
             var resolution = this.getResolution();
-            console.info('Resolution', resolution);
+            // console.info('Resolution', resolution);
 
             // root font size
             var rootFontSize:any = this.getRootFontSize();
-            console.info('Root font size:', rootFontSize);
+            // console.info('Root font size:', rootFontSize);
 
             // viewport
             var viewport = this.getViewport();
-            console.info('Viewport', viewport);
+            // console.info('Viewport', viewport);
 
             // pixel ratio
             var pixelRatio = this.getPixelRatio();
-            console.info('Pixel ratio:', pixelRatio);
+            // console.info('Pixel ratio:', pixelRatio);
 
             var data = {
                 userAgent: userAgent,
@@ -72,11 +66,7 @@ module VORLON {
                 data: data
             }
 
-            console.info(data);
-
             this.sendToDashboard(message);
-
-            console.log('Device information refreshed.');
         }
 
         public refreshResize(): void {
@@ -92,7 +82,7 @@ module VORLON {
 
             this.sendToDashboard(message);
 
-            console.log('Device information refreshed for resize.');
+            // console.log('Device information refreshed for resize.');
         }
 
         public getUserAgent(): string {
@@ -159,21 +149,13 @@ module VORLON {
             // load the "res" and "verge" libraries
 
             this._loadNewScriptAsync("res.min.js",() => {
-                console.log('Loading res library...');
                 if (res) {
-                    console.log('The res library loaded successfully.');
                     this.refresh();
-                } else {
-                    console.error('The res library failed to load.', res);
                 }
             });
             this._loadNewScriptAsync("verge.min.js",() => {
-                console.log('Loading verge library...');
                 if (verge) {
-                    console.log('The verge library loaded successfully.');
                     this.refresh();
-                } else {
-                    console.error('The verge library failed to load.', res);
                 }
             });
 
