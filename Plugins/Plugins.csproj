@@ -85,6 +85,8 @@
     <Content Include="Vorlon\plugins\resourcesExplorer\control.html" />
     <Content Include="Vorlon\plugins\sample\control.css" />
     <Content Include="Vorlon\plugins\sample\control.html" />
+    <Content Include="Vorlon\plugins\unitTestRunner\control.html" />
+    <Content Include="Vorlon\plugins\unitTestRunner\qunit.js" />
     <Content Include="Vorlon\plugins\xhrPanel\control.less" />
     <Content Include="Vorlon\plugins\domExplorer\control.less" />
     <Content Include="Vorlon\plugins\domExplorer\control.css.map">
@@ -105,6 +107,7 @@
     <Content Include="Vorlon\plugins\sample\README.md" />
     <Content Include="Vorlon\plugins\networkMonitor\control.less" />
     <Content Include="Vorlon\plugins\resourcesExplorer\control.less" />
+    <Content Include="Vorlon\plugins\unitTestRunner\control.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -161,6 +164,9 @@
     <TypeScriptCompile Include="Vorlon\plugins\resourcesExplorer\vorlon.resourcesExplorer.interfaces.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\sample\vorlon.sample.client.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\sample\vorlon.sample.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\unitTestRunner\vorlon.unitTestRunner.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\unitTestRunner\vorlon.unitTestRunner.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\unitTestRunner\vorlon.unitTestRunner.interfaces.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.client.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.dashboard.ts" />
     <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.interfaces.ts" />
