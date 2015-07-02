@@ -17,8 +17,15 @@ With the server is running, open http://localhost:1337 in your browser to see th
 
 ### Custom port
 
+[Linux]
 ```sh
 $ PORT=3000 vorlon
+```
+[Windows]
+```sh
+c:\>SET PORT=3000 && vorlon 
+```
+```sh
 //Vorlon listening on port 3000
 ```
 
