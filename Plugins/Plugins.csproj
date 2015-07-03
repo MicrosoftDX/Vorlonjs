@@ -106,6 +106,7 @@
     <Content Include="Vorlon\plugins\sample\README.md" />
     <Content Include="Vorlon\plugins\networkMonitor\control.less" />
     <Content Include="Vorlon\plugins\resourcesExplorer\control.less" />
+    <Content Include="Vorlon\plugins\vorlontheme.less" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
