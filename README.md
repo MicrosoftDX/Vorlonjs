@@ -4,6 +4,8 @@ A new, open source, extensible, platform-agnostic tool for remotely debugging an
 
 Learn more at [VorlonJS](http://vorlonjs.com).
 
+## Deploy on Azure  
+ [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)  
 
 ## Easy setup
 
