@@ -70,6 +70,10 @@ module VORLON {
         }
 
         public refreshResize(): void {
+            if (typeof verge === 'undefined') {
+                return;
+            }
+            
             var data = {
                 screenWidths: this.getScreenWidths(),
                 viewport: this.getViewport(),
