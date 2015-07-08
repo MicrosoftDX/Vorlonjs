@@ -12,6 +12,7 @@ module VORLON {
         name: string;
         classes: string;
         content: string;
+        isEmpty: boolean;
         attributes: Array<any>;
         styles: any;
         internalId: string;
@@ -19,5 +20,5 @@ module VORLON {
         rootHTML: any;
         children: Array<any>;
         highlightElementID?: string;
-    }    
+    }
 }
