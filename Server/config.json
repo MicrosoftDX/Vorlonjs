@@ -11,6 +11,7 @@
         { "id": "XHRPANEL", "name": "XHR", "panel": "top", "foldername": "xhrPanel", "enabled": true },
         { "id": "NGINSPECTOR", "name": "Ng. Inspector", "panel": "top", "foldername": "ngInspector", "enabled": false },
         { "id": "NETWORK", "name": "Network Monitor", "panel": "top", "foldername": "networkMonitor", "enabled": true },
-        { "id": "RESOURCES", "name": "Resources Explorer", "panel": "top", "foldername": "resourcesExplorer", "enabled": true }
+        { "id": "RESOURCES", "name": "Resources Explorer", "panel": "top", "foldername": "resourcesExplorer", "enabled": true },
+        { "id": "DEVICE", "name": "My Device", "panel": "top", "foldername": "device", "enabled": true }
     ]
 }

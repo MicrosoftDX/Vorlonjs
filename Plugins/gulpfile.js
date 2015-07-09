@@ -88,7 +88,9 @@ gulp.task('scripts', ['typescript-to-js'], function () {
             './**/resourcesExplorer/vorlon.resourcesExplorer.client.js',
             './**/resourcesExplorer/vorlon.resourcesExplorer.dashboard.js',
             './**/sample/vorlon.sample.client.js',
-            './**/sample/vorlon.sample.dashboard.js'
+            './**/sample/vorlon.sample.dashboard.js',
+            './**/device/vorlon.device.client.js',
+            './**/device/vorlon.device.dashboard.js'
         ])
         .pipe(rename(function (path) {
                 path.extname = ".min.js";
