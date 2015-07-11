@@ -1,48 +1,61 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22609.0
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugins", "Plugins\Plugins.csproj", "{54E4B466-DFD4-4853-8BF5-939E9AFFED9C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{200CA1D1-B855-499E-A24B-65C594058A39}"
-	ProjectSection(SolutionItems) = preProject
-		readme.txt = readme.txt
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Server", "Server\", "{2632468E-0332-4119-87D3-0CF2EE420540}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv2.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_32047"
+		Debug.AspNetCompiler.PhysicalPath = "Server\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_32047\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_32047"
+		Release.AspNetCompiler.PhysicalPath = "Server\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_32047\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "32047"
+		SlnRelativePath = "Server\"
 	EndProjectSection
 EndProject
-Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "Server", "Server\Server.njsproj", "{FF85083B-DF28-448B-8280-60CA2E5507DC}"
-	ProjectSection(ProjectDependencies) = postProject
-		{54E4B466-DFD4-4853-8BF5-939E9AFFED9C} = {54E4B466-DFD4-4853-8BF5-939E9AFFED9C}
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Plugins", "Plugins\", "{B24FFA7F-1251-435F-ACEF-9F21252A171B}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_32049"
+		Debug.AspNetCompiler.PhysicalPath = "Plugins\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_32049\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_32049"
+		Release.AspNetCompiler.PhysicalPath = "Plugins\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_32049\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "32049"
+		SlnRelativePath = "Plugins\"
 	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{54E4B466-DFD4-4853-8BF5-939E9AFFED9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{54E4B466-DFD4-4853-8BF5-939E9AFFED9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{54E4B466-DFD4-4853-8BF5-939E9AFFED9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{54E4B466-DFD4-4853-8BF5-939E9AFFED9C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FF85083B-DF28-448B-8280-60CA2E5507DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FF85083B-DF28-448B-8280-60CA2E5507DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FF85083B-DF28-448B-8280-60CA2E5507DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FF85083B-DF28-448B-8280-60CA2E5507DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2632468E-0332-4119-87D3-0CF2EE420540}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2632468E-0332-4119-87D3-0CF2EE420540}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B24FFA7F-1251-435F-ACEF-9F21252A171B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B24FFA7F-1251-435F-ACEF-9F21252A171B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://deltakosh.visualstudio.com/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = Plugins\\Plugins.csproj
-		SccProjectName1 = Plugins
-		SccLocalPath1 = Plugins
-		SccProjectUniqueName2 = Server\\Server.njsproj
-		SccProjectName2 = Server
-		SccLocalPath2 = Server
 	EndGlobalSection
 EndGlobal
