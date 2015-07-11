@@ -65,7 +65,7 @@
     <h2>Dom Explorer</h2>
     <p>You can inspect the DOM of this page from the Vorlon.JS dashboard. Here is some html with inline styles, and css styles applied.
     <div>
-      <input type="text" placeholder="This is an input"/>
+      <input type="text" id="sampleInput" placeholder="This is an input" value="42"/>
 
       <div id="test">
         <p>This text is styled by css</p>
@@ -91,6 +91,15 @@
       }
     </script>
     <button onclick="ajaxCall()">make ajax call</button>
+    <h2>unitTest</h2>
+    <p>You can run this QUnit test in dashboard</p>
+    <div id="test2" style="font-family: monospace">
+        <p id="searchsample">
+            QUnit.test( "Sample test", function( assert ) {
+        		assert.ok( document.getElementById("sampleInput").value == "42", "Passed!" );
+        	  });
+        </p>
+    </div>
     
     <div id="footer">
       Learn more about <a href="http://vorlonjs.com">Vorlon.JS</a> or find the source at <a href="http://github.com/MicrosoftDX/Vorlonjs">GitHub</a>.

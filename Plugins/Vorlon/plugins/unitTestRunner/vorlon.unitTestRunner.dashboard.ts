@@ -109,7 +109,10 @@
 
                     tdPassed.innerHTML = receivedObject.passed;
                     tdFailed.innerHTML = receivedObject.failed;
-                    tdTime.innerHTML = receivedObject.runtime;
+                    //** Need to fix because receivedObject.runtime return a wrong value
+                    //   it's a Qunit problem
+                    tdTime.innerHTML = "";// receivedObject.runtime;
+                    //**
                     tdTotal.innerHTML = receivedObject.total;
 
                     this._containerSummary.innerHTML = "";
