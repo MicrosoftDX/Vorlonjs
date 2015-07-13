@@ -13,7 +13,7 @@ export module VORLON {
             //Nothing for now
         }
 
-        public addRoutes(app: express.Express): void {
+        public addRoutes(app: express.Express, passport: any): void {
             app.route('/').get(vauth.VORLON.Authentication.ensureAuthenticated, this.defaultDashboard);
             app.route('/dashboard').get(vauth.VORLON.Authentication.ensureAuthenticated,this.defaultDashboard);
             app.route('/dashboard/').get(vauth.VORLON.Authentication.ensureAuthenticated,this.defaultDashboard);
@@ -24,7 +24,7 @@ export module VORLON {
             
             //login
             app.post('/login',   
-                    vauth.VORLON.Authentication.Passport.authenticate('local', 
+                    passport.authenticate('local', 
                         { failureRedirect: '/login',
                           successRedirect: '/',
                           failureFlash: false })

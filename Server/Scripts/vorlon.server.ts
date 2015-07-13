@@ -81,7 +81,7 @@ export module VORLON {
             this.http = new httpConfig.VORLON.HttpConfig();
         }
 
-        public addRoutes(app: express.Express): void {
+        public addRoutes(app: express.Express, passport: any): void {
             app.get("/api/createsession",(req: any, res: any) => {
                 this.json(res, this.guid());
             });

@@ -1,12 +1,10 @@
 ﻿extends layout
 
 block content
-    //- display the error message here
-    if message
-      p {message}
+  p #{message}
     
-    //- submit to /login
-    form(action="/login", method="post")
-      input(type="text", id="username", name="username")
-      input(type="password", id="password", name="password")
-      button(type="submit") Login
+  //- submit to /login
+  form(action="/login", method="post")
+    input(type="text", id="username", name="username")
+    input(type="password", id="password", name="password")
+    button(type="submit") Login
