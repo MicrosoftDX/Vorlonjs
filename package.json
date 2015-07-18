@@ -14,6 +14,7 @@
     "jade": "^1.9.2",
     "json": "^9.0.3",
     "logger": "0.0.1",
+	"method-override" : "2.3.4",
     "multer": "^0.1.8",
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",

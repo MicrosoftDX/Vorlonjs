@@ -10,7 +10,8 @@ var fakeredis = require("fakeredis");
 var winstonDisplay = require("winston-logs-display");
 import redisConfigImport = require("../config/vorlon.redisconfig");
 var redisConfig = redisConfigImport.VORLON.RedisConfig;
-import httpConfig = require("../config/vorlon.httpconfig"); 
+import httpConfig = require("../config/vorlon.httpconfig");
+import logConfig = require("../config/vorlon.logconfig"); 
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
@@ -25,8 +26,10 @@ export module VORLON {
         private _redisApi: any;
         private _log: winston.LoggerInstance;
         private http: httpConfig.VORLON.HttpConfig;
+        private logConfig: logConfig.VORLON.LogConfig;
 
         constructor() {
+            this.logConfig = new logConfig.VORLON.LogConfig();
             //LOGS      
             winston.cli();
             this._log = new winston.Logger({
@@ -47,13 +50,17 @@ export module VORLON {
                         timestamp: true,
                         colorize: true
                     }),
-                    new winston.transports.File({ filename: 'vorlonjs.log' })
+                    new winston.transports.File({ filename: this.logConfig.vorlonLogFile, level: this.logConfig.level})
                 ],
                 exceptionHandlers: [
-                    new winston.transports.File({ filename: 'exceptions.log', timestamp: true, maxsize: 1000000 })
+                    new winston.transports.File({ filename: this.logConfig.exceptionsLogFile, timestamp: true, maxsize: 1000000 })
                 ],
                 exitOnError: false
             });
+
+            if (!this.logConfig.enableConsole) {
+                this._log.remove(winston.transports.Console);
+            }
 
             winston.addColors({
                 info: 'green',
