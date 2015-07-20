@@ -53,7 +53,7 @@ export module VORLON {
 
             if (this.logConfig.enableConsole) {
                 this._log.add(winston.transports.Console, {
-                        level: 'debug',
+                        level: this.logConfig.level,
                         handleExceptions: true,
                         json: false,
                         timestamp: true,
