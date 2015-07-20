@@ -68,7 +68,7 @@ C:\Users\Username\node_modules\vorlon>notepad Server/config.json
 	"logs": {
 		"level" : "info",
 		"enableConsole" : true,
-		"filePath" : "E:\temp"
+		"filePath" : "E:\\temp",
 		"vorlonLogFileName": "vorlonjs.log",
 		"exceptionsLogFileName":  "exceptions.log"
     }
