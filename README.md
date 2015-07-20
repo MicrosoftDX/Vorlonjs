@@ -34,6 +34,18 @@ If you want to run the server with SSL support proceed as follows:
 5. If you want to replace our localhost certificate should only change the path of the files with the private key and certificate
 6. Exit and save JSON file
 
+## Custom log file
+By default Vorlon.JS application logs with debug level and files are stored in the installation folder.
+If you want to customize logs, proceed as follows :
+1. Navigate to the installation folder
+2. Modify JSON file, add or edit the "logs" section :
+	- enableConsole : enabled logging to the console,
+	- level : allowed values : info, warn, error
+	- filePath : folder where log files should be store
+	- vorlonLogFileName : name of Vorlon.JS log file,
+	- exceptionsLogFileName : name of the log files for exceptions
+3. Exit and save JSON file	
+
 ```console
 [Windows]
 C:\>cd %HOMEPATH%\node_modules\vorlon
@@ -52,7 +64,14 @@ C:\Users\Username\node_modules\vorlon>notepad Server/config.json
         { "id" : "OBJEXPLORER", "name" : "Obj. Explorer","panel": "top", "foldername" : "objectExplorer", "enabled": true },
         { "id" : "XHRPANEL", "name" : "XHR","panel": "top", "foldername" : "xhrPanel", "enabled": true },
         { "id" : "NGINSPECTOR", "name" : "ngInspector","panel": "top", "foldername" : "ngInspector", "enabled": false  }
-    ]
+    ],
+	"logs": {
+		"level" : "info",
+		"enableConsole" : true,
+		"filePath" : "E:\\temp",
+		"vorlonLogFileName": "vorlonjs.log",
+		"exceptionsLogFileName":  "exceptions.log"
+    }
 }
 
 C:\Users\Username\node_modules\vorlon>vorlon
