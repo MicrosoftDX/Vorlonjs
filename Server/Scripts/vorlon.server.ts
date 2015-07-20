@@ -43,13 +43,6 @@ export module VORLON {
                     plugin: 6
                 },
                 transports: [
-                    new winston.transports.Console({
-                        level: 'debug',
-                        handleExceptions: true,
-                        json: false,
-                        timestamp: true,
-                        colorize: true
-                    }),
                     new winston.transports.File({ filename: this.logConfig.vorlonLogFile, level: this.logConfig.level})
                 ],
                 exceptionHandlers: [
@@ -58,8 +51,14 @@ export module VORLON {
                 exitOnError: false
             });
 
-            if (!this.logConfig.enableConsole) {
-                this._log.remove(winston.transports.Console);
+            if (this.logConfig.enableConsole) {
+                this._log.add(winston.transports.Console, {
+                        level: 'debug',
+                        handleExceptions: true,
+                        json: false,
+                        timestamp: true,
+                        colorize: true
+                    });
             }
 
             winston.addColors({
