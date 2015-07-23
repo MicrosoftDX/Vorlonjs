@@ -93,6 +93,7 @@
              "[concat('Microsoft.Web/Sites/', parameters('siteName'))]" 
            ], 
            "properties": { 
+             "webSocketsEnabled": true,
              "virtualApplications": [
               {
                 "virtualPath": "/",
