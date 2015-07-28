@@ -57,7 +57,7 @@ export module VORLON {
             //Uses
             this._passport.use(new this._localStrategy(function(username, password, done) { 
                     // insert your MongoDB check here. For now, just a simple hardcoded check.
-                    if (username === 'vorlon' && password === 'vorlon')
+                    if (username === vauth.VORLON.Authentication.UserName && password === vauth.VORLON.Authentication.Password)
                     {
                         done(null, { user: username });
                     }
@@ -90,6 +90,8 @@ export module VORLON {
                 resave: true }));
             app.use(this._passport.initialize());
             app.use(this._passport.session());
+            
+            vauth.VORLON.Authentication.loadAuthConfig();
           
             this.init();
             

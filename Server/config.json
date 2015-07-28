@@ -3,6 +3,9 @@
     "SSLkey": "cert/server.key",
     "SSLcert": "cert/server.crt",
     "includeSocketIO": true,
+    "activateAuth": false,
+    "username": "",
+    "password": "",
     "plugins": [
         { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername": "interactiveConsole", "enabled": true },
         { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername": "domExplorer", "enabled": true },

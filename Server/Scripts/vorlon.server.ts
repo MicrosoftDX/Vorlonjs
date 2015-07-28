@@ -188,11 +188,23 @@ export module VORLON {
                     this._log.error("ROUTE : Error reading config.json file");
                     return;
                 }
-
-                var configstring = catalogdata.toString().replace(/^\uFEFF/, '');
                 
+                var catalog = JSON.parse(catalogdata.replace(/^\uFEFF/, ''));
+                
+                //remove auth data to not send username and password outside ;)
+                if(catalog.activateAuth){
+                    delete catalog.activateAuth;
+                }
+                if(catalog.username){
+                    delete catalog.username;
+                }
+                if(catalog.password){
+                    delete catalog.password;
+                }
+                
+                catalogdata = JSON.stringify(catalog);
                 res.header('Content-Type', 'application/json');
-                res.send(configstring);
+                res.send(catalogdata);
             });
         }
 
