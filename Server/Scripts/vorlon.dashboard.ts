@@ -1,6 +1,8 @@
 ﻿import express = require("express");
 import http = require("http");
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+import fs = require("fs");
+import path = require("path");
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
@@ -30,7 +32,9 @@ export module VORLON {
                           failureFlash: false })
                 );
             
-           app.route('/login').get(this.login);     
+           app.route('/login').get(this.login);  
+           
+           app.get('/logout', this.logout);
         }
 
         public start(httpServer: http.Server): void {
@@ -43,7 +47,16 @@ export module VORLON {
         }
 
         private dashboard(req: express.Request, res: express.Response) {
-            res.render('dashboard', { title: 'Dashboard', sessionid: req.params.sessionid, clientid: "" });
+            var authent = false;
+            var configastext = fs.readFileSync(path.join(__dirname, "../config.json"));
+            var catalog = JSON.parse(configastext.toString().replace(/^\uFEFF/, ''));   
+                
+            if(catalog.activateAuth){
+                authent = catalog.activateAuth;
+            }
+            
+            console.log(authent);
+            res.render('dashboard', { title: 'Dashboard', sessionid: req.params.sessionid, clientid: "", authenticated: authent });
         }
 
         private dashboardWithClient(req: express.Request, res: express.Response) {
@@ -56,6 +69,11 @@ export module VORLON {
         
         private login(req: express.Request, res: express.Response) {
             res.render('login', { message: 'Please login' });
+        }
+        
+        private logout(req: any, res: any) {
+            req.logout();
+            res.redirect('/');
         }
 
         private dashboardServerReset(req: any, res: any) {
