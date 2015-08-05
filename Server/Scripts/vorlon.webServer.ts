@@ -1,6 +1,7 @@
 ﻿import express = require("express");
 import path = require("path");
 import stylus = require("stylus");
+import fs = require("fs");
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
@@ -48,6 +49,29 @@ export module VORLON {
 
         public start(): void {
             var app = this._app;
+            
+            //Command line
+            var stopExecution = false;
+            process.argv.forEach(function (val, index, array) {
+                switch (val) {
+                    case "--version":
+                        fs.readFile(path.join(__dirname, "../../package.json"), "utf8",(err, packageData) => {
+                            if (err) {
+                                this._log.error("Error reading package.json file");
+                                return;
+                            }
+                            
+                            var package = JSON.parse(packageData.replace(/^\uFEFF/, ''));
+                            console.log('Vorlon.js v' + package.version);
+                        });
+                        stopExecution = true;
+                        break;
+                }
+            });
+            
+            if (stopExecution) {
+                return;
+            }
 
             //Sets
             app.set('port', process.env.PORT || 1337);
@@ -103,11 +127,11 @@ export module VORLON {
 
             if (this.http.useSSL) {
                 this.http.httpModule = this.http.httpModule.createServer(this.http.options, app).listen(app.get('port'), () => {
-                    console.log('Vorlon with SSL listening on port ' + app.get('port'));
+                    console.log('Vorlon.js with SSL listening on port ' + app.get('port'));
                 });
             } else {
                 this.http.httpModule = this.http.httpModule.createServer(app).listen(app.get('port'), () => {
-                    console.log('Vorlon listening on port ' + app.get('port'));
+                    console.log('Vorlon.js listening on port ' + app.get('port'));
                 });
             }
 

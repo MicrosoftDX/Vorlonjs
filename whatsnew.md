@@ -1,3 +1,15 @@
+## 0.0.16
+
+- Plugins
+	- Object explorer was revamped for better integration
+	- New device plugin: Know your numbers!
+	- New (Q)Unit test plugin
+	- Wappalyzer plugin (3rd party)
+	- DOM Explorer: display all html nodes (head and body, instead of body only) in domExplorer, improve UI of search, update css 
+- Core
+	- --version now return the current version
+	- Custom log path and log level
+
 ## 0.0.15
 
 - Plugins
