@@ -31,8 +31,9 @@
         }
 
         private inspect(obj: any, context: any, deepness: number): ObjectDescriptor {
-            if (!obj)
+            if (!obj || typeof obj != "object") {
                 return null;
+            }
 
             var objProperties = Object.getOwnPropertyNames(obj);
             var proto = Object.getPrototypeOf(obj);
