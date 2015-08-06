@@ -61,8 +61,8 @@ export module VORLON {
                                 return;
                             }
                             
-                            var package = JSON.parse(packageData.replace(/^\uFEFF/, ''));
-                            console.log('Vorlon.js v' + package.version);
+                            var _package = JSON.parse(packageData.replace(/^\uFEFF/, ''));
+                            console.log('Vorlon.js v' + _package.version);
                         });
                         stopExecution = true;
                         break;
