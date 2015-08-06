@@ -9,6 +9,9 @@
 - Core
 	- --version now return the current version
 	- Custom log path and log level
+- General
+	- Added server authentication
+	- Single click to deploy on Azure
 
 ## 0.0.15
 
