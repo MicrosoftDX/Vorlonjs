@@ -1,17 +1,19 @@
 extends layout
 
+
 block content
   .dashboard.cf
 
     include includes/sidebar
 
     include includes/dashboard-plugins
-
+    
 block scripts
   script(src='/javascripts/socket.io-1.3.5.js')
   script(src='/javascripts/x-tag-components.js')
   script(src='/vorlon/vorlon-noplugin.max.js')
   script(src='/vorlon.dashboardManager.js')
+  script!='var vorlonBaseURL = "' +  baseURL + '";'
   script!='var vorlonDashboard = new VORLON.DashboardManager("' +  sessionid + '", "' + clientid + '");'
   script(src='/javascripts/jquery.splitter-0.14.0.js')
   script(src='/javascripts/dashboard.js')
