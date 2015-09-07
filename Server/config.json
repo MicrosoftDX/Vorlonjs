@@ -1,5 +1,5 @@
 ﻿{
-    "baseURL": "/bulbizarre",
+    "baseURL": "",
     "useSSL": false,
     "SSLkey": "cert/server.key",
     "SSLcert": "cert/server.crt",
