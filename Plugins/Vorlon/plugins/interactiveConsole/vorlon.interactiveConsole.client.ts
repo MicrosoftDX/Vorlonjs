@@ -166,47 +166,45 @@
             });
             
             var _arguments= arguments;
-            this._hooks.dir = Tools.Hook(window.console, "dir",(message: string): void => {
-                var messages = _arguments;
+            this._hooks.dir = Tools.Hook(window.console, "dir",(message: any): void => {
                 var data = {
-                    messages: this.getMessages(_arguments[0]),
+                    messages: this.getMessages(message),
                     type: "dir"
                 };
 
                 this.addEntry(data);
             });
 
-            this._hooks.log = Tools.Hook(window.console, "log",(message: string): void => {
-                var messages = _arguments;
+            this._hooks.log = Tools.Hook(window.console, "log", (message: any): void => {
                 var data = {
-                    messages: this.getMessages(_arguments[0]),
+                    messages: this.getMessages(message),
                     type: "log"
                 };
 
                 this.addEntry(data);
             });
 
-            this._hooks.debug = Tools.Hook(window.console, "debug",(message: string): void => {
+            this._hooks.debug = Tools.Hook(window.console, "debug", (message: any): void => {
                 var data = {
-                    messages: this.getMessages(_arguments[0]),
+                    messages: this.getMessages(message),
                     type: "debug"
                 };
 
                 this.addEntry(data);
             });
 
-            this._hooks.info = Tools.Hook(window.console, "info",(message: string): void => {
+            this._hooks.info = Tools.Hook(window.console, "info",(message: any): void => {
                 var data = {
-                    messages: this.getMessages(_arguments[0]),
+                    messages: this.getMessages(message),
                     type: "info"
                 };
 
                 this.addEntry(data);
             });
 
-            this._hooks.warn = Tools.Hook(window.console, "warn",(message: string): void => {
+            this._hooks.warn = Tools.Hook(window.console, "warn",(message: any): void => {
                 var data = {
-                    messages: this.getMessages(_arguments[0]),
+                    messages: this.getMessages(message),
                     type: "warn"
                 };
 

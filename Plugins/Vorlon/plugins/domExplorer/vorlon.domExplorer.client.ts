@@ -293,18 +293,34 @@
         }
         
         inspect(): void {
-            var overlay = document.createElement("DIV");
-            overlay.style.position = "absolute";
-            overlay.style.left = "0";
-            overlay.style.right = "0";
-            overlay.style.top = "0";
-            overlay.style.bottom = "0";
-            overlay.style.backgroundColor = "rgba(255,0,0,0.5)";
-            document.appendChild(overlay);
-            console.info("INSPECT");
-            overlay.addEventListener("click", function () {
-                overlay.parentElement.removeChild(overlay);
-            })
+            if (document.elementFromPoint) {
+                console.info("INSPECT");
+                var overlay = document.createElement("DIV");
+                overlay.style.position = "absolute";
+                overlay.style.left = "0";
+                overlay.style.right = "0";
+                overlay.style.top = "0";
+                overlay.style.bottom = "0";
+                overlay.style.backgroundColor = "rgba(255,0,0,0.2)";
+                document.body.appendChild(overlay);
+                overlay.addEventListener("mousedown", (arg) => {
+                    console.log(arg);
+                    overlay.parentElement.removeChild(overlay);
+                    var el = <HTMLElement>document.elementFromPoint(arg.pageX, arg.pageY);
+                    if (el) {
+                        console.log("element found", el.innerHTML);
+                        var parentId = this.getFirstParentWithInternalId(el);
+                        if (parentId) {
+                            this.refreshbyId(parentId, this._packageNode(el).internalId);
+                        }
+                    } else {
+                        console.log("element not found");
+                    }
+                });
+            } else {
+                //TODO : send message back to dashboard and disable button
+                console.warn("VORLON, inspection not supported");
+            }
         }
 
         setStyle(internaID: string, property: string, newValue: string): void {
