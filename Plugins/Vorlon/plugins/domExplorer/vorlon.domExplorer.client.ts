@@ -293,6 +293,7 @@
         }
         
         inspect(): void {
+            console.info("INSPECT");
             var overlay = document.createElement("DIV");
             overlay.style.position = "absolute";
             overlay.style.left = "0";
@@ -300,9 +301,9 @@
             overlay.style.top = "0";
             overlay.style.bottom = "0";
             overlay.style.backgroundColor = "rgba(255,0,0,0.5)";
-            document.appendChild(overlay);
-            console.info("INSPECT");
-            overlay.addEventListener("click", function () {
+            document.body.appendChild(overlay);
+            overlay.addEventListener("mousedown", function (arg) {
+                console.log(arg);
                 overlay.parentElement.removeChild(overlay);
             })
         }
