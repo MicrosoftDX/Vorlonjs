@@ -63,23 +63,24 @@ module VORLON {
                 //todo catch send to get posted data
                 //see https://msdn.microsoft.com/en-us/library/hh772834(v=vs.85).aspx
                 
+                var _arguments = _arguments;
                 xhr.open = () => {
-                    data.method = arguments[0];
-                    data.url = arguments[1];
+                    data.method = _arguments[0];
+                    data.url = _arguments[1];
                     this.trace('request for ' + data.url);
                     this.sendCommandToDashboard('xhr', data);
                     
-                    xhr.__open.apply(xhr, arguments);
-                    return xhr.__open.apply(xhr, arguments);
+                    xhr.__open.apply(xhr, _arguments);
+                    return xhr.__open.apply(xhr, _arguments);
                 }
                 
                 xhr.setRequestHeader = () => {
                     var header = {
-                        name : arguments[0],
-                        value : arguments[1]
+                        name : _arguments[0],
+                        value : _arguments[1]
                     }
                     data.requestHeaders.push(header);
-                    return xhr.__setRequestHeader.apply(xhr, arguments);
+                    return xhr.__setRequestHeader.apply(xhr, _arguments);
                 }
 
                 xhr.addEventListener('readystatechange', () => {

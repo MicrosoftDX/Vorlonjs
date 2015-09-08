@@ -226,7 +226,8 @@
             }
             else {
                 var div = document.createElement("div");
-                div.style.position = "absolute";
+		div.className = "vorlonIdentifyNumber";
+		div.style.position = "absolute";
                 div.style.left = "0";
                 div.style.top = "50%";
                 div.style.marginTop = "-150px";

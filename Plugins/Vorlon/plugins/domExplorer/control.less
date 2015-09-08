@@ -43,11 +43,13 @@
         display: flex;
         -webkit-flex-direction: column;
         flex-direction: column;
+        overflow: auto;
 
         .accordion-section {
             &.visible {
                 display: block;
                 overflow: auto;
+                min-height: 100px;
             }
 
             display: none;
@@ -195,7 +197,6 @@
     }
 
     #treeView {
-        display: none;
         height: ~"calc(100% - 36px)";
         overflow-x: none;
         overflow-y: auto;
@@ -239,6 +240,7 @@
 
     .tree-view-wrapper {
         position: relative;
+
         .domload-spinner {
             position: absolute;
             top: 0;
@@ -257,37 +259,69 @@
         }
 
         &.active {
-
             .domload-spinner {
                 display: none;
             }
-
-            > x-controlbar,
-            #treeView {
-                display: block;
+        }
+        
+        &:not(.active) {
+            > x-controlbar, > #treeView {
+                display: none;
             }
         }
 
-        > x-controlbar {
-            display: none;
+        > x-controlbar {          
             border-top: none;
             border-left: none;
             border-right: none;
 
-            > * {
-                border-radius: 0.25em;
+            #searchresults {
+                display: none;
+                position: relative;
+                font-size: 70%;
+                font-weight: bold;
+                text-align: center;
+                
+                &:before {
+                    content: "";
+                    position: absolute;
+                    top: 50%;
+                    right: 0; 
+                    padding: 0 0.75em 0 0;
+                    -webkit-transform: translateY(-50%); 
+                    transform: translateY(-50%);
+                }
+
+                &.found {
+                    display: block;
+                    color: #777;
+                    
+                    &:before {
+                        content: attr(content);
+                    }   
+                }
+
+                &.noresults {
+                    display: block;
+                    color: #ed2424;
+                    
+                    &:before {
+                        content: "0/0";
+                    }
+                }
             }
 
             #searchinput {
-                /*display: none;*/
-                position: absolute;
-                right: 0.25em;
-                top: 0.25em;
                 min-width: 220px;
+                margin-left: auto;
             }
         }
     }
-
+.notexpansible{
+        .treeNodeButton {
+            display: none;
+        }
+}
     .treeNodeButton {
         display: inline-block;
         color: #444;
@@ -333,6 +367,10 @@
         &[data-collapsed] ~ .treeNodeHeader .closetag:after {
             content: '...';
             color: black;
+        }
+
+        &[data-collapsed] ~ .treeNodeHeader.emptynode .closetag:after {
+            content: '';
         }
 
         &[data-collapsed] ~ .nodeContentContainer {
