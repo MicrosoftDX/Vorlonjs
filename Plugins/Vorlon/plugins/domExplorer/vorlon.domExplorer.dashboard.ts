@@ -9,6 +9,7 @@
         private _computedsection: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
         public refreshButton: Element;
+        public inspectButton: Element;
         public clikedNodeID = null;
         public _selectedNode: DomExplorerNode;
         public _rootNode: DomExplorerNode;
@@ -53,8 +54,12 @@
                 var domSettings = new DomSettings(this);
                 this.searchDOM();
                 this.refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
+                this.inspectButton = this._containerDiv.querySelector('x-action[event="inspect"]');
                 this._stylesEditor = new DomExplorerPropertyEditor(this);
-                this._containerDiv.addEventListener('refresh',() => {
+                this._containerDiv.addEventListener('inspectFromClient',() => {
+                    this.sendCommandToClient('inspect');
+                });
+                this._containerDiv.addEventListener('refresh', () => {
                     this.sendCommandToClient('refresh');
                 });
                 this._containerDiv.addEventListener('gethtml',() => {
