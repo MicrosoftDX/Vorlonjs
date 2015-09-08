@@ -165,7 +165,6 @@
                 this.clearClientConsole();
             });
             
-            var _arguments= arguments;
             this._hooks.dir = Tools.Hook(window.console, "dir",(message: any): void => {
                 var data = {
                     messages: this.getMessages(message),
@@ -211,9 +210,9 @@
                 this.addEntry(data);
             });
 
-            this._hooks.error = Tools.Hook(window.console, "error",(message: string): void => {
+            this._hooks.error = Tools.Hook(window.console, "error",(message: any): void => {
                 var data = {
-                    messages: this.getMessages(_arguments[0]),
+                    messages: this.getMessages(message),
                     type: "error"
                 };
 
@@ -223,11 +222,11 @@
             // Override Error constructor
             var previousError = Error;
 
-            Error = <any>((message: string) => {
+            Error = <any>((message: any) => {
                 var error = new previousError(message);
 
                 var data = {
-                    messages: [message],
+                    messages: this.getMessages(message),
                     type: "exception"
                 };
 
@@ -236,10 +235,9 @@
                 return error;
             });
 
-            window.addEventListener('error', () => {
-                var err = _arguments[0];
+            window.addEventListener('error', (err) => {
                 
-                if (err.error) {
+                if (err && err.error) {
                     //this.addEntry({ messages: [err.error.message], type: "exception" });
                     this.addEntry({ messages: [err.error.stack], type: "exception" });
                 }

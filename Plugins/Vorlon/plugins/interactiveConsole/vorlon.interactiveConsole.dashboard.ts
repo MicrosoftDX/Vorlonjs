@@ -217,7 +217,7 @@
         }
 
         public renderContent() {
-            if (this.contentRendered)
+            if (!this.obj || this.contentRendered)
                 return;
 
             if (this.obj.proto) {
