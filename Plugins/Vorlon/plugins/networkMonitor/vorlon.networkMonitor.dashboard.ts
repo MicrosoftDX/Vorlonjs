@@ -30,6 +30,10 @@
                 response: "rgb(52, 150, 255)"
             }
             var maxTime = 0;
+            
+            if (!receivedObject.entries)
+                return;
+                
             for (var n = 0; n < receivedObject.entries.length; n++) {
                 maxTime = Math.max(maxTime, receivedObject.entries[n].startTime + receivedObject.entries[n].duration);
             }
