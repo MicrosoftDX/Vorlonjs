@@ -167,7 +167,6 @@
             
             var _arguments= arguments;
             this._hooks.dir = Tools.Hook(window.console, "dir",(message: any): void => {
-                var messages = _arguments;
                 var data = {
                     messages: this.getMessages(message),
                     type: "dir"
@@ -177,7 +176,6 @@
             });
 
             this._hooks.log = Tools.Hook(window.console, "log", (message: any): void => {
-                var messages = _arguments;
                 var data = {
                     messages: this.getMessages(message),
                     type: "log"
