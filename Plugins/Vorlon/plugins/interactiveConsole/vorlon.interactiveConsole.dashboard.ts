@@ -318,6 +318,7 @@
                 this.addMessage(entry.messages[i]);
             }
         }
+        
 
         private addMessage(msg: any) {
             if (typeof msg === 'string' || typeof msg === 'number') {

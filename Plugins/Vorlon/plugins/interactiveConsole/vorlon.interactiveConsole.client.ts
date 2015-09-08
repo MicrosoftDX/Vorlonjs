@@ -164,11 +164,12 @@
             this._hooks.clear = Tools.Hook(window.console, "clear",(): void => {
                 this.clearClientConsole();
             });
-
+            
+            var _arguments= arguments;
             this._hooks.dir = Tools.Hook(window.console, "dir",(message: string): void => {
-                var messages = arguments;
+                var messages = _arguments;
                 var data = {
-                    messages: this.getMessages(arguments[0]),
+                    messages: this.getMessages(_arguments[0]),
                     type: "dir"
                 };
 
@@ -176,9 +177,9 @@
             });
 
             this._hooks.log = Tools.Hook(window.console, "log",(message: string): void => {
-                var messages = arguments;
+                var messages = _arguments;
                 var data = {
-                    messages: this.getMessages(arguments[0]),
+                    messages: this.getMessages(_arguments[0]),
                     type: "log"
                 };
 
@@ -187,7 +188,7 @@
 
             this._hooks.debug = Tools.Hook(window.console, "debug",(message: string): void => {
                 var data = {
-                    messages: this.getMessages(arguments[0]),
+                    messages: this.getMessages(_arguments[0]),
                     type: "debug"
                 };
 
@@ -196,7 +197,7 @@
 
             this._hooks.info = Tools.Hook(window.console, "info",(message: string): void => {
                 var data = {
-                    messages: this.getMessages(arguments[0]),
+                    messages: this.getMessages(_arguments[0]),
                     type: "info"
                 };
 
@@ -205,7 +206,7 @@
 
             this._hooks.warn = Tools.Hook(window.console, "warn",(message: string): void => {
                 var data = {
-                    messages: this.getMessages(arguments[0]),
+                    messages: this.getMessages(_arguments[0]),
                     type: "warn"
                 };
 
@@ -214,7 +215,7 @@
 
             this._hooks.error = Tools.Hook(window.console, "error",(message: string): void => {
                 var data = {
-                    messages: this.getMessages(arguments[0]),
+                    messages: this.getMessages(_arguments[0]),
                     type: "error"
                 };
 
@@ -238,7 +239,7 @@
             });
 
             window.addEventListener('error', () => {
-                var err = arguments[0];
+                var err = _arguments[0];
                 
                 if (err.error) {
                     //this.addEntry({ messages: [err.error.message], type: "exception" });
