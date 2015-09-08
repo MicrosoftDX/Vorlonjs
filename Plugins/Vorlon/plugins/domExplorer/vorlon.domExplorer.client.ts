@@ -301,14 +301,18 @@
                 overlay.style.right = "0";
                 overlay.style.top = "0";
                 overlay.style.bottom = "0";
-                overlay.style.backgroundColor = "rgba(255,0,0,0.5)";
+                overlay.style.backgroundColor = "rgba(255,0,0,0.2)";
                 document.body.appendChild(overlay);
-                overlay.addEventListener("mousedown", function (arg) {
+                overlay.addEventListener("mousedown", (arg) => {
                     console.log(arg);
                     overlay.parentElement.removeChild(overlay);
                     var el = <HTMLElement>document.elementFromPoint(arg.pageX, arg.pageY);
                     if (el) {
                         console.log("element found", el.innerHTML);
+                        var parentId = this.getFirstParentWithInternalId(el);
+                        if (parentId) {
+                            this.refreshbyId(parentId, this._packageNode(el).internalId);
+                        }
                     } else {
                         console.log("element not found");
                     }
