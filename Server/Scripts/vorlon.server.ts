@@ -10,7 +10,8 @@ var fakeredis = require("fakeredis");
 var winstonDisplay = require("winston-logs-display");
 import redisConfigImport = require("../config/vorlon.redisconfig");
 var redisConfig = redisConfigImport.VORLON.RedisConfig;
-import httpConfig = require("../config/vorlon.httpconfig"); 
+import httpConfig = require("../config/vorlon.httpconfig");
+import logConfig = require("../config/vorlon.logconfig"); 
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
@@ -25,8 +26,10 @@ export module VORLON {
         private _redisApi: any;
         private _log: winston.LoggerInstance;
         private http: httpConfig.VORLON.HttpConfig;
+        private logConfig: logConfig.VORLON.LogConfig;
 
         constructor() {
+            this.logConfig = new logConfig.VORLON.LogConfig();
             //LOGS      
             winston.cli();
             this._log = new winston.Logger({
@@ -40,20 +43,23 @@ export module VORLON {
                     plugin: 6
                 },
                 transports: [
-                    new winston.transports.Console({
-                        level: 'debug',
+                    new winston.transports.File({ filename: this.logConfig.vorlonLogFile, level: this.logConfig.level})
+                ],
+                exceptionHandlers: [
+                    new winston.transports.File({ filename: this.logConfig.exceptionsLogFile, timestamp: true, maxsize: 1000000 })
+                ],
+                exitOnError: false
+            });
+
+            if (this.logConfig.enableConsole) {
+                this._log.add(winston.transports.Console, {
+                        level: this.logConfig.level,
                         handleExceptions: true,
                         json: false,
                         timestamp: true,
                         colorize: true
-                    }),
-                    new winston.transports.File({ filename: 'vorlonjs.log' })
-                ],
-                exceptionHandlers: [
-                    new winston.transports.File({ filename: 'exceptions.log', timestamp: true, maxsize: 1000000 })
-                ],
-                exitOnError: false
-            });
+                    });
+            }
 
             winston.addColors({
                 info: 'green',
@@ -81,7 +87,7 @@ export module VORLON {
             this.http = new httpConfig.VORLON.HttpConfig();
         }
 
-        public addRoutes(app: express.Express): void {
+        public addRoutes(app: express.Express, passport: any): void {
             app.get("/api/createsession",(req: any, res: any) => {
                 this.json(res, this.guid());
             });
@@ -182,11 +188,23 @@ export module VORLON {
                     this._log.error("ROUTE : Error reading config.json file");
                     return;
                 }
-
-                var configstring = catalogdata.toString().replace(/^\uFEFF/, '');
                 
+                var catalog = JSON.parse(catalogdata.replace(/^\uFEFF/, ''));
+                
+                //remove auth data to not send username and password outside ;)
+                if(catalog.activateAuth){
+                    delete catalog.activateAuth;
+                }
+                if(catalog.username){
+                    delete catalog.username;
+                }
+                if(catalog.password){
+                    delete catalog.password;
+                }
+                
+                catalogdata = JSON.stringify(catalog);
                 res.header('Content-Type', 'application/json');
-                res.send(configstring);
+                res.send(catalogdata);
             });
         }
 
