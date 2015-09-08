@@ -54,7 +54,7 @@
         },
         "branch": {
             "type": "string",
-            "defaultValue": "development-0.0.16",
+            "defaultValue": "master",
             "metadata": { 
                 "description": "The branch of the GitHub repository to use."
             }

@@ -318,13 +318,14 @@
                 this.addMessage(entry.messages[i]);
             }
         }
+        
 
         private addMessage(msg: any) {
             if (typeof msg === 'string' || typeof msg === 'number') {
                 var elt = document.createElement('DIV');
                 elt.className = 'log-message text-message';
                 this.element.appendChild(elt);
-                elt.textContent = msg.toString();
+                elt.textContent = msg + '';
             } else {
                 var obj = new InteractiveConsoleObject(this.element, <ObjectDescriptor>msg, true);
                 this.objects.push(obj);

@@ -8,7 +8,7 @@
         private _globalloadactive = false;
         private _overlay: HTMLElement;
         private _observerMutationObserver;
-        
+
         constructor() {
             super("domExplorer");
             this._id = "DOM";
@@ -85,14 +85,18 @@
                 classes: node.className,
                 content: null,
                 hasChildNodes: false,
-                attributes: node.attributes ? Array.prototype.map.call(node.attributes, (attr) => {
+                attributes: node.attributes ? Array.prototype.map.call(node.attributes,(attr) => {
                     return [attr.name, attr.value];
                 }) : [],
                 styles: DOMExplorerClient.GetAppliedStyles(node),
                 children: [],
+                isEmpty: false,
                 rootHTML: null,
                 internalId: VORLON.Tools.CreateGUID()
             };
+            if (node.innerHTML === "") {
+                packagedNode.isEmpty = true;
+            }
             if (packagedNode.type == "3" || node.nodeName === "#comment") {
                 if (node.nodeName === "#comment") {
                     packagedNode.name = "#comment";
@@ -175,14 +179,14 @@
         }
 
         public getInnerHTML(internalId: string) {
-            var element = this._getElementByInternalId(internalId, document.body);
+            var element = this._getElementByInternalId(internalId, document.documentElement);
             if (element)
                 this.sendCommandToDashboard("innerHTML", { internalId: internalId, innerHTML: element.innerHTML });
         }
 
         public getComputedStyleById(internalId: string) {
 
-            var element = this._getElementByInternalId(internalId, document.body);
+            var element = this._getElementByInternalId(internalId, document.documentElement);
             if (element) {
                 var winObject = document.defaultView || window;
                 if (winObject.getComputedStyle) {
@@ -200,7 +204,7 @@
             }
         }
         public getStyle(internalId: string) {
-            var element = this._getElementByInternalId(internalId, document.body);
+            var element = this._getElementByInternalId(internalId, document.documentElement);
             if (element) {
                 var winObject = document.defaultView || window;
                 if (winObject.getComputedStyle) {
@@ -236,7 +240,7 @@
         }
 
         public saveInnerHTML(internalId: string, innerHTML: string) {
-            var element = this._getElementByInternalId(internalId, document.body);
+            var element = this._getElementByInternalId(internalId, document.documentElement);
             if (element) {
                 element.innerHTML = innerHTML;
             }
@@ -251,7 +255,7 @@
         }
 
         public setClientSelectedElement(elementId: string) {
-            var element = this._getElementByInternalId(elementId, document.body);
+            var element = this._getElementByInternalId(elementId, document.documentElement);
 
             if (!element) {
                 return;
@@ -283,13 +287,44 @@
         }
 
         refresh(): void {
-            var packagedObject = this._packageNode(document.body);
-            this._packageDOM(document.body, packagedObject, this._globalloadactive, null);
+            var packagedObject = this._packageNode(document.documentElement);
+            this._packageDOM(document.documentElement, packagedObject, this._globalloadactive, null);
             this.sendCommandToDashboard('init', packagedObject);
+        }
+        
+        inspect(): void {
+            if (document.elementFromPoint) {
+                console.info("INSPECT");
+                var overlay = document.createElement("DIV");
+                overlay.style.position = "absolute";
+                overlay.style.left = "0";
+                overlay.style.right = "0";
+                overlay.style.top = "0";
+                overlay.style.bottom = "0";
+                overlay.style.backgroundColor = "rgba(255,0,0,0.2)";
+                document.body.appendChild(overlay);
+                overlay.addEventListener("mousedown", (arg) => {
+                    console.log(arg);
+                    overlay.parentElement.removeChild(overlay);
+                    var el = <HTMLElement>document.elementFromPoint(arg.pageX, arg.pageY);
+                    if (el) {
+                        console.log("element found", el.innerHTML);
+                        var parentId = this.getFirstParentWithInternalId(el);
+                        if (parentId) {
+                            this.refreshbyId(parentId, this._packageNode(el).internalId);
+                        }
+                    } else {
+                        console.log("element not found");
+                    }
+                });
+            } else {
+                //TODO : send message back to dashboard and disable button
+                console.warn("VORLON, inspection not supported");
+            }
         }
 
         setStyle(internaID: string, property: string, newValue: string): void {
-            var element = this._getElementByInternalId(internaID, document.body);
+            var element = this._getElementByInternalId(internaID, document.documentElement);
             element.style[property] = newValue;
         }
 
@@ -320,24 +355,27 @@
         }
 
         searchDOMBySelector(selector: string, position: number = 0) {
-            var elements = document.querySelectorAll(selector);
-            if (elements.length) {
-                if (!elements[position])
-                    position = 0;
-                var parentId = this.getFirstParentWithInternalId(elements[position]);
-                if (parentId) {
-                    this.refreshbyId(parentId, this._packageNode(elements[position]).internalId);
-                }
-                if (position < elements.length + 1) {
-                    position++;
+            var length = 0;
+            if (selector) {
+                var elements = document.querySelectorAll(selector);
+                length = elements.length;
+                if (elements.length) {
+                    if (!elements[position])
+                        position = 0;
+                    var parentId = this.getFirstParentWithInternalId(elements[position]);
+                    if (parentId) {
+                        this.refreshbyId(parentId, this._packageNode(elements[position]).internalId);
+                    }
+                    if (position < elements.length + 1) {
+                        position++;
+                    }
                 }
             }
-
-            this.sendCommandToDashboard('searchDOMByResults', { length: elements.length, selector: selector, position: position });
+            this.sendCommandToDashboard('searchDOMByResults', { length: length, selector: selector, position: position });
         }
 
         setAttribute(internaID: string, attributeName: string, attributeOldName: string, attributeValue: string): void {
-            var element = this._getElementByInternalId(internaID, document.body);
+            var element = this._getElementByInternalId(internaID, document.documentElement);
             if (attributeName !== "attributeName") {
                 try {
                     element.removeAttribute(attributeOldName);
@@ -356,15 +394,15 @@
 
         public refreshbyId(internaID: string, internalIdToshow: string = ""): void {
             if (internaID && internalIdToshow) {
-                this._packageAndSendDOM(this._getElementByInternalId(internaID, document.body), internalIdToshow);
+                this._packageAndSendDOM(this._getElementByInternalId(internaID, document.documentElement), internalIdToshow);
             }
             else if (internaID) {
-                this._packageAndSendDOM(this._getElementByInternalId(internaID, document.body));
+                this._packageAndSendDOM(this._getElementByInternalId(internaID, document.documentElement));
             }
         }
 
         public setElementValue(internaID: string, value: string) {
-            var element = this._getElementByInternalId(internaID, document.body);
+            var element = this._getElementByInternalId(internaID, document.documentElement);
             element.innerHTML = value;
         }
     }
@@ -423,6 +461,11 @@
         refresh() {
             var plugin = <DOMExplorerClient>this;
             plugin.refresh();
+        },
+        
+        inspect() {
+            var plugin = <DOMExplorerClient>this;
+            plugin.inspect();
         },
 
         getInnerHTML(data: any) {
