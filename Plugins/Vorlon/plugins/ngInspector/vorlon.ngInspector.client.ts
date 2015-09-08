@@ -5,7 +5,7 @@
 
         private _rootScopes: Scope[] = [];
         private _currentShownScopeId: number = null;
-        
+
         constructor() {
             super("ngInspector");
             this._ready = false;
@@ -25,6 +25,15 @@
             });
         }
 
+        public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
+            if (typeof angular == 'undefined')
+                return;
+
+            if (receivedObject.type === MessageType.ReloadWithDebugInfo) {
+                angular.reloadWithDebugInfo();
+            }
+        }
+
         private _timeoutId: NodeJS.Timer;
         private _markForRefresh() {
             if (this._timeoutId) {
@@ -40,13 +49,13 @@
             this._rootScopes = [];
             this._findRootScopes(document.body);
 
-            this.sendToDashboard({ scopes: this._rootScopes }); 
+            this.sendToDashboard({ scopes: this._rootScopes });
         }
 
         private _findRootScopes(element: Node) {
-            if(typeof angular == 'undefined')
+            if (typeof angular == 'undefined')
                 return;
-                
+
             var rootScope = angular.element(element).scope();
             if (!!rootScope) {
                 var cleanedRootScope = this._cleanScope(rootScope);
@@ -65,21 +74,24 @@
         }
 
         private _findChildrenScopes(element: Node, parentScope: Scope) {
-            if(typeof angular == 'undefined')
+            if (typeof angular == 'undefined')
                 return;
-                
+
             for (var i = 0; i < element.childNodes.length; i++) {
                 var childNode = element.childNodes[i];
                 var childScope = angular.element(childNode).scope();
 
-                if (!!childScope && childScope.$id !== parentScope.$id) {
+                if (!!childScope
+                    && childScope.$id !== parentScope.$id
+                    && parentScope.$children.indexOf(childScope) === -1) {
                     var cleanedChildScope = this._cleanScope(childScope);
 
-                    if (childNode.attributes["ng-repeat"] ||
-                        childNode.attributes["data-ng-repeat"] ||
-                        childNode.attributes["x-ng-repeat"] ||
-                        childNode.attributes["ng_repeat"] ||
-                        childNode.attributes["ng:repeat"]) {
+                    if (childNode.attributes &&
+                        (childNode.attributes["ng-repeat"] ||
+                         childNode.attributes["data-ng-repeat"] ||
+                         childNode.attributes["x-ng-repeat"] ||
+                         childNode.attributes["ng_repeat"] ||
+                         childNode.attributes["ng:repeat"])) {
                         cleanedChildScope.$type = ScopeType.NgRepeat;
                         cleanedChildScope.$name = "ng-repeat";
                     }
@@ -88,7 +100,21 @@
 
                         // Workaround for IE, name property of constructor return undefined :/
                         // Get the name from the constructor function as string
-                        var name: string = constructor.toString().match(/function (\w+)\(/)[1];
+                        var match = constructor.toString().match(/function (\w+)\(/);
+                        var name: string = "";
+                        if (!!match && match.length > 1) {
+                            name = match[1];
+                        }
+                        else {
+                            var ngControllerAttribute = childNode.attributes["ng-controller"] ||
+                                                        childNode.attributes["data-ng-controller"] ||
+                                                        childNode.attributes["x-ng-controller"] ||
+                                                        childNode.attributes["ng_controller"] ||
+                                                        childNode.attributes["ng:controller"];
+                            if (ngControllerAttribute) {
+                                name = ngControllerAttribute.name;
+                            }
+                        }
 
                         cleanedChildScope.$type = ScopeType.Controller;
                         cleanedChildScope.$name = name;
@@ -134,15 +160,6 @@
             }
 
             return scopePackaged;
-        }
-
-        public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
-            if(typeof angular == 'undefined')
-                return;
-                
-            if (receivedObject.type === MessageType.ReloadWithDebugInfo) {
-                angular.reloadWithDebugInfo();
-            }
         }
     }
 

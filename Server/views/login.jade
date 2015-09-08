@@ -1,12 +1,15 @@
 ﻿extends layout
 
 block content
-    //- display the error message here
-    if message
-      p {message}
+  section.login-container
+    div.message
+      img.logo(src="/images/VorlonLogo_Smooth.svg")
+      h1 We need your credentials :)
     
-    //- submit to /login
-    form(action="/login", method="post")
-      input(type="text", id="username", name="username")
-      input(type="password", id="password", name="password")
-      button(type="submit") Login
+      //- submit to /login
+      form(action="/login", method="post")
+        input(type="text", id="username", name="username", placeholder="Username")
+        input(type="password", id="password", name="password", placeholder="Password")
+        button(type="submit") Login
+    
+block scripts
