@@ -17,6 +17,8 @@ $ vorlon
 With the server is running, open http://localhost:1337 in your browser to see the Vorlon.JS dashboard.
 ```
 
+**You may notice errors from Pyton, node-gyp and socket.io. This is a known issue already reported to socket.io team. This is not a blocking issue though assocket.io still works well even with this error :)**
+
 ### Custom port
 
 [Linux]
