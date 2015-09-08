@@ -653,9 +653,10 @@
                             menu("#treeNodeClosingText" + this.node.internalId);
                         });
                     });
-                }
+                }   
                 else {
-                    (<HTMLElement>  this.header.querySelector('.closetag')).innerHTML = "/>";
+                   root.element.classList.add('notexpansible');                   
+                   (<HTMLElement>  this.header.querySelector('.closetag')).innerHTML = "/>";
                 }
             }
             // Main node
