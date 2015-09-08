@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{54E4B466-DFD4-4853-8BF5-939E9AFFED9C}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Plugins</RootNamespace>
+    <AssemblyName>Plugins</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TypeScriptToolsVersion>1.4</TypeScriptToolsVersion>
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="package.json" />
+    <None Include="Properties\PublishProfiles\toto.pubxml" />
+    <Content Include="gulpfile.js" />
+    <Content Include="release\vorlon-noplugin.js" />
+    <Content Include="release\vorlon-noplugin.max.js" />
+    <Content Include="release\vorlon.js" />
+    <Content Include="release\vorlon.max.js" />
+    <Content Include="samples\andyet\index.html" />
+    <Content Include="samples\index.html" />
+    <Content Include="Vorlon\plugins\domExplorer\control.min.css">
+      <DependentUpon>control.css</DependentUpon>
+    </Content>
+    <Content Include="Vorlon\plugins\interactiveConsole\control.css">
+      <DependentUpon>control.less</DependentUpon>
+    </Content>
+    <Content Include="Vorlon\plugins\interactiveConsole\control.min.css">
+      <DependentUpon>control.css</DependentUpon>
+    </Content>
+    <Content Include="Vorlon\plugins\networkMonitor\control.html" />
+    <Content Include="Vorlon\plugins\resourcesExplorer\control.html" />
+    <Content Include="Vorlon\plugins\sample\control.css" />
+    <Content Include="Vorlon\plugins\sample\control.html" />
+    <Content Include="Vorlon\plugins\xhrPanel\control.less" />
+    <Content Include="Vorlon\plugins\domExplorer\control.less" />
+    <Content Include="Vorlon\plugins\domExplorer\control.css.map">
+      <DependentUpon>control.css</DependentUpon>
+    </Content>
+    <Content Include="Vorlon\plugins\interactiveConsole\control.less" />
+    <Content Include="Vorlon\plugins\interactiveConsole\control.css.map">
+      <DependentUpon>control.css</DependentUpon>
+    </Content>
+    <Content Include="Vorlon\plugins\ngInspector\control.css" />
+    <Content Include="Vorlon\plugins\ngInspector\control.html" />
+    <Content Include="Vorlon\plugins\ngInspector\control.less" />
+    <Content Include="Vorlon\plugins\ngInspector\control.css.map">
+      <DependentUpon>control.css</DependentUpon>
+    </Content>
+    <Content Include="Vorlon\plugins\modernizrReport\control.less" />
+    <Content Include="Vorlon\plugins\objectExplorer\control.less" />
+    <Content Include="Vorlon\plugins\sample\README.md" />
+    <Content Include="Vorlon\plugins\networkMonitor\control.less" />
+    <Content Include="Vorlon\plugins\resourcesExplorer\control.less" />
+    <Content Include="Vorlon\plugins\vorlontheme.less" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="samples\davrous\index.html" />
+    <Content Include="samples\meulta\index.html" />
+    <Content Include="samples\pierlag\index.html" />
+    <Content Include="samples\davca\index.html" />
+    <Content Include="libs\require.js" />
+    <Content Include="Vorlon\plugins\domExplorer\control.css" />
+    <Content Include="Vorlon\plugins\domExplorer\control.html" />
+    <Content Include="Vorlon\plugins\interactiveConsole\control.html" />
+    <Content Include="Vorlon\plugins\modernizrReport\control.css" />
+    <Content Include="Vorlon\plugins\modernizrReport\control.html" />
+    <Content Include="Vorlon\plugins\modernizrReport\modernizr.js" />
+    <Content Include="Vorlon\plugins\ngInspector\control.min.css">
+      <DependentUpon>control.css</DependentUpon>
+    </Content>
+    <Content Include="Vorlon\plugins\objectExplorer\control.css" />
+    <Content Include="Vorlon\plugins\objectExplorer\control.html" />
+    <Content Include="Vorlon\plugins\xhrPanel\control.html" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="libs\node.d.ts" />
+    <TypeScriptCompile Include="libs\socket.io.d.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\domExplorer\vorlon.domExplorer.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\domExplorer\vorlon.domExplorer.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\domExplorer\vorlon.domExplorer.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\interactiveConsole\vorlon.interactiveConsole.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\modernizrReport\vorlon.modernizrReport.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\modernizrReport\vorlon.modernizrReport.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\modernizrReport\vorlon.modernizrReport.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\networkMonitor\vorlon.networkMonitor.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\networkMonitor\vorlon.networkMonitor.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\networkMonitor\vorlon.networkMonitor.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\ngInspector\vorlon.ngInspector.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\ngInspector\vorlon.ngInspector.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\ngInspector\vorlon.ngInspector.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\objectExplorer\vorlon.objectExplorer.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\resourcesExplorer\vorlon.resourcesExplorer.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\resourcesExplorer\vorlon.resourcesExplorer.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\resourcesExplorer\vorlon.resourcesExplorer.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\sample\vorlon.sample.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\sample\vorlon.sample.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.client.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.dashboard.ts" />
+    <TypeScriptCompile Include="Vorlon\plugins\xhrPanel\vorlon.xhrPanel.interfaces.ts" />
+    <TypeScriptCompile Include="Vorlon\vorlon.basePlugin.ts" />
+    <TypeScriptCompile Include="Vorlon\vorlon.clientPlugin.ts" />
+    <TypeScriptCompile Include="Vorlon\vorlon.dashboardPlugin.ts" />
+    <TypeScriptCompile Include="Vorlon\vorlon.tools.ts" />
+    <TypeScriptCompile Include="Vorlon\vorlon.clientMessenger.ts" />
+    <TypeScriptCompile Include="Vorlon\vorlon.enums.ts" />
+    <TypeScriptCompile Include="Vorlon\vorlon.core.ts" />
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptModuleKind>none</TypeScriptModuleKind>
+    <TypeScriptSourceMap>False</TypeScriptSourceMap>
+    <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>31657</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:31657/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>gulp</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

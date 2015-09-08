@@ -192,11 +192,15 @@
             }
         }
 
-        public static ToggleClass(e: HTMLElement, name: string) {
+        public static ToggleClass(e: HTMLElement, name: string, callback? : (hasClass:boolean) => void) {
             if (e.className.match(name)) {
                 Tools.RemoveClass(e, name);
+                if (callback)
+                    callback(false);
             } else {
                 Tools.AddClass(e, name);
+                if (callback)
+                    callback(true);
             }
         }
     }
@@ -288,7 +292,7 @@
             return this;
         }
 
-        append(nodeType: string, className?: string, callback?: (FluentDOM) => void) {
+        append(nodeType: string, className?: string, callback?: (fdom: FluentDOM) => void) {
             var child = new FluentDOM(nodeType, className, this.element, this);
             if (callback) {
                 callback(child);

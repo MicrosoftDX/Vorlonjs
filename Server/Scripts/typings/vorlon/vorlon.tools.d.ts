@@ -11,7 +11,7 @@ declare module VORLON {
         static RemoveEmpties(arr: string[]): number;
         static AddClass(e: HTMLElement, name: string): HTMLElement;
         static RemoveClass(e: HTMLElement, name: string): HTMLElement;
-        static ToggleClass(e: HTMLElement, name: string): void;
+        static ToggleClass(e: HTMLElement, name: string, callback?: (hasClass: boolean) => void): void;
     }
     class FluentDOM {
         element: HTMLElement;
@@ -31,7 +31,7 @@ declare module VORLON {
         editable(editable: boolean): FluentDOM;
         style(name: string, val: string): FluentDOM;
         appendTo(elt: Element): FluentDOM;
-        append(nodeType: string, className?: string, callback?: (FluentDOM) => void): FluentDOM;
+        append(nodeType: string, className?: string, callback?: (fdom: FluentDOM) => void): FluentDOM;
         createChild(nodeType: string, className?: string): FluentDOM;
         click(callback: (EventTarget) => void): FluentDOM;
         blur(callback: (EventTarget) => void): FluentDOM;
