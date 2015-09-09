@@ -15,11 +15,11 @@ gulp.task('typescript-to-js', function() {
   //Compile all ts file into their respective js file.
   
   var tsResult = gulp.src(['Vorlon/**/*.ts', 'libs/**.ts'])
-                       .pipe(typescript({ 
+                       .pipe(typescript({
                             declarationFiles: true,
                             noExternalResolve: true, target: 'ES5'}
                           ));
-  
+
    return merge([
       tsResult.dts.pipe(gulp.dest('release')),
       tsResult.js.pipe(gulp.dest('release'))
@@ -62,6 +62,20 @@ gulp.task('scripts-noplugin', ['typescript-to-js'], function() {
  * Do not hesitate to update it if you need to add your own files.
  */
 gulp.task('scripts', ['typescript-to-js'], function () {
+    gulp.src([
+        'release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
+        'release/plugins/babylonInspector/vorlon.babylonInspector.client.js'
+    ])
+        .pipe(concat('vorlon.babylonInspector.client.min.js'))
+        .pipe(gulp.dest('release/plugins/babylonInspector/'));
+
+    gulp.src([
+        'release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
+        'release/plugins/babylonInspector/vorlon.babylonInspector.dashboard.js'
+    ])
+        .pipe(concat('vorlon.babylonInspector.dashboard.min.js'))
+        .pipe(gulp.dest('release/plugins/babylonInspector/'));
+
     return gulp.src([
             './**/vorlon.interactiveConsole.interfaces.js',
             './**/vorlon.interactiveConsole.client.js',
@@ -86,9 +100,7 @@ gulp.task('scripts', ['typescript-to-js'], function () {
             './**/networkMonitor/vorlon.networkMonitor.dashboard.js',
             './**/resourcesExplorer/vorlon.resourcesExplorer.interfaces.js',
             './**/resourcesExplorer/vorlon.resourcesExplorer.client.js',
-            './**/resourcesExplorer/vorlon.resourcesExplorer.dashboard.js',
-            './**/sample/vorlon.sample.client.js',
-            './**/sample/vorlon.sample.dashboard.js'
+            './**/resourcesExplorer/vorlon.resourcesExplorer.dashboard.js'
         ])
         .pipe(rename(function (path) {
                 path.extname = ".min.js";
@@ -116,7 +128,8 @@ gulp.task('copyPlugins', function () {
     gulp.src([
           'Vorlon/plugins/**/*.js',
           'Vorlon/plugins/**/*.css',
-          'Vorlon/plugins/**/*.html',
+            'Vorlon/plugins/**/*.html',
+            'Vorlon/plugins/**/*.png',
           'release/plugins/**/*.js'
     ])
         .pipe(gulp.dest('../Server/public/vorlon/plugins'));
