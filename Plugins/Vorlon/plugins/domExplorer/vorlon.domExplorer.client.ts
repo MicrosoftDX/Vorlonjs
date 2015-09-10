@@ -12,6 +12,7 @@
         constructor() {
             super("domExplorer");
             this._id = "DOM";
+            //this.debug = true;
             this._ready = false;
         }
 
@@ -291,6 +292,52 @@
             this._packageDOM(document.documentElement, packagedObject, this._globalloadactive, null);
             this.sendCommandToDashboard('init', packagedObject);
         }
+        
+        inspect(): void {
+            if (document.elementFromPoint) {
+                this.trace("INSPECT");
+                var overlay = document.createElement("DIV");
+                overlay.style.position = "fixed";
+                overlay.style.left = "0";
+                overlay.style.right = "0";
+                overlay.style.top = "0";
+                overlay.style.bottom = "0";
+                overlay.style.touchAction = "manipulation";
+                overlay.style.backgroundColor = "rgba(255,0,0,0.2)";
+                document.body.appendChild(overlay);
+                var event = "mousedown";
+                if (overlay.onpointerdown !== undefined){
+                    event = "pointerdown";
+                }
+                else if ((<any>overlay).ontouchstart !== undefined){
+                    event = "touchstart";
+                }
+                overlay.addEventListener(event, (arg) => {
+                    var evt = <any>arg;
+                    this.trace("tracking element at " + evt.clientX + "/" +  evt.clientY);
+                    overlay.parentElement.removeChild(overlay);
+                    var el = <HTMLElement>document.elementFromPoint(evt.clientX, evt.clientY);
+                    if (el) {
+                        this.trace("element found");
+                        this.openElementInDashboard(el);
+                    } else {
+                        this.trace("element not found");
+                    }
+                });
+            } else {
+                //TODO : send message back to dashboard and disable button
+                this.trace("VORLON, inspection not supported");
+            }
+        }
+        
+        openElementInDashboard(element : Element){
+            if (element){
+                var parentId = this.getFirstParentWithInternalId(element);
+                if (parentId) {
+                    this.refreshbyId(parentId, this._packageNode(element).internalId);
+                }
+            }
+        }
 
         setStyle(internaID: string, property: string, newValue: string): void {
             var element = this._getElementByInternalId(internaID, document.documentElement);
@@ -430,6 +477,11 @@
         refresh() {
             var plugin = <DOMExplorerClient>this;
             plugin.refresh();
+        },
+        
+        inspect() {
+            var plugin = <DOMExplorerClient>this;
+            plugin.inspect();
         },
 
         getInnerHTML(data: any) {

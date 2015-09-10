@@ -11,9 +11,6 @@ bin/
 GLE id�es.txt
 sync.bat
 Plugins/Vorlon/plugins/remoteDebugging.zip
-<<<<<<< HEAD
 .settings/launch.json
-=======
 *.dat
->>>>>>> 8e38a9097a969c97676d00f30898bb85b7de6c5c
 Server/public/stylesheets/style.css

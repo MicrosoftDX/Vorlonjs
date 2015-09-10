@@ -1,36 +1,35 @@
+import fs = require("fs");
+import path = require("path");
 
 export module VORLON {
     export class Authentication  {
-        public static Passport = require("passport");
-        public static LocalStrategy = require("passport-local").Strategy;
         public static ActivateAuth: boolean = false;
-        
-        public static initAuthentication(){
-            Authentication.Passport.use(new Authentication.LocalStrategy(function(username, password, done) { 
-                    // insert your MongoDB check here. For now, just a simple hardcoded check.
-                    if (username === 'vorlon' && password === 'vorlon')
-                    {
-                        done(null, { user: username });
-                    }
-                    else
-                    {
-                        done(null, false);
-                    }
-                })
-            );
-            
-            Authentication.Passport.serializeUser(function(user, done) { 
-                done(null, user.id); 
-            }); 
-        
-            Authentication.Passport.deserializeUser(function(id, done) { 
-                done(null,  { 'id' : '1', 'login' : 'vorlon'}); 
-            }); 
-        }
+        public static UserName: string;
+        public static Password: string;
         
         public static ensureAuthenticated(req, res, next) { 
             if (!Authentication.ActivateAuth || req.isAuthenticated()) { return next(); } 
-            res.redirect('/login') 
+            res.redirect('/login');
         } 
+        
+        public static loadAuthConfig(): void {
+             fs.readFile(path.join(__dirname, "../config.json"), "utf8",(err, catalogdata) => {
+                if (err) {
+                    return;
+                }
+                
+                var catalog = JSON.parse(catalogdata.replace(/^\uFEFF/, ''));
+                
+                if(catalog.activateAuth){
+                    Authentication.ActivateAuth = catalog.activateAuth;
+                }
+                if(catalog.username){
+                    Authentication.UserName = catalog.username;
+                }
+                if(catalog.password){
+                    Authentication.Password = catalog.password;
+                }
+            });
+        }
     }
 };
