@@ -6,7 +6,7 @@ jQuery(function ($) {
     });
 
     // Replace default url with the current one (running vorlon)
-    $('#scriptSrc').text('<script src="{{location}}/vorlon.js"></script>'.replace('{{location}}', location.origin));
+    $('#scriptSrc').text('<script src="{{location}}{{baseURL}}/vorlon.js"></script>'.replace('{{location}}', location.origin).replace('{{baseURL}}', vorlonBaseURL));
 
     //Plugin tab navigation
     $('#pluginsPaneTop').on('click', '[data-plugin-target]', function (e) {
