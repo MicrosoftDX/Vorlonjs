@@ -46,7 +46,7 @@
   "scripts": {    
     "build-server": "gulp --gulpfile=./Server/gulpfile.js --cwd=./Server",
     "build-client": "gulp --gulpfile=./Plugins/gulpfile.js --cwd=./Plugins",
-    "build": "npm install && node disclaimer.js && npm run build-server && npm run build-client",
+    "build": "node disclaimer.js && npm run build-server && npm run build-client",
     "prepublish": "npm run build",
     "start": "node ./Server/server.js"
   },
