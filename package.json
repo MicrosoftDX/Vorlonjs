@@ -40,7 +40,8 @@
     "gulp-util": "^2.2.14",
     "gulp-webserver": "^0.9.0",
     "merge2": "^0.3.5",
-    "through": "^2.3.4"
+    "through": "^2.3.4",
+    "typescript": "^1.6.0-beta"
   },
   "scripts": {    
     "build-server": "gulp --gulpfile=./Server/gulpfile.js --cwd=./Server",
