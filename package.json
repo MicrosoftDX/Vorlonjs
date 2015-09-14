@@ -48,7 +48,7 @@
     "build-client": "gulp --gulpfile=./Plugins/gulpfile.js --cwd=./Plugins",
     "build": "node disclaimer.js && npm run build-server && npm run build-client",
     "prepublish": "npm run build",
-    "start": "npm run prepublish && node ./Server/server.js"
+    "start": "node ./Server/server.js"
   },
   "bin": {
     "vorlon": "./bin/vorlon"
