@@ -237,9 +237,9 @@
 
             window.addEventListener('error', (err) => {
                 
-                if (err && err.error) {
+                if (err && (<any>err).error) {
                     //this.addEntry({ messages: [err.error.message], type: "exception" });
-                    this.addEntry({ messages: [err.error.stack], type: "exception" });
+                    this.addEntry({ messages: [(<any>err).error.stack], type: "exception" });
                 }
             });
         }

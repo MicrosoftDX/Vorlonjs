@@ -8,7 +8,8 @@ html(lang='en')
     meta(name='author', content='')
 
     title Vorlon.js
-    
+    script!='var vorlonBaseURL = "' +  baseURL + '";'
+    script!='var vorlonDashboard = new VORLON.DashboardManager("' +  sessionid + '", "' + clientid + '");'
     link(rel='stylesheet', href='/stylesheets/x-tag-components.css')
     link(rel='stylesheet', href='/stylesheets/jquery-ui.css')
     link(rel='stylesheet', href='/stylesheets/contextMenu.css')

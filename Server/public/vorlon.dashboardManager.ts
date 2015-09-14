@@ -1,19 +1,25 @@
 ﻿/// <reference path="../Scripts/typings/vorlon/vorlon.core.d.ts" /> 
 /// <reference path="../Scripts/typings/vorlon/vorlon.clientMessenger.d.ts" /> 
 /// <reference path="../Scripts/typings/vorlon/vorlon.plugin.d.ts" /> 
+
+
 module VORLON {
     declare var $: any;
+    declare var vorlonBaseURL: string;
+    
     export class DashboardManager {
-        private _catalogUrl: string = "/config.json";
+        private _catalogUrl: string;
         static ListenClientid: string;
         static ListenClientDisplayid: string;
         static SessionId: string;
         static ClientList: Array<any>;
+        
         constructor(sessionid: string, listenClientid: string) {
             DashboardManager.SessionId = sessionid;
             DashboardManager.ListenClientid = listenClientid;
             DashboardManager.ClientList = new Array<any>();
             DashboardManager.RefreshClients();
+            this._catalogUrl =  vorlonBaseURL + "/config.json";
             this.loadPlugins();
         }
 
@@ -201,7 +207,7 @@ module VORLON {
 
                             var pluginlistelementa = document.createElement("a");
                             pluginlistelementa.textContent = " " + client.name + " - " + client.displayid;
-                            pluginlistelementa.setAttribute("href", "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
+                            pluginlistelementa.setAttribute("href", vorlonBaseURL + "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
                             pluginlistelementa.id = client.clientid;
                             pluginlistelement.appendChild(pluginlistelementa);
 
@@ -211,8 +217,7 @@ module VORLON {
                     }
                 }
             }
-
-            xhr.open("GET", "/api/getclients/" + DashboardManager.SessionId);
+            xhr.open("GET", vorlonBaseURL + "/api/getclients/" + DashboardManager.SessionId);
             xhr.send();
         }
 
@@ -233,7 +238,7 @@ module VORLON {
                 }
             }
 
-            xhr.open("GET", "/api/reset/" + sessionid);
+            xhr.open("GET", vorlonBaseURL + "/api/reset/" + sessionid);
             xhr.send();
         }
 
@@ -262,12 +267,12 @@ module VORLON {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         var sessionId = xhr.responseText;
-                        window.location.assign("/dashboard/" + sessionId);
+                        window.location.assign(vorlonBaseURL + "/dashboard/" + sessionId);
                     }
                 }
             }
 
-            xhr.open("GET", "/api/createsession");
+            xhr.open("GET", vorlonBaseURL + "/api/createsession");
             xhr.send();
         }
     }

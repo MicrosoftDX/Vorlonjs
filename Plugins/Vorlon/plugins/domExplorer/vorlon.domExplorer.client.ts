@@ -309,7 +309,7 @@
                 if (overlay.onpointerdown !== undefined){
                     event = "pointerdown";
                 }
-                else if (overlay.ontouchstart !== undefined){
+                else if ((<any>overlay).ontouchstart !== undefined){
                     event = "touchstart";
                 }
                 overlay.addEventListener(event, (arg) => {
