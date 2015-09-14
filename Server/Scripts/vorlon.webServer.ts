@@ -7,7 +7,7 @@ import fs = require("fs");
 import iwsc = require("./vorlon.IWebServerComponent");
 import vauth = require("./vorlon.authentication");
 import httpConfig = require("../config/vorlon.httpconfig"); 
-
+import baseURLConfig = require("../config/vorlon.baseurlconfig"); 
 
 export module VORLON {
     export class WebServer {
@@ -25,11 +25,13 @@ export module VORLON {
         private _components: Array<iwsc.VORLON.IWebServerComponent>;
         private http: httpConfig.VORLON.HttpConfig;
         private _app: express.Express;
+        private baseURLConfig: baseURLConfig.VORLON.BaseURLConfig;
 
         constructor() {
             this._app = express();
             this._components = new Array<iwsc.VORLON.IWebServerComponent>();
             this.http = new httpConfig.VORLON.HttpConfig();
+            this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();  
         }
 
         public init(): void {

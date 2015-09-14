@@ -39,10 +39,10 @@ module VORLON {
         }
 
         public setupXMLHttpRequestHook(){
-
+            var that = this;
             var w = <any>window;
             w.___XMLHttpRequest = w.XMLHttpRequest;
-            var XmlHttpRequestProxy = () => {
+            var XmlHttpRequestProxy = function() {
                 var xhr = new w.___XMLHttpRequest();
                 var data = {
                     id: VORLON.Tools.CreateGUID(),
@@ -55,7 +55,7 @@ module VORLON {
                     requestHeaders : [],
                     readyState: 0,
                 }
-                this.cache.push(data);
+                that.cache.push(data);
                 xhr.__open = xhr.open;
                 xhr.__send = xhr.send;
                 xhr.__setRequestHeader = xhr.setRequestHeader;
@@ -63,29 +63,28 @@ module VORLON {
                 //todo catch send to get posted data
                 //see https://msdn.microsoft.com/en-us/library/hh772834(v=vs.85).aspx
                 
-                var _arguments = _arguments;
-                xhr.open = () => {
-                    data.method = _arguments[0];
-                    data.url = _arguments[1];
-                    this.trace('request for ' + data.url);
-                    this.sendCommandToDashboard('xhr', data);
+                xhr.open = function() {
+                    data.method = arguments[0];
+                    data.url = arguments[1];
+                    that.trace('request for ' + data.url);
+                    that.sendCommandToDashboard('xhr', data);
                     
-                    xhr.__open.apply(xhr, _arguments);
-                    return xhr.__open.apply(xhr, _arguments);
+                    xhr.__open.apply(xhr, arguments);
+                    return xhr.__open.apply(xhr, arguments);
                 }
                 
-                xhr.setRequestHeader = () => {
+                xhr.setRequestHeader = function() {
                     var header = {
-                        name : _arguments[0],
-                        value : _arguments[1]
+                        name : arguments[0],
+                        value : arguments[1]
                     }
                     data.requestHeaders.push(header);
-                    return xhr.__setRequestHeader.apply(xhr, _arguments);
+                    return xhr.__setRequestHeader.apply(xhr, arguments);
                 }
 
                 xhr.addEventListener('readystatechange', () => {
                     data.readyState = xhr.readyState;
-                    this.trace('STATE CHANGED ' + data.readyState);
+                    that.trace('STATE CHANGED ' + data.readyState);
 
                     if (data.readyState === 4){
                         data.responseType = xhr.responseType;
@@ -95,9 +94,9 @@ module VORLON {
                         if (xhr.getAllResponseHeaders)    
                             data.responseHeaders = xhr.getAllResponseHeaders();
                         
-                        this.trace('LOADED !!!');
+                        that.trace('LOADED !!!');
                     }
-                    this.sendCommandToDashboard('xhr', data);
+                    that.sendCommandToDashboard('xhr', data);
                 });
 
                 return xhr;
