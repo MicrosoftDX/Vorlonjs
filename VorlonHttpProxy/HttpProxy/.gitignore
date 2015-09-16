@@ -1,0 +1,4 @@
+.log
+Scripts/*.js
+Scripts/*.js.map
+server.js

@@ -1,0 +1,29 @@
+{
+  "name": "HttpProxy",
+  "version": "0.0.1",
+  "description": "HttpProxy",
+  "main": "HttpProxy/server.js",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "connect": "^3.4.0",
+    "express": "^4.12.3",
+    "fs": "^0.0.2",
+    "http-proxy": "^1.11.2",
+    "util": "^0.10.3"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-less": "^3.0.3",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-typescript": "^2.8.2",
+    "typescript": "^1.6.0-beta"
+  },
+  "scripts": {
+    "build-server": "gulp --gulpfile=./HttpProxy/gulpfile.js --cwd=./HttpProxy",
+    "build": "npm run build-server",
+    "start": "node ./HttpProxy/server.js"
+  },
+  "bin": {
+    "vorlon": "./bin/httpProxy"
+  }
+}
