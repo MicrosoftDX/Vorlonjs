@@ -842,12 +842,14 @@ module VORLON {
          * @private
          */
         private _sendScenesData() {
-            var scenesData = this._dataGenerator.generateScenesData(this.scenes);
-            this.sendToDashboard({
-                messageType : 'SCENES_DATA',
-                data : scenesData,
-                clientURL : window.location.href
-            });
+            if (this.scenes) {
+                var scenesData = this._dataGenerator.generateScenesData(this.scenes);
+                this.sendToDashboard({
+                    messageType: 'SCENES_DATA',
+                    data: scenesData,
+                    clientURL: window.location.href
+                });
+            }
         }
 
         /**

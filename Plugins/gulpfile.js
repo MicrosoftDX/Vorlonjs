@@ -58,10 +58,11 @@ gulp.task('scripts-noplugin', ['typescript-to-js'], function() {
 });
 
 /**
- * Minify all plugins.
- * Do not hesitate to update it if you need to add your own files.
+ * Specific task that need to be handled for specific plugins.
+ * Do not hesitate to update it if you need to add your own files
  */
-gulp.task('scripts', ['typescript-to-js'], function () {
+gulp.task('scripts-specific-plugins', function() {
+    // Babylon Inspector
     gulp.src([
         'release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
         'release/plugins/babylonInspector/vorlon.babylonInspector.client.js'
@@ -75,6 +76,16 @@ gulp.task('scripts', ['typescript-to-js'], function () {
     ])
         .pipe(concat('vorlon.babylonInspector.dashboard.min.js'))
         .pipe(gulp.dest('release/plugins/babylonInspector/'));
+
+});
+
+/**
+ * Minify all plugins.
+ * Do not hesitate to update it if you need to add your own files.
+ */
+gulp.task('scripts', ['typescript-to-js'], function () {
+
+    gulp.start('scripts-specific-plugins');
 
     return gulp.src([
             './**/vorlon.interactiveConsole.interfaces.js',
