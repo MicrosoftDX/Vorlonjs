@@ -111,7 +111,9 @@ gulp.task('scripts', ['typescript-to-js'], function () {
             './**/networkMonitor/vorlon.networkMonitor.dashboard.js',
             './**/resourcesExplorer/vorlon.resourcesExplorer.interfaces.js',
             './**/resourcesExplorer/vorlon.resourcesExplorer.client.js',
-            './**/resourcesExplorer/vorlon.resourcesExplorer.dashboard.js'
+            './**/resourcesExplorer/vorlon.resourcesExplorer.dashboard.js',
+            './**/sample/vorlon.sample.client.js',
+            './**/sample/vorlon.sample.dashboard.js'
         ])
         .pipe(rename(function (path) {
                 path.extname = ".min.js";
