@@ -26,7 +26,8 @@
     "winston": "^1.0.1",
     "winston-azure": "0.0.4",
     "winston-logs-display": "^0.1.1",
-    "xmlhttprequest": "^1.7.0"
+    "xmlhttprequest": "^1.7.0",
+    "http-proxy": "^1.11.2"
   },
   "devDependencies": {
     "gulp": "^3.8.11",
@@ -41,7 +42,7 @@
     "gulp-webserver": "^0.9.0",
     "merge2": "^0.3.5",
     "through": "^2.3.4",
-    "typescript": "^1.6.0-beta"
+    "typescript": "^1.6.2"
   },
   "scripts": {    
     "build-server": "gulp --gulpfile=./Server/gulpfile.js --cwd=./Server",
