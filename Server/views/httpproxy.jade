@@ -1,0 +1,37 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    meta(name='description', content='')
+    meta(name='author', content='')
+  title Vorlonjs HTTP Proxy
+  link(rel='stylesheet', href='/stylesheets/httpproxy.css')
+  script(src='/javascripts/jquery-2.1.1.min.js' type="text/javascript")
+    body
+  
+  div.home
+    div.top
+      img.logo(src="/images/VorlonLogo_Smooth.svg")
+    div.form
+      input#url(type='text')
+      button#inject Injecte Script
+      button#dashboard dashboard
+
+ script(type='text/javascript').
+ 	$(document).ready(function() {	
+      document.querySelector("#inject").addEventListener("click", function () {
+        var url = document.querySelector("#url").value;
+          $.ajax({
+            type: "GET",
+            url: "/inject?url=" + url,
+            success: function (data) {
+              window.open(data);
+            },
+          });
+        });
+        document.querySelector("#dashboard").addEventListener("click", function () {
+          window.open("http://localhost:1337/dashboard/default/");
+        });
+ 	});
