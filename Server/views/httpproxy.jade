@@ -15,9 +15,12 @@ html(lang='en')
     div.top
       img.logo(src="/images/VorlonLogo_Smooth.svg")
     div.form
-      input#url(type='text')
-      button#inject Injecte Script
-      button#dashboard dashboard
+      div.input
+        input#url(type='text')
+      div.button
+        div.spacebutton
+          a#inject.btn.btn-default.left Open Site
+          a#dashboard.btn.btn-default.right Open Dashboard
 
  script(type='text/javascript').
  	$(document).ready(function() {	

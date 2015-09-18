@@ -60,7 +60,7 @@ export module VORLON {
                     changeOrigin: true 
                 };
                 if (uri.protocol === "https:") {
-                    options = {
+                    /*options = {
                         target: uri.href, 
                         agent: https.globalAgent, 
                         headers: { 
@@ -69,7 +69,7 @@ export module VORLON {
                         changeOrigin: true
                     };
                     console.log("options => ", options);
-                    var proxy = httpProxy.createProxyServer();
+                    var proxy = httpProxy.createProxyServer();*/
                 }
                 this._proxy = httpProxy.createProxyServer(options);
                 this._server = http.createServer((req: express.Request, res: express.Response) => {
