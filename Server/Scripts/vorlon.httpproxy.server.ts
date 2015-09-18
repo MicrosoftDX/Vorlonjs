@@ -22,9 +22,12 @@ export module VORLON {
             this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();
         }
         
-        private insertVorlonScript(str) {
+        private insertVorlonScript(str, uri) {
              var position = str.indexOf("</head>");
-             str = str.substr(0, position) + " " + this._scriptElm + str.substr(position);
+             var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
+             var match = uri.href.match(pat); 
+             var _script = "<script src=\"http://localhost:1337/vorlon.js/"+ match[2] +"/\"></script>"
+             str = str.substr(0, position) + " " + _script + str.substr(position);
              return str;
         }
         
@@ -59,18 +62,6 @@ export module VORLON {
                     target: uri.href, 
                     changeOrigin: true 
                 };
-                if (uri.protocol === "https:") {
-                    /*options = {
-                        target: uri.href, 
-                        agent: https.globalAgent, 
-                        headers: { 
-                            host: uri.hostname 
-                        }, 
-                        changeOrigin: true
-                    };
-                    console.log("options => ", options);
-                    var proxy = httpProxy.createProxyServer();*/
-                }
                 this._proxy = httpProxy.createProxyServer(options);
                 this._server = http.createServer((req: express.Request, res: express.Response) => {
                     this._proxy.web(req, res);
@@ -114,7 +105,7 @@ export module VORLON {
                         };
                         response.end = function () {
                             if (chunks && chunks.toString) {
-                                var tmp = _that.insertVorlonScript(chunks.toString());
+                                var tmp = _that.insertVorlonScript(chunks.toString(), uri);
                                 write.apply(this, [tmp]);
                             } else {
                                 end.apply(this, arguments);

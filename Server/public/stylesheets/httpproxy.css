@@ -1,0 +1,44 @@
+body {
+  background-color: #eee;
+}
+.home .top {
+  margin: calc(25% - 100px) auto auto;
+  text-align: center;
+}
+.home .top .logo {
+  max-width: 100%;
+  max-height: 120px;
+  margin-bottom: 1em;
+}
+.home .form {
+  margin: auto;
+  text-align: center;
+}
+.home .form .input input {
+  width: 250px;
+  padding: 6px 12px;
+}
+.home .form .button { 
+  width: 250px;
+  margin: auto;
+}
+.spacebutton {
+  width: 100%;
+}
+.btn {
+  border-radius: 3px;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 400;
+  margin: 10px 0;
+  padding: 8px 10px;
+  text-align: center;
+}
+.btn-default {
+  background: #ccc none repeat scroll 0 0;
+  color: #444;
+}
+
+.btn + .btn {
+  margin-left: 15px;
+}
