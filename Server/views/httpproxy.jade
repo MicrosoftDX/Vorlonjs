@@ -35,6 +35,9 @@ html(lang='en')
           });
         });
         document.querySelector("#dashboard").addEventListener("click", function () {
-          window.open("http://localhost:1337/dashboard/default/");
+          var url = document.querySelector("#url").value;
+          var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
+          var match = url.match(pat);   
+          window.open("http://localhost:1337/dashboard/" + match[2]);
         });
  	});
