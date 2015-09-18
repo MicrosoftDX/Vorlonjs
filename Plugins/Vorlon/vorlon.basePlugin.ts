@@ -1,4 +1,6 @@
 ﻿module VORLON {
+    declare var vorlonBaseURL: string;
+
     export class BasePlugin {
         public _ready = true;
         protected _id = "";
@@ -7,7 +9,7 @@
         public trace : (msg) => void;
         protected traceLog = (msg) => { console.log(msg); };
         protected traceNoop = (msg) => { };
-        public loadingDirectory = "vorlon/plugins";
+        public loadingDirectory = vorlonBaseURL.replace(/^\/|\/$/, '') + "/vorlon/plugins";
 
         constructor(public name: string) {
             this.debug = Core.debug;
@@ -16,11 +18,11 @@
         public get Type(): PluginType {
             return this._type;
         }
-        
+
         public get debug(): boolean {
             return this._debug;
         }
-        
+
         public set debug(val: boolean) {
             this._debug = val;
             if (val){

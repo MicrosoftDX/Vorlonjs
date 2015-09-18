@@ -1,19 +1,19 @@
-﻿/// <reference path="../Scripts/typings/vorlon/vorlon.core.d.ts" /> 
-/// <reference path="../Scripts/typings/vorlon/vorlon.clientMessenger.d.ts" /> 
-/// <reference path="../Scripts/typings/vorlon/vorlon.plugin.d.ts" /> 
+﻿/// <reference path="../Scripts/typings/vorlon/vorlon.core.d.ts" />
+/// <reference path="../Scripts/typings/vorlon/vorlon.clientMessenger.d.ts" />
+/// <reference path="../Scripts/typings/vorlon/vorlon.plugin.d.ts" />
 
 
 module VORLON {
     declare var $: any;
     declare var vorlonBaseURL: string;
-    
+
     export class DashboardManager {
         private _catalogUrl: string;
         static ListenClientid: string;
         static ListenClientDisplayid: string;
         static SessionId: string;
         static ClientList: Array<any>;
-        
+
         constructor(sessionid: string, listenClientid: string) {
             DashboardManager.SessionId = sessionid;
             DashboardManager.ListenClientid = listenClientid;
@@ -53,7 +53,7 @@ module VORLON {
 
                         var pluginLoaded = 0;
                         var pluginstoload = 0;
-                        
+
                         //Cleaning unwanted plugins
                         for(var i = 0; i < catalog.plugins.length; i++){
                             if(catalog.plugins[i].enabled){
@@ -63,11 +63,11 @@ module VORLON {
 
                         for (var i = 0; i < catalog.plugins.length; i++) {
                             var plugin = catalog.plugins[i];
-                            
+
                             if(!plugin.enabled){
                                 continue;
                             }
-                            
+
                             var existingLocation = document.querySelector('[data-plugin=' + plugin.id + ']');
 
                             if (!existingLocation) {
@@ -97,7 +97,7 @@ module VORLON {
                                 }
                             }
                             var pluginscript = document.createElement("script");
-                            pluginscript.setAttribute("src", "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".dashboard.min.js");
+                            pluginscript.setAttribute("src", vorlonBaseURL + "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".dashboard.min.js");
 
                             pluginscript.onload = (oError) => {
                                 pluginLoaded++;
@@ -114,7 +114,7 @@ module VORLON {
                             };
                             document.body.appendChild(pluginscript);
                         }
-                        
+
                         var addPluginBtn = document.createElement('div');
                         addPluginBtn.className = "tab";
                         addPluginBtn.innerText = "+";
@@ -122,7 +122,7 @@ module VORLON {
                         addPluginBtn.addEventListener('click',() => {
                             window.open("http://www.vorlonjs.io/plugins", "_blank");
                         });
-                        
+
                         var collaspseBtn = document.createElement('div');
                         collaspseBtn.className = "fa fa-expand expandBtn";
                         divPluginBottomTabs.appendChild(collaspseBtn);
@@ -164,7 +164,7 @@ module VORLON {
 
                         var clients = JSON.parse(xhr.responseText);
                         //console.log("dashboard clients ", clients);
-                        
+
                         var divClientsListPane = <HTMLDivElement> document.getElementById("clientsListPaneContent");
 
                         while (divClientsListPane.hasChildNodes()) {
@@ -277,4 +277,3 @@ module VORLON {
         }
     }
 }
-

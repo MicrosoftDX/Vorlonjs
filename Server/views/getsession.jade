@@ -4,7 +4,7 @@ block content
   .row
     p To start using vorlon.js, you need to create a session.
     a#createSessionButton.btn.btn-default.btn-getsession(onclick='VORLON.DashboardManager.getSessionId()') Create Session
-  
+
 block scripts
-  script(src='/javascripts/socket.io-1.3.5.js')
-  script(src='/vorlon.dashboardManager.js')
+  script(src=baseURL + '/javascripts/socket.io-1.3.5.js')
+  script(src=baseURL + '/vorlon.dashboardManager.js')

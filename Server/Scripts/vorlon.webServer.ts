@@ -6,8 +6,8 @@ import fs = require("fs");
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
 import vauth = require("./vorlon.authentication");
-import httpConfig = require("../config/vorlon.httpconfig"); 
-import baseURLConfig = require("../config/vorlon.baseurlconfig"); 
+import httpConfig = require("../config/vorlon.httpconfig");
+import baseURLConfig = require("../config/vorlon.baseurlconfig");
 
 export module VORLON {
     export class WebServer {
@@ -31,7 +31,7 @@ export module VORLON {
             this._app = express();
             this._components = new Array<iwsc.VORLON.IWebServerComponent>();
             this.http = new httpConfig.VORLON.HttpConfig();
-            this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();  
+            this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();
         }
 
         public init(): void {
@@ -51,7 +51,7 @@ export module VORLON {
 
         public start(): void {
             var app = this._app;
-            
+
             //Command line
             var stopExecution = false;
             process.argv.forEach(function (val, index, array) {
@@ -62,7 +62,7 @@ export module VORLON {
                                 this._log.error("Error reading package.json file");
                                 return;
                             }
-                            
+
                             var _package = JSON.parse(packageData.replace(/^\uFEFF/, ''));
                             console.log('Vorlon.js v' + _package.version);
                         });
@@ -70,7 +70,7 @@ export module VORLON {
                         break;
                 }
             });
-            
+
             if (stopExecution) {
                 return;
             }
@@ -81,7 +81,7 @@ export module VORLON {
             app.set('view engine', 'jade');
 
             //Uses
-            this._passport.use(new this._localStrategy(function(username, password, done) { 
+            this._passport.use(new this._localStrategy(function(username, password, done) {
                     // insert your MongoDB check here. For now, just a simple hardcoded check.
                     if (username === vauth.VORLON.Authentication.UserName && password === vauth.VORLON.Authentication.Password)
                     {
@@ -93,17 +93,17 @@ export module VORLON {
                     }
                 })
             );
-            
-            this._passport.serializeUser(function(user, done) { 
-                done(null, user); 
-            }); 
-        
-            this._passport.deserializeUser(function(user, done) { 
-                done(null, user); 
-            }); 
+
+            this._passport.serializeUser(function(user, done) {
+                done(null, user);
+            });
+
+            this._passport.deserializeUser(function(user, done) {
+                done(null, user);
+            });
 
             app.use(stylus.middleware(path.join(__dirname, '../public')));
-            app.use(express.static(path.join(__dirname, '../public')));
+            app.use(this.baseURLConfig.baseURL, express.static(path.join(__dirname, '../public')));
             app.use(this._bodyParser.urlencoded({ extended: false }));
             app.use(this._bodyParser.json());
             app.use(this._cookieParser());
@@ -116,11 +116,11 @@ export module VORLON {
                 resave: true }));
             app.use(this._passport.initialize());
             app.use(this._passport.session());
-            
+
             vauth.VORLON.Authentication.loadAuthConfig();
-          
+
             this.init();
-            
+
             app.use((req, res, next) => {
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");

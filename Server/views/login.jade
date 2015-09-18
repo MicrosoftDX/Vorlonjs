@@ -3,13 +3,13 @@
 block content
   section.login-container
     div.message
-      img.logo(src="/images/VorlonLogo_Smooth.svg")
+      img.logo(src=baseURL + "/images/VorlonLogo_Smooth.svg")
       h1 We need your credentials :)
-    
+
       //- submit to /login
       form(action="/login", method="post")
         input(type="text", id="username", name="username", placeholder="Username")
         input(type="password", id="password", name="password", placeholder="Password")
         button(type="submit") Login
-    
+
 block scripts
