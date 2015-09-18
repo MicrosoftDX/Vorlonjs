@@ -8,6 +8,8 @@ html(lang='en')
     meta(name='author', content='')
   title Vorlonjs HTTP Proxy
   link(rel='stylesheet', href='/stylesheets/httpproxy.css')
+  link(href='https://fonts.googleapis.com/css?family=Oswald:400' rel='stylesheet')
+  link(href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,300|Roboto:400,300' rel='stylesheet')
   script(src='/javascripts/jquery-2.1.1.min.js' type="text/javascript")
     body
   
@@ -15,12 +17,13 @@ html(lang='en')
     div.top
       img.logo(src="/images/VorlonLogo_Smooth.svg")
     div.form
+      div.message Vorlon proxy allows you to use Vorlon on an existing website. Just enter the website url, open your website and then open Vorlon dashboard. Couldn't be easier !
       div.input
         input#url(type='text')
       div.button
         div.spacebutton
-          a#inject.btn.btn-default.left Open Site
-          a#dashboard.btn.btn-default.right Open Dashboard
+          a#inject.btn.btn-default.left Open website
+          a#dashboard.btn.btn-default.right Open dashboard
 
  script(type='text/javascript').
  	$(document).ready(function() {	

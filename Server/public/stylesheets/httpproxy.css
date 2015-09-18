@@ -1,8 +1,9 @@
 body {
   background-color: #eee;
+  font-family: Roboto;
 }
 .home .top {
-  margin: calc(25% - 100px) auto auto;
+  margin: calc(15% - 100px) auto auto;
   text-align: center;
 }
 .home .top .logo {
@@ -13,26 +14,50 @@ body {
 .home .form {
   margin: auto;
   text-align: center;
+  width: 400px;
 }
+
+.home .form .input input {  
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.home .message {
+  color: #555;
+  text-align: :center;
+  margin-bottom : 10px;
+  text-align: justify;
+}
+
 .home .form .input input {
-  width: 250px;
   padding: 6px 12px;
+  border-color: #411748;  
+  width: 100%;
 }
-.home .form .button { 
-  width: 250px;
+.home .form .button {   
   margin: auto;
 }
 .spacebutton {
   width: 100%;
 }
 .btn {
-  border-radius: 3px;
+  border: none;
   cursor: pointer;
   display: inline-block;
   font-weight: 400;
   margin: 10px 0;
   padding: 8px 10px;
   text-align: center;
+  width: 120px;
+  background-color: #411748 !important;
+  color: white !important;  
+}
+.btn.left{
+  float: left;
+}
+.btn.right{
+  float: right;
 }
 .btn-default {
   background: #ccc none repeat scroll 0 0;
