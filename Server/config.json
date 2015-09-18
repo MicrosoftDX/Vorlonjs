@@ -1,4 +1,4 @@
-﻿{
+{
     "baseURL": "",
     "useSSL": false,
     "SSLkey": "cert/server.key",
@@ -18,5 +18,6 @@
         { "id": "RESOURCES", "name": "Resources Explorer", "panel": "top", "foldername": "resourcesExplorer", "enabled": true },
         { "id": "DEVICE", "name": "My Device", "panel": "top", "foldername": "device", "enabled": true },
         { "id": "UNITTEST", "name": "Unit Test", "panel": "top", "foldername": "unitTestRunner", "enabled": true }
-    ]
+    ],
+    "port": 1337
 }
