@@ -288,7 +288,7 @@
         }
 
         private _OnIdentificationReceived(id: string): void {
-            //console.log('helo received ' + id);
+            //console.log('helo received ' + id + " RuntimeSide = " + Core._side);
             Core._listenClientId = id;
 
             if (Core._side === RuntimeSide.Client) {
@@ -299,7 +299,9 @@
                 }
             } else {
                 var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+                Tools.RemoveClass(elt, 'bounce');
                 Tools.AddClass(elt, 'hidden');
+                console.log("yo");
             }
         }
 
