@@ -25,7 +25,7 @@ html(lang='en')
         var url = document.querySelector("#url").value;
           $.ajax({
             type: "GET",
-            url: "/inject?url=" + url,
+            url: "/HttpProxy/inject?url=" + url,
             success: function (data) {
               window.open(data);
             },

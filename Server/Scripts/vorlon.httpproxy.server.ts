@@ -14,13 +14,11 @@ import baseURLConfig = require("../config/vorlon.baseurlconfig");
 export module VORLON {
     export class HttpProxy implements iwsc.VORLON.IWebServerComponent {
         private _scriptElm: string = "<script src=\"http://localhost:1337/vorlon.js\"></script>";
-        private _app: express.Express;
         private _proxy = null;
         private _server = null;
         private baseURLConfig: baseURLConfig.VORLON.BaseURLConfig;
         
         constructor() {
-            this._app = express();
             this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();
         }
         
@@ -31,17 +29,11 @@ export module VORLON {
         }
         
         public start(): void {
-            this._app.use(express.static(path.join(__dirname, '../public')));
-            this._app.get("/", this.home());
-            this._app.get("/inject", this.inject());
-            this._app.set('views', path.join(__dirname, '../views'));
-            this._app.set('view engine', 'jade');
-            this._app.listen(2800, () => {
-                console.log(colors.blue("http server ") + colors.green.bold("started ") + colors.blue("on port ") + colors.yellow("2800 "));
-            });
         }
         
         public addRoutes(app: express.Express, passport: any): void {
+            app.get("/HttpProxy", this.home());
+            app.get("/HttpProxy/inject", this.inject());
         }
         
         //Routes
