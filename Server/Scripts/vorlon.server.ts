@@ -11,8 +11,8 @@ var winstonDisplay = require("winston-logs-display");
 import redisConfigImport = require("../config/vorlon.redisconfig");
 var redisConfig = redisConfigImport.VORLON.RedisConfig;
 import httpConfig = require("../config/vorlon.httpconfig");
-import logConfig = require("../config/vorlon.logconfig"); 
-import baseURLConfig = require("../config/vorlon.baseurlconfig"); 
+import logConfig = require("../config/vorlon.logconfig");
+import baseURLConfig = require("../config/vorlon.baseurlconfig");
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
@@ -33,8 +33,8 @@ export module VORLON {
         constructor() {
             this.logConfig = new logConfig.VORLON.LogConfig();
             this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();
-            
-            //LOGS      
+
+            //LOGS
             winston.cli();
             this._log = new winston.Logger({
                 levels: {
@@ -76,7 +76,7 @@ export module VORLON {
             });
 
             this._log.cli();
-           
+
             //Redis
             if (redisConfig.fackredis === true) {
                 this._redisApi = fakeredis.createClient();
@@ -176,7 +176,7 @@ export module VORLON {
             app.get(this.baseURLConfig.baseURL + "/vorlon.autostartdisabled.js",(req: any, res: any) => {
                 this._sendVorlonJSFile(true, req, res, false);
             });
-            
+
             app.get(this.baseURLConfig.baseURL + "/config.json",(req: any, res: any) => {
                 this._sendConfigJson(req, res);
             });
@@ -184,17 +184,17 @@ export module VORLON {
             //DisplayLogs
             winstonDisplay(app, this._log);
         }
-        
+
         private _sendConfigJson(req: any, res: any) {
-           
+
             fs.readFile(path.join(__dirname, "../config.json"), "utf8",(err, catalogdata) => {
                 if (err) {
                     this._log.error("ROUTE : Error reading config.json file");
                     return;
                 }
-                
+
                 var catalog = JSON.parse(catalogdata.replace(/^\uFEFF/, ''));
-                
+
                 //remove auth data to not send username and password outside ;)
                 if(catalog.activateAuth){
                     delete catalog.activateAuth;
@@ -205,7 +205,7 @@ export module VORLON {
                 if(catalog.password){
                     delete catalog.password;
                 }
-                
+
                 catalogdata = JSON.stringify(catalog);
                 res.header('Content-Type', 'application/json');
                 res.send(catalogdata);
@@ -224,10 +224,13 @@ export module VORLON {
 
                 var configstring = catalogdata.toString().replace(/^\uFEFF/, '');
                 console.log(configstring);
+                var baseUrl = this.baseURLConfig.baseURL;
                 var catalog = JSON.parse(configstring);
                 var vorlonpluginfiles: string = "";
                 var javascriptFile: string = "";
-                                
+
+                javascriptFile += 'var vorlonBaseURL="' + baseUrl + '";\n';
+
                 //read the socket.io file if needed
                 if (catalog.includeSocketIO) {
                     javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.3.5.js"));
@@ -253,7 +256,7 @@ export module VORLON {
                     }
                 }
 
-                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + this.http.protocol + '://' + req.headers.host + '/vorlon/plugins"');
+                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + this.http.protocol + '://' + req.headers.host + this.baseURLConfig.baseURL + '/vorlon/plugins"');
                 javascriptFile += "\r" + vorlonpluginfiles;
 
                 if (autostart) {
@@ -317,7 +320,7 @@ export module VORLON {
             res.end();
         }
 
-        
+
         public addClient(socket: SocketIO.Socket): void {
             socket.on("helo",(message: string) => {
                 //this._log.warn("CLIENT helo " + message);
@@ -353,7 +356,7 @@ export module VORLON {
                 }
 
                 this._log.info(formatLog("PLUGIN", "Number clients in session : " + (session.nbClients + 1), receiveMessage));
-                
+
                 //If dashboard already connected to this socket send "helo" else wait
                 if ((metadata.clientId != "") && (metadata.clientId == session.currentClientId)) {
                     this._log.info(formatLog("PLUGIN", "Send helo to client to open socket : " + metadata.clientId, receiveMessage));
@@ -471,7 +474,7 @@ export module VORLON {
                                 if (client.socket != null) {
                                     this._log.info(formatLog("DASHBOARD", "Send helo to socketid :" + client.socket.id, receiveMessage));
                                     client.socket.emit("helo", metadata.listenClientId);
-                                    
+
                                 }
                             }
                             else {
@@ -549,8 +552,8 @@ export module VORLON {
                 }
             });
 
-            socket.on("disconnect",(message: string) => {      
-                //this._log.warn("DASHBOARD disconnect " + message);          
+            socket.on("disconnect",(message: string) => {
+                //this._log.warn("DASHBOARD disconnect " + message);
                 //Delete dashboard session
                 for (var dashboard in this.dashboards) {
                     if (this.dashboards[dashboard].id === socket.id) {
@@ -642,7 +645,7 @@ export module VORLON {
             }
         }
 
-        
+
         return buffer.join("");
     }
 
