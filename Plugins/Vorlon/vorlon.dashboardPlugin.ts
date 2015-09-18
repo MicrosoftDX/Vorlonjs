@@ -1,4 +1,6 @@
 ﻿module VORLON {
+    declare var vorlonBaseURL: string;
+
     export class DashboardPlugin extends BasePlugin {
         public htmlFragmentUrl;
         public cssStyleSheetUrl;
@@ -32,8 +34,8 @@
                 this.trace(this.getID() + ' send command to plugin client ' + command);
                 Core.Messenger.sendRealtimeMessage(pluginId, data, RuntimeSide.Dashboard, "protocol", incrementVisualIndicator, command);
             }
-        }              
-        
+        }
+
         public sendCommandToPluginDashboard(pluginId : string, command: string, data: any = null, incrementVisualIndicator: boolean = false) {
             if (Core.Messenger) {
                 this.trace(this.getID() + ' send command to plugin dashboard ' + command);
@@ -42,7 +44,7 @@
         }
 
         public _insertHtmlContentAsync(divContainer: HTMLDivElement, callback: (filledDiv: HTMLDivElement) => void): void {
-            var basedUrl = "/" + this.loadingDirectory + "/" + this.name + "/";
+            var basedUrl = vorlonBaseURL + "/" + this.loadingDirectory + "/" + this.name + "/";
             var alone = false;
             if (!divContainer) {
                 // Not emptyDiv provided, let's plug into the main DOM

@@ -256,7 +256,7 @@ export module VORLON {
                     }
                 }
 
-                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + this.http.protocol + '://' + req.headers.host + this.baseURLConfig.baseURL + '/vorlon/plugins"');
+                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + this.http.protocol + '://' + req.headers.host + baseUrl + '/vorlon/plugins"');
                 javascriptFile += "\r" + vorlonpluginfiles;
 
                 if (autostart) {
