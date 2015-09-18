@@ -24,8 +24,9 @@ export module VORLON {
         
         private insertVorlonScript(str, uri) {
              var position = str.indexOf("</head>");
-             var _script = "<script src=\"http://localhost:1337/vorlon.js/"+ uri.hostname +"/\"></script>"
-             console.log("script", _script);
+             var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
+             var match = uri.href.match(pat); 
+             var _script = "<script src=\"http://localhost:1337/vorlon.js/"+ match[2] +"/\"></script>"
              str = str.substr(0, position) + " " + _script + str.substr(position);
              return str;
         }
@@ -104,7 +105,6 @@ export module VORLON {
                         };
                         response.end = function () {
                             if (chunks && chunks.toString) {
-                                console.log("uri", uri);
                                 var tmp = _that.insertVorlonScript(chunks.toString(), uri);
                                 write.apply(this, [tmp]);
                             } else {

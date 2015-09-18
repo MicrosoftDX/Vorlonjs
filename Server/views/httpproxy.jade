@@ -37,7 +37,7 @@ html(lang='en')
         document.querySelector("#dashboard").addEventListener("click", function () {
           var url = document.querySelector("#url").value;
           var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
-          var match = url.match(pat);   
+          var match = url.match(pat); 
           window.open("http://localhost:1337/dashboard/" + match[2]);
         });
  	});
