@@ -13,7 +13,6 @@ import baseURLConfig = require("../config/vorlon.baseurlconfig");
 
 export module VORLON {
     export class HttpProxy implements iwsc.VORLON.IWebServerComponent {
-        private _scriptElm: string = "<script src=\"http://localhost:1337/vorlon.js\"></script>";
         private _proxy = null;
         private _server = null;
         private baseURLConfig: baseURLConfig.VORLON.BaseURLConfig;
@@ -22,13 +21,18 @@ export module VORLON {
             this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();
         }
         
-        private insertVorlonScript(str, uri) {
-             var position = str.indexOf("</head>");
-             var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
-             var match = uri.href.match(pat); 
-             var _script = "<script src=\"http://localhost:1337/vorlon.js/"+ match[2] +"/\"></script>"
-             str = str.substr(0, position) + " " + _script + str.substr(position);
-             return str;
+        private insertVorlonScript(str: string, uri, _script: string) {
+            var position = str.indexOf("</head>");
+            str = str.substr(0, position) + " " + _script + str.substr(position);
+            return str;
+        }
+        
+        private changePath(str: string, uri) {
+            var re = new RegExp("href=\"/", 'g');
+            str= str.replace(re, "href=\"" + uri.href);
+            /*re = new RegExp("src=\"/", 'g');
+            str= str.replace(re, "src=\"" + uri.href);*/
+            return str;
         }
         
         public start(): void {
@@ -37,35 +41,25 @@ export module VORLON {
         public addRoutes(app: express.Express, passport: any): void {
             app.get("/HttpProxy", this.home());
             app.get("/HttpProxy/inject", this.inject());
+            var _appProxy = express();
+            _appProxy.use("/:url/", this.websiteInProxy());
+            http.createServer(_appProxy).listen(5050, () => {
+                console.log(colors.blue("http proxy server ") + colors.green.bold("started ") + colors.blue("on port ") + colors.yellow("5050 "));
+            });            
         }
         
         //Routes
-        private home() {
+        private websiteInProxy() {
             return (req: express.Request, res: express.Response) => {
-                res.render('httpproxy', { baseURL: this.baseURLConfig.baseURL });
-            };
-        }
-        
-        private inject() {
-            return (req: express.Request, res: express.Response) => { 
                 res.setHeader("Content-Type", "text/plain");
-                var uri = url.parse(req.query.url);
+                var uri = url.parse(decodeURIComponent(req.params.url));
+                console.log("Ask proxy to load website.", uri);
                 
-                if (this._proxy != null) {
-                    this._proxy.close();
-                    this._proxy = null;
-                    this._server.close();
-                    this._server = null;
-                }
-                var options : any = {};
-                options = { 
-                    target: uri.href, 
-                    changeOrigin: true 
-                };
-                this._proxy = httpProxy.createProxyServer(options);
-                this._server = http.createServer((req: express.Request, res: express.Response) => {
-                    this._proxy.web(req, res);
-                });               
+                this._proxy = httpProxy.createProxyServer({});
+                this._proxy.web(req, res, { 
+                    target: uri.href,
+                    changeOrigin: true ,
+                });
                 
                 this._proxy.on("error", (error, req, res) => {
                     var json;
@@ -79,6 +73,11 @@ export module VORLON {
                 });
                 
                 this._proxy.on("proxyRes", (proxyRes, request, response) => {
+                    console.log("Proxy load website.", proxyRes);
+                    var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
+                    var match = uri.href.match(pat); 
+                    var port = process.env.PORT || 1337;
+                    var _script = "<script src=\"http://localhost:" + port + "/vorlon.js/"+ match[2] +"/\"></script>"
                     if (proxyRes.headers && proxyRes.headers["content-type"] && proxyRes.headers["content-type"].match("text/html")) {
                         var chunks,
                             end = response.end,
@@ -88,7 +87,7 @@ export module VORLON {
                         var _that = this;
                         response.writeHead = function () {
                             if (proxyRes.headers && proxyRes.headers["content-length"]) {
-                                response.setHeader("content-length", parseInt(proxyRes.headers["content-length"], 10) + _that._scriptElm.length);
+                                response.setHeader("content-length", parseInt(proxyRes.headers["content-length"], 10) + _script.length);
                             }                            
                             response.setHeader("transfer-encoding", "");                            
                             response.setHeader("cache-control", "no-cache");
@@ -103,22 +102,30 @@ export module VORLON {
                                 chunks = data;
                             }
                         };
+                        
                         response.end = function () {
                             if (chunks && chunks.toString) {
-                                var tmp = _that.insertVorlonScript(chunks.toString(), uri);
+                                var tmp = _that.insertVorlonScript(chunks.toString(), uri, _script);
+                                console.log("Insert vorlon script in website.");
+                                tmp = _that.changePath(tmp, uri);
                                 write.apply(this, [tmp]);
                             } else {
                                 end.apply(this, arguments);
                             }
                         };
                     }
-                });
-                
-                var port = 5050;
-                this._server.listen(port, () => {
-                    console.log(colors.blue("http proxy server ") + colors.green.bold("started ") + colors.blue("on port ") + colors.yellow("5050 "));
-                });
-                res.end("http://localhost:5050/");
+                });  
+            };
+        }
+        private home() {
+            return (req: express.Request, res: express.Response) => {
+                res.render('httpproxy', { baseURL: this.baseURLConfig.baseURL });
+            };
+        }
+        
+        private inject() {
+            return (req: express.Request, res: express.Response) => {                
+                res.end("http://localhost:5050/" + encodeURIComponent(req.query.url));
             };
         }
     }
