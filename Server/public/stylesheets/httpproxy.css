@@ -49,9 +49,12 @@ body {
   margin: 10px 0;
   padding: 8px 10px;
   text-align: center;
-  width: 120px;
+  width: 100%;
   background-color: #411748 !important;
   color: white !important;  
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 .btn.left{
   float: left;
