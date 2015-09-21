@@ -17,31 +17,51 @@ html(lang='en')
     div.top
       img.logo(src="/images/VorlonLogo_Smooth.svg")
     div.form
-      div.message Vorlon proxy allows you to use Vorlon on an existing website. Just enter the website url, open your website and then open Vorlon dashboard. Couldn't be easier !
+      div.message Vorlon proxy allows you to use Vorlon on an existing website. Just enter the website url, and click on the button. Couldn't be easier !
       div.message Please note that, for now, the proxy will not work with websites using https.
       div.input
         input#url(type='text', placeholder='enter website url')
       div.button
         div.spacebutton
-          a#inject.btn.btn-default.left Open website
-          a#dashboard.btn.btn-default.right Open dashboard
+          a#inject.btn.btn-default.left Open with VORLON.JS
 
  script(type='text/javascript').
  	$(document).ready(function() {	
-      document.querySelector("#inject").addEventListener("click", function () {
-        var url = document.querySelector("#url").value;
-          $.ajax({
+     function openProxiedWindow(url){
+       $.ajax({
             type: "GET",
             url: "/HttpProxy/inject?url=" + encodeURIComponent(url),
             success: function (data) {
               window.open(data);
             },
-          });
-        });
-        document.querySelector("#dashboard").addEventListener("click", function () {
-          var url = document.querySelector("#url").value;
-          var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
-          var match = url.match(pat); 
-          window.open("http://localhost:1337/dashboard/" + match[2]);
-        });
+       });
+     }
+     
+     function openDashboard(url){
+       var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
+       var match = url.match(pat); 
+       window.open("http://localhost:1337/dashboard/" + match[2]);
+     }
+     
+     function inject(){
+       var url = document.querySelector("#url").value;
+       if (url && url.length){
+        openProxiedWindow(url);
+        openDashboard(url);
+       }
+     }
+     
+     var btninject = document.querySelector("#inject");
+     var urlinput = document.querySelector("#url");
+     btninject.addEventListener("click", function () {
+       inject();
+     });
+     
+     urlinput.addEventListener("keypress", function(e){
+       var key = e.which ? e.which : e.keyCode;
+       if (key == 13) {         
+         e.preventDefault();
+         inject();
+       }
+     });
  	});

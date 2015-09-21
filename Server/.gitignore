@@ -1,4 +1,5 @@
 .log
+.vscode/
 Scripts/**/*.js
 Scripts/**/*.js.map
 config/**/*.js
