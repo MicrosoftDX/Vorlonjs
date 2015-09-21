@@ -19,6 +19,7 @@ export module VORLON {
         
         constructor() {
             this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();
+            this._proxy = httpProxy.createProxyServer({});
         }
         
         private insertVorlonScript(str: string, uri, _script: string) {
@@ -41,11 +42,13 @@ export module VORLON {
         public addRoutes(app: express.Express, passport: any): void {
             app.get("/HttpProxy", this.home());
             app.get("/HttpProxy/inject", this.inject());
-            var _appProxy = express();
-            _appProxy.use("/:url/", this.websiteInProxy());
-            http.createServer(_appProxy).listen(5050, () => {
+            this._server = express();
+            this._server.use("/:url/", this.websiteInProxy());
+            http.createServer(this._server).listen(5050, () => {
                 console.log(colors.blue("http proxy server ") + colors.green.bold("started ") + colors.blue("on port ") + colors.yellow("5050 "));
-            });            
+            });
+            this._proxy.on("error", this.proxyError);
+            this._proxy.on("proxyRes", this.proxyResult.bind(this));
         }
         
         //Routes
@@ -53,68 +56,12 @@ export module VORLON {
             return (req: express.Request, res: express.Response) => {
                 res.setHeader("Content-Type", "text/plain");
                 var uri = url.parse(decodeURIComponent(req.params.url));
-                console.log("Ask proxy to load website.", uri);
+                console.log("Ask proxy to load website.");
                 
-                this._proxy = httpProxy.createProxyServer({});
                 this._proxy.web(req, res, { 
                     target: uri.href,
                     changeOrigin: true ,
                 });
-                
-                this._proxy.on("error", (error, req, res) => {
-                    var json;
-                    console.log("proxy error", error);
-                    if (!res.headersSent) {
-                        res.writeHead(500, { "content-type": "application/json" });
-                    }
-                    
-                    json = { error: "proxy_error", reason: error.message };
-                    res.end(JSON.stringify(json));
-                });
-                
-                this._proxy.on("proxyRes", (proxyRes, request, response) => {
-                    console.log("Proxy load website.", proxyRes);
-                    var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
-                    var match = uri.href.match(pat); 
-                    var port = process.env.PORT || 1337;
-                    var _script = "<script src=\"http://localhost:" + port + "/vorlon.js/"+ match[2] +"/\"></script>"
-                    if (proxyRes.headers && proxyRes.headers["content-type"] && proxyRes.headers["content-type"].match("text/html")) {
-                        var chunks,
-                            end = response.end,
-                            writeHead = response.writeHead,
-                            write = response.write;
-                        
-                        var _that = this;
-                        response.writeHead = function () {
-                            if (proxyRes.headers && proxyRes.headers["content-length"]) {
-                                response.setHeader("content-length", parseInt(proxyRes.headers["content-length"], 10) + _script.length);
-                            }                            
-                            response.setHeader("transfer-encoding", "");                            
-                            response.setHeader("cache-control", "no-cache");
-                            
-                            writeHead.apply(this, arguments);
-                        };
-                        
-                        response.write = (data) => {
-                            if (chunks) {
-                                chunks += data;
-                            } else {
-                                chunks = data;
-                            }
-                        };
-                        
-                        response.end = function () {
-                            if (chunks && chunks.toString) {
-                                var tmp = _that.insertVorlonScript(chunks.toString(), uri, _script);
-                                console.log("Insert vorlon script in website.");
-                                tmp = _that.changePath(tmp, uri);
-                                write.apply(this, [tmp]);
-                            } else {
-                                end.apply(this, arguments);
-                            }
-                        };
-                    }
-                });  
             };
         }
         private home() {
@@ -127,6 +74,64 @@ export module VORLON {
             return (req: express.Request, res: express.Response) => {                
                 res.end("http://localhost:5050/" + encodeURIComponent(req.query.url));
             };
+        }
+        
+        //Events HttpProxy
+        private proxyError(error, req: express.Request, res: express.Response) {
+                var json;
+                console.log("proxy error", error);
+                if (!res.headersSent) {
+                    res.writeHead(500, { "content-type": "application/json" });
+                }
+                
+                json = { error: "proxy_error", reason: error.message };
+                res.end(JSON.stringify(json));
+        }
+        
+        private proxyResult(proxyRes, req: express.Request, res: express.Response) {
+            console.log("Proxy load website.");
+            var uri = url.parse(decodeURIComponent(req.params.url));
+            var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
+            var match = uri.href.match(pat); 
+            var port = process.env.PORT || 1337;
+            var _script = "<script src=\"http://localhost:" + port + "/vorlon.js/"+ match[2] +"/\"></script>"
+            if (proxyRes.headers && proxyRes.headers["content-type"] && proxyRes.headers["content-type"].match("text/html")) {
+                var chunks,
+                    end = res.end,
+                    writeHead = res.writeHead,
+                    write = res.write;
+                
+                var _that = this;
+                res.writeHead = function () {
+                    if (proxyRes.headers && proxyRes.headers["content-length"]) {
+                        res.setHeader("content-length", <any>parseInt(proxyRes.headers["content-length"], 10) + _script.length);
+                    }                            
+                    res.setHeader("transfer-encoding", "");                            
+                    res.setHeader("cache-control", "no-cache");
+                    
+                    writeHead.apply(this, arguments);
+                };
+                
+                res.write = (data) => {
+                    if (chunks) {
+                        chunks += data;
+                    } else {
+                        chunks = data;
+                    }
+                    return chunks;
+                };
+                
+                res.end = function () {
+                    if (chunks && chunks.toString) {
+                        var tmp = _that.insertVorlonScript(chunks.toString(), uri, _script);
+                        console.log("Insert vorlon script in website.");
+                        tmp = _that.changePath(tmp, uri);
+                        write.apply(this, [tmp]);
+                    } else {
+                        end.apply(this, arguments);
+                    }
+                };
+            }
         }
     }
 }
