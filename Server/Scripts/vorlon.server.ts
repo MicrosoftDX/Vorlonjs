@@ -223,7 +223,6 @@ export module VORLON {
                 }
 
                 var configstring = catalogdata.toString().replace(/^\uFEFF/, '');
-                console.log(configstring);
                 var baseUrl = this.baseURLConfig.baseURL;
                 var catalog = JSON.parse(configstring);
                 var vorlonpluginfiles: string = "";
