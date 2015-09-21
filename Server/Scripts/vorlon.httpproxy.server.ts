@@ -5,6 +5,7 @@ import path = require("path");
 import fs = require("fs");
 import util = require("util");
 import url = require("url");
+var cookieParser = require('cookie-parser')
 var colors = require("colors");
 var httpProxy = require("http-proxy");
 
@@ -28,9 +29,24 @@ export module VORLON {
             return str;
         }
         
-        private changePath(str: string, uri) {
-            var re = new RegExp("href=\"/", 'g');
-            str= str.replace(re, "href=\"" + uri.href);
+        private changePath(str: string, uri) {4
+            str = str.replace(/<head>([.\s\S]+?)<\/head>/gmi, function (tag) {
+                tag = tag.replace(/<link(.+?)>/gmi, function (css) {
+                    var link = css.match(/href=\"(.+?)\"/g);
+                    if (link && link[0].match(/(^[\/]{2})|(http)/) == null) {
+                        css = css.replace(/href=\"/g, "href=\"" + uri.href);
+                    }
+                    return css;
+                }); 
+                tag = tag.replace(/<script(.+?)>/gmi, function (script) {
+                    var link = script.match(/src=\"(.+?)\"/g);
+                    if (link && link[0].match(/(^[\/]{2})|(http)/) == null) {
+                        script = script.replace(/src=\"/g, "src=\"" + uri.href);
+                    }
+                    return script;
+                });
+                return tag;
+            });
             /*re = new RegExp("src=\"/", 'g');
             str= str.replace(re, "src=\"" + uri.href);*/
             return str;
@@ -43,6 +59,10 @@ export module VORLON {
             app.get("/HttpProxy", this.home());
             app.get("/HttpProxy/inject", this.inject());
             this._server = express();
+            this._server.use(cookieParser());
+            this._server.use("/", () => {
+                
+            });
             this._server.use("/:url/", this.websiteInProxy());
             http.createServer(this._server).listen(5050, () => {
                 console.log(colors.blue("http proxy server ") + colors.green.bold("started ") + colors.blue("on port ") + colors.yellow("5050 "));
@@ -57,10 +77,10 @@ export module VORLON {
                 res.setHeader("Content-Type", "text/plain");
                 var uri = url.parse(decodeURIComponent(req.params.url));
                 console.log("Ask proxy to load website.");
-                
+                console.log("Cookies: ", req.cookies)
                 this._proxy.web(req, res, { 
                     target: uri.href,
-                    changeOrigin: true ,
+                    changeOrigin: true
                 });
             };
         }
@@ -72,20 +92,20 @@ export module VORLON {
         
         private inject() {
             return (req: express.Request, res: express.Response) => {                
-                res.end("http://localhost:5050/" + encodeURIComponent(req.query.url));
+                res.end("http://localhost:5050/"/* + encodeURIComponent(req.query.url)*/);
             };
         }
         
         //Events HttpProxy
         private proxyError(error, req: express.Request, res: express.Response) {
-                var json;
-                console.log("proxy error", error);
-                if (!res.headersSent) {
-                    res.writeHead(500, { "content-type": "application/json" });
-                }
-                
-                json = { error: "proxy_error", reason: error.message };
-                res.end(JSON.stringify(json));
+            var json;
+            console.error("proxy error", error);
+            if (!res.headersSent) {
+                res.writeHead(500, { "content-type": "application/json" });
+            }
+            
+            json = { error: "proxy_error", reason: error.message };
+            res.end(JSON.stringify(json));
         }
         
         private proxyResult(proxyRes, req: express.Request, res: express.Response) {
@@ -125,7 +145,7 @@ export module VORLON {
                     if (chunks && chunks.toString) {
                         var tmp = _that.insertVorlonScript(chunks.toString(), uri, _script);
                         console.log("Insert vorlon script in website.");
-                        tmp = _that.changePath(tmp, uri);
+                        //tmp = _that.changePath(tmp, uri);
                         write.apply(this, [tmp]);
                     } else {
                         end.apply(this, arguments);
