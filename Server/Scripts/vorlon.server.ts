@@ -224,10 +224,13 @@ export module VORLON {
 
                 var configstring = catalogdata.toString().replace(/^\uFEFF/, '');
                 console.log(configstring);
+                var baseUrl = this.baseURLConfig.baseURL;
                 var catalog = JSON.parse(configstring);
                 var vorlonpluginfiles: string = "";
                 var javascriptFile: string = "";
                                 
+                javascriptFile += 'var vorlonBaseURL="' + baseUrl + '";\n';
+
                 //read the socket.io file if needed
                 if (catalog.includeSocketIO) {
                     javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.3.6.js"));
@@ -253,7 +256,7 @@ export module VORLON {
                     }
                 }
 
-                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + this.http.protocol + '://' + req.headers.host + '/vorlon/plugins"');
+                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + this.http.protocol + '://' + req.headers.host + baseUrl + '/vorlon/plugins"');
                 javascriptFile += "\r" + vorlonpluginfiles;
 
                 if (autostart) {

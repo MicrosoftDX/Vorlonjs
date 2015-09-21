@@ -97,7 +97,7 @@ module VORLON {
                                 }
                             }
                             var pluginscript = document.createElement("script");
-                            pluginscript.setAttribute("src", "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".dashboard.min.js");
+                            pluginscript.setAttribute("src", vorlonBaseURL + "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".dashboard.min.js");
 
                             pluginscript.onload = (oError) => {
                                 pluginLoaded++;
@@ -293,4 +293,3 @@ module VORLON {
         }
     }
 }
-
