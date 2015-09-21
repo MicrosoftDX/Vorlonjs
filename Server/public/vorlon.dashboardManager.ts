@@ -183,9 +183,17 @@ module VORLON {
                                 }
                             }
                         }
+                        
+                        console.log(DashboardManager.ListenClientid);
+                        
+                        var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
                         if (!contains || clients.length === 0) {
-                            var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
                             VORLON.Tools.RemoveClass(elt, 'hidden');
+                            VORLON.Tools.RemoveClass(elt, 'bounce');
+                        }
+                        else {
+                            VORLON.Tools.RemoveClass(elt, 'hidden');
+                            VORLON.Tools.AddClass(elt, 'bounce');
                         }
 
                         if (clients.length === 0) {
@@ -213,6 +221,14 @@ module VORLON {
 
                             DashboardManager.ClientList.push(client);
                             DashboardManager.UpdateClientWaitingInfo(client.clientid, client.waitingevents);
+                        }
+                        if (!contains || clients.length === 0) {
+                            VORLON.Tools.RemoveClass(elt, 'hidden');
+                            VORLON.Tools.RemoveClass(elt, 'bounce');
+                        }
+                        else {
+                            VORLON.Tools.AddClass(elt, 'hidden');
+                            VORLON.Tools.RemoveClass(elt, 'bounce');
                         }
                     }
                 }

@@ -1,4 +1,4 @@
-﻿{
+{
     "baseURL": "",
     "useSSL": false,
     "SSLkey": "cert/server.key",
@@ -17,6 +17,8 @@
         { "id": "NETWORK", "name": "Network Monitor", "panel": "top", "foldername": "networkMonitor", "enabled": true },
         { "id": "RESOURCES", "name": "Resources Explorer", "panel": "top", "foldername": "resourcesExplorer", "enabled": true },
         { "id": "DEVICE", "name": "My Device", "panel": "top", "foldername": "device", "enabled": true },
-        { "id": "UNITTEST", "name": "Unit Test", "panel": "top", "foldername": "unitTestRunner", "enabled": true }
-    ]
+        { "id": "UNITTEST", "name": "Unit Test", "panel": "top", "foldername": "unitTestRunner", "enabled": true },
+        { "id": "BABYLONINSPECTOR", "name": "Babylon Inspector", "panel": "top", "foldername": "babylonInspector", "enabled": true }
+    ],
+    "port": 1337
 }

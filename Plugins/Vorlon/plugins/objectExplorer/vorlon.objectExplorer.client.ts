@@ -119,7 +119,7 @@
                 } catch (exception) {
                     this.trace('error reading property ' + p + ' of type ' + propertyType);
                     this.trace(exception);
-                    res.properties.push({
+                    res.properties.push(<ObjExplorerPropertyDescriptor>{
                         name: p,
                         type: propertyType,
                         fullpath: propPath.join('.'),
@@ -174,7 +174,7 @@
 
             if (selectedObj === undefined) {
                 console.log('not found');
-                return { type: 'notfound', name: 'not found', val: null, functions: [], properties: [], contentFetched: false, fullpath: null };
+                return <ObjExplorerObjDescriptor>{ type: 'notfound', name: 'not found', val: null, functions: [], properties: [], contentFetched: false, fullpath: null };
             }
             var res = this.inspect(tokens, selectedObj, selectedObj);
             return res;
