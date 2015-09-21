@@ -9,6 +9,7 @@ export module VORLON {
         public protocol: String;
         public httpModule;
         public options;
+        public port;
 
         public constructor() {            
             var catalogdata: string = fs.readFileSync(path.join(__dirname, "../config.json"), "utf8");            
@@ -29,6 +30,7 @@ export module VORLON {
                 this.protocol = "http";
                 this.httpModule = http;
             }
+            this.port = process.env.PORT || catalog.port || 1337;
         }
     }
 }
