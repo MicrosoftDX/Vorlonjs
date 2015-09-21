@@ -36,7 +36,7 @@ export module VORLON {
             
             //LOGS      
             winston.cli();
-            this._log = new winston.Logger({
+            this._log = new winston.Logger(<any>{
                 levels: {
                     info: 0,
                     warn: 1,
@@ -47,16 +47,16 @@ export module VORLON {
                     plugin: 6
                 },
                 transports: [
-                    new winston.transports.File({ filename: this.logConfig.vorlonLogFile, level: this.logConfig.level})
+                    new winston.transports.File(<any>{ filename: this.logConfig.vorlonLogFile, level: this.logConfig.level})
                 ],
                 exceptionHandlers: [
-                    new winston.transports.File({ filename: this.logConfig.exceptionsLogFile, timestamp: true, maxsize: 1000000 })
+                    new winston.transports.File(<any>{ filename: this.logConfig.exceptionsLogFile, timestamp: true, maxsize: 1000000 })
                 ],
                 exitOnError: false
             });
 
             if (this.logConfig.enableConsole) {
-                this._log.add(winston.transports.Console, {
+                this._log.add(winston.transports.Console, <any>{
                         level: this.logConfig.level,
                         handleExceptions: true,
                         json: false,
@@ -230,7 +230,7 @@ export module VORLON {
                                 
                 //read the socket.io file if needed
                 if (catalog.includeSocketIO) {
-                    javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.3.5.js"));
+                    javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.3.6.js"));
                 }
 
                 if (ismin) {

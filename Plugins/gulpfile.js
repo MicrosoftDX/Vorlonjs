@@ -93,7 +93,10 @@ gulp.task('scripts', ['typescript-to-js'], function () {
             './**/sample/vorlon.sample.client.js',
             './**/sample/vorlon.sample.dashboard.js',
             './**/device/vorlon.device.client.js',
-            './**/device/vorlon.device.dashboard.js'
+            './**/device/vorlon.device.dashboard.js',
+            './**/babylonInspector/vorlon.babylonInspector.interfaces.js',
+            './**/babylonInspector/vorlon.babylonInspector.client.js',
+            './**/babylonInspector/vorlon.babylonInspector.dashboard.js',
         ])
         .pipe(rename(function (path) {
                 path.extname = ".min.js";
