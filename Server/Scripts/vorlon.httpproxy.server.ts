@@ -60,10 +60,7 @@ export module VORLON {
             app.get("/HttpProxy/inject", this.inject());
             this._server = express();
             this._server.use(cookieParser());
-            this._server.use("/", () => {
-                
-            });
-            this._server.use("/:url/", this.websiteInProxy());
+            this._server.use("/", this.websiteInProxy());
             http.createServer(this._server).listen(5050, () => {
                 console.log(colors.blue("http proxy server ") + colors.green.bold("started ") + colors.blue("on port ") + colors.yellow("5050 "));
             });
@@ -75,7 +72,7 @@ export module VORLON {
         private websiteInProxy() {
             return (req: express.Request, res: express.Response) => {
                 res.setHeader("Content-Type", "text/plain");
-                var uri = url.parse(decodeURIComponent(req.params.url));
+                var uri = url.parse(req.cookies["_url"]);
                 console.log("Ask proxy to load website.");
                 console.log("Cookies: ", req.cookies)
                 this._proxy.web(req, res, { 
@@ -91,8 +88,10 @@ export module VORLON {
         }
         
         private inject() {
-            return (req: express.Request, res: express.Response) => {                
-                res.end("http://localhost:5050/"/* + encodeURIComponent(req.query.url)*/);
+            return (req: express.Request, res: express.Response) => {   
+                var uri = url.parse(req.query.url);
+                res.cookie("_url", uri.protocol + "//" + uri.hostname);
+                res.end("http://localhost:5050/" /* + encodeURIComponent(req.query.url)*/); 
             };
         }
         
@@ -110,7 +109,7 @@ export module VORLON {
         
         private proxyResult(proxyRes, req: express.Request, res: express.Response) {
             console.log("Proxy load website.");
-            var uri = url.parse(decodeURIComponent(req.params.url));
+            var uri = url.parse(req.cookies["_url"]);
             var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
             var match = uri.href.match(pat); 
             var port = process.env.PORT || 1337;
