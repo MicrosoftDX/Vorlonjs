@@ -18,7 +18,8 @@
         { "id": "RESOURCES", "name": "Resources Explorer", "panel": "top", "foldername": "resourcesExplorer", "enabled": true },
         { "id": "DEVICE", "name": "My Device", "panel": "top", "foldername": "device", "enabled": true },
         { "id": "UNITTEST", "name": "Unit Test", "panel": "top", "foldername": "unitTestRunner", "enabled": false },
-        { "id": "BABYLONINSPECTOR", "name": "Babylon Inspector", "panel": "top", "foldername": "babylonInspector", "enabled": false }
+        { "id": "BABYLONINSPECTOR", "name": "Babylon Inspector", "panel": "top", "foldername": "babylonInspector", "enabled": false },
+        { "id": "WEBSTANDARDS", "name": "Web standards", "panel": "top", "foldername": "webstandards", "enabled": false }
     ],
     "port": 1337
 }
