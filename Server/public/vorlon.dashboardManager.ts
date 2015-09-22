@@ -191,6 +191,10 @@ module VORLON {
                                 }
                             }
                         }
+                        
+                        //Show waiting logo 
+                        var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+                        VORLON.Tools.RemoveClass(elt, 'hidden');
                                                
                         //if not client, reset the dashboard without reloading the page
                         if (clients.length === 0) {
