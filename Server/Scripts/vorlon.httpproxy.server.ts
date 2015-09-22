@@ -29,29 +29,6 @@ export module VORLON {
             return str;
         }
         
-        private changePath(str: string, uri) {4
-            str = str.replace(/<head>([.\s\S]+?)<\/head>/gmi, function (tag) {
-                tag = tag.replace(/<link(.+?)>/gmi, function (css) {
-                    var link = css.match(/href=\"(.+?)\"/g);
-                    if (link && link[0].match(/(^[\/]{2})|(http)/) == null) {
-                        css = css.replace(/href=\"/g, "href=\"" + uri.href);
-                    }
-                    return css;
-                }); 
-                tag = tag.replace(/<script(.+?)>/gmi, function (script) {
-                    var link = script.match(/src=\"(.+?)\"/g);
-                    if (link && link[0].match(/(^[\/]{2})|(http)/) == null) {
-                        script = script.replace(/src=\"/g, "src=\"" + uri.href);
-                    }
-                    return script;
-                });
-                return tag;
-            });
-            /*re = new RegExp("src=\"/", 'g');
-            str= str.replace(re, "src=\"" + uri.href);*/
-            return str;
-        }
-        
         public start(): void {
         }
         
@@ -74,7 +51,7 @@ export module VORLON {
                 res.setHeader("Content-Type", "text/plain");
                 var uri = url.parse(req.cookies["_url"]);
                 console.log("Ask proxy to load website.");
-                console.log("Cookies: ", req.cookies)
+                
                 this._proxy.web(req, res, { 
                     target: uri.href,
                     changeOrigin: true
@@ -91,7 +68,7 @@ export module VORLON {
             return (req: express.Request, res: express.Response) => {   
                 var uri = url.parse(req.query.url);
                 res.cookie("_url", uri.protocol + "//" + uri.hostname);
-                res.end("http://localhost:5050/" /* + encodeURIComponent(req.query.url)*/); 
+                res.end("http://localhost:5050/"); 
             };
         }
         
@@ -144,7 +121,6 @@ export module VORLON {
                     if (chunks && chunks.toString) {
                         var tmp = _that.insertVorlonScript(chunks.toString(), uri, _script);
                         console.log("Insert vorlon script in website.");
-                        //tmp = _that.changePath(tmp, uri);
                         write.apply(this, [tmp]);
                     } else {
                         end.apply(this, arguments);
