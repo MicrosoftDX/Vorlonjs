@@ -5,6 +5,7 @@ import path = require("path");
 import fs = require("fs");
 import util = require("util");
 import url = require("url");
+var cookieParser = require('cookie-parser')
 var colors = require("colors");
 var httpProxy = require("http-proxy");
 
@@ -28,14 +29,6 @@ export module VORLON {
             return str;
         }
         
-        private changePath(str: string, uri) {
-            var re = new RegExp("href=\"/", 'g');
-            str= str.replace(re, "href=\"" + uri.href);
-            /*re = new RegExp("src=\"/", 'g');
-            str= str.replace(re, "src=\"" + uri.href);*/
-            return str;
-        }
-        
         public start(): void {
         }
         
@@ -43,7 +36,8 @@ export module VORLON {
             app.get("/HttpProxy", this.home());
             app.get("/HttpProxy/inject", this.inject());
             this._server = express();
-            this._server.use("/:url/", this.websiteInProxy());
+            this._server.use(cookieParser());
+            this._server.use("/", this.websiteInProxy());
             http.createServer(this._server).listen(5050, () => {
                 console.log(colors.blue("http proxy server ") + colors.green.bold("started ") + colors.blue("on port ") + colors.yellow("5050 "));
             });
@@ -55,12 +49,12 @@ export module VORLON {
         private websiteInProxy() {
             return (req: express.Request, res: express.Response) => {
                 res.setHeader("Content-Type", "text/plain");
-                var uri = url.parse(decodeURIComponent(req.params.url));
+                var uri = url.parse(req.cookies["_url"]);
                 console.log("Ask proxy to load website.");
                 
                 this._proxy.web(req, res, { 
                     target: uri.href,
-                    changeOrigin: true ,
+                    changeOrigin: true
                 });
             };
         }
@@ -71,26 +65,28 @@ export module VORLON {
         }
         
         private inject() {
-            return (req: express.Request, res: express.Response) => {                
-                res.end("http://localhost:5050/" + encodeURIComponent(req.query.url));
+            return (req: express.Request, res: express.Response) => {   
+                var uri = url.parse(req.query.url);
+                res.cookie("_url", uri.protocol + "//" + uri.hostname);
+                res.end("http://localhost:5050/"); 
             };
         }
         
         //Events HttpProxy
         private proxyError(error, req: express.Request, res: express.Response) {
-                var json;
-                console.log("proxy error", error);
-                if (!res.headersSent) {
-                    res.writeHead(500, { "content-type": "application/json" });
-                }
-                
-                json = { error: "proxy_error", reason: error.message };
-                res.end(JSON.stringify(json));
+            var json;
+            console.error("proxy error", error);
+            if (!res.headersSent) {
+                res.writeHead(500, { "content-type": "application/json" });
+            }
+            
+            json = { error: "proxy_error", reason: error.message };
+            res.end(JSON.stringify(json));
         }
         
         private proxyResult(proxyRes, req: express.Request, res: express.Response) {
             console.log("Proxy load website.");
-            var uri = url.parse(decodeURIComponent(req.params.url));
+            var uri = url.parse(req.cookies["_url"]);
             var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
             var match = uri.href.match(pat); 
             var port = process.env.PORT || 1337;
@@ -125,7 +121,6 @@ export module VORLON {
                     if (chunks && chunks.toString) {
                         var tmp = _that.insertVorlonScript(chunks.toString(), uri, _script);
                         console.log("Insert vorlon script in website.");
-                        tmp = _that.changePath(tmp, uri);
                         write.apply(this, [tmp]);
                     } else {
                         end.apply(this, arguments);
