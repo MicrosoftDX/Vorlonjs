@@ -16,6 +16,7 @@ export module VORLON {
     export class HttpProxy implements iwsc.VORLON.IWebServerComponent {
         private _proxy = null;
         private _server = null;
+        private _proxyPort = 5050;
         private baseURLConfig: baseURLConfig.VORLON.BaseURLConfig;
         
         constructor() {
@@ -38,8 +39,8 @@ export module VORLON {
             this._server = express();
             this._server.use(cookieParser());
             this._server.use("/", this.websiteInProxy());
-            http.createServer(this._server).listen(5050, () => {
-                console.log(colors.blue("http proxy server ") + colors.green.bold("started ") + colors.blue("on port ") + colors.yellow("5050 "));
+            http.createServer(this._server).listen(this._proxyPort, () => {
+                console.log("Vorlon.js proxy started on port " + this._proxyPort);
             });
             this._proxy.on("error", this.proxyError);
             this._proxy.on("proxyRes", this.proxyResult.bind(this));
@@ -50,7 +51,7 @@ export module VORLON {
             return (req: express.Request, res: express.Response) => {
                 res.setHeader("Content-Type", "text/plain");
                 var uri = url.parse(req.cookies["_url"]);
-                console.log("Ask proxy to load website.");
+                console.log("Ask proxy to load website for " + uri.href);
                 
                 this._proxy.web(req, res, { 
                     target: uri.href,
@@ -58,6 +59,7 @@ export module VORLON {
                 });
             };
         }
+        
         private home() {
             return (req: express.Request, res: express.Response) => {
                 res.render('httpproxy', { baseURL: this.baseURLConfig.baseURL });
@@ -68,14 +70,15 @@ export module VORLON {
             return (req: express.Request, res: express.Response) => {   
                 var uri = url.parse(req.query.url);
                 res.cookie("_url", uri.protocol + "//" + uri.hostname);
-                res.end("http://localhost:5050/"); 
+                console.log("request for proxiing " + uri.hostname + " to port " + this._proxyPort)
+                res.end("http://localhost:" + this._proxyPort + "/"); 
             };
         }
         
         //Events HttpProxy
         private proxyError(error, req: express.Request, res: express.Response) {
             var json;
-            console.error("proxy error", error);
+            console.log("proxy error", error);
             if (!res.headersSent) {
                 res.writeHead(500, { "content-type": "application/json" });
             }
@@ -85,11 +88,13 @@ export module VORLON {
         }
         
         private proxyResult(proxyRes, req: express.Request, res: express.Response) {
-            console.log("Proxy load website.");
             var uri = url.parse(req.cookies["_url"]);
+            console.log("Proxy load website for target " + uri.href);
             var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
             var match = uri.href.match(pat); 
             var port = process.env.PORT || 1337;
+            var _proxy = this;
+            
             var _script = "<script src=\"http://localhost:" + port + "/vorlon.js/"+ match[2] +"/\"></script>"
             if (proxyRes.headers && proxyRes.headers["content-type"] && proxyRes.headers["content-type"].match("text/html")) {
                 var chunks,
@@ -97,7 +102,7 @@ export module VORLON {
                     writeHead = res.writeHead,
                     write = res.write;
                 
-                var _that = this;
+                
                 res.writeHead = function () {
                     if (proxyRes.headers && proxyRes.headers["content-length"]) {
                         res.setHeader("content-length", <any>parseInt(proxyRes.headers["content-length"], 10) + _script.length);
@@ -108,23 +113,24 @@ export module VORLON {
                     writeHead.apply(this, arguments);
                 };
                 
-                res.write = (data) => {
-                    if (chunks) {
-                        chunks += data;
-                    } else {
-                        chunks = data;
-                    }
-                    return chunks;
-                };
+                // res.write = (data) => {
+                //     if (chunks) {
+                //         chunks += data;
+                //     } else {
+                //         chunks = data;
+                //     }
+                //     return chunks;
+                // };
                 
                 res.end = function () {
                     if (chunks && chunks.toString) {
-                        var tmp = _that.insertVorlonScript(chunks.toString(), uri, _script);
+                        var tmp = _proxy.insertVorlonScript(chunks.toString(), uri, _script);
                         console.log("Insert vorlon script in website.");
                         write.apply(this, [tmp]);
                     } else {
                         end.apply(this, arguments);
                     }
+                    //end.apply(this, arguments);
                 };
             }
         }

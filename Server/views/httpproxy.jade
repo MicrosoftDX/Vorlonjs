@@ -30,7 +30,7 @@ html(lang='en')
      function openProxiedWindow(url){
        $.ajax({
             type: "GET",
-            url: "/HttpProxy/inject?url=" + encodeURIComponent(url),
+            url: "/HttpProxy/inject?url=" + encodeURIComponent(url) + "&ts=" + new Date(),
             success: function (data) {
               window.open(data);
             },
@@ -40,7 +40,7 @@ html(lang='en')
      function openDashboard(url){
        var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
        var match = url.match(pat); 
-       window.open("http://localhost:1337/dashboard/" + match[2]);
+       window.open("/dashboard/" + match[2]);
      }
      
      function inject(){
