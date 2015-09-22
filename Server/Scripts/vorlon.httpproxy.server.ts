@@ -25,8 +25,10 @@ export module VORLON {
         }
         
         private insertVorlonScript(str: string, uri, _script: string) {
-            var position = str.indexOf("</head>");
-            str = str.substr(0, position) + " " + _script + str.substr(position);
+            if (str.match(/<head>(.+?)<\/head>/)) {
+                var position = str.indexOf("<head>") + 7;
+                str = str.substr(0, position) + " " + _script + str.substr(position);
+            }
             return str;
         }
         
@@ -113,14 +115,14 @@ export module VORLON {
                     writeHead.apply(this, arguments);
                 };
                 
-                // res.write = (data) => {
-                //     if (chunks) {
-                //         chunks += data;
-                //     } else {
-                //         chunks = data;
-                //     }
-                //     return chunks;
-                // };
+                res.write = (data) => {
+                    if (chunks) {
+                        chunks += data;
+                    } else {
+                        chunks = data;
+                    }
+                    return chunks;
+                };
                 
                 res.end = function () {
                     if (chunks && chunks.toString) {
