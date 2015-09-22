@@ -13,6 +13,7 @@ module VORLON {
         static ListenClientDisplayid: string;
         static SessionId: string;
         static ClientList: Array<any>;
+        static DisplayingClient: boolean;
         
         constructor(sessionid: string, listenClientid: string) {
             //Dashboard session id
@@ -20,6 +21,7 @@ module VORLON {
             //Client ID
             DashboardManager.ListenClientid = listenClientid;
             DashboardManager.ClientList = new Array<any>();
+            DashboardManager.DisplayingClient = false;
             DashboardManager.RefreshClients();
             DashboardManager.CatalogUrl =  vorlonBaseURL + "/config.json";
         }
@@ -147,6 +149,7 @@ module VORLON {
                             $('.hsplitter', divPluginsTop.parentElement).css('top', 'calc(100% - 58px)');
                         });
                         DashboardManager.UpdateClientInfo();
+                        DashboardManager.DisplayingClient = true;
                     }
                 }
             }
@@ -193,8 +196,10 @@ module VORLON {
                         }
                         
                         //Show waiting logo 
-                        var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
-                        VORLON.Tools.RemoveClass(elt, 'hidden');
+                        if(!contains || !DashboardManager.DisplayingClient || clients.length === 0){
+                            var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+                            VORLON.Tools.RemoveClass(elt, 'hidden');
+                        }
                                                
                         //if not client, reset the dashboard without reloading the page
                         if (clients.length === 0) {
@@ -224,15 +229,18 @@ module VORLON {
                             DashboardManager.UpdateClientWaitingInfo(client.clientid, client.waitingevents);
                         }
                         
-                        if (contains) {
+                        if (contains && !DashboardManager.DisplayingClient) {
                              DashboardManager.loadPlugins();
                         }
-                        else {
+                        
+                        if(!contains && clients.length === 0) {
                             var getUrl = window.location;
                             var baseUrl = getUrl.protocol + "//" + getUrl.host;
                             Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, "", DashboardManager.divMapper);
                             Core.Messenger.onWaitingEventsReceived = DashboardManager._onClientUpdateWaitingEvents;
                             Core.Messenger.onRefreshClients = DashboardManager._onRefreshClients;
+                            var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+                            VORLON.Tools.RemoveClass(elt, 'hidden');
                         }
                     }
                 }
