@@ -41,6 +41,11 @@ module VORLON {
             var divPluginBottomTabs = <HTMLDivElement> document.getElementById("pluginsListPaneBottom");
             var divPluginTopTabs = <HTMLDivElement> document.getElementById("pluginsListPaneTop");
             var coreLoaded = false;
+            
+            //Hide waiting page and let's bounce the logo !
+            var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+            VORLON.Tools.RemoveClass(elt, 'hidden');
+            VORLON.Tools.AddClass(elt, 'bounce');
 
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
@@ -142,6 +147,11 @@ module VORLON {
                             $('.hsplitter', divPluginsTop.parentElement).css('top', 'calc(100% - 58px)');
                         });
                         DashboardManager.UpdateClientInfo();
+                        
+                        //Stop bouncing and hide waiting page
+                        VORLON.Tools.AddClass(elt, 'hidden');
+                        VORLON.Tools.RemoveClass(elt, 'bounce');
+                        
                     }
                 }
             }
@@ -186,13 +196,7 @@ module VORLON {
                                 }
                             }
                         }
-                        
-                        var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
-                        // if (contains && clients.length !== 0) {
-                        //     VORLON.Tools.RemoveClass(elt, 'hidden');
-                        //     VORLON.Tools.AddClass(elt, 'bounce');
-                        // }
-                       
+                                               
                         //if not client, reset the dashboard without reloading the page
                         if (clients.length === 0) {
                             DashboardManager.ResetDashboard(false);
@@ -231,10 +235,6 @@ module VORLON {
                             Core.Messenger.onWaitingEventsReceived = DashboardManager._onClientUpdateWaitingEvents;
                             Core.Messenger.onRefreshClients = DashboardManager._onRefreshClients;
                         }
-                        // else{
-                        //     VORLON.Tools.RemoveClass(elt, 'hidden');
-                        //     VORLON.Tools.RemoveClass(elt, 'bounce');
-                        // }
                     }
                 }
             }

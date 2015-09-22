@@ -298,9 +298,9 @@
                     plugin.refresh();
                 }
             } else {
-                var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
-                Tools.RemoveClass(elt, 'bounce');
-                Tools.AddClass(elt, 'hidden');
+                // var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+                // Tools.RemoveClass(elt, 'bounce');
+                // Tools.AddClass(elt, 'hidden');
             }
         }
 
