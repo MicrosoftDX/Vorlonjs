@@ -60,7 +60,15 @@ export module VORLON {
                         level: this.logConfig.level,
                         handleExceptions: true,
                         json: false,
-                        timestamp: true,
+                        timestamp: function() {
+                            var date:Date = new Date();
+                            return date.getFullYear() + "-" + 
+                            date.getMonth() + "-" +
+                            date.getDate() + " " +
+                            date.getHours() + ":" + 
+                            date.getMinutes() + ":" +
+                            date.getSeconds();
+                        },
                         colorize: true
                     });
             }
@@ -223,11 +231,13 @@ export module VORLON {
                 }
 
                 var configstring = catalogdata.toString().replace(/^\uFEFF/, '');
-                console.log(configstring);
+                var baseUrl = this.baseURLConfig.baseURL;
                 var catalog = JSON.parse(configstring);
                 var vorlonpluginfiles: string = "";
                 var javascriptFile: string = "";
                                 
+                javascriptFile += 'var vorlonBaseURL="' + baseUrl + '";\n';
+
                 //read the socket.io file if needed
                 if (catalog.includeSocketIO) {
                     javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.3.6.js"));
@@ -253,7 +263,7 @@ export module VORLON {
                     }
                 }
 
-                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + this.http.protocol + '://' + req.headers.host + '/vorlon/plugins"');
+                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + this.http.protocol + '://' + req.headers.host + baseUrl + '/vorlon/plugins"');
                 javascriptFile += "\r" + vorlonpluginfiles;
 
                 if (autostart) {
@@ -320,7 +330,6 @@ export module VORLON {
         
         public addClient(socket: SocketIO.Socket): void {
             socket.on("helo",(message: string) => {
-                //this._log.warn("CLIENT helo " + message);
                 var receiveMessage = <VorlonMessage>JSON.parse(message);
                 var metadata = receiveMessage.metadata;
                 var data = receiveMessage.data;
