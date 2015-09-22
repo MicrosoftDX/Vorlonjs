@@ -297,6 +297,12 @@
                     plugin.refresh();
                 }
             }
+            else {
+                //Stop bouncing and hide waiting page
+                var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+                VORLON.Tools.AddClass(elt, 'hidden');
+                VORLON.Tools.RemoveClass(elt, 'bounce');
+            }
         }
 
         private _RetrySendingRealtimeMessage(plugin: DashboardPlugin, message: VorlonMessage) {

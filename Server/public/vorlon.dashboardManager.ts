@@ -147,11 +147,6 @@ module VORLON {
                             $('.hsplitter', divPluginsTop.parentElement).css('top', 'calc(100% - 58px)');
                         });
                         DashboardManager.UpdateClientInfo();
-                        
-                        //Stop bouncing and hide waiting page
-                        VORLON.Tools.AddClass(elt, 'hidden');
-                        VORLON.Tools.RemoveClass(elt, 'bounce');
-                        
                     }
                 }
             }
