@@ -526,14 +526,12 @@ input[type=text]::placeholder {
   }
   90% {
     transform: translateY(0%);
-    padding-bottom: 8px;
   }
   95% {
     transform: translateY(-4%);
   }
   100% {
     transform: translateY(0);
-    padding-bottom: 9px;
     opacity: 1;
   }
 }
@@ -546,14 +544,12 @@ input[type=text]::placeholder {
   }
   90% {
     transform: translateY(0%);
-    padding-bottom: 8px;
   }
   95% {
     transform: translateY(-4%);
   }
   100% {
     transform: translateY(0);
-    padding-bottom: 9px;
     opacity: 1;
   }
 }
@@ -566,14 +562,12 @@ input[type=text]::placeholder {
   }
   90% {
     transform: translateY(0%);
-    padding-bottom: 8px;
   }
   95% {
     transform: translateY(-4%);
   }
   100% {
     transform: translateY(0);
-    padding-bottom: 9px;
     opacity: 1;
   }
 }
@@ -586,14 +580,12 @@ input[type=text]::placeholder {
   }
   90% {
     transform: translateY(0%);
-    padding-bottom: 8px;
   }
   95% {
     transform: translateY(-4%);
   }
   100% {
     transform: translateY(0);
-    padding-bottom: 9px;
     opacity: 1;
   }
 }
