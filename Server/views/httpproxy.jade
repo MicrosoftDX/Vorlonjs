@@ -1,0 +1,67 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    meta(name='description', content='')
+    meta(name='author', content='')
+  title Vorlonjs HTTP Proxy
+  link(rel='stylesheet', href='/stylesheets/httpproxy.css')
+  link(href='https://fonts.googleapis.com/css?family=Oswald:400' rel='stylesheet')
+  link(href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,300|Roboto:400,300' rel='stylesheet')
+  script(src='/javascripts/jquery-2.1.1.min.js' type="text/javascript")
+    body
+  
+  div.home
+    div.top
+      img.logo(src="/images/VorlonLogo_Smooth.svg")
+    div.form
+      div.message Vorlon proxy allows you to use Vorlon on an existing website. Just enter the website url, and click on the button. Couldn't be easier !
+      div.message Please note that, for now, the proxy will not work with websites using https.
+      div.input
+        input#url(type='text', placeholder='enter website url')
+      div.button
+        div.spacebutton
+          a#inject.btn.btn-default.left Open with VORLON.JS
+
+ script(type='text/javascript').
+ 	$(document).ready(function() {	
+     function openProxiedWindow(url){
+       $.ajax({
+            type: "GET",
+            url: "/HttpProxy/inject?url=" + encodeURIComponent(url) + "&ts=" + new Date(),
+            success: function (data) {
+              window.open(data);
+            },
+       });
+     }
+     
+     function openDashboard(url){
+       var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
+       var match = url.match(pat); 
+       window.open("/dashboard/" + match[2]);
+     }
+     
+     function inject(){
+       var url = document.querySelector("#url").value;
+       if (url && url.length){
+        openProxiedWindow(url);
+        openDashboard(url);
+       }
+     }
+     
+     var btninject = document.querySelector("#inject");
+     var urlinput = document.querySelector("#url");
+     btninject.addEventListener("click", function () {
+       inject();
+     });
+     
+     urlinput.addEventListener("keypress", function(e){
+       var key = e.which ? e.which : e.keyCode;
+       if (key == 13) {         
+         e.preventDefault();
+         inject();
+       }
+     });
+ 	});
