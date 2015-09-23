@@ -131,12 +131,17 @@ export module VORLON {
             var _proxy = this;
             
             if (proxyRes.headers && proxyRes.headers["content-type"] && proxyRes.headers["content-type"].match("text/html")) {
-                if (!req.query.targeturl){
-                    console.warn("no url...");
+                var targetProxyUrl = req.query.targeturl;                
+                if (!targetProxyUrl){
+                    targetProxyUrl = req.cookies[this._proxyCookieName];
+                } 
+                
+                if (!targetProxyUrl){
+                    console.warn("PROXY request HTML Content but no url...");
                     return;
                 }
                 
-                var uri = url.parse(decodeURIComponent(req.query.targeturl));
+                var uri = url.parse(targetProxyUrl);
                 console.log("result from path " + uri.href);
                 console.log("Proxy load website for target " + uri.href);
                 var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
@@ -155,8 +160,13 @@ export module VORLON {
                     }                            
                     res.setHeader("transfer-encoding", "");                            
                     res.setHeader("cache-control", "no-cache");
-                    console.log("set cookie " + req.query.targeturl);
-                    res.cookie(_proxy._proxyCookieName, req.query.targeturl);
+                    
+                    //we must set cookie only if url was requested through Vorlon
+                    if (req.query.targeturl){
+                         console.log("set cookie " + req.query.targeturl);
+                        res.cookie(_proxy._proxyCookieName, req.query.targeturl);
+                    }
+                    
                     writeHead.apply(this, arguments);
                 };
                 
