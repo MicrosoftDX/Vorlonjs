@@ -159,7 +159,9 @@ export module VORLON {
                         res.setHeader("content-length", <any>parseInt(proxyRes.headers["content-length"], 10) + _script.length);
                     }                            
                     res.setHeader("transfer-encoding", "");                            
-                    res.setHeader("cache-control", "no-cache");
+                    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+                    res.header('Expires', '-1');
+                    res.header('Pragma', 'no-cache');
                     
                     //we must set cookie only if url was requested through Vorlon
                     if (req.query.targeturl){
