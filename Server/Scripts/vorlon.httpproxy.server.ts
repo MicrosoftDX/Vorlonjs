@@ -26,8 +26,9 @@ export module VORLON {
         }
         
         private insertVorlonScript(str: string, uri, _script: string, vorlonsessionid:string) {
-            var position = str.indexOf("</head>");
+            var position = str.indexOf("<head>");
             if (position > 0){
+                position = position + 6;
                 console.log("PROXY Injert vorlon script in website with SESSIONID " + vorlonsessionid);
                 str = str.substr(0, position) + " " + _script + str.substr(position);
             }
@@ -148,10 +149,7 @@ export module VORLON {
                 var match = uri.href.match(pat); 
                 var vorlonsessionid = match[2];
                 var _script = "<script src=\"http://localhost:" + port + "/vorlon.js/"+ vorlonsessionid +"/\"></script>"
-                var chunks,
-                    end = res.end,
-                    writeHead = res.writeHead,
-                    write = res.write;
+                var chunks, end = res.end, writeHead = res.writeHead, write = res.write;
                 
                 
                 res.writeHead = function () {
