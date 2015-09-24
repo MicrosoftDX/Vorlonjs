@@ -61,17 +61,17 @@ export module VORLON {
                 res.setHeader("Content-Type", "text/plain");
                 
                 var targetProxyUrl = req.query.targeturl;                
-                if (!targetProxyUrl){
+                if (!targetProxyUrl) {
                     targetProxyUrl = req.cookies[this._proxyCookieName];
                 } 
                 
-                if (targetProxyUrl){
+                if (targetProxyUrl) {
                     console.log("PROXY REQUEST from target " + targetProxyUrl)
                     this._proxy.web(req, res, { 
                         target: targetProxyUrl,
                         changeOrigin: true
                     });
-                }else{
+                } else {
                     console.warn("PROXY REQUEST but no target");
                 }
             };
@@ -86,7 +86,7 @@ export module VORLON {
                 
                 var cookieUrl = req.cookies[this._proxyCookieName];
                 
-                if (cookieUrl){
+                if (cookieUrl) {
                     var uri = url.parse(cookieUrl);
                     var target = uri.protocol + "//" + uri.hostname;
                     console.log("PROXY REQUEST for root http domain " + target)
@@ -94,7 +94,7 @@ export module VORLON {
                         target: target,
                         changeOrigin: true
                     });
-                }else{
+                } else {
                     console.warn("PROXY REQUEST from root but no cookie...");
                 }
             };
@@ -107,10 +107,14 @@ export module VORLON {
         }
         
         private inject() {
-            return (req: express.Request, res: express.Response) => {   
-                var uri = url.parse(req.query.url);
+            return (req: express.Request, res: express.Response) => {
+                var _url = req.query.url;
+                if (_url.match(/^(http[s]?:\/\/)/)) {
+                    _url = "http://" + _url;
+                }
+                var uri = url.parse(_url);
                 //res.cookie(this._proxyCookieName, uri.protocol + "//" + uri.hostname);
-                console.log("request for proxiing " + uri.hostname + " to port " + this._proxyPort)
+                console.log("request for proxiing " + uri.hostname + " to port " + this._proxyPort)                
                 res.end("http://localhost:" + this._proxyPort + "/vorlonproxy?targeturl=" + encodeURIComponent(req.query.url)); 
             };
         }
@@ -133,11 +137,11 @@ export module VORLON {
             
             if (proxyRes.headers && proxyRes.headers["content-type"] && proxyRes.headers["content-type"].match("text/html")) {
                 var targetProxyUrl = req.query.targeturl;                
-                if (!targetProxyUrl){
+                if (!targetProxyUrl) {
                     targetProxyUrl = req.cookies[this._proxyCookieName];
                 } 
                 
-                if (!targetProxyUrl){
+                if (!targetProxyUrl) {
                     console.warn("PROXY request HTML Content but no url...");
                     return;
                 }
