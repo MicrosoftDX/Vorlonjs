@@ -1,6 +1,7 @@
 module VORLON {
     export class WebStandardsClient extends ClientPlugin {
-
+        public sendedHTML : string;
+        
         constructor() {
             super("webstandards");
             this._id = "WEBSTANDARDS";
@@ -19,12 +20,27 @@ module VORLON {
         public startClientSide(): void {
             
         }
+        
+        public startNewAnalyse(): void {
+            var allHTML = document.documentElement.outerHTML;
+            this.sendedHTML = allHTML;
+            this.sendCommandToDashboard("htmlContent", { html : allHTML });
+        }
+        
+        private getStyleSheets(){
+            var stylesheets = document.querySelectorAll("link[rel=stylesheet]");
+            
+        }
+        
+        private getScripts(){
+            
+        }
     }
     
     WebStandardsClient.prototype.ClientCommands = {
-        example: function (data: any) {
+        startNewAnalyse: function (data: any) {
             var plugin = <WebStandardsClient>this;
-            //
+            plugin.startNewAnalyse();
         }
     };
 

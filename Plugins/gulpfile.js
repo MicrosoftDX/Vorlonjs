@@ -160,6 +160,7 @@ gulp.task('watch', function() {
   gulp.watch([
     'Vorlon/**/*.ts',
     'Vorlon/**/*.less',
+    'Vorlon/**/*.html',
     //'Vorlon/plugins/**/*.*',
   ], ['default']);
 });
