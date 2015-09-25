@@ -102,17 +102,13 @@ export module VORLON {
         
         private home() {
             return (req: express.Request, res: express.Response) => {
-                res.render('httpproxy', { baseURL: this.baseURLConfig.baseURL });
+                res.render('httpproxy');
             };
         }
         
         private inject() {
             return (req: express.Request, res: express.Response) => {
-                var _url = req.query.url;
-                if (_url.match(/^(http[s]?:\/\/)/)) {
-                    _url = "http://" + _url;
-                }
-                var uri = url.parse(_url);
+                var uri = url.parse(req.query.url);
                 //res.cookie(this._proxyCookieName, uri.protocol + "//" + uri.hostname);
                 console.log("request for proxiing " + uri.hostname + " to port " + this._proxyPort)                
                 res.end("http://localhost:" + this._proxyPort + "/vorlonproxy?targeturl=" + encodeURIComponent(req.query.url)); 
