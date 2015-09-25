@@ -1,10 +1,13 @@
+declare var cssjs : any;
+
 module VORLON {
+    var _webstandardsRefreshLoop;
+    
     export class WebStandardsDashboard extends DashboardPlugin {
         constructor() {
-            //     name   ,  html for dash   css for dash
             super("webstandards", "control.html", "control.css");
             this._id = "WEBSTANDARDS";
-            this.debug = true;
+            //this.debug = true;
             this._ready = true;
             console.log('Started');
         }
@@ -12,7 +15,6 @@ module VORLON {
         private _startCheckButton: HTMLButtonElement;
         private _rootDiv: HTMLElement;
         private _currentAnalyse = null;        
-        private _refreshloop : any;
         
         public startDashboardSide(div: HTMLDivElement = null): void {
             var script = <HTMLScriptElement>document.createElement("SCRIPT");
@@ -23,14 +25,14 @@ module VORLON {
                 this._startCheckButton = <HTMLButtonElement>filledDiv.querySelector('#startCheck');
                 this._rootDiv = <HTMLElement>filledDiv;
 
-                // Send message to client when user types and hits return
                 this._startCheckButton.addEventListener("click", (evt) => {
                     this._currentAnalyse = { processing: true };
                     this._rootDiv.classList.add("loading");
                     this.sendCommandToClient('startNewAnalyse');
                 });
 
-                this._refreshloop = setInterval(() => {
+                clearInterval(_webstandardsRefreshLoop);
+                _webstandardsRefreshLoop = setInterval(() => {
                     this.checkLoadingState();
                 }, 3000);
             });
@@ -54,7 +56,7 @@ module VORLON {
                 this._currentAnalyse =  { processing : true };
             }
             
-            console.log('received html from client ', data.html);
+            //console.log('received html from client ', data.html);
             var fragment = document.implementation.createHTMLDocument("analyse");
             fragment.documentElement.innerHTML = data.html;
             this._currentAnalyse.pendingLoad = 0;
@@ -89,7 +91,7 @@ module VORLON {
         }
         
         receiveDocumentContent(data: { url:string, content: string, error?:string, status : number }){
-            console.log("document loaded " + data.url + " " + data.status);
+            //console.log("document loaded " + data.url + " " + data.status);
             var item = null;
             if (this._currentAnalyse.stylesheets[data.url]){
                 item = this._currentAnalyse.stylesheets[data.url];                
@@ -173,15 +175,20 @@ module VORLON {
             }
         }
         
-        applyDOMNodeRule(node : Node, rule: IDOMRule, analyse){
+        initialiseRuleSummary(rule, analyse){
             var tokens = rule.id.split('.');
             var current = analyse.results;
             tokens.forEach(function(t){
                 if (!current[t])
-                    current[t] = {};
+                    current[t] = { rules : {}};
                     
-                current = current[t];
+                current = current[t].rules;
             });
+            return current;
+        }
+        
+        applyDOMNodeRule(node : Node, rule: IDOMRule, analyse){
+            var current = this.initialiseRuleSummary(rule, analyse);
             rule.check(node, current, analyse);
         }
         
@@ -191,7 +198,24 @@ module VORLON {
             var parsed = parser.parseCSS(content);
             console.log("processed css");
             console.log(parsed);
+                        
+            //we index rules based on target node types
+            for (var n in VORLON.WebStandards.Rules.CSS){
+                var rule = <IDOMRule>VORLON.WebStandards.Rules.CSS[n];
+                if (rule){
+                    this.applyCSSRule(url, parsed, rule, analyse);
+                }
+            }
+            
+            console.log("analysed");
+            console.log(analyse);
         }
+        
+        applyCSSRule(fileurl, ast, rule, analyse){
+            var current = this.initialiseRuleSummary(rule, analyse);
+            rule.check(fileurl, ast, current, analyse);
+        }
+        
     }
     
     WebStandardsDashboard.prototype.DashboardCommands = {
@@ -227,6 +251,17 @@ module VORLON.WebStandards.Rules.DOM {
             }else{
                 
             }
+        }
+    }
+}
+
+module VORLON.WebStandards.Rules.CSS {
+    export var imagesShouldHaveAlt = <ICSSRule>{
+        id: "webstandards.prefixes",
+        title : "incorrect use of prefixes",
+        check : function(url, ast, rulecheck: any, analyseSummary : any){
+            console.log("check css prefixes");
+            
         }
     }
 }
