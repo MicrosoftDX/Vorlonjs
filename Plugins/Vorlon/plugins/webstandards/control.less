@@ -1,15 +1,32 @@
 .plugin-webstandards {
-  #webstandardspanel{
-	  width: 100%;
-	  height: 100%;
-	  position: relative;
-	  
-	  .contentpanel{
-		  position : absolute;
-		  top : 36px;
-		  bottom: 0;
-      left: 0;
-      right: 0;
-	  }
-  }
+    #webstandardspanel {
+        width: 100%;
+        height: 100%;
+        position: relative;
+
+        x-controlbar {
+            .loadingstate {
+                font-size: 16pt;
+                line-height: 26px;
+                margin-left: 10px;
+                display: none;
+            }
+        }
+
+        &.loading {
+            x-controlbar {
+                .loadingstate {
+                    display: block;
+                }
+            }
+
+            .contentpanel {
+                position: absolute;
+                top: 36px;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+        }
+    }
 }
