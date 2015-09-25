@@ -171,6 +171,9 @@ module VORLON {
                     if (xhr.status === 200) {
                         
                         DashboardManager.ClientList = new Array<any>();
+
+                        document.getElementById('test').style.visibility='hidden';
+
                         //Loading client list 
                         var clients = JSON.parse(xhr.responseText);
                         var divClientsListPane = <HTMLDivElement> document.getElementById("clientsListPaneContent");
@@ -268,6 +271,10 @@ module VORLON {
 
             xhr.open("GET", vorlonBaseURL + "/api/reset/" + sessionid);
             xhr.send();
+        }
+
+        public static ReloadClient(): void {
+            Core.Messenger.sendRealtimeMessage("", DashboardManager.ListenClientid, VORLON.RuntimeSide.Dashboard, "reload");
         }
 
         private static _onRefreshClients(): void {

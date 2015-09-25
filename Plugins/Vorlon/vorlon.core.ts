@@ -72,6 +72,7 @@
             Core.Messenger.onIdentifyReceived = Core._OnIdentifyReceived;
             Core.Messenger.onStopListenReceived = Core._OnStopListenReceived;
             Core.Messenger.onError = Core._OnError;
+            Core.Messenger.onReload = Core._OnReloadClient;
 
             // Say 'helo'
             var heloMessage = {
@@ -302,7 +303,12 @@
                 var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
                 VORLON.Tools.AddClass(elt, 'hidden');
                 VORLON.Tools.RemoveClass(elt, 'bounce');
+                document.getElementById('test').style.visibility='visible';
             }
+        }
+
+        private _OnReloadClient(id: string): void {
+            document.location.reload();
         }
 
         private _RetrySendingRealtimeMessage(plugin: DashboardPlugin, message: VorlonMessage) {
