@@ -31,13 +31,13 @@
         public update(data: any): void {
             // resolution
             var resolution = data.resolution;
-            this.setTableValue('dpi', resolution.dpi);
-            this.setTableValue('dppx', resolution.dppx);
-            this.setTableValue('dpcm', resolution.dpcm);
+            this.setTableValue('dpi', this.round2decimals(resolution.dpi).toString());
+            this.setTableValue('dppx', this.round2decimals(resolution.dppx).toString());
+            this.setTableValue('dpcm', this.round2decimals(resolution.dpcm).toString());
 
             // miscellaneous
             this.setTableValue('root-font-size', data.rootFontSize + 'px');
-            this.setTableValue('pixel-ratio', data.pixelRatio);
+            this.setTableValue('pixel-ratio', this.round2decimals(data.pixelRatio).toString());
             this.setTableValue('user-agent', data.userAgent);
 
 
@@ -48,7 +48,7 @@
         public updateResize(data: any): void {
             // viewport
             var viewport = data.viewport;
-            this.setTableValue('aspect-ratio', viewport.aspectRatio);
+            this.setTableValue('aspect-ratio', this.round2decimals(viewport.aspectRatio).toString());
             this.setTableValue('width', viewport.width + 'px');
             this.setTableValue('width-em', viewport.widthEm + 'em');
             this.setTableValue('meta-viewport-tag', data.metaViewport);
@@ -63,6 +63,10 @@
 
         public setTableValue(cssClass: string, value: string): void {
             this._table.querySelector('.' + cssClass).textContent = value;
+        }
+        
+        private round2decimals(value: any):number{
+            return (Math.round(value * 100) / 100);
         }
 
         // When we get a message from the client, just show it
