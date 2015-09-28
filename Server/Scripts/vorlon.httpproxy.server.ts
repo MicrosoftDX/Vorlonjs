@@ -18,6 +18,7 @@ export module VORLON {
         private _server = null;
         private _proxyPort = 5050;
         private _proxyCookieName = "vorlonProxyTarget";
+        private _vorlonScript = "vorlon.js";
         private baseURLConfig: baseURLConfig.VORLON.BaseURLConfig;
         
         constructor() {
@@ -169,7 +170,7 @@ export module VORLON {
                 var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
                 var match = uri.href.match(pat); 
                 var vorlonsessionid = match[2];
-                var _script = "<script src=\"http://localhost:" + port + "/vorlon.js/"+ vorlonsessionid +"/\"></script>"
+                var _script = "<script src=\"http://localhost:" + port + "/" + this._vorlonScript + "/"+ vorlonsessionid +"/\"></script>"
                 var chunks, end = res.end, writeHead = res.writeHead, write = res.write;
                 
                 

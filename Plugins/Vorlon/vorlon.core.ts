@@ -99,6 +99,14 @@
         }
 
         public startClientDirtyCheck() {
+            //sometimes refresh is called before document was loaded
+            if (!document.body){
+                setTimeout(() => {
+                   this.startClientDirtyCheck(); 
+                }, 200);
+                return;
+            }
+            
             var mutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
             if (mutationObserver) {
                 if (!document.body.__vorlon)

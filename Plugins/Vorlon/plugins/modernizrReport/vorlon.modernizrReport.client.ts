@@ -96,7 +96,16 @@
         }
 
         public refresh(): void {
+            //sometimes refresh is called before document was loaded
+            if (!document.body){
+                setTimeout(() => {
+                   this.refresh(); 
+                }, 200);
+                return;
+            }
+            
             var message: any = {};
+            
             message.features = this.supportedFeatures;
             this.sendToDashboard(message);
         }
