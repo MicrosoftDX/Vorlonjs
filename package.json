@@ -27,8 +27,7 @@
     "winston-azure": "0.0.4",
     "winston-logs-display": "^0.1.1",
     "xmlhttprequest": "^1.7.0",
-    "http-proxy": "^1.11.2",
-    "css-js": "^1.0.6"
+    "http-proxy": "^1.11.2"
   },
   "devDependencies": {
     "gulp": "^3.8.11",
