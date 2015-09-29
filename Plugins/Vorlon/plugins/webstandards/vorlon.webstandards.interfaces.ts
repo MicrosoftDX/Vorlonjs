@@ -14,4 +14,10 @@ module VORLON {
 		check : any;
 		description?: string;
 	}
+	
+	export interface DataResult {
+		lineNumber: number;
+		file: string;
+		testName: string;		
+	}
 }
