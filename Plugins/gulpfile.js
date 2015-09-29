@@ -17,9 +17,7 @@ gulp.task('typescript-to-js', function() {
   var tsResult = gulp.src(['Vorlon/**/*.ts', 'libs/**.ts'])
                        .pipe(typescript({ 
                             declarationFiles: true,
-                            noExternalResolve: true, 
-                            target: 'ES5'
-                            }
+                            noExternalResolve: true, target: 'ES5'}
                           ));
   
    return merge([
