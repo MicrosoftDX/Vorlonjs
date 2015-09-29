@@ -99,6 +99,14 @@
         }
 
         public startClientDirtyCheck() {
+            //sometimes refresh is called before document was loaded
+            if (!document.body){
+                setTimeout(() => {
+                   this.startClientDirtyCheck(); 
+                }, 200);
+                return;
+            }
+            
             var mutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
             if (mutationObserver) {
                 if (!document.body.__vorlon)
@@ -288,7 +296,6 @@
         }
 
         private _OnIdentificationReceived(id: string): void {
-            //console.log('helo received ' + id + " RuntimeSide = " + Core._side);
             Core._listenClientId = id;
 
             if (Core._side === RuntimeSide.Client) {
@@ -297,10 +304,12 @@
                     var plugin = Core._clientPlugins[index];
                     plugin.refresh();
                 }
-            } else {
+            }
+            else {
+                //Stop bouncing and hide waiting page
                 var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
-                Tools.RemoveClass(elt, 'bounce');
-                Tools.AddClass(elt, 'hidden');
+                VORLON.Tools.AddClass(elt, 'hidden');
+                VORLON.Tools.RemoveClass(elt, 'bounce');
             }
         }
 
