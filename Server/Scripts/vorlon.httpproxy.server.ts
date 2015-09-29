@@ -184,6 +184,9 @@ export module VORLON {
         
         private proxyRequest(proxyReq, req: express.Request, res: express.Response, opt) {
             var e = proxyReq;
+            if (proxyReq.path[proxyReq.path.length-1] == "/"){
+                proxyReq.path = proxyReq.path.substr(0, proxyReq.path.length-1);
+            }
             console.log("PROXY ISSUING REQUEST TO " + proxyReq.path);
         }
         
