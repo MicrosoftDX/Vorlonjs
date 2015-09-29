@@ -1,8 +1,8 @@
-declare var cssjs : any;
+declare var cssjs: any;
 
 module VORLON {
     var _webstandardsRefreshLoop;
-    
+
     export class WebStandardsDashboard extends DashboardPlugin {
         constructor() {
             super("webstandards", "control.html", "control.css");
@@ -14,13 +14,13 @@ module VORLON {
 
         private _startCheckButton: HTMLButtonElement;
         private _rootDiv: HTMLElement;
-        private _currentAnalyse = null;        
-        
+        private _currentAnalyse = null;
+
         public startDashboardSide(div: HTMLDivElement = null): void {
             var script = <HTMLScriptElement>document.createElement("SCRIPT");
             script.src = "/javascripts/css.js";
             document.body.appendChild(script);
-            
+
             this._insertHtmlContentAsync(div, (filledDiv) => {
                 this._startCheckButton = <HTMLButtonElement>filledDiv.querySelector('#startCheck');
                 this._rootDiv = <HTMLElement>filledDiv;
@@ -37,162 +37,163 @@ module VORLON {
                 }, 3000);
             });
         }
-        
-        checkLoadingState(){
-            if (!this._currentAnalyse || this._currentAnalyse.ended){
-                return;                
+
+        checkLoadingState() {
+            if (!this._currentAnalyse || this._currentAnalyse.ended) {
+                return;
             }
-            
-            if (this._currentAnalyse.processing){           
-                             
+
+            if (this._currentAnalyse.processing) {
+
             } else {
                 this._rootDiv.classList.remove("loading");
                 this._currentAnalyse.ended = true;
             }
         }
 
-        receiveHtmlContent(data : { html: string}){
-            if (!this._currentAnalyse){
-                this._currentAnalyse =  { processing : true };
+        receiveHtmlContent(data: { html: string }) {
+            if (!this._currentAnalyse) {
+                this._currentAnalyse = { processing: true };
             }
             
             //console.log('received html from client ', data.html);
-            var fragment = document.implementation.createHTMLDocument("analyse");
+            var fragment: HTMLDocument = document.implementation.createHTMLDocument("analyse");
             fragment.documentElement.innerHTML = data.html;
             this._currentAnalyse.pendingLoad = 0;
-            
+
             this._currentAnalyse.scripts = {};
             var scripts = fragment.querySelectorAll("script");
-            for (var i=0; i<scripts.length ; i++){
+            for (var i = 0; i < scripts.length; i++) {
                 var s = scripts[i];
                 var src = s.attributes.getNamedItem("src");
-                if (src){
-                    this._currentAnalyse.scripts[src.value] = { loaded : false, content : null };
+                if (src) {
+                    this._currentAnalyse.scripts[src.value] = { loaded: false, content: null };
                     //console.log("found script " + src.value);
                     this.sendCommandToClient('fetchDocument', { url: src.value });
                     this._currentAnalyse.pendingLoad++;
                 }
             }
-            
+
             this._currentAnalyse.stylesheets = {};
             var stylesheets = fragment.querySelectorAll("link[rel=stylesheet]");
-            for (var i=0; i<stylesheets.length ; i++){
+            for (var i = 0; i < stylesheets.length; i++) {
                 var s = stylesheets[i];
                 var href = s.attributes.getNamedItem("href");
-                if (href){
-                    this._currentAnalyse.stylesheets[href.value] = { loaded : false, content : null };
+                if (href) {
+                    this._currentAnalyse.stylesheets[href.value] = { loaded: false, content: null };
                     //console.log("found stylesheet " + href.value);
                     this.sendCommandToClient('fetchDocument', { url: href.value });
                     this._currentAnalyse.pendingLoad++;
                 }
             }
-            
+
             this.analyseDOM(fragment, this._currentAnalyse);
         }
-        
-        receiveDocumentContent(data: { url:string, content: string, error?:string, status : number }){
+
+        receiveDocumentContent(data: { url: string, content: string, error?: string, status: number }) {
             //console.log("document loaded " + data.url + " " + data.status);
             var item = null;
-            if (this._currentAnalyse.stylesheets[data.url]){
-                item = this._currentAnalyse.stylesheets[data.url];                
-                if (data.content){
+            if (this._currentAnalyse.stylesheets[data.url]) {
+                item = this._currentAnalyse.stylesheets[data.url];
+                if (data.content) {
                     this.analyseCssDocument(data.url, data.content, this._currentAnalyse);
                 }
             }
-            if (this._currentAnalyse.scripts[data.url]){
-                item = this._currentAnalyse.scripts[data.url];                
+            if (this._currentAnalyse.scripts[data.url]) {
+                item = this._currentAnalyse.scripts[data.url];
             }
-            
-            if (item){
+
+            if (item) {
                 this._currentAnalyse.pendingLoad--;
                 item.loaded = true;
                 item.content = data.content;
-                
-                if (this._currentAnalyse.pendingLoad == 0){
+
+                if (this._currentAnalyse.pendingLoad == 0) {
                     this._currentAnalyse.processing = false;
                 }
             }
         }
-        
-        analyseDOM(document : HTMLDocument, analyse){
+
+        analyseDOM(document: HTMLDocument, analyse) {
             var generalRules = [];
             var rules = {
-                domRulesIndex : <any>{},
+                domRulesIndex: <any>{},
                 domRulesForAllNodes: []
             };
             analyse.results = {};
             
             //we index rules based on target node types
-            for (var n in VORLON.WebStandards.Rules.DOM){
+            for (var n in VORLON.WebStandards.Rules.DOM) {
                 var rule = <IDOMRule>VORLON.WebStandards.Rules.DOM[n];
-                if (rule){
-                    if (rule.generalRule){
+                if (rule) {
+                    if (rule.generalRule) {
                         generalRules.push(rule);
-                    }else{
+                    } else {
                         //console.log("indexing " + rule.id);
-                        if (rule.nodeTypes.length){
-                            rule.nodeTypes.forEach(function(n){
+                        if (rule.nodeTypes.length) {
+                            rule.nodeTypes.forEach(function(n) {
                                 n = n.toUpperCase();
                                 if (!rules.domRulesIndex[n])
                                     rules.domRulesIndex[n] = [];
-                                    
+
                                 rules.domRulesIndex[n].push(rule);
                             });
-                        }else{
+                        } else {
                             rules.domRulesForAllNodes.push(rule);
                         }
                     }
                 }
             }
-            
+
             this.analyseDOMNode(document, rules, analyse);
             console.log(analyse.results)
             generalRules.forEach((r) => {
                 this.applyDOMNodeRule(document, r, analyse);
             });
+            this.analysePluginFree(document);
         }
-        
-        analyseDOMNode(node : Node, rules: any, analyse){
+
+        analyseDOMNode(node: Node, rules: any, analyse) {
             //console.log("checking " + node.nodeName);
             var specificRules = rules.domRulesIndex[node.nodeName];
-            if (specificRules && specificRules.length){
+            if (specificRules && specificRules.length) {
                 console.log((specificRules.length + rules.domRulesForAllNodes.length) + " rules");
                 specificRules.forEach((r) => {
                     this.applyDOMNodeRule(node, r, analyse);
                 });
-            }else{
+            } else {
                 //console.log(rules.domRulesForAllNodes.length + " rules");
             }
-            
-            if (rules.domRulesForAllNodes && rules.domRulesForAllNodes.length){
+
+            if (rules.domRulesForAllNodes && rules.domRulesForAllNodes.length) {
                 rules.domRulesForAllNodes.forEach((r) => {
                     this.applyDOMNodeRule(node, r, analyse);
                 });
             }
-            
-            for (var i=0, l=node.childNodes.length; i<l ; i++){
+
+            for (var i = 0, l = node.childNodes.length; i < l; i++) {
                 this.analyseDOMNode(node.childNodes[i], rules, analyse);
             }
         }
-        
-        initialiseRuleSummary(rule, analyse){
+
+        initialiseRuleSummary(rule, analyse) {
             var tokens = rule.id.split('.');
             var current = analyse.results;
-            tokens.forEach(function(t){
+            tokens.forEach(function(t) {
                 if (!current[t])
-                    current[t] = { rules : {}};
-                    
+                    current[t] = { rules: {} };
+
                 current = current[t].rules;
             });
             return current;
         }
-        
-        applyDOMNodeRule(node : Node, rule: IDOMRule, analyse){
+
+        applyDOMNodeRule(node: Node, rule: IDOMRule, analyse) {
             var current = this.initialiseRuleSummary(rule, analyse);
             rule.check(node, current, analyse);
         }
-        
-        analyseCssDocument(url, content, analyse){
+
+        analyseCssDocument(url, content, analyse) {
             var parser = new cssjs();
             //parse css string
             var parsed = parser.parseCSS(content);
@@ -200,31 +201,104 @@ module VORLON {
             console.log(parsed);
                         
             //we index rules based on target node types
-            for (var n in VORLON.WebStandards.Rules.CSS){
+            for (var n in VORLON.WebStandards.Rules.CSS) {
                 var rule = <IDOMRule>VORLON.WebStandards.Rules.CSS[n];
-                if (rule){
+                if (rule) {
                     this.applyCSSRule(url, parsed, rule, analyse);
                 }
             }
-            
+
             console.log("analysed");
             console.log(analyse);
         }
-        
-        applyCSSRule(fileurl, ast, rule, analyse){
+
+        applyCSSRule(fileurl, ast, rule, analyse) {
             var current = this.initialiseRuleSummary(rule, analyse);
             rule.check(fileurl, ast, current, analyse);
         }
         
+        private removeItems(original, itemsToRemove) {
+            var cleaned = [],
+                remove;
+            for (var i = 0; i < original.length; i++) {
+                remove = true;
+                for (var j = 0; j < itemsToRemove.length; j++) {
+                    if (original[i] === itemsToRemove[j]) {
+                        remove = false;
+                        break;
+                    }
+                }
+                if (remove) {
+                    cleaned.push(original[i]);
+                }
+            }
+            return cleaned;
+        }
+        
+        private concatNodeList(first, second) {
+            var tab = [];
+            for (var i = 0; i < first.length; i++) {
+                tab.push(first[i]);
+            }
+            for (var i = 0; i < second.length; i++) {
+                tab.push(second[i]);
+            }
+            return tab;
+        }
+        
+        private analysePluginFree(html: HTMLDocument) {
+            var objects = html.querySelectorAll('object'),
+                embeds = html.querySelectorAll('embed'),
+                //objectParams = html.querySelectorAll('object param[value*=swf]'),
+                objectSWFparams = html.querySelectorAll('object[data*=swf]'),
+                objectSVGparams = html.querySelectorAll('object[data*=svg]'),
+                embedsSWF = html.querySelectorAll('embed[src*=swf]'),
+                embedsSVG = html.querySelectorAll('embed[src*=svg]');
+                
+            var activeXcontrols: number = objects.length /*- objectParams.length*/ - objectSWFparams.length - objectSVGparams.length
+                                + embeds.length - embedsSVG.length - embedsSWF.length;
+                                    
+            if (activeXcontrols > 0) {
+                var endPoint, lines: Array<DataResult>= [], matches: RegExpExecArray,
+                    objectsToRemove = this.concatNodeList(/*this.concatNodeList(objectParams, objectSWFparams)*/objectSWFparams, objectSVGparams),
+                    embedsToRemove = this.concatNodeList(embedsSWF, embedsSVG),
+                    uniqueObjects = this.removeItems(objects, objectsToRemove),
+                    uniqueEmbeds = this.removeItems(embeds, embedsToRemove);
+                    
+                var htmlString = html.documentElement.innerHTML;
+                if (uniqueObjects.length > 0) {
+                    for (var i = 0; i < uniqueObjects.length; i++) {
+                        var regExp = new RegExp(uniqueObjects[i].outerHTML, "gi");
+                        matches = regExp.exec(htmlString);
+                        if (matches && matches.length > 0) {
+                            endPoint = htmlString.indexOf(matches[0]);
+                            var nbLine = htmlString.substr(0, endPoint).split('\n').length + 1;
+                            lines.push(<DataResult>{ lineNumber: nbLine, file: "", testName: "pluginfree" });
+                        }
+                    }
+                }
+                if (uniqueEmbeds.length > 0) {
+                    for (var i = 0; i < uniqueEmbeds.length; i++) {
+                        var regExp = new RegExp(uniqueEmbeds[i].outerHTML, "gi");
+                        matches = regExp.exec(htmlString);
+                        if (matches && matches.length > 0) {
+                            endPoint = htmlString.indexOf(matches[0]);
+                            var nbLine = htmlString.substr(0, endPoint).split('\n').length + 1;
+                            lines.push(<DataResult>{ lineNumber: nbLine, file: "", testName: "pluginfree" });
+                        }
+                    }
+                }
+            }
+        }
     }
-    
+
     WebStandardsDashboard.prototype.DashboardCommands = {
-        htmlContent : function(data:any){
+        htmlContent: function(data: any) {
             var plugin = <WebStandardsDashboard>this;
             plugin.receiveHtmlContent(data);
         },
-        
-        documentContent: function (data: any) {
+
+        documentContent: function(data: any) {
             var plugin = <WebStandardsDashboard>this;
             plugin.receiveDocumentContent(data);
         }
@@ -237,19 +311,19 @@ module VORLON {
 module VORLON.WebStandards.Rules.DOM {
     export var imagesShouldHaveAlt = <IDOMRule>{
         id: "accessibility.images-should-have-alt",
-        title : "",
-        nodeTypes : ["IMG"],
-        check : function(node : Node, rulecheck: any, analyseSummary : any){
-            console.log("check alt images");
+        title: "",
+        nodeTypes: ["IMG"],
+        check: function(node: Node, rulecheck: any, analyseSummary: any) {
+            console.log("check alt images ");
             var altattr = node.attributes.getNamedItem("alt");
             rulecheck.nbfailed = rulecheck.nbfailed || 0;
             rulecheck.nbcheck = rulecheck.nbcheck || 0;
             rulecheck.nbcheck++;
-            if (!altattr || !altattr.value){
+            if (!altattr || !altattr.value) {
                 rulecheck.nbfailed++;
                 rulecheck.failed = true;
-            }else{
-                
+            } else {
+
             }
         }
     }
@@ -258,10 +332,10 @@ module VORLON.WebStandards.Rules.DOM {
 module VORLON.WebStandards.Rules.CSS {
     export var imagesShouldHaveAlt = <ICSSRule>{
         id: "webstandards.prefixes",
-        title : "incorrect use of prefixes",
-        check : function(url, ast, rulecheck: any, analyseSummary : any){
+        title: "incorrect use of prefixes",
+        check: function(url, ast, rulecheck: any, analyseSummary: any) {
             console.log("check css prefixes");
-            
+
         }
     }
 }
