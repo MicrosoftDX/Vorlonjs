@@ -67,7 +67,7 @@ export module VORLON {
                 res.setHeader("Content-Type", "text/plain");
                 
                 var cookieUrl = req.cookies[this._proxyCookieName];
-                var targetProxyUrl = req.baseUrl.substr("/vorlonproxy/".length);                                
+                var targetProxyUrl = (<any>req).baseUrl.substr("/vorlonproxy/".length);                                
                 // var idx = targetProxyUrl.lastIndexOf('/');
                 // if (idx > -1){
                 //     targetProxyUrl = targetProxyUrl.substr(0, idx+1);
@@ -85,7 +85,7 @@ export module VORLON {
                         
                         target = target + targetProxyUrl;
                     }
-                    console.log("PROXY RELATIVE REQUEST from target " + target + " for " + req.baseUrl);
+                    console.log("PROXY RELATIVE REQUEST from target " + target + " for " + (<any>req).baseUrl);
                     var opt = <any>{
                         target: target,
                         changeOrigin: true
@@ -95,7 +95,7 @@ export module VORLON {
                     }
                     this._proxy.web(req, res, opt);
                 }else{
-                    console.warn("PROXY RELATIVE REQUEST but no target for " + req.baseUrl);
+                    console.warn("PROXY RELATIVE REQUEST but no target for " + (<any>req).baseUrl);
                 }
             };
         }        
@@ -113,7 +113,7 @@ export module VORLON {
                 } 
                 
                 if (targetProxyUrl){
-                    console.log("PROXY REQUEST from target " + targetProxyUrl + " for " + req.baseUrl);
+                    console.log("PROXY REQUEST from target " + targetProxyUrl + " for " + (<any>req).baseUrl);
                     var opt = <any>{
                         target: targetProxyUrl,
                         changeOrigin: true
@@ -123,7 +123,7 @@ export module VORLON {
                     }
                     this._proxy.web(req, res, opt);
                 }else{
-                    console.warn("PROXY REQUEST but no target" + " for " + req.baseUrl);
+                    console.warn("PROXY REQUEST but no target" + " for " + (<any>req).baseUrl);
                 }
             };
         }
