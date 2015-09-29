@@ -51,7 +51,7 @@ module VORLON {
             }
         }
 
-        receiveHtmlContent(data: { html: string }) {
+        receiveHtmlContent(data: { html: string, doctype: any }) {
             if (!this._currentAnalyse) {
                 this._currentAnalyse = { processing: true };
             }
@@ -87,7 +87,7 @@ module VORLON {
                 }
             }
 
-            this.analyseDOM(fragment, this._currentAnalyse);
+            this.analyseDOM(fragment, data.html, this._currentAnalyse);
         }
 
         receiveDocumentContent(data: { url: string, content: string, error?: string, status: number }) {
@@ -114,7 +114,7 @@ module VORLON {
             }
         }
 
-        analyseDOM(document: HTMLDocument, analyse) {
+        analyseDOM(document: HTMLDocument, htmlContent : string, analyse) {
             var generalRules = [];
             var rules = {
                 domRulesIndex: <any>{},
@@ -145,21 +145,23 @@ module VORLON {
                 }
             }
 
-            this.analyseDOMNode(document, rules, analyse);
-            console.log(analyse.results)
+            this.analyseDOMNode(document, rules, analyse, htmlContent);
+            
             generalRules.forEach((r) => {
-                this.applyDOMNodeRule(document, r, analyse);
+                this.applyDOMNodeRule(document, r, analyse, htmlContent);
             });
             this.analysePluginFree(document);
+            console.log("DOM NODES ANALYSE ended")
+            console.log(analyse.results)
         }
 
-        analyseDOMNode(node: Node, rules: any, analyse) {
+        analyseDOMNode(node: Node, rules: any, analyse, htmlContent : string) {
             //console.log("checking " + node.nodeName);
             var specificRules = rules.domRulesIndex[node.nodeName];
             if (specificRules && specificRules.length) {
                 console.log((specificRules.length + rules.domRulesForAllNodes.length) + " rules");
                 specificRules.forEach((r) => {
-                    this.applyDOMNodeRule(node, r, analyse);
+                    this.applyDOMNodeRule(node, r, analyse, htmlContent);
                 });
             } else {
                 //console.log(rules.domRulesForAllNodes.length + " rules");
@@ -167,30 +169,34 @@ module VORLON {
 
             if (rules.domRulesForAllNodes && rules.domRulesForAllNodes.length) {
                 rules.domRulesForAllNodes.forEach((r) => {
-                    this.applyDOMNodeRule(node, r, analyse);
+                    this.applyDOMNodeRule(node, r, analyse, htmlContent);
                 });
             }
 
             for (var i = 0, l = node.childNodes.length; i < l; i++) {
-                this.analyseDOMNode(node.childNodes[i], rules, analyse);
+                this.analyseDOMNode(node.childNodes[i], rules, analyse, htmlContent);
             }
         }
 
         initialiseRuleSummary(rule, analyse) {
             var tokens = rule.id.split('.');
             var current = analyse.results;
+            current.rules = current.rules || {};
             tokens.forEach(function(t) {
-                if (!current[t])
-                    current[t] = { rules: {} };
+                if (!current.rules)
+                    current.rules = {};
+                if (!current.rules[t])
+                    current.rules[t] = {};
 
-                current = current[t].rules;
+                current = current.rules[t];
             });
+            
             return current;
         }
 
-        applyDOMNodeRule(node: Node, rule: IDOMRule, analyse) {
+        applyDOMNodeRule(node: Node, rule: IDOMRule, analyse, htmlContent : string) {
             var current = this.initialiseRuleSummary(rule, analyse);
-            rule.check(node, current, analyse);
+            rule.check(node, current, analyse, htmlContent);
         }
 
         analyseCssDocument(url, content, analyse) {
@@ -313,7 +319,7 @@ module VORLON.WebStandards.Rules.DOM {
         id: "accessibility.images-should-have-alt",
         title: "",
         nodeTypes: ["IMG"],
-        check: function(node: Node, rulecheck: any, analyseSummary: any) {
+        check: function(node: Node, rulecheck: any, analyseSummary: any, htmlString: string) {
             console.log("check alt images ");
             var altattr = node.attributes.getNamedItem("alt");
             rulecheck.nbfailed = rulecheck.nbfailed || 0;
@@ -324,6 +330,42 @@ module VORLON.WebStandards.Rules.DOM {
                 rulecheck.failed = true;
             } else {
 
+            }
+        }
+    }
+    
+    export var dontUsePlugins = <IDOMRule>{
+        id: "webstandards.dont-use-plugins",
+        title: "",
+        nodeTypes: ["EMBED", "OBJECT"],
+        check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlString: string) {
+            console.log("check for plugins");
+                        
+            var source :string = null, data:string  = null, type:string  = null;
+            
+            var source = node.getAttribute("src");
+            if (source) source = source.toLowerCase(); else source = "";
+                        
+            var data = node.getAttribute("data");
+            if (data) data = data.toLowerCase(); else data = "";
+               
+            var type = node.getAttribute("type");
+            if (type) type = type.toLowerCase(); else type = "";
+            
+            rulecheck.items = rulecheck.items || [];             
+            if (source.indexOf(".swf") > 0 || data.indexOf("swf") > 0){
+                rulecheck.failed = true;
+                rulecheck.items.push({ message: "think about using HTML5 instead of Flash", content : (<HTMLElement>node).outerHTML })
+            }
+            else if (type.indexOf("silverlight") > 0){
+                rulecheck.failed = true;
+                rulecheck.items.push({ message: "think about using HTML5 instead of Silverlight", content : (<HTMLElement>node).outerHTML })
+            } else if (source.indexOf(".svg") > 0 || data.indexOf("svg") > 0) {
+                rulecheck.failed = true;
+                rulecheck.items.push({ message: "dont't use SVG with " + node.nodeType, content : (<HTMLElement>node).outerHTML })
+            } else {
+                rulecheck.failed = true;
+                rulecheck.items.push({ message: "use HTML5 instead of embed or object elements", content : (<HTMLElement>node).outerHTML })
             }
         }
     }

@@ -24,7 +24,26 @@ module VORLON {
         public startNewAnalyse(): void {
             var allHTML = document.documentElement.outerHTML;
             this.sendedHTML = allHTML;
-            this.sendCommandToDashboard("htmlContent", { html : allHTML });
+            
+            var doctype : any;            
+            var node = document.doctype;
+            
+            if (node){
+                var doctypeHtml = "<!DOCTYPE "
+                + node.name
+                + (node.publicId ? ' PUBLIC "' + node.publicId + '"' : '')
+                + (!node.publicId && node.systemId ? ' SYSTEM' : '') 
+                + (node.systemId ? ' "' + node.systemId + '"' : '')
+                + '>';
+                doctype = {
+                    html : doctypeHtml,
+                    name : node.name,
+                    publicId : node.publicId,
+                    systemId : node.systemId
+                }
+            }
+            
+            this.sendCommandToDashboard("htmlContent", { html : allHTML, doctype: doctype});
         }
         
         public fetchDocument(data: { url : string }){
