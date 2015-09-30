@@ -2,6 +2,7 @@ module VORLON.WebStandards.Rules.CSS {
     export var cssprefixes = <ICSSRule>{
         id: "webstandards.prefixes",
         title: "incorrect use of prefixes",
+        description : "Ensure you use all vendor prefixes and unprefixed version for HTML5 CSS properties.",
         check: function(url, ast, rulecheck: any, analyseSummary: any) {
             console.log("check css prefixes");
             var compatiblePrefixes = {
@@ -48,10 +49,12 @@ module VORLON.WebStandards.Rules.CSS {
                 'transition-timing-function': 'webkit',
                 'user-select': 'webkit moz ms'
             };
+            
             var variations,
                 prefixed,
                 arrayPush = Array.prototype.push,
                 applyTo: Array<string> = new Array<string>();
+                
             for (var prop in compatiblePrefixes) {
                 if (compatiblePrefixes.hasOwnProperty(prop)) {
                     variations = [];
@@ -66,10 +69,14 @@ module VORLON.WebStandards.Rules.CSS {
                 }
             }
             
+            var unprefixedPropertyName = function(property){
+                return property.replace("-webkit-", "").replace("-moz-", "").replace("-o-", "").replace("-ms-", "");
+            }
+            
             var convertNode = function (node, prefixe) {
-                var rules: string = "";
+                var rules: string[] = [];
                 node.rules.forEach((rule, i) => {
-                   rules = rules + rule.directive + " "; 
+                   rules.push(rule.directive);                    
                 });
                 
                 return {
@@ -86,17 +93,22 @@ module VORLON.WebStandards.Rules.CSS {
                     
                 items.forEach((node, i) => {
                     if (node.rules && node.rules.length > 0) {
+                        var checked = <any>{};
                         for (var x = 0, len = node.rules.length; x < len; x++) {
                             var property = node.rules[x].directive;
-                            if (compatiblePrefixes.hasOwnProperty(property)) {
-                                if (compatiblePrefixes[property].indexOf(property) == -1)
-                                    compatiblePrefixes[property].push(property);
+                            var unprefixed = unprefixedPropertyName(property);
+                                
+                            if (!checked[unprefixed] && compatiblePrefixes.hasOwnProperty(unprefixed)) {
+                                if (compatiblePrefixes[unprefixed].indexOf(unprefixed) == -1)
+                                    compatiblePrefixes[unprefixed].push(unprefixed);
                                     
-                                nodes.push(convertNode(node, property));
+                                nodes.push(convertNode(node, unprefixed));
                             }
+                            checked[unprefixed] = true;
                         }
                     }
                     
+                    //scan content of media queries
                     if (node.type === "media"){
                         checkNodes(node.subStyles);    
                     }
@@ -104,24 +116,33 @@ module VORLON.WebStandards.Rules.CSS {
             }
             checkNodes(ast);
             
-            rulecheck.items = rulecheck.items || [];
+            var itemsInError = [];
 			for (i = 0, len = nodes.length; i < len; i++) {
-                var allProperty = compatiblePrefixes[nodes[i].prefixe];
+                var allProperty = compatiblePrefixes[nodes[i].prefixe];                
                 var prefixes = [];
+                
                 allProperty.forEach((prop, y) => {
-                    if (nodes[i].rules.search(prop) === -1) {
+                    var hasPrefix = nodes[i].rules.some((r) => { return r == prop });
+                    if (!hasPrefix) {
                         prefixes.push(prop);
                     }
                 });
+                
                 if (prefixes.length > 0) {
-                    rulecheck.items.push(<ResultCSSPrefixe>{
-                        prefixesMissing: prefixes,
-                        selector: nodes.selector
+                    itemsInError.push({
+                        content: "missing " + prefixes + " for <strong>" + nodes[i].prefixe + "</strong>",
+                        title: nodes[i].selector
                     });
                 }
             }
-            if (rulecheck.items.length > 0) {
+            if (itemsInError.length > 0) {
                 rulecheck.failed = true;
+                rulecheck.items = rulecheck.items || [];
+                rulecheck.items.push({
+                    title : url,
+                    type : "itemslist",
+                    items : itemsInError
+                })
             }
         }
     }

@@ -15,13 +15,18 @@ module VORLON {
         private _startCheckButton: HTMLButtonElement;
         private _rootDiv: HTMLElement;
         private _currentAnalyse = null;
-
+        private _rulesPanel: WebStandardsRulesPanel = null;
+        private _ruleDetailPanel: WebStandardsRuleDetailPanel = null;
+        
         public startDashboardSide(div: HTMLDivElement = null): void {
             var script = <HTMLScriptElement>document.createElement("SCRIPT");
             script.src = "/javascripts/css.js";
             document.body.appendChild(script);
 
             this._insertHtmlContentAsync(div, (filledDiv) => {
+                this._ruleDetailPanel = new WebStandardsRuleDetailPanel(filledDiv.querySelector('#webstandards-ruledetailpanel'));
+                this._rulesPanel = new WebStandardsRulesPanel(filledDiv.querySelector('#webstandards-rulespanel'), this._ruleDetailPanel);
+                
                 this._startCheckButton = <HTMLButtonElement>filledDiv.querySelector('#startCheck');
                 this._rootDiv = <HTMLElement>filledDiv;
 
@@ -48,6 +53,7 @@ module VORLON {
             } else {
                 this._rootDiv.classList.remove("loading");
                 this._currentAnalyse.ended = true;
+                this._rulesPanel.setRules(this._currentAnalyse);
             }
         }
 
@@ -180,18 +186,26 @@ module VORLON {
         initialiseRuleSummary(rule, analyse) {
             var tokens = rule.id.split('.');
             var current = analyse.results;
+            var id = "";
             current.rules = current.rules || {};
-            tokens.forEach(function(t) {
-                if (!current.rules)
+            tokens.forEach(function (t) {
+                id = (id.length > 0) ? "." + t : t;
+
+                if (!current.rules) {
                     current.rules = {};
+                }
+
                 if (!current.rules[t])
-                    current.rules[t] = {};
+                    current.rules[t] = { id : id };
 
                 current = current.rules[t];
             });
             
-            if (current.failed === undefined)
+            if (current.failed === undefined) {
                 current.failed = false;
+                current.title = rule.title;
+                current.description = rule.description;
+            }
             
             return current;
         }
@@ -222,6 +236,7 @@ module VORLON {
 
         applyCSSRule(fileurl, ast, rule, analyse) {
             var current = this.initialiseRuleSummary(rule, analyse);
+            
             rule.check(fileurl, ast, current, analyse);
         }
     }
@@ -240,4 +255,116 @@ module VORLON {
 
     //Register the plugin with vorlon core
     Core.RegisterDashboardPlugin(new WebStandardsDashboard());
+    
+    class WebStandardsRulesPanel{
+        element : HTMLElement;
+        detailpanel: WebStandardsRuleDetailPanel;
+        selectedRuleElt: HTMLElement;
+
+        constructor(element: Element, detailpanel : WebStandardsRuleDetailPanel){
+            this.element = <HTMLElement>element;
+            this.detailpanel = detailpanel;    
+        }
+        
+        setRules(analyse){
+            console.log("RENDER ANALYSE");
+            console.log(analyse);
+            this.element.innerHTML = "";
+            this.renderRules(analyse.results.rules, this.element, 1);
+        }
+        
+        renderRules(rules, parent : HTMLElement, level : number){
+            for (var n in rules){
+                this.renderRule(n, rules[n], parent, level);
+            }
+        }
+
+        renderRule(name: string, rule, parent: HTMLElement, level: number) {
+            var ruleitem = new FluentDOM('DIV', 'rule level' + level, parent);
+            ruleitem.append('DIV', 'title', (title) => {
+                title.text(rule.title || name);
+                if (rule.rules) {
+                    title.click(() => {
+                        ruleitem.toggleClass("collapsed");
+                        ruleitem.toggleClass("expanded");
+                    });
+                }
+                else {
+                    title.click(() => {
+                        if (this.selectedRuleElt) {
+                            this.selectedRuleElt.classList.remove("selected");
+                        }
+                        ruleitem.element.classList.add("selected");
+                        this.selectedRuleElt = ruleitem.element;
+                        this.detailpanel.setRule(rule);
+                    });
+                }
+            });
+
+            if (rule.rules) {
+                ruleitem.addClass("collapsible");
+                ruleitem.addClass("collapsed");
+                ruleitem.append('DIV', 'childs', (childs) => {
+                    this.renderRules(rule.rules, childs.element, level + 1);
+                });
+            }
+        }
+    }
+    
+    class WebStandardsRuleDetailPanel{
+        element : HTMLElement;
+        
+        constructor(element: Element){
+            this.element = <HTMLElement>element;  
+        }
+
+        setRule(rule) {
+            this.element.innerHTML = "";
+            var fluent = FluentDOM.forElement(this.element);
+            fluent.append("DIV", "ruledetailpanel-content", (content) => {
+                content.append("H1", "title", (title) => {
+                    title.text(rule.title);
+                });
+
+                if (rule.description) {
+                    content.append("DIV", "description", (desc) => {
+                        desc.text(rule.description);
+                    });
+                }
+
+                if (rule.items && rule.items.length) {
+                    content.append("DIV", "items", (itemselt) => {
+                        rule.items.forEach((item) => {
+                            this.renderItem(item, itemselt);
+                        });
+                    });
+                }
+            });
+        }
+
+        renderItem(item, parent: FluentDOM) {
+            parent.append("DIV", "item", (itemelt) => {
+                if (item.type) {
+                    itemelt.addClass(item.type);
+                }
+                if (item.title) {
+                    itemelt.createChild("DIV", "title").html(item.title);
+                }
+                if (item.message) {
+                    itemelt.createChild("DIV", "message").html(item.message);
+                }
+                if (item.content) {
+                    itemelt.createChild("DIV", "content").html(item.content);
+                }
+
+                if (item.items && item.items.length) {
+                    itemelt.append("DIV", "items", (itemselt) => {
+                        item.items.forEach((item) => {
+                            this.renderItem(item, itemselt);
+                        });
+                    });
+                }
+            });
+        }
+    }
 }

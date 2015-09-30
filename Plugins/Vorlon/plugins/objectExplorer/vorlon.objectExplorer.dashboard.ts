@@ -233,7 +233,7 @@
 
         public render(elt?: FluentDOM) {
             if (!elt)
-                elt = FluentDOM.for(this.element);
+                elt = FluentDOM.forElement(this.element);
 
             this.clear();
 

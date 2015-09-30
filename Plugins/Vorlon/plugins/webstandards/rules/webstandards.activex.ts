@@ -1,7 +1,8 @@
 module VORLON.WebStandards.Rules.DOM {
     export var dontUsePlugins = <IDOMRule>{
         id: "webstandards.dont-use-plugins",
-        title: "",
+        title: "object and embed",
+        description : "With HTML5 embed or object tags can often be replaced with HTML5 features.",
         nodeTypes: ["EMBED", "OBJECT"],
         check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlString: string) {
             console.log("check for plugins");
@@ -20,17 +21,17 @@ module VORLON.WebStandards.Rules.DOM {
             rulecheck.items = rulecheck.items || [];             
             if (source.indexOf(".swf") > 0 || data.indexOf("swf") > 0){
                 rulecheck.failed = true;
-                rulecheck.items.push({ message: "think about using HTML5 instead of Flash", content : (<HTMLElement>node).outerHTML })
+                rulecheck.items.push({ message: "think about using HTML5 instead of Flash", content : VORLON.Tools.htmlToString((<HTMLElement>node).outerHTML) })
             }
             else if (type.indexOf("silverlight") > 0){
                 rulecheck.failed = true;
-                rulecheck.items.push({ message: "think about using HTML5 instead of Silverlight", content : (<HTMLElement>node).outerHTML })
+                rulecheck.items.push({ message: "think about using HTML5 instead of Silverlight", content : VORLON.Tools.htmlToString((<HTMLElement>node).outerHTML) })
             } else if (source.indexOf(".svg") > 0 || data.indexOf("svg") > 0) {
                 rulecheck.failed = true;
-                rulecheck.items.push({ message: "dont't use SVG with " + node.nodeType, content : (<HTMLElement>node).outerHTML })
+                rulecheck.items.push({ message: "dont't use SVG with " + node.nodeType, content : VORLON.Tools.htmlToString((<HTMLElement>node).outerHTML) })
             } else {
                 rulecheck.failed = true;
-                rulecheck.items.push({ message: "use HTML5 instead of embed or object elements", content : (<HTMLElement>node).outerHTML })
+                rulecheck.items.push({ message: "use HTML5 instead of embed or object elements", content : VORLON.Tools.htmlToString((<HTMLElement>node).outerHTML) })
             }
         }
     }
