@@ -194,6 +194,14 @@ a {
 .btn.btn-secondary:hover {
   background: #b8b8b8;
 }
+.btn.btn-secondary1 {
+  background: #ccc;
+  color: #444;
+  visibility: hidden;
+}
+.btn.btn-secondary1:hover {
+  background: #b8b8b8;
+}
 .btn.btn-small {
   padding: 2px 5px;
   font-size: 90%;

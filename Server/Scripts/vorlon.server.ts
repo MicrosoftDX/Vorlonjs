@@ -498,6 +498,39 @@ export module VORLON {
                 }
             });
 
+            socket.on("reload",(message: string) => {
+                //this._log.warn("DASHBOARD reload " + message);
+                var receiveMessage = <VorlonMessage>JSON.parse(message);
+                var metadata = receiveMessage.metadata;
+
+                //if client listen by dashboard send reload to selected client
+                if (metadata.listenClientId !== "") {
+                    this._log.info(formatLog("DASHBOARD", "Client selected for :" + metadata.listenClientId, receiveMessage));
+                    var session = this.sessions[metadata.sessionId];
+                    if (session != undefined) {
+                        this._log.info(formatLog("DASHBOARD", "Change currentClient " + metadata.clientId, receiveMessage));
+                        session.currentClientId = metadata.listenClientId;
+
+                        for (var clientId in session.connectedClients) {
+                            var client = session.connectedClients[clientId]
+                            if (client.clientId === metadata.listenClientId) {
+                                if (client.socket != null) {
+                                    this._log.info(formatLog("DASHBOARD", "Send reload to socketid :" + client.socket.id, receiveMessage));
+                                    client.socket.emit("reload", metadata.listenClientId);
+                                    
+                                }
+                            }
+                            else {
+                                this._log.info(formatLog("DASHBOARD", "Wait for socketid (" + client.socket.id + ")", receiveMessage));
+                            }
+                        }
+                    }
+                }
+                else {
+                    this._log.info(formatLog("DASHBOARD", "No client selected for this dashboard"));
+                }
+            });
+
             socket.on("protocol",(message: string) => {
                 //this._log.warn("DASHBOARD protocol " + message);
                 var receiveMessage = <VorlonMessage>JSON.parse(message);
