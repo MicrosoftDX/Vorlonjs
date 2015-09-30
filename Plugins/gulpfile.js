@@ -57,11 +57,17 @@ gulp.task('scripts-noplugin', ['typescript-to-js'], function() {
 
 });
 
+gulp.task('concat-webstandards-rules', ['typescript-to-js'], function () {
+	return gulp.src(['./release/**/webstandards/rules/*.js', './release/**/webstandards/dashboard.js'])
+		.pipe(concat('vorlon.webstandards.dashboard.js'))
+		.pipe(gulp.dest('release/plugins/webstandards/'));
+});
+
 /**
  * Minify all plugins.
  * Do not hesitate to update it if you need to add your own files.
  */
-gulp.task('scripts', ['typescript-to-js'], function () {
+gulp.task('scripts', ['concat-webstandards-rules'], function () {
     return gulp.src([
             './**/vorlon.interactiveConsole.interfaces.js',
             './**/vorlon.interactiveConsole.client.js',
