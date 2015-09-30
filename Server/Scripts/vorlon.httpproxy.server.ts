@@ -18,6 +18,7 @@ export module VORLON {
         private _server = null;
         private _proxyPort = 5050;
         private _proxyCookieName = "vorlonProxyTarget";
+        private _vorlonScript = "vorlon.max.js";
         private baseURLConfig: baseURLConfig.VORLON.BaseURLConfig;
         
         constructor() {
@@ -26,11 +27,14 @@ export module VORLON {
         }
         
         private insertVorlonScript(str: string, uri, _script: string, vorlonsessionid:string) {
-            var position = str.indexOf("<head>");
-            if (position > 0){
-                position = position + 6;
+            var position = str.indexOf("<head");            
+            if (position > 0) {
+                var closing = str.indexOf(">", position) + 1;
+                
                 console.log("PROXY Injert vorlon script in website with SESSIONID " + vorlonsessionid);
-                str = str.substr(0, position) + " " + _script + str.substr(position);
+                var beforehead = str.substr(0, closing);
+                var afterhead =  str.substr(closing);
+                str = beforehead + " " + _script + afterhead;
             }
             return str;
         }
@@ -43,16 +47,59 @@ export module VORLON {
             app.get("/HttpProxy/inject", this.inject());
             this._server = express();
             this._server.use(cookieParser());
-            this._server.use("/vorlonproxy", this.proxyForTarget());
+            this._server.use("/vorlonproxy/root.html", this.proxyForTarget());
+            this._server.use("/vorlonproxy/*", this.proxyForRelativePath());
             this._server.use("/", this.proxyForRootDomain());
             http.createServer(this._server).listen(this._proxyPort, () => {
                 console.log("Vorlon.js proxy started on port " + this._proxyPort);
             });
             this._proxy.on("error", this.proxyError);
             this._proxy.on("proxyRes", this.proxyResult.bind(this));
+            this._proxy.on("proxyReq", this.proxyRequest.bind(this));
         }
         
         //Routes
+        private proxyForRelativePath() {
+            return (req: express.Request, res: express.Response) => {
+                //disable accept-encoding
+                req.headers["accept-encoding"] = "";
+                                
+                res.setHeader("Content-Type", "text/plain");
+                
+                var cookieUrl = req.cookies[this._proxyCookieName];
+                var targetProxyUrl = (<any>req).baseUrl.substr("/vorlonproxy/".length);                                
+                // var idx = targetProxyUrl.lastIndexOf('/');
+                // if (idx > -1){
+                //     targetProxyUrl = targetProxyUrl.substr(0, idx+1);
+                // }else{
+                //     targetProxyUrl = "";
+                // }
+                
+                if (cookieUrl){
+                    var uri = url.parse(cookieUrl);
+                    var target = uri.href;
+                                            
+                    if (targetProxyUrl) {
+                        if (target[target.length-1] != '/')
+                            target = target + '/';
+                        
+                        target = target + targetProxyUrl;
+                    }
+                    console.log("PROXY RELATIVE REQUEST from target " + target + " for " + (<any>req).baseUrl);
+                    var opt = <any>{
+                        target: target,
+                        changeOrigin: true
+                    };
+                    if (target.indexOf("https:") === 0){
+                        opt.secure = true;
+                    }
+                    this._proxy.web(req, res, opt);
+                }else{
+                    console.warn("PROXY RELATIVE REQUEST but no target for " + (<any>req).baseUrl);
+                }
+            };
+        }        
+        
         private proxyForTarget() {
             return (req: express.Request, res: express.Response) => {
                 //disable accept-encoding
@@ -66,13 +113,17 @@ export module VORLON {
                 } 
                 
                 if (targetProxyUrl){
-                    console.log("PROXY REQUEST from target " + targetProxyUrl)
-                    this._proxy.web(req, res, { 
+                    console.log("PROXY REQUEST from target " + targetProxyUrl + " for " + (<any>req).baseUrl);
+                    var opt = <any>{
                         target: targetProxyUrl,
                         changeOrigin: true
-                    });
+                    };
+                    if (targetProxyUrl.indexOf("https:") === 0){
+                        opt.secure = true;
+                    }
+                    this._proxy.web(req, res, opt);
                 }else{
-                    console.warn("PROXY REQUEST but no target");
+                    console.warn("PROXY REQUEST but no target" + " for " + (<any>req).baseUrl);
                 }
             };
         }
@@ -90,10 +141,14 @@ export module VORLON {
                     var uri = url.parse(cookieUrl);
                     var target = uri.protocol + "//" + uri.hostname;
                     console.log("PROXY REQUEST for root http domain " + target)
-                    this._proxy.web(req, res, { 
+                    var opt = <any>{
                         target: target,
                         changeOrigin: true
-                    });
+                    };
+                    if (target.indexOf("https:") === 0){
+                        opt.secure = true;
+                    }
+                    this._proxy.web(req, res, opt);
                 }else{
                     console.warn("PROXY REQUEST from root but no cookie...");
                 }
@@ -111,7 +166,7 @@ export module VORLON {
                 var uri = url.parse(req.query.url);
                 //res.cookie(this._proxyCookieName, uri.protocol + "//" + uri.hostname);
                 console.log("request for proxiing " + uri.hostname + " to port " + this._proxyPort)
-                res.end("http://localhost:" + this._proxyPort + "/vorlonproxy?targeturl=" + encodeURIComponent(req.query.url)); 
+                res.end("http://localhost:" + this._proxyPort + "/vorlonproxy/root.html?targeturl=" + encodeURIComponent(req.query.url)); 
             };
         }
         
@@ -127,9 +182,22 @@ export module VORLON {
             res.end(JSON.stringify(json));
         }
         
+        private proxyRequest(proxyReq, req: express.Request, res: express.Response, opt) {
+            var e = proxyReq;
+            if (proxyReq.path[proxyReq.path.length-1] == "/"){
+                proxyReq.path = proxyReq.path.substr(0, proxyReq.path.length-1);
+            }
+            console.log("PROXY ISSUING REQUEST TO " + proxyReq.path);
+        }
+        
         private proxyResult(proxyRes, req: express.Request, res: express.Response) {
             var port = process.env.PORT || 1337;
             var _proxy = this;
+            
+            if (proxyRes.statusCode >= 300){
+                console.warn("received status " + proxyRes.statusCode + " " + proxyRes.statusMessage);
+                console.warn(proxyRes.req._header);
+            }
             
             if (proxyRes.headers && proxyRes.headers["content-type"] && proxyRes.headers["content-type"].match("text/html")) {
                 var targetProxyUrl = req.query.targeturl;                
@@ -148,7 +216,7 @@ export module VORLON {
                 var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
                 var match = uri.href.match(pat); 
                 var vorlonsessionid = match[2];
-                var _script = "<script src=\"http://localhost:" + port + "/vorlon.js/"+ vorlonsessionid +"/\"></script>"
+                var _script = "<script src=\"http://localhost:" + port + "/" + this._vorlonScript + "/"+ vorlonsessionid +"/\"></script>"
                 var chunks, end = res.end, writeHead = res.writeHead, write = res.write;
                 
                 

@@ -18,8 +18,15 @@ module VORLON {
             // override this method with cleanup work that needs to happen
             // as the user switches between clients on the dashboard
 
-
             if (typeof verge === 'undefined' || typeof res === 'undefined') {
+                return;
+            }
+            
+            //sometimes refresh is called before document was loaded
+            if (!document.body){
+                setTimeout(() => {
+                   this.refresh(); 
+                }, 200);
                 return;
             }
 

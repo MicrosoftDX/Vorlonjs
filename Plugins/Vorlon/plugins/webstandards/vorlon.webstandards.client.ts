@@ -1,11 +1,12 @@
 module VORLON {
     export class WebStandardsClient extends ClientPlugin {
-
+        public sendedHTML : string;
+        
         constructor() {
             super("webstandards");
             this._id = "WEBSTANDARDS";
             this._ready = true;
-            //this.debug = true;
+            this.debug = true;
             console.log('Web Standards started');
         }
 
@@ -19,12 +20,74 @@ module VORLON {
         public startClientSide(): void {
             
         }
+        
+        public startNewAnalyse(): void {
+            var allHTML = document.documentElement.outerHTML;
+            this.sendedHTML = allHTML;
+            
+            var doctype : any;            
+            var node = document.doctype;
+            
+            if (node){
+                var doctypeHtml = "<!DOCTYPE "
+                + node.name
+                + (node.publicId ? ' PUBLIC "' + node.publicId + '"' : '')
+                + (!node.publicId && node.systemId ? ' SYSTEM' : '') 
+                + (node.systemId ? ' "' + node.systemId + '"' : '')
+                + '>';
+                doctype = {
+                    html : doctypeHtml,
+                    name : node.name,
+                    publicId : node.publicId,
+                    systemId : node.systemId
+                }
+            }
+            
+            this.sendCommandToDashboard("htmlContent", { html : allHTML, doctype: doctype});
+        }
+        
+        public fetchDocument(data: { url : string }){
+            var xhr = null;
+            if (!data || !data.url){
+                this.trace("invalid fetch request");
+                return;                
+            }
+            
+            this.trace("fetching " + data.url);
+            try
+            {
+                xhr = new XMLHttpRequest(); 
+                xhr.onreadystatechange = () => { 
+                    if(xhr.readyState == 4)
+                    {
+                        if(xhr.status == 200)
+                        { 
+                            this.sendCommandToDashboard("documentContent", { url : data.url, status : xhr.status, content : xhr.responseText });
+                        } 
+                        else 
+                        { 
+                            this.sendCommandToDashboard("documentContent", { url : data.url, status : xhr.status, content : null, error :  xhr.statusText });
+                        } 
+                    } 
+                };
+                xhr.open("GET", data.url, true);                
+                xhr.send(null); 
+            } catch(e)
+            { 
+                this.sendCommandToDashboard("documentContent", { url : data.url, status : 0, content : null, error : e.message });
+            }
+        }                    
     }
     
     WebStandardsClient.prototype.ClientCommands = {
-        example: function (data: any) {
+        startNewAnalyse: function (data: any) {
             var plugin = <WebStandardsClient>this;
-            //
+            plugin.startNewAnalyse();
+        },
+        
+        fetchDocument : function(data: any){
+            var plugin = <WebStandardsClient>this;
+            plugin.fetchDocument(data);
         }
     };
 
