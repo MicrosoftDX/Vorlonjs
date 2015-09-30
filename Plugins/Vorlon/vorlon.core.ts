@@ -24,7 +24,7 @@
         public get DashboardPlugins(): Array<DashboardPlugin> {
             return Core._dashboardPlugins;
         }
-
+        
         public RegisterClientPlugin(plugin: ClientPlugin): void {
             Core._clientPlugins.push(plugin);
         }
@@ -98,7 +98,7 @@
                 this.startClientDirtyCheck();
             }, 500);
         }
-
+        
         public startClientDirtyCheck() {
             //sometimes refresh is called before document was loaded
             if (!document.body){
