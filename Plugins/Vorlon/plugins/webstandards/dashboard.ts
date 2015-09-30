@@ -162,6 +162,10 @@ module VORLON {
 
         analyseDOMNode(node: Node, rules: any, analyse, htmlContent : string) {
             //console.log("checking " + node.nodeName);
+            if (node.nodeName === "STYLE"){
+                this.analyseCssDocument("inline", (<HTMLElement>node).innerHTML, analyse);    
+            }
+            
             var specificRules = rules.domRulesIndex[node.nodeName];
             if (specificRules && specificRules.length) {
                 console.log((specificRules.length + rules.domRulesForAllNodes.length) + " rules");
