@@ -236,7 +236,7 @@ module VORLON {
                              DashboardManager.loadPlugins();
                         }
                         
-                        if(!contains && !Core.IsDashboardStarted) {
+                        if(!contains) {
                             var getUrl = window.location;
                             var baseUrl = getUrl.protocol + "//" + getUrl.host;
                             Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, "", DashboardManager.divMapper);
