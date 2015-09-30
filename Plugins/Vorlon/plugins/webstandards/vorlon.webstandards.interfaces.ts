@@ -20,4 +20,9 @@ module VORLON {
 		file: string;
 		testName: string;		
 	}
+	
+	export interface ResultCSSPrefixe {
+		prefixesMissing: Array<any>;
+		selector: string;
+	}
 }
