@@ -43,7 +43,7 @@ module VORLON {
             var divPluginBottomTabs = <HTMLDivElement> document.getElementById("pluginsListPaneBottom");
             var divPluginTopTabs = <HTMLDivElement> document.getElementById("pluginsListPaneTop");
             var coreLoaded = false;
-            
+              
             //Hide waiting page and let's bounce the logo !
             var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
             VORLON.Tools.RemoveClass(elt, 'hidden');
@@ -197,7 +197,7 @@ module VORLON {
                                 }
                             }
                         }
-                        
+                                               
                         //Show waiting logo 
                         if(!contains || !DashboardManager.DisplayingClient || clients.length === 0){
                             var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
@@ -206,7 +206,7 @@ module VORLON {
                                                
                         //if not client, reset the dashboard without reloading the page
                         if (clients.length === 0) {
-                            DashboardManager.ResetDashboard(false);
+                            DashboardManager.ResetDashboard(DashboardManager.DisplayingClient);
                         }
                         
                         for (var i = 0; i < clients.length; i++) {
@@ -236,7 +236,7 @@ module VORLON {
                              DashboardManager.loadPlugins();
                         }
                         
-                        if(!contains && clients.length === 0) {
+                        if(!contains && !Core.IsDashboardStarted) {
                             var getUrl = window.location;
                             var baseUrl = getUrl.protocol + "//" + getUrl.host;
                             Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, "", DashboardManager.divMapper);
