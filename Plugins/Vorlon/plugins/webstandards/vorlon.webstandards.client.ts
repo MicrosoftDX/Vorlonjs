@@ -62,7 +62,8 @@ module VORLON {
                     {
                         if(xhr.status == 200)
                         { 
-                            this.sendCommandToDashboard("documentContent", { url : data.url, status : xhr.status, content : xhr.responseText });
+                            var encoding = xhr.getResponseHeader("Content-Encoding");
+                            this.sendCommandToDashboard("documentContent", { url : data.url, status : xhr.status, content : xhr.responseText, encoding : encoding });
                         } 
                         else 
                         { 

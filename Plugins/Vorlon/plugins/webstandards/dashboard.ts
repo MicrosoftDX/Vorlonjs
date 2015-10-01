@@ -3,8 +3,9 @@ declare var cssjs: any;
 module VORLON {
     var _webstandardsRefreshLoop;
     var rulesLabels = {
-        "webstandards" : "Best practices",
-        "accessibility" : "Accessibility"
+        "webstandards" : "Web standards",
+        "accessibility" : "Accessibility",
+        "performances" : "Performances"
     }
 
     export class WebStandardsDashboard extends DashboardPlugin {
@@ -37,7 +38,7 @@ module VORLON {
                 this._startCheckButton.addEventListener("click", (evt) => {
                     this._currentAnalyse = { processing: true };
                     this._rootDiv.classList.add("loading");
-                    this._rulesPanel.clear();
+                    this._rulesPanel.clear("analyse in progress...");
                     this.sendCommandToClient('startNewAnalyse');
                 });
 
@@ -56,6 +57,7 @@ module VORLON {
             if (this._currentAnalyse.processing) {
 
             } else {
+                this.endAnalyse(this._currentAnalyse);
                 this._rootDiv.classList.remove("loading");
                 this._currentAnalyse.ended = true;
                 this._ruleDetailPanel.setMessage("click on a rule in the result panel to show details");
@@ -78,11 +80,14 @@ module VORLON {
             for (var i = 0; i < scripts.length; i++) {
                 var s = scripts[i];
                 var src = s.attributes.getNamedItem("src");
-                if (src) {
-                    this._currentAnalyse.scripts[src.value] = { loaded: false, content: null };
-                    //console.log("found script " + src.value);
-                    this.sendCommandToClient('fetchDocument', { url: src.value });
-                    this._currentAnalyse.pendingLoad++;
+                if (src && src.value) {                    
+                    var isVorlon = src.value.indexOf('vorlon.js') > 0 || src.value.indexOf('vorlon.min.js') > 0 || src.value.indexOf('vorlon.max.js') > 0;
+                    if (!isVorlon){ 
+                        this._currentAnalyse.scripts[src.value] = { loaded: false, content: null };
+                        //console.log("found script " + src.value);
+                        this.sendCommandToClient('fetchDocument', { url: src.value });
+                        this._currentAnalyse.pendingLoad++;
+                    }
                 }
             }
 
@@ -105,14 +110,19 @@ module VORLON {
         receiveDocumentContent(data: { url: string, content: string, error?: string, status: number }) {
             //console.log("document loaded " + data.url + " " + data.status);
             var item = null;
+            
             if (this._currentAnalyse.stylesheets[data.url]) {
                 item = this._currentAnalyse.stylesheets[data.url];
                 if (data.content) {
                     this.analyseCssDocument(data.url, data.content, this._currentAnalyse);
                 }
             }
+            
             if (this._currentAnalyse.scripts[data.url]) {
                 item = this._currentAnalyse.scripts[data.url];
+                if (data.content) {
+                    this.analyseJsDocument(data.url, data.content, this._currentAnalyse);
+                }
             }
 
             if (item) {
@@ -128,6 +138,7 @@ module VORLON {
 
         analyseDOM(document: HTMLDocument, htmlContent : string, analyse) {
             var generalRules = [];
+            var commonRules = [];
             var rules = {
                 domRulesIndex: <any>{},
                 domRulesForAllNodes: []
@@ -141,6 +152,7 @@ module VORLON {
                     if (rule.generalRule) {
                         generalRules.push(rule);
                     } else {
+                        commonRules.push(rule);
                         //console.log("indexing " + rule.id);
                         if (rule.nodeTypes.length) {
                             rule.nodeTypes.forEach(function(n) {
@@ -159,9 +171,16 @@ module VORLON {
 
             this.analyseDOMNode(document, rules, analyse, htmlContent);
             
-            generalRules.forEach((r) => {
-                this.applyDOMNodeRule(document, r, analyse, htmlContent);
+            generalRules.forEach((rule) => {
+                this.applyDOMNodeRule(document, rule, analyse, htmlContent);
             });
+            
+            commonRules.forEach((rule) => {
+                if (rule.endcheck){
+                    var current = this.initialiseRuleSummary(rule, analyse);
+                    rule.endcheck(current, analyse);
+                }
+            })
             console.log("DOM NODES ANALYSE ended")
             console.log(analyse.results)
         }
@@ -170,6 +189,16 @@ module VORLON {
             //console.log("checking " + node.nodeName);
             if (node.nodeName === "STYLE"){
                 this.analyseCssDocument("inline", (<HTMLElement>node).innerHTML, analyse);    
+            }
+            
+            if (node.nodeName === "SCRIPT"){
+                var domnode = <HTMLElement>node;
+                var scriptType = domnode.getAttribute("type");
+                var hasContent = domnode.innerHTML.trim().length > 0;
+                
+                if (!scriptType || scriptType == "text/javascript" && hasContent){
+                    this.analyseJsDocument("inline", domnode.innerHTML, analyse);
+                }    
             }
             
             var specificRules = rules.domRulesIndex[node.nodeName];
@@ -229,25 +258,50 @@ module VORLON {
             var parser = new cssjs();
             //parse css string
             var parsed = parser.parseCSS(content);
-            console.log("processed css");
-            console.log(parsed);
+            console.log("processing css " + url);
                         
             //we index rules based on target node types
             for (var n in VORLON.WebStandards.Rules.CSS) {
-                var rule = <IDOMRule>VORLON.WebStandards.Rules.CSS[n];
+                var rule = <ICSSRule>VORLON.WebStandards.Rules.CSS[n];
                 if (rule) {
-                    this.applyCSSRule(url, parsed, rule, analyse);
+                    var current = this.initialiseRuleSummary(rule, analyse);            
+                    rule.check(url, parsed, current, analyse);
                 }
             }
 
             console.log("analysed");
             console.log(analyse);
         }
-
-        applyCSSRule(fileurl, ast, rule, analyse) {
-            var current = this.initialiseRuleSummary(rule, analyse);
+        
+        analyseJsDocument(url, content, analyse) {
+            console.log("processing script " + url);
+            for (var n in VORLON.WebStandards.Rules.JavaScript) {
+                var rule = <IScriptRule>VORLON.WebStandards.Rules.JavaScript[n];
+                if (rule) {
+                    var current = this.initialiseRuleSummary(rule, analyse);            
+                    rule.check(url, content, current, analyse);
+                }
+            }
+        }
+        
+        endAnalyse(analyse){
+            for (var n in VORLON.WebStandards.Rules.CSS) {
+                var cssrule = <ICSSRule>VORLON.WebStandards.Rules.CSS[n];
+                if (cssrule) {
+                    var current = this.initialiseRuleSummary(cssrule, analyse);            
+                    if (cssrule.endcheck)            
+                        cssrule.endcheck(current, analyse);
+                }
+            }
             
-            rule.check(fileurl, ast, current, analyse);
+            for (var n in VORLON.WebStandards.Rules.JavaScript) {
+                var scriptrule = <IScriptRule>VORLON.WebStandards.Rules.JavaScript[n];
+                if (scriptrule) {
+                    var current = this.initialiseRuleSummary(scriptrule, analyse);
+                    if (scriptrule.endcheck)            
+                        scriptrule.endcheck(current, analyse);
+                }
+            }
         }
     }
 
@@ -294,13 +348,15 @@ module VORLON {
             var items = [];
             for (var n in rules){
                 var rule = rules[n];
-                if (!rule.title){
-                    rule.title = rulesLabels[rule.id];
-                }
-                if (!rule.title){
-                    rule.title = n;
-                }
-                items.push(rule);                
+                if (rule.rules || rule.failed){
+                    if (!rule.title){
+                        rule.title = rulesLabels[rule.id];
+                    }
+                    if (!rule.title){
+                        rule.title = n;
+                    }
+                    items.push(rule);              
+                }  
             }
             
             items.sort(function(a, b){

@@ -4,6 +4,7 @@ module VORLON {
 		title : string;
 		nodeTypes : string[];
 		check : any;
+		endcheck? : any;
 		generalRule? : boolean;
 		description?: string;
 	}
@@ -12,17 +13,15 @@ module VORLON {
 		id: string;
 		title : string;
 		check : any;
+		endcheck? : any;
 		description?: string;
 	}
 	
-	export interface DataResult {
-		lineNumber: number;
-		file: string;
-		testName: string;		
-	}
-	
-	export interface ResultCSSPrefixe {
-		prefixesMissing: Array<any>;
-		selector: string;
-	}
+	export interface IScriptRule{
+		id: string;
+		title : string;
+		check : any;
+		endcheck? : any;
+		description?: string;
+	}		
 }
