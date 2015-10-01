@@ -2,6 +2,10 @@ declare var cssjs: any;
 
 module VORLON {
     var _webstandardsRefreshLoop;
+    var rulesLabels = {
+        "webstandards" : "Best practices",
+        "accessibility" : "Accessibility"
+    }
 
     export class WebStandardsDashboard extends DashboardPlugin {
         constructor() {
@@ -33,6 +37,7 @@ module VORLON {
                 this._startCheckButton.addEventListener("click", (evt) => {
                     this._currentAnalyse = { processing: true };
                     this._rootDiv.classList.add("loading");
+                    this._rulesPanel.clear();
                     this.sendCommandToClient('startNewAnalyse');
                 });
 
@@ -53,6 +58,7 @@ module VORLON {
             } else {
                 this._rootDiv.classList.remove("loading");
                 this._currentAnalyse.ended = true;
+                this._ruleDetailPanel.setMessage("click on a rule in the result panel to show details");
                 this._rulesPanel.setRules(this._currentAnalyse);
             }
         }
@@ -267,26 +273,49 @@ module VORLON {
 
         constructor(element: Element, detailpanel : WebStandardsRuleDetailPanel){
             this.element = <HTMLElement>element;
+            this.element.style.display = "none";
             this.detailpanel = detailpanel;    
+        }
+        
+        clear(msg){
+            this.element.style.display = "none";
+            this.detailpanel.clear();
         }
         
         setRules(analyse){
             console.log("RENDER ANALYSE");
             console.log(analyse);
+            this.element.style.display = "";
             this.element.innerHTML = "";
             this.renderRules(analyse.results.rules, this.element, 1);
         }
         
         renderRules(rules, parent : HTMLElement, level : number){
+            var items = [];
             for (var n in rules){
-                this.renderRule(n, rules[n], parent, level);
+                var rule = rules[n];
+                if (!rule.title){
+                    rule.title = rulesLabels[rule.id];
+                }
+                if (!rule.title){
+                    rule.title = n;
+                }
+                items.push(rule);                
             }
+            
+            items.sort(function(a, b){
+                return a.title.localeCompare(b.title);
+            })
+            
+            items.forEach((rule) =>{
+                this.renderRule(rule, parent, level);
+            })
         }
 
-        renderRule(name: string, rule, parent: HTMLElement, level: number) {
+        renderRule(rule, parent: HTMLElement, level: number) {
             var ruleitem = new FluentDOM('DIV', 'rule level' + level, parent);
-            ruleitem.append('DIV', 'title', (title) => {
-                title.text(rule.title || name);
+            ruleitem.append('DIV', 'title', (title) => {                
+                title.text(rule.title);
                 if (rule.rules) {
                     title.click(() => {
                         ruleitem.toggleClass("collapsed");
@@ -369,6 +398,14 @@ module VORLON {
                     });
                 }
             });
+        }
+        
+        clear(){
+            this.setMessage("loading...");  
+        }
+        
+        setMessage(msg){
+            this.element.innerHTML = '<div class="empty">' + msg + '</div>';
         }
     }
 }
