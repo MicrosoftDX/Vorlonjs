@@ -12,14 +12,16 @@ declare module VORLON {
         static AddClass(e: HTMLElement, name: string): HTMLElement;
         static RemoveClass(e: HTMLElement, name: string): HTMLElement;
         static ToggleClass(e: HTMLElement, name: string, callback?: (hasClass: boolean) => void): void;
+        static htmlToString(text: any): any;
     }
     class FluentDOM {
         element: HTMLElement;
         childs: Array<FluentDOM>;
         parent: FluentDOM;
         constructor(nodeType: string, className?: string, parentElt?: Element, parent?: FluentDOM);
-        static for(element: HTMLElement): FluentDOM;
+        static forElement(element: HTMLElement): FluentDOM;
         addClass(classname: string): FluentDOM;
+        toggleClass(classname: string): FluentDOM;
         className(classname: string): FluentDOM;
         opacity(opacity: string): FluentDOM;
         display(display: string): FluentDOM;

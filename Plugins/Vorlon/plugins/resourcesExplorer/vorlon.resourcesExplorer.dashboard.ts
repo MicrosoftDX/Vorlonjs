@@ -13,7 +13,7 @@
         private _containerSessionStorage: HTMLElement;
         private _containerCookies: HTMLElement;
         public startDashboardSide(div: HTMLDivElement = null): void {
-            this._insertHtmlContentAsync(div,(filledDiv) => {
+            this._insertHtmlContentAsync(div, (filledDiv) => {
                 this._containerLocalStorage = Tools.QuerySelectorById(div, "localStorageList");
                 this._containerSessionStorage = Tools.QuerySelectorById(div, "sessionStorageList");
                 this._containerCookies = Tools.QuerySelectorById(div, "cookiesList");
@@ -21,41 +21,52 @@
         }
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-            for (var i = 0; i < receivedObject.localStorageList.length; i++) {
-                var tr = document.createElement('tr');
-                var tdKey = document.createElement('td');
-                var tdValue = document.createElement('td');
+            if (!receivedObject)
+                return;
 
-                tdKey.innerHTML = receivedObject.localStorageList[i].key;
-                tdValue.innerHTML = receivedObject.localStorageList[i].value;
+            if (receivedObject.localStorageList) {
+                for (var i = 0; i < receivedObject.localStorageList.length; i++) {
+                    var tr = document.createElement('tr');
+                    var tdKey = document.createElement('td');
+                    var tdValue = document.createElement('td');
 
-                tr.appendChild(tdKey);
-                tr.appendChild(tdValue);
-                this._containerLocalStorage.appendChild(tr);
+                    tdKey.innerHTML = receivedObject.localStorageList[i].key;
+                    tdValue.innerHTML = receivedObject.localStorageList[i].value;
+
+                    tr.appendChild(tdKey);
+                    tr.appendChild(tdValue);
+                    this._containerLocalStorage.appendChild(tr);
+                }
             }
-            for (var i = 0; i < receivedObject.sessionStorageList.length; i++) {
-                var tr = document.createElement('tr');
-                var tdKey = document.createElement('td');
-                var tdValue = document.createElement('td');
 
-                tdKey.innerHTML = receivedObject.sessionStorageList[i].key;
-                tdValue.innerHTML = receivedObject.sessionStorageList[i].value;
+            if (receivedObject.sessionStorageList) {
+                for (var i = 0; i < receivedObject.sessionStorageList.length; i++) {
+                    var tr = document.createElement('tr');
+                    var tdKey = document.createElement('td');
+                    var tdValue = document.createElement('td');
 
-                tr.appendChild(tdKey);
-                tr.appendChild(tdValue);
-                this._containerSessionStorage.appendChild(tr);
+                    tdKey.innerHTML = receivedObject.sessionStorageList[i].key;
+                    tdValue.innerHTML = receivedObject.sessionStorageList[i].value;
+
+                    tr.appendChild(tdKey);
+                    tr.appendChild(tdValue);
+                    this._containerSessionStorage.appendChild(tr);
+                }
             }
-            for (var i = 0; i < receivedObject.cookiesList.length; i++) {
-                var tr = document.createElement('tr');
-                var tdKey = document.createElement('td');
-                var tdValue = document.createElement('td');
 
-                tdKey.innerHTML = receivedObject.cookiesList[i].key;
-                tdValue.innerHTML = receivedObject.cookiesList[i].value;
+            if (receivedObject.cookiesList) {
+                for (var i = 0; i < receivedObject.cookiesList.length; i++) {
+                    var tr = document.createElement('tr');
+                    var tdKey = document.createElement('td');
+                    var tdValue = document.createElement('td');
 
-                tr.appendChild(tdKey);
-                tr.appendChild(tdValue);
-                this._containerCookies.appendChild(tr);
+                    tdKey.innerHTML = receivedObject.cookiesList[i].key;
+                    tdValue.innerHTML = receivedObject.cookiesList[i].value;
+
+                    tr.appendChild(tdKey);
+                    tr.appendChild(tdValue);
+                    this._containerCookies.appendChild(tr);
+                }
             }
         }
     }

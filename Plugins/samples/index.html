@@ -4,41 +4,11 @@
     <title>Vorlon.js - Test page</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="http://localhost:1337/vorlon.max.js"></script>
+    <script src="http://code.jquery.com/jquery-1.2.js"></script>
+    <link rel="stylesheet" href="index.css" />
     <style>
-       body {
-        margin: 0;
-        padding: 50px;       
-         padding-bottom: 100px;
-        padding-top: 10px;
-        font-family: Helvetica, Arial, sans-serif;
-        color: #666;
-      }
-
-      h1, h2 {
-        margin-bottom: 0px;
-        margin-top: 40px;
-      }
-
-      h1, h2, a, a:visited {
-        color: #6C2983;
-      }
-
-      #test {
-        font-size: 18px;
-      }
-
-      .class1 {
-        color: coral;
-      }
-
-      #footer {
-        background: rgba(255, 255, 255, 0.8);
-        position: fixed;
-        bottom: 20px;
-        left: 0;
-        width: 100%;
-        text-align: center;
-        padding: 10px
+      #webstandards{
+        transform : scale(1.1);
       }
     </style>
   </head>
@@ -101,10 +71,16 @@
         </p>
     </div>
     
+    <h2>web standards and best practices</h2>
+    <p>This block is for testing several aspects of web standards and best practice checks</p>
+    <p id="webstandards">
+      <object></object>
+    </p>
+
     <div id="footer">
       Learn more about <a href="http://vorlonjs.com">Vorlon.JS</a> or find the source at <a href="http://github.com/MicrosoftDX/Vorlonjs">GitHub</a>.
     </div>
-
+    
     <script type="text/javascript">
         console.log('The sample page has loaded!');
         function intenseLog() {

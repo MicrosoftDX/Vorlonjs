@@ -203,6 +203,10 @@
                     callback(true);
             }
         }
+
+        public static htmlToString(text) {
+            return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
     }
 
     export class FluentDOM {
@@ -226,7 +230,7 @@
             }
         }
 
-        public static for(element: HTMLElement) {
+        public static forElement(element: HTMLElement) {
             var res = new FluentDOM(null);
             res.element = element;
             return res;
@@ -234,6 +238,11 @@
 
         addClass(classname: string) {
             this.element.classList.add(classname);
+            return this;
+        }
+
+        toggleClass(classname: string) {
+            this.element.classList.toggle(classname);
             return this;
         }
 

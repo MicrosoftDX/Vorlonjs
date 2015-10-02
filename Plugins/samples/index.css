@@ -1,0 +1,45 @@
+body {
+        margin: 0;
+        padding: 50px;       
+         padding-bottom: 100px;
+        padding-top: 10px;
+        font-family: Helvetica, Arial, sans-serif;
+        color: #666;
+      }
+
+      h1, h2 {
+        margin-bottom: 0px;
+        margin-top: 40px;
+      }
+
+      h1, h2, a, a:visited {
+        color: #6C2983;
+      }
+
+      #test {
+        font-size: 18px;
+      }
+
+      .class1 {
+        color: coral;
+        -webkit-transform : scale(1);
+      }
+
+      #footer {
+        background: rgba(255, 255, 255, 0.8);
+        position: fixed;
+        bottom: 20px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+        -webkit-transform : scale(1);
+        transform : scale(1);
+        transition : opacity 200ms ease-out;
+      }
+      
+@media screen and (max-width : 300px){
+        #footer{
+                transform : translate(0,0);
+        }
+}      
