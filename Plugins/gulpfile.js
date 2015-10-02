@@ -64,10 +64,35 @@ gulp.task('concat-webstandards-rules', ['typescript-to-js'], function () {
 });
 
 /**
+ * Specific task that need to be handled for specific plugins.
+ * Do not hesitate to update it if you need to add your own files
+ */
+gulp.task('scripts-specific-plugins', function() {
+    // Babylon Inspector
+    gulp.src([
+        'release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
+        'release/plugins/babylonInspector/vorlon.babylonInspector.client.js'
+    ])
+        .pipe(concat('vorlon.babylonInspector.client.min.js'))
+        .pipe(gulp.dest('release/plugins/babylonInspector/'));
+
+    gulp.src([
+        'release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
+        'release/plugins/babylonInspector/vorlon.babylonInspector.dashboard.js'
+    ])
+        .pipe(concat('vorlon.babylonInspector.dashboard.min.js'))
+        .pipe(gulp.dest('release/plugins/babylonInspector/'));
+
+});
+
+/**
  * Minify all plugins.
  * Do not hesitate to update it if you need to add your own files.
  */
 gulp.task('scripts', ['concat-webstandards-rules'], function () {
+
+    gulp.start('scripts-specific-plugins');
+    
     return gulp.src([
             './**/vorlon.interactiveConsole.interfaces.js',
             './**/vorlon.interactiveConsole.client.js',
@@ -100,11 +125,8 @@ gulp.task('scripts', ['concat-webstandards-rules'], function () {
             './**/sample/vorlon.sample.dashboard.js',
             './**/device/vorlon.device.client.js',
             './**/device/vorlon.device.dashboard.js',
-            './**/babylonInspector/vorlon.babylonInspector.interfaces.js',
-            './**/babylonInspector/vorlon.babylonInspector.client.js',
-            './**/babylonInspector/vorlon.babylonInspector.dashboard.js',
             './**/webstandards/vorlon.webstandards.client.js',
-            './**/webstandards/vorlon.webstandards.dashboard.js',
+            './**/webstandards/vorlon.webstandards.dashboard.js'
         ])
         .pipe(rename(function (path) {
                 path.extname = ".min.js";
@@ -133,6 +155,7 @@ gulp.task('copyPlugins', function () {
           'Vorlon/plugins/**/*.js',
           'Vorlon/plugins/**/*.css',
           'Vorlon/plugins/**/*.html',
+          'Vorlon/plugins/**/*.png',
           'release/plugins/**/*.js'
     ])
         .pipe(gulp.dest('../Server/public/vorlon/plugins'));
@@ -166,7 +189,7 @@ gulp.task('watch', function() {
   gulp.watch([
     'Vorlon/**/*.ts',
     'Vorlon/**/*.less',
-    'Vorlon/**/*.html',
+    'Vorlon/**/*.html'
     //'Vorlon/plugins/**/*.*',
   ], ['default']);
 });
