@@ -16,6 +16,16 @@ body {
         color: #6C2983;
       }
 
+      button{
+        display: inline-block;
+        margin-right : 5px;
+        margin-bottom: 5px;
+        background-color: #6C2983; 
+        color : white;
+        border : none;
+        padding : 0.5em 1em;
+      }
+
       #test {
         font-size: 18px;
       }
@@ -26,20 +36,38 @@ body {
       }
 
       #footer {
-        background: rgba(255, 255, 255, 0.8);
+        background: rgba(220, 220, 220, 0.9);
         position: fixed;
-        bottom: 20px;
+        bottom: 0;
         left: 0;
         width: 100%;
         text-align: center;
-        padding: 10px;
+        padding: 20px;
         -webkit-transform : scale(1);
         transform : scale(1);
         transition : opacity 200ms ease-out;
       }
-      
-@media screen and (max-width : 300px){
-        #footer{
+
+@media screen and (min-width :1280px){
+    body {
+      padding : 20px 80px 80px 80px;
+    }
+} 
+
+@media screen and (max-width : 800px){
+    body {
+      padding : 0 20px 70px 20px;
+    }
+    
+    #footer{
                 transform : translate(0,0);
-        }
+    }
 }      
+
+@media screen and (max-width : 500px){
+  button{
+    display: block;
+    margin-right: 0;
+    width : 100%;
+  }
+}

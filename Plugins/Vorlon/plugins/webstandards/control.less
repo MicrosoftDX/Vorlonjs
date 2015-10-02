@@ -24,10 +24,34 @@
             
             #webstandards-rulespanel{
                 width: 300px;
+                height : 100%;
                 max-width : 30%;
                 background-color: #EEE;
+                overflow-x: hidden;
+                overflow-y: auto;
                 
                 .rule{
+                    .state{
+                        display: inline-block;
+                        width: 22px;
+                        height : 22px;
+                        line-height: 18px;
+                        text-align: center;
+                        border-radius: 50%;
+                        border : 2px solid #999;
+                        box-sizing: border-box;
+                        margin-right : 8px;
+                        
+                        &.fa-check{
+                            color : lawngreen;
+                            border-color : lawngreen;
+                        }
+                        
+                        &.fa-close{
+                            color : indianred;
+                            border-color : indianred;
+                        }
+                    }
                     .title{
                         padding : 0.3em 1em;
                         font-size: 0.9em;

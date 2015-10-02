@@ -129,6 +129,10 @@ module VORLON {
                 this._currentAnalyse.pendingLoad--;
                 item.loaded = true;
                 item.content = data.content;
+                
+                if (data.error){
+                    item.loaded = false;
+                }
 
                 if (this._currentAnalyse.pendingLoad == 0) {
                     this._currentAnalyse.processing = false;
@@ -348,7 +352,7 @@ module VORLON {
             var items = [];
             for (var n in rules){
                 var rule = rules[n];
-                if (rule.rules || rule.failed){
+                //if (rule.rules || rule.failed){
                     if (!rule.title){
                         rule.title = rulesLabels[rule.id];
                     }
@@ -356,7 +360,7 @@ module VORLON {
                         rule.title = n;
                     }
                     items.push(rule);              
-                }  
+                //}  
             }
             
             items.sort(function(a, b){
@@ -370,8 +374,11 @@ module VORLON {
 
         renderRule(rule, parent: HTMLElement, level: number) {
             var ruleitem = new FluentDOM('DIV', 'rule level' + level, parent);
-            ruleitem.append('DIV', 'title', (title) => {                
-                title.text(rule.title);
+            ruleitem.append('DIV', 'title', (title) => {
+                if (rule.failed !== undefined){
+                    title.createChild("SPAN", "state fa " + (rule.failed ? "fa-close" : "fa-check"));
+                }                
+                title.createChild("SPAN").text(rule.title);
                 if (rule.rules) {
                     title.click(() => {
                         ruleitem.toggleClass("collapsed");
