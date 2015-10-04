@@ -6,6 +6,7 @@
     <script src="http://localhost:1337/vorlon.max.js"></script>
     <script src="http://code.jquery.com/jquery-1.2.js"></script>
     <link rel="stylesheet" href="index.css" />
+
     <style>
       #webstandards{
         transform : scale(1.1);
@@ -76,6 +77,13 @@
     <p id="webstandards">
       <object></object>
     </p>
+    <!--[if IE 6]>
+	<p>You are using Internet Explorer 6.</p>
+	<![endif]-->
+	
+	<!--[if !IE]-->
+	<p>You are not using Internet Explorer 5-9.</p>
+	<!-- <![endif]-->
 
     <div id="footer">
       Learn more about <a href="http://vorlonjs.com">Vorlon.JS</a> or find the source at <a href="http://github.com/MicrosoftDX/Vorlonjs">GitHub</a>.

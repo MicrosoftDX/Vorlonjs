@@ -70,6 +70,8 @@ module VORLON {
                 this._currentAnalyse = { processing: true };
             }
             
+            this._currentAnalyse.doctype = data.doctype;
+            
             //console.log('received html from client ', data.html);
             var fragment: HTMLDocument = document.implementation.createHTMLDocument("analyse");
             fragment.documentElement.innerHTML = data.html;
@@ -184,7 +186,7 @@ module VORLON {
             commonRules.forEach((rule) => {
                 if (rule.endcheck){
                     var current = this.initialiseRuleSummary(rule, analyse);
-                    rule.endcheck(current, analyse);
+                    rule.endcheck(current, analyse, htmlContent);
                 }
             })
             console.log("DOM NODES ANALYSE ended")
@@ -207,7 +209,7 @@ module VORLON {
                 }    
             }
             
-            var specificRules = rules.domRulesIndex[node.nodeName];
+            var specificRules = rules.domRulesIndex[node.nodeName.toUpperCase()];
             if (specificRules && specificRules.length) {
                 console.log((specificRules.length + rules.domRulesForAllNodes.length) + " rules");
                 specificRules.forEach((r) => {
@@ -421,12 +423,12 @@ module VORLON {
             var fluent = FluentDOM.forElement(this.element);
             fluent.append("DIV", "ruledetailpanel-content", (content) => {
                 content.append("H1", "title", (title) => {
-                    title.text(rule.title);
+                    title.html(rule.title);
                 });
 
                 if (rule.description) {
                     content.append("DIV", "description", (desc) => {
-                        desc.text(rule.description);
+                        desc.html(rule.description);
                     });
                 }
 
