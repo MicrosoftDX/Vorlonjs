@@ -6,7 +6,7 @@ module VORLON {
             super("webstandards");
             this._id = "WEBSTANDARDS";
             this._ready = true;
-            //this.debug = true;
+            this.debug = true;
             console.log('Web Standards started');
         }
 
@@ -62,8 +62,10 @@ module VORLON {
                     {
                         if(xhr.status == 200)
                         { 
-                            var encoding = xhr.getResponseHeader("Content-Encoding");
-                            this.sendCommandToDashboard("documentContent", { url : data.url, status : xhr.status, content : xhr.responseText, encoding : encoding });
+                            var encoding = xhr.getResponseHeader("content-encoding");
+                            var contentLength = xhr.getResponseHeader("content-length");
+                            console.log("encoding " + encoding);
+                            this.sendCommandToDashboard("documentContent", { url : data.url, status : xhr.status, content : xhr.responseText, contentLength: contentLength, encoding : encoding });
                         } 
                         else 
                         { 

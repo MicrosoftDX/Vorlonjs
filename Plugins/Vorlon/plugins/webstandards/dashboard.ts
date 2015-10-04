@@ -107,7 +107,7 @@ module VORLON {
             this.analyseDOM(fragment, data.html, this._currentAnalyse);
         }
 
-        receiveDocumentContent(data: { url: string, content: string, error?: string, status: number }) {
+        receiveDocumentContent(data: { url: string, content: string, error?: string, encoding?:string, contentLength?:string, status: number }) {
             //console.log("document loaded " + data.url + " " + data.status);
             var item = null;
             
@@ -128,7 +128,9 @@ module VORLON {
             if (item) {
                 this._currentAnalyse.pendingLoad--;
                 item.loaded = true;
+                item.encoding = data.encoding;
                 item.content = data.content;
+                item.contentLength = data.contentLength;
                 
                 if (data.error){
                     item.loaded = false;

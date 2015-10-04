@@ -50,7 +50,7 @@ body {
   cursor: pointer;
   display: inline-block;
   font-weight: 400;
-  margin: 10px 0;
+  margin: 10px 0 0 0;
   padding: 8px 10px;
   text-align: center;
   width: 100%;
@@ -69,10 +69,6 @@ body {
 .btn-default {
   background: #ccc none repeat scroll 0 0;
   color: #444;
-}
-
-.btn + .btn {
-  margin-left: 15px;
 }
 
 .hide {

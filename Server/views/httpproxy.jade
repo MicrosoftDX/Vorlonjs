@@ -23,7 +23,9 @@ html(lang='en')
         input#url(type='text', placeholder='enter website url')
       div.button
         div.spacebutton
-          a#inject.btn.btn-default.left Open with VORLON.JS
+          a#inject.btn.btn-default.left Inspect with VORLON.JS
+          a#openSite.btn.btn-default.left Open website only
+          a#openDashboard.btn.btn-default.left Open dashboard only
           a#error.message.left.error.hide URL is not valid
 
  script(type='text/javascript').
@@ -65,10 +67,27 @@ html(lang='en')
        }
      }
      
-     var btninject = document.querySelector("#inject");
      var urlinput = document.querySelector("#url");
+     
+     var btninject = document.querySelector("#inject");
      btninject.addEventListener("click", function () {
        inject();
+     });
+     
+     var btnopenSite = document.querySelector("#openSite");
+     btnopenSite.addEventListener("click", function () {
+       var url = urlinput.value;
+         if (checkUrl()) {
+           openProxiedWindow(url);
+         }
+     });
+     
+     var btnopenDashboard = document.querySelector("#openDashboard");
+     btnopenDashboard.addEventListener("click", function () {
+       var url = urlinput.value;
+         if (checkUrl()) {
+           openDashboard(url);
+         }
      });
      
      urlinput.addEventListener("keypress", function(e){
