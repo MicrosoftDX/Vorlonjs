@@ -1,5 +1,5 @@
 module VORLON.WebStandards.Rules.DOM {
-    var ariaAttributes = ['role',
+    var ariaAttributes = [
 		'aria-atomic',
 		'aria-busy',
 		'aria-controls',
@@ -43,7 +43,7 @@ module VORLON.WebStandards.Rules.DOM {
         nodeTypes: [],
 		
 		prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
-            rulecheck.ariaCount = 0;          
+            rulecheck.ariaCount = 0;         
         },
         
         check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlstring : string) {

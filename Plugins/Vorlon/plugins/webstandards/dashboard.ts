@@ -137,6 +137,8 @@ module VORLON {
                 item.encoding = data.encoding;
                 item.content = data.content;
                 item.contentLength = data.contentLength;
+                item.error = data.error;
+                item.status = data.status;
 
                 if (data.error) {
                     item.loaded = false;

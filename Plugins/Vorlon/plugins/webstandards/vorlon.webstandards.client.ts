@@ -12,7 +12,7 @@ module VORLON {
             super("webstandards");
             this._id = "WEBSTANDARDS";
             this._ready = true;
-            //this.debug = true;
+            this.debug = true;
             console.log('Web Standards started');
         }
 
@@ -78,9 +78,17 @@ module VORLON {
                 return;                
             }
             
-            this.trace("fetching " + data.url);
-            try
-            {
+            var documentUrl = data.url;
+            if (documentUrl.indexOf("http") === 0 || documentUrl.indexOf("//") === 0){
+                //external resources may not have Access Control headers, we make a proxied request
+                var serverurl = (<any>VORLON.Core._messenger)._serverUrl;
+                var target = this.getAbsolutePath(data.url);
+                documentUrl = serverurl + "httpproxy/fetch?fetchurl=" + encodeURIComponent(target);
+            }
+            this.trace("fetching " + documentUrl);
+                
+            try {
+           
                 xhr = new XMLHttpRequest(); 
                 xhr.onreadystatechange = () => { 
                     if(xhr.readyState == 4)
@@ -92,19 +100,25 @@ module VORLON {
                             
                             this.sendCommandToDashboard("documentContent", { url : data.url, status : xhr.status, content : xhr.responseText, contentLength: contentLength, encoding : encoding });
                         } 
-                        else 
-                        { 
+                        else  {
                             this.sendCommandToDashboard("documentContent", { url : data.url, status : xhr.status, content : null, error :  xhr.statusText });
                         } 
                     } 
                 };
-                xhr.open("GET", data.url, true);                
+                
+                xhr.open("GET", documentUrl, true);                
                 xhr.send(null); 
             } catch(e)
             { 
                 this.sendCommandToDashboard("documentContent", { url : data.url, status : 0, content : null, error : e.message });
             }
-        }                    
+        }    
+        
+        public getAbsolutePath(url){
+            var a = document.createElement('a');
+            a.href = url;
+            return a.href;
+        }                
     }
     
     WebStandardsClient.prototype.ClientCommands = {
