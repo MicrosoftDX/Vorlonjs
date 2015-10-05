@@ -3,8 +3,9 @@ module VORLON {
 		id: string;
 		title : string;
 		nodeTypes : string[];
-		check : any;
-		endcheck? : any;
+		check : (node, rulecheck, analyse, htmlcontent) => void;
+		prepare? : (rulecheck, analyse, htmlcontent) => void;
+		endcheck? : (rulecheck, analyse, htmlcontent) => void;
 		generalRule? : boolean;
 		description?: string;
 	}

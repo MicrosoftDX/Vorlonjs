@@ -3,19 +3,37 @@ module VORLON.WebStandards.Rules.DOM {
         id: "webstandards.use-modern-doctype",
         title: "use modern doctype",
         description: "Modern doctype like &lt;!DOCTYPE html&gt; are better for browser compatibility and enable using HTML5 features.",
-        nodeTypes: [],
-        generalRule : true,
-
-        check: function(node: Node, rulecheck: any, analyseSummary: any, htmlString: string) {
+        nodeTypes: ["META"],
+        
+        prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+            rulecheck.items = rulecheck.items || [];   
+            rulecheck.type = "blockitems";          
+        },
+        
+        check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlString: string) {
+            var httpequiv = node.getAttribute("http-equiv");
+            
+            if (httpequiv && httpequiv.toLowerCase() == "x-ua-compatible"){
+                var content = node.getAttribute("content");
+                if (!(content.toLowerCase().indexOf("edge") >= 0)){
+                    rulecheck.failed = true;
+                    //current.content = doctype.html;
+                    rulecheck.items.push({
+                        title : "your website use IE's document mode compatibility for an older version of IE ",
+                        content : VORLON.Tools.htmlToString(node.outerHTML)
+                    });
+                }
+            }
+        },
+        
+        endcheck: function(rulecheck: any, analyseSummary: any, htmlString: string) {
             //console.log("checking comment " + node.nodeValue);
             var doctype = analyseSummary.doctype || {};
-            rulecheck.items = rulecheck.items || [];
             var current = {
                 title : "used doctype is <br/>" + VORLON.Tools.htmlToString(doctype.html)
             }
             
             if (doctype.publicId || doctype.systemId){
-                debugger;
                 rulecheck.failed = true;
                 //current.content = doctype.html;
                 rulecheck.items.push(current);
