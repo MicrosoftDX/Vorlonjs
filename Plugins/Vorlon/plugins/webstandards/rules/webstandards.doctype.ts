@@ -2,7 +2,7 @@ module VORLON.WebStandards.Rules.DOM {
     export var modernDocType = <IDOMRule>{
         id: "webstandards.use-modern-doctype",
         title: "use modern doctype",
-        description: "Modern doctype like &lt;!DOCTYPE html&gt; are better for browser compatibility.",
+        description: "Modern doctype like &lt;!DOCTYPE html&gt; are better for browser compatibility and enable using HTML5 features.",
         nodeTypes: [],
         generalRule : true,
 
@@ -15,7 +15,10 @@ module VORLON.WebStandards.Rules.DOM {
             }
             
             if (doctype.publicId || doctype.systemId){
+                debugger;
                 rulecheck.failed = true;
+                //current.content = doctype.html;
+                rulecheck.items.push(current);
             }
         }
     }
