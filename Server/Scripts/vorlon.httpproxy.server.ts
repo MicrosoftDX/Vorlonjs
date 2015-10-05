@@ -275,12 +275,11 @@ export module VORLON {
             if (!targetProxyUrl) {
                 targetProxyUrl = req.cookies[this._proxyCookieName];
             }
+            var cspHeader = proxyRes.headers["content-security-policy"];
+            //TODO : manage content-security-policy header for script, ...
 
             if (proxyRes.headers && proxyRes.headers["content-type"] && proxyRes.headers["content-type"].match("text/html")) {
                 var encoding = proxyRes.headers["content-encoding"];
-
-
-
 
                 if (!targetProxyUrl) {
                     console.warn("PROXY request HTML Content but no url...");
@@ -309,6 +308,7 @@ export module VORLON {
                         res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
                         res.header('Access-Control-Expose-Headers', 'Accept-Ranges, Content-Encoding, Content-Length, Content-Range');
                         res.header('Expires', '-1');
+                        res.header("content-security-policy", "");
                         res.header('Pragma', 'no-cache');
                         res.header('Content-Encoding', '');
                         res.removeHeader('Content-Encoding');
@@ -359,6 +359,7 @@ export module VORLON {
                         res.header('Access-Control-Expose-Headers', 'Accept-Ranges, Content-Encoding, Content-Length, Content-Range');
                         res.header('Expires', '-1');
                         res.header('Pragma', 'no-cache');
+                        res.header("content-security-policy", "");
                     
                         //we must set cookie only if url was requested through Vorlon
                         if (req.query.vorlonproxytarget) {
@@ -393,6 +394,7 @@ export module VORLON {
                     res.header('Access-Control-Expose-Headers', 'Accept-Ranges, Content-Encoding, Content-Length, Content-Range');
                     res.header('Expires', '-1');
                     res.header('Pragma', 'no-cache');
+                    res.header("content-security-policy", "");
                     writeHead.apply(res, arguments);
                 };
             }

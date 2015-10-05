@@ -43,7 +43,7 @@ module VORLON.WebStandards.Rules.DOM {
                         var stacked = item.stack.split("\n");
                         var check = {
                             title : "access to window.navigator." + property,
-                            content : stacked.slice(3, stacked.length - 3).join("<br/>")
+                            content : stacked.slice(3, stacked.length).join("<br/>")
                         };
                         if (item.file){
                             check.title = check.title + " from " + item.file;
