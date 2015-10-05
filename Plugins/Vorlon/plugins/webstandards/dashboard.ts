@@ -14,7 +14,6 @@ module VORLON {
             this._id = "WEBSTANDARDS";
             //this.debug = true;
             this._ready = true;
-            console.log('Started');
         }
 
         private _startCheckButton: HTMLButtonElement;
@@ -79,7 +78,6 @@ module VORLON {
             this._currentAnalyse.location = data.url;
             this._currentAnalyse.browserDetection  = data.browserDetection;
             
-            //console.log('received html from client ', data.html);
             var fragment: HTMLDocument = document.implementation.createHTMLDocument("analyse");
             fragment.documentElement.innerHTML = data.html;
             this._currentAnalyse.pendingLoad = 0;
@@ -93,7 +91,6 @@ module VORLON {
                     var isVorlon = src.value.indexOf('vorlon.js') > 0 || src.value.indexOf('vorlon.min.js') > 0 || src.value.indexOf('vorlon.max.js') > 0;
                     if (!isVorlon) {
                         this._currentAnalyse.files.scripts[src.value] = { loaded: false, content: null };
-                        //console.log("found script " + src.value);
                         this.sendCommandToClient('fetchDocument', { url: src.value });
                         this._currentAnalyse.pendingLoad++;
                     }
@@ -107,7 +104,6 @@ module VORLON {
                 var href = s.attributes.getNamedItem("href");
                 if (href) {
                     this._currentAnalyse.files.stylesheets[href.value] = { loaded: false, content: null };
-                    //console.log("found stylesheet " + href.value);
                     this.sendCommandToClient('fetchDocument', { url: href.value });
                     this._currentAnalyse.pendingLoad++;
                 }
@@ -119,7 +115,6 @@ module VORLON {
         }
 
         receiveDocumentContent(data: { url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number }) {
-            //console.log("document loaded " + data.url + " " + data.status);
             var item = null;
             var itemContainer = null;
             for (var n in this._currentAnalyse.files){
@@ -179,7 +174,6 @@ module VORLON {
                         generalRules.push(rule);
                     } else {
                         commonRules.push(rule);
-                        //console.log("indexing " + rule.id);
                         if (rule.nodeTypes.length) {
                             rule.nodeTypes.forEach(function(n) {
                                 n = n.toUpperCase();
@@ -203,7 +197,6 @@ module VORLON {
         }
 
         analyseDOMNode(node: Node, rules: any, analyse, htmlContent: string) {
-            //console.log("checking " + node.nodeName);
             if (node.nodeName === "STYLE") {
                 this.analyseCssDocument("inline", (<HTMLElement>node).innerHTML, analyse);
             }
@@ -220,13 +213,10 @@ module VORLON {
 
             var specificRules = rules.domRulesIndex[node.nodeName.toUpperCase()];
             if (specificRules && specificRules.length) {
-                console.log((specificRules.length + rules.domRulesForAllNodes.length) + " rules");
                 specificRules.forEach((r) => {
                     this.applyDOMNodeRule(node, r, analyse, htmlContent);
                 });
-            } else {
-                //console.log(rules.domRulesForAllNodes.length + " rules");
-            }
+            } 
 
             if (rules.domRulesForAllNodes && rules.domRulesForAllNodes.length) {
                 rules.domRulesForAllNodes.forEach((r) => {
@@ -273,7 +263,6 @@ module VORLON {
 
         analyseCssDocument(url, content, analyse) {
             var parser = new cssjs();
-            //parse css string
             var parsed = parser.parseCSS(content);
             console.log("processing css " + url);
                         
@@ -285,9 +274,6 @@ module VORLON {
                     rule.check(url, parsed, current, analyse);
                 }
             }
-
-            console.log("analysed");
-            console.log(analyse);
         }
 
         analyseJsDocument(url, content, analyse) {

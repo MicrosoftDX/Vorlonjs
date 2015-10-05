@@ -8,14 +8,13 @@ module VORLON {
             product: [],
             vendor: [],
         };
+        
         constructor() {
             super("webstandards");
             this._id = "WEBSTANDARDS";
             this._ready = true;
-            //this.debug = true;
-            console.log('Web Standards started');
+            //this.debug = true;            
         }
-
 
         public refresh(): void {
             //override this method with cleanup work that needs to happen
@@ -103,7 +102,7 @@ module VORLON {
                             var encoding = xhr.getResponseHeader("content-encoding");
                             var contentLength = xhr.getResponseHeader("content-length");
                             this.trace("encoding for " + documentUrl + " is " + encoding);
-                            //TODO getting encoding is not working in IE (but do in Chrome), must try on other browsers
+                            //TODO getting encoding is not working in IE (but do in Chrome), must try on other browsers because getting it may enable performance rules
                             this.sendCommandToDashboard("documentContent", { url : data.url, status : xhr.status, content : xhr.responseText, contentLength: contentLength, encoding : encoding });
                         } 
                         else  {
