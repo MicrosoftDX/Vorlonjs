@@ -47,27 +47,3 @@ body {
         transform : scale(1);
         transition : opacity 200ms ease-out;
       }
-
-@media screen and (min-width :1280px){
-    body {
-      padding : 20px 80px 80px 80px;
-    }
-} 
-
-@media screen and (max-width : 800px){
-    body {
-      padding : 0 20px 70px 20px;
-    }
-    
-    #footer{
-                transform : translate(0,0);
-    }
-}      
-
-@media screen and (max-width : 500px){
-  button{
-    display: block;
-    margin-right: 0;
-    width : 100%;
-  }
-}

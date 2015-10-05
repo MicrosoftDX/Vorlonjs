@@ -5,6 +5,8 @@ declare module VORLON {
         static setLocalStorageValue(key: string, data: string): void;
         static getLocalStorageValue(key: string): any;
         static Hook(rootObject: any, functionToHook: string, hookingFunction: (...optionalParams: any[]) => void): void;
+        static HookProperty(rootObject: any, propertyToHook: string, callback: any): void;
+        static getCallStack(skipped: any): any;
         static CreateCookie(name: string, value: string, days: number): void;
         static ReadCookie(name: string): string;
         static CreateGUID(): string;

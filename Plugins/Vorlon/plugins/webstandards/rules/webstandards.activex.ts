@@ -4,6 +4,12 @@ module VORLON.WebStandards.Rules.DOM {
         title: "object and embed",
         description : "With HTML5 embed or object tags can often be replaced with HTML5 features.",
         nodeTypes: ["EMBED", "OBJECT"],
+        
+        prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+            rulecheck.items = rulecheck.items || [];   
+            rulecheck.type = "blockitems";          
+        },
+        
         check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlString: string) {
             console.log("check for plugins");
                         
@@ -17,8 +23,7 @@ module VORLON.WebStandards.Rules.DOM {
                
             var type = node.getAttribute("type");
             if (type) type = type.toLowerCase(); else type = "";
-            
-            rulecheck.items = rulecheck.items || [];             
+                                     
             if (source.indexOf(".swf") > 0 || data.indexOf("swf") > 0){
                 rulecheck.failed = true;
                 rulecheck.items.push({ message: "think about using HTML5 instead of Flash", content : VORLON.Tools.htmlToString((<HTMLElement>node).outerHTML) })

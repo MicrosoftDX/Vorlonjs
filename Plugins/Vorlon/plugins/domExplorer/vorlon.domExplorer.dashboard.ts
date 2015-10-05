@@ -288,7 +288,8 @@
             }
             if (this._rootNode)
                 this._rootNode.dispose();
-            this.treeDiv.parentElement.classList.add('active');
+            if (this.treeDiv.parentElement) 
+                this.treeDiv.parentElement.classList.add('active');
             this._rootNode = new DomExplorerNode(this, null, this.treeDiv, root);
         }
 
