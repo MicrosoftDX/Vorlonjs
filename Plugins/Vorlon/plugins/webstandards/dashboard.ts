@@ -65,13 +65,14 @@ module VORLON {
             }
         }
 
-        receiveHtmlContent(data: { html: string, doctype: any, url:any }) {
+        receiveHtmlContent(data: { html: string, doctype: any, url:any, browserDetection : any }) {
             if (!this._currentAnalyse) {
                 this._currentAnalyse = { processing: true };
             }
 
             this._currentAnalyse.doctype = data.doctype;
             this._currentAnalyse.location = data.url;
+            this._currentAnalyse.browserDetection  = data.browserDetection;
             
             //console.log('received html from client ', data.html);
             var fragment: HTMLDocument = document.implementation.createHTMLDocument("analyse");

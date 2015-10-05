@@ -1,12 +1,18 @@
 module VORLON {
     export class WebStandardsClient extends ClientPlugin {
         public sendedHTML : string;
-        
+        public browserDetectionHook = {
+            userAgent : [],
+            appVersion : [],
+            appName: [],
+            product: [],
+            vendor: [],
+        };
         constructor() {
             super("webstandards");
             this._id = "WEBSTANDARDS";
             this._ready = true;
-            this.debug = true;
+            //this.debug = true;
             console.log('Web Standards started');
         }
 
@@ -18,7 +24,26 @@ module VORLON {
 
         // Start the clientside code
         public startClientSide(): void {
-            
+            this.hook(window.navigator, "userAgent");
+            this.hook(window.navigator, "appVersion");
+            this.hook(window.navigator, "appName");
+            this.hook(window.navigator, "product");
+            this.hook(window.navigator, "vendor");            
+        }
+        
+        public hook(root, prop){
+            VORLON.Tools.HookProperty(root, prop, (stack) => {
+                this.trace("browser detection " + stack.file);
+                this.trace(stack.stack);
+                if (stack.file){
+                    if (stack.file.indexOf("vorlon.max.js") >= 0 || stack.file.indexOf("vorlon.min.js") >= 0 || stack.file.indexOf("vorlon.js") >= 0){
+                        this.trace("skip browser detection access " + stack.file)
+                        
+                        return;
+                    }
+                }
+                this.browserDetectionHook[prop].push(stack);
+            });
         }
         
         public startNewAnalyse(): void {
@@ -43,7 +68,7 @@ module VORLON {
                 }
             }
             
-            this.sendCommandToDashboard("htmlContent", { html : allHTML, doctype: doctype, url : window.location });
+            this.sendCommandToDashboard("htmlContent", { html : allHTML, doctype: doctype, url : window.location, browserDetection : this.browserDetectionHook });
         }
         
         public fetchDocument(data: { url : string }){
@@ -64,7 +89,7 @@ module VORLON {
                         { 
                             var encoding = xhr.getResponseHeader("content-encoding");
                             var contentLength = xhr.getResponseHeader("content-length");
-                            console.log("encoding " + encoding);
+                            
                             this.sendCommandToDashboard("documentContent", { url : data.url, status : xhr.status, content : xhr.responseText, contentLength: contentLength, encoding : encoding });
                         } 
                         else 
