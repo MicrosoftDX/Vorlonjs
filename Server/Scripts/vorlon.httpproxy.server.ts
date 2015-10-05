@@ -49,6 +49,7 @@ export module VORLON {
             app.get("/httpproxy", this.home());
             app.get("/httpproxy/inject", this.inject());
             app.get("/httpproxy/fetch", this.fetchFile());
+            app.get("/browserspecificcontent", this.browserSpecificContent());
             this._server = express();
             this._server.use(cookieParser());
             this._server.use("/vorlonproxy/root.html", this.proxyForTarget());
@@ -64,6 +65,25 @@ export module VORLON {
             this._fetchproxy.on("proxyRes", this.proxyFetchResult.bind(this));
         }
 
+        private browserSpecificContent() {
+            return (req: express.Request, res: express.Response) => {
+                var userAgent = req.headers["user-agent"];
+                var reply = function(browsername){
+                    res.write('<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Vorlon.js - Test page</title><script src="http://localhost:1337/vorlon.max.js"></script></head><body><div>This is content for ' + browsername + '</div><div> ' + userAgent + '</div></body></html>');
+                    res.end();
+                }
+                if (userAgent == "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36"){
+                    reply("Google Chrome")
+                }else if (userAgent == "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240"){
+                    reply("Microsoft Edge")
+                }else if (userAgent == "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko"){
+                    reply("IE 11")
+                }else {
+                    reply("Others")
+                }
+            }
+        }
+        
         private fetchFile() {
             return (req: express.Request, res: express.Response) => {
                 var targetProxyUrl = req.query.fetchurl;
@@ -82,8 +102,13 @@ export module VORLON {
 
         private proxyFetchRequest(proxyReq, req: express.Request, res: express.Response, opt) {
             var e = proxyReq;
-            proxyReq.path = req.query.fetchurl;
-            console.log("FETCH ISSUING REQUEST TO " + proxyReq.path);
+            proxyReq.path = req.query.fetchurl;            
+            if (req.query.fetchuseragent){                
+                proxyReq._headers["user-agent"] = req.query.fetchuseragent;
+                console.log("FETCH ISSUING UA REQUEST TO " + proxyReq.path);
+            }else{
+                console.log("FETCH ISSUING REQUEST TO " + proxyReq.path);
+            }
         }
 
         private proxyFetchResult(proxyRes, req: express.Request, res: express.Response) {
@@ -246,14 +271,16 @@ export module VORLON {
                 console.warn(proxyRes.req._header);
             }
 
+            var targetProxyUrl = req.query.vorlonproxytarget;
+            if (!targetProxyUrl) {
+                targetProxyUrl = req.cookies[this._proxyCookieName];
+            }
+
             if (proxyRes.headers && proxyRes.headers["content-type"] && proxyRes.headers["content-type"].match("text/html")) {
                 var encoding = proxyRes.headers["content-encoding"];
 
 
-                var targetProxyUrl = req.query.vorlonproxytarget;
-                if (!targetProxyUrl) {
-                    targetProxyUrl = req.cookies[this._proxyCookieName];
-                }
+
 
                 if (!targetProxyUrl) {
                     console.warn("PROXY request HTML Content but no url...");
@@ -267,7 +294,7 @@ export module VORLON {
                 var match = uri.href.match(pat);
                 var vorlonsessionid = match[2];
                 var _script = "<script src=\"http://localhost:" + port + "/" + this._vorlonScript + "/" + vorlonsessionid + "/\"></script>"
-                
+
                 if (encoding == "gzip" || encoding == "deflate") {
                     console.warn("PROXY content is encoded to " + encoding);
                     var uncompress = (<any>zlib).Gunzip();

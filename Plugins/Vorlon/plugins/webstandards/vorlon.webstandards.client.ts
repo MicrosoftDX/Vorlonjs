@@ -79,9 +79,14 @@ module VORLON {
             }
             
             var documentUrl = data.url;
-            if (documentUrl.indexOf("http") === 0 || documentUrl.indexOf("//") === 0){
-                //external resources may not have Access Control headers, we make a proxied request
+            if (documentUrl.indexOf("//") === 0){
+                documentUrl = window.location.protocol + documentUrl;
+            }
+            if (documentUrl.indexOf("http") === 0){
+                //external resources may not have Access Control headers, we make a proxied request to prevent CORS issues
                 var serverurl = (<any>VORLON.Core._messenger)._serverUrl;
+                if (serverurl[serverurl.length-1] !== '/')
+                    serverurl = serverurl + "/";
                 var target = this.getAbsolutePath(data.url);
                 documentUrl = serverurl + "httpproxy/fetch?fetchurl=" + encodeURIComponent(target);
             }
@@ -97,7 +102,8 @@ module VORLON {
                         { 
                             var encoding = xhr.getResponseHeader("content-encoding");
                             var contentLength = xhr.getResponseHeader("content-length");
-                            
+                            this.trace("encoding for " + documentUrl + " is " + encoding);
+                            //TODO getting encoding is not working in IE (but do in Chrome), must try on other browsers
                             this.sendCommandToDashboard("documentContent", { url : data.url, status : xhr.status, content : xhr.responseText, contentLength: contentLength, encoding : encoding });
                         } 
                         else  {
@@ -108,8 +114,8 @@ module VORLON {
                 
                 xhr.open("GET", documentUrl, true);                
                 xhr.send(null); 
-            } catch(e)
-            { 
+            } catch(e) {
+                console.error(e); 
                 this.sendCommandToDashboard("documentContent", { url : data.url, status : 0, content : null, error : e.message });
             }
         }    
