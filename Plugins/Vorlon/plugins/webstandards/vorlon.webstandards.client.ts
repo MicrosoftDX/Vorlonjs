@@ -43,7 +43,7 @@ module VORLON {
                 }
             }
             
-            this.sendCommandToDashboard("htmlContent", { html : allHTML, doctype: doctype});
+            this.sendCommandToDashboard("htmlContent", { html : allHTML, doctype: doctype, url : window.location });
         }
         
         public fetchDocument(data: { url : string }){

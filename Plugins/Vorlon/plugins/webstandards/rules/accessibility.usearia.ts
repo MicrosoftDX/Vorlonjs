@@ -41,11 +41,14 @@ module VORLON.WebStandards.Rules.DOM {
         title: "Use aria attributes",
         description : "Use accessibility attributes like aria-label to provide meaningful information for people with visual disabilities.",
         nodeTypes: [],
+		
+		prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+            rulecheck.ariaCount = 0;          
+        },
         
         check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlstring : string) {
 			if (!node.getAttribute) //not an HTML element
 				return;
-            rulecheck.ariaCount = rulecheck.ariaCount || 0;
              
             ariaAttributes.forEach(function(a){
                 if(node.getAttribute(a)){

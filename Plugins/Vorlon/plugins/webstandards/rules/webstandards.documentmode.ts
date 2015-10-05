@@ -1,6 +1,6 @@
 module VORLON.WebStandards.Rules.DOM {
     export var modernDocType = <IDOMRule>{
-        id: "webstandards.use-modern-doctype",
+        id: "webstandards.documentmode",
         title: "use modern doctype",
         description: "Modern doctype like &lt;!DOCTYPE html&gt; are better for browser compatibility and enable using HTML5 features.",
         nodeTypes: ["META"],

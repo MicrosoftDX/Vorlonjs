@@ -65,12 +65,13 @@ module VORLON {
             }
         }
 
-        receiveHtmlContent(data: { html: string, doctype: any }) {
+        receiveHtmlContent(data: { html: string, doctype: any, url:any }) {
             if (!this._currentAnalyse) {
                 this._currentAnalyse = { processing: true };
             }
 
             this._currentAnalyse.doctype = data.doctype;
+            this._currentAnalyse.location = data.url;
             
             //console.log('received html from client ', data.html);
             var fragment: HTMLDocument = document.implementation.createHTMLDocument("analyse");
@@ -105,7 +106,9 @@ module VORLON {
                     this._currentAnalyse.pendingLoad++;
                 }
             }
-
+            
+            this._currentAnalyse.results = {};            
+            this.prepareAnalyse(this._currentAnalyse) 
             this.analyseDOM(fragment, data.html, this._currentAnalyse);
         }
 
@@ -151,7 +154,6 @@ module VORLON {
                 domRulesIndex: <any>{},
                 domRulesForAllNodes: []
             };
-            analyse.results = {};
             
             //we index rules based on target node types
             for (var n in VORLON.WebStandards.Rules.DOM) {
@@ -194,8 +196,7 @@ module VORLON {
                     rule.endcheck(current, analyse, htmlContent);
                 }
             })
-            console.log("DOM NODES ANALYSE ended")
-            console.log(analyse.results)
+            
         }
 
         analyseDOMNode(node: Node, rules: any, analyse, htmlContent: string) {
@@ -297,6 +298,26 @@ module VORLON {
             }
         }
 
+        prepareAnalyse(analyse) {
+            for (var n in VORLON.WebStandards.Rules.CSS) {
+                var cssrule = <ICSSRule>VORLON.WebStandards.Rules.CSS[n];
+                if (cssrule) {
+                    var current = this.initialiseRuleSummary(cssrule, analyse);
+                    if (cssrule.prepare)
+                        cssrule.prepare(current, analyse);
+                }
+            }
+
+            for (var n in VORLON.WebStandards.Rules.JavaScript) {
+                var scriptrule = <IScriptRule>VORLON.WebStandards.Rules.JavaScript[n];
+                if (scriptrule) {
+                    var current = this.initialiseRuleSummary(scriptrule, analyse);
+                    if (scriptrule.prepare)
+                        scriptrule.prepare(current, analyse);
+                }
+            }
+        }
+        
         endAnalyse(analyse) {
             for (var n in VORLON.WebStandards.Rules.CSS) {
                 var cssrule = <ICSSRule>VORLON.WebStandards.Rules.CSS[n];

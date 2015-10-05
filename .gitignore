@@ -1,6 +1,6 @@
 npm-debug.log
 *.log
-/plugins/**/*.css
+/plugins/vorlon/**/*.css
 tsconfig.json
 /Plugins/obj
 **/node_modules
