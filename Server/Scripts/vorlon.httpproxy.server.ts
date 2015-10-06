@@ -12,19 +12,21 @@ var httpProxy = require("http-proxy");
 
 import iwsc = require("./vorlon.IWebServerComponent");
 import baseURLConfig = require("../config/vorlon.baseurlconfig");
+import httpConfig = require("../config/vorlon.httpconfig");
 
 export module VORLON {
     export class HttpProxy implements iwsc.VORLON.IWebServerComponent {
         private _proxy = null;
         private _fetchproxy = null;
         private _server = null;
-        private _proxyPort = 5050;
         private _proxyCookieName = "vorlonProxyTarget";
         private _vorlonScript = "vorlon.max.js";
         private baseURLConfig: baseURLConfig.VORLON.BaseURLConfig;
+        private httpConfig: httpConfig.VORLON.HttpConfig;
 
         constructor() {
             this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();
+            this.httpConfig = new httpConfig.VORLON.HttpConfig();
             this._proxy = httpProxy.createProxyServer({});
             this._fetchproxy = httpProxy.createProxyServer({});
         }
@@ -46,18 +48,42 @@ export module VORLON {
         }
 
         public addRoutes(app: express.Express, passport: any): void {
-            app.get("/httpproxy", this.home());
-            app.get("/httpproxy/inject", this.inject());
-            app.get("/httpproxy/fetch", this.fetchFile());
-            app.get("/browserspecificcontent", this.browserSpecificContent());
+            app.get(this.baseURLConfig.baseURL + "/httpproxy/fetch", this.fetchFile());
+            app.get(this.baseURLConfig.baseURL + "/browserspecificcontent", this.browserSpecificContent());
+
+            if (!this.httpConfig.enableWebproxy) {
+                //the proxy is disabled, look at config.json to enable webproxy
+                return;
+            }
+            app.get(this.baseURLConfig.baseURL + "/httpproxy", this.home());
+            app.get(this.baseURLConfig.baseURL + "/httpproxy/inject", this.inject());
+
+            this.startProxyServer();
+        }
+
+        public startProxyServer() {
             this._server = express();
+            this._server.set('port', this.httpConfig.proxyPort);
             this._server.use(cookieParser());
-            this._server.use("/vorlonproxy/root.html", this.proxyForTarget());
-            this._server.use("/vorlonproxy/*", this.proxyForRelativePath());
-            this._server.use("/", this.proxyForRootDomain());
-            http.createServer(this._server).listen(this._proxyPort, () => {
-                console.log("Vorlon.js proxy started on port " + this._proxyPort);
-            });
+            this._server.use(this.baseURLConfig.baseProxyURL + "/vorlonproxy/root.html", this.proxyForTarget());
+            this._server.use(this.baseURLConfig.baseProxyURL + "/vorlonproxy/*", this.proxyForRelativePath());
+            this._server.use(this.baseURLConfig.baseProxyURL + "/", this.proxyForRootDomain());
+            
+            // http.createServer(this._server).listen(this.httpConfig.proxyPort, () => {
+            //     console.log("Vorlon.js proxy started on port " + this.httpConfig.proxyPort);
+            // });
+            
+            
+            if (this.httpConfig.useSSL) {
+                this.httpConfig.httpModule.createServer(this.httpConfig.options, this._server).listen(this._server.get('port'), () => {
+                    console.log('Vorlon.js PROXY with SSL listening on port ' + this._server.get('port'));
+                });
+            } else {
+                this.httpConfig.httpModule = this.httpConfig.httpModule.createServer(this._server).listen(this._server.get('port'), () => {
+                    console.log('Vorlon.js PROXY listening on port ' + this._server.get('port'));
+                });
+            }
+
             this._proxy.on("error", this.proxyError);
             this._proxy.on("proxyRes", this.proxyResult.bind(this));
             this._proxy.on("proxyReq", this.proxyRequest.bind(this));
@@ -65,25 +91,34 @@ export module VORLON {
             this._fetchproxy.on("proxyRes", this.proxyFetchResult.bind(this));
         }
 
+        private vorlonClientFileUrl() {
+            var scriptUrl = "http://localhost:" + this.httpConfig.port + "/" + this._vorlonScript;
+            if (this.httpConfig.vorlonServerURL) {
+                scriptUrl = this.httpConfig.vorlonServerURL + "/" + this._vorlonScript;
+            }
+            
+            return scriptUrl;
+        }
+
         private browserSpecificContent() {
             return (req: express.Request, res: express.Response) => {
                 var userAgent = req.headers["user-agent"];
-                var reply = function(browsername){
-                    res.write('<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Vorlon.js - Test page</title><script src="http://localhost:1337/vorlon.max.js"></script></head><body><div>This is content for ' + browsername + '</div><div> ' + userAgent + '</div></body></html>');
+                var reply = (browsername) => {
+                    res.write('<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Vorlon.js - Test page</title><script src="' + this.vorlonClientFileUrl() + '"></script></head><body><div>This is content for ' + browsername + '</div><div> ' + userAgent + '</div></body></html>');
                     res.end();
                 }
-                if (userAgent == "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36"){
+                if (userAgent == "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36") {
                     reply("Google Chrome")
-                }else if (userAgent == "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240"){
+                } else if (userAgent == "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240") {
                     reply("Microsoft Edge")
-                }else if (userAgent == "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko"){
+                } else if (userAgent == "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko") {
                     reply("IE 11")
-                }else {
+                } else {
                     reply("Others")
                 }
             }
         }
-        
+
         private fetchFile() {
             return (req: express.Request, res: express.Response) => {
                 var targetProxyUrl = req.query.fetchurl;
@@ -102,11 +137,11 @@ export module VORLON {
 
         private proxyFetchRequest(proxyReq, req: express.Request, res: express.Response, opt) {
             var e = proxyReq;
-            proxyReq.path = req.query.fetchurl;            
-            if (req.query.fetchuseragent){                
+            proxyReq.path = req.query.fetchurl;
+            if (req.query.fetchuseragent) {
                 proxyReq._headers["user-agent"] = req.query.fetchuseragent;
                 console.log("FETCH ISSUING UA REQUEST TO " + proxyReq.path);
-            }else{
+            } else {
                 console.log("FETCH ISSUING REQUEST TO " + proxyReq.path);
             }
         }
@@ -235,8 +270,12 @@ export module VORLON {
             return (req: express.Request, res: express.Response) => {
                 var uri = url.parse(req.query.url);
                 //res.cookie(this._proxyCookieName, uri.protocol + "//" + uri.hostname);
-                console.log("request for proxiing " + uri.hostname + " to port " + this._proxyPort)
-                res.end("http://localhost:" + this._proxyPort + "/vorlonproxy/root.html?vorlonproxytarget=" + encodeURIComponent(req.query.url));
+                console.log("request for proxiing " + uri.hostname + " to port " + this.httpConfig.proxyPort);
+                var rootUrl = "http://localhost:" + this.httpConfig.proxyPort;
+                if (this.httpConfig.vorlonProxyURL){
+                    rootUrl = this.httpConfig.vorlonProxyURL;
+                }
+                res.end(rootUrl + "/vorlonproxy/root.html?vorlonproxytarget=" + encodeURIComponent(req.query.url));
             };
         }
         
@@ -262,7 +301,6 @@ export module VORLON {
         }
 
         private proxyResult(proxyRes, req: express.Request, res: express.Response) {
-            var port = process.env.PORT || 1337;
             var _proxy = this;
             var chunks, end = res.end, writeHead = res.writeHead, write = res.write;
 
@@ -292,7 +330,8 @@ export module VORLON {
                 var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
                 var match = uri.href.match(pat);
                 var vorlonsessionid = match[2];
-                var _script = "<script src=\"http://localhost:" + port + "/" + this._vorlonScript + "/" + vorlonsessionid + "/\"></script>"
+                //var scriptUrl = "http://localhost:" + this.httpConfig.port + "/" + this._vorlonScript + "/" + vorlonsessionid;
+                var _script = "<script src=\"" + this.vorlonClientFileUrl() + "/" + vorlonsessionid + "/\"></script>"
 
                 if (encoding == "gzip" || encoding == "deflate") {
                     console.warn("PROXY content is encoded to " + encoding);

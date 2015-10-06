@@ -21,5 +21,12 @@
         { "id": "BABYLONINSPECTOR", "name": "Babylon Inspector", "panel": "top", "foldername": "babylonInspector", "enabled": false },
         { "id": "WEBSTANDARDS", "name": "Best practices", "panel": "top", "foldername": "webstandards", "enabled": true }
     ],
-    "port": 1337
+    "port": 1337,
+    
+    "enableWebproxy" : true,
+    "baseProxyURL": "",
+    "proxyPort" : 5050,
+    "vorlonServerURL": "",
+    "vorlonProxyURL": ""
+    
 }
