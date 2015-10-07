@@ -37,6 +37,7 @@
                 }
             }
         }
+        
         public static Hook(rootObject: any, functionToHook: string, hookingFunction: (...optionalParams: any[]) => void): void {
             var previousFunction = rootObject[functionToHook];
 
@@ -45,6 +46,66 @@
                 previousFunction.apply(rootObject, optionalParams);
             }
             return previousFunction;
+        }
+        
+        public static HookProperty(rootObject: any, propertyToHook: string, callback){            
+            var initialValue = rootObject[propertyToHook];
+            Object.defineProperty(rootObject, propertyToHook, {
+                get: function() {
+                    if (callback){
+                        callback(VORLON.Tools.getCallStack(1));
+                    }
+                    return initialValue;
+                }
+            });
+        }
+        
+        public static getCallStack(skipped){  
+            skipped = skipped || 0;
+            try {
+                //Throw an error to generate a stack trace
+                throw new Error();
+            }
+            catch(e) {
+                //Split the stack trace into each line
+                var stackLines = e.stack.split('\n');
+                var callerIndex = 0;
+                
+                //Now walk though each line until we find a path reference
+                for(var i=2 + skipped, l = stackLines.length; i<l; i++){ //first lines will be error and this utility method
+                    if(!(stackLines[i].indexOf("http://") >= 0)) 
+                        continue;
+                    //We skipped all the lines with out an http so we now have a script reference
+                    //This one is the class constructor, the next is the getScriptPath() call
+                    //The one after that is the user code requesting the path info (so offset by 2)
+                    callerIndex = i;
+                    break;
+                }
+                
+                var res = <any>{
+                    stack : e.stack,
+                    // fullPath : pathParts ? pathParts[1] : null,
+                    // path : pathParts ? pathParts[2] : null,
+                    // file : pathParts ? pathParts[3] : null
+                };
+                
+                var linetext = stackLines[callerIndex];
+                //Now parse the string for each section we want to return
+                //var pathParts = linetext.match(/((http[s]?:\/\/.+\/)([^\/]+\.js))([\/]):/);
+                // if (pathParts){
+                //     
+                // }
+                var opening = linetext.indexOf("http://") || linetext.indexOf("https://");
+                if (opening > 0){
+                    var closing = linetext.indexOf(")", opening);
+                    if (closing < 0)
+                        closing = linetext.length - 1;
+                    var filename = linetext.substr(opening, closing - opening);
+                    var linestart = filename.indexOf(":", filename.lastIndexOf("/"));
+                    res.file = filename.substr(0, linestart);
+                }
+                return res;
+            }
         }
 
         public static CreateCookie(name: string, value: string, days: number): void {
@@ -203,6 +264,10 @@
                     callback(true);
             }
         }
+
+        public static htmlToString(text) {
+            return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
     }
 
     export class FluentDOM {
@@ -226,7 +291,7 @@
             }
         }
 
-        public static for(element: HTMLElement) {
+        public static forElement(element: HTMLElement) {
             var res = new FluentDOM(null);
             res.element = element;
             return res;
@@ -234,6 +299,11 @@
 
         addClass(classname: string) {
             this.element.classList.add(classname);
+            return this;
+        }
+
+        toggleClass(classname: string) {
+            this.element.classList.toggle(classname);
             return this;
         }
 

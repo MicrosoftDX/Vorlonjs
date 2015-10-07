@@ -5,6 +5,8 @@ declare module VORLON {
         static setLocalStorageValue(key: string, data: string): void;
         static getLocalStorageValue(key: string): any;
         static Hook(rootObject: any, functionToHook: string, hookingFunction: (...optionalParams: any[]) => void): void;
+        static HookProperty(rootObject: any, propertyToHook: string, callback: any): void;
+        static getCallStack(skipped: any): any;
         static CreateCookie(name: string, value: string, days: number): void;
         static ReadCookie(name: string): string;
         static CreateGUID(): string;
@@ -12,14 +14,16 @@ declare module VORLON {
         static AddClass(e: HTMLElement, name: string): HTMLElement;
         static RemoveClass(e: HTMLElement, name: string): HTMLElement;
         static ToggleClass(e: HTMLElement, name: string, callback?: (hasClass: boolean) => void): void;
+        static htmlToString(text: any): any;
     }
     class FluentDOM {
         element: HTMLElement;
         childs: Array<FluentDOM>;
         parent: FluentDOM;
         constructor(nodeType: string, className?: string, parentElt?: Element, parent?: FluentDOM);
-        static for(element: HTMLElement): FluentDOM;
+        static forElement(element: HTMLElement): FluentDOM;
         addClass(classname: string): FluentDOM;
+        toggleClass(classname: string): FluentDOM;
         className(classname: string): FluentDOM;
         opacity(opacity: string): FluentDOM;
         display(display: string): FluentDOM;

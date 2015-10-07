@@ -129,11 +129,11 @@ export module VORLON {
 
             if (this.http.useSSL) {
                 this.http.httpModule = this.http.httpModule.createServer(this.http.options, app).listen(app.get('port'), () => {
-                    console.log('Vorlon.js with SSL listening on port ' + app.get('port'));
+                    console.log('Vorlon.js SERVER with SSL listening on port ' + app.get('port'));
                 });
             } else {
                 this.http.httpModule = this.http.httpModule.createServer(app).listen(app.get('port'), () => {
-                    console.log('Vorlon.js listening on port ' + app.get('port'));
+                    console.log('Vorlon.js SERVER listening on port ' + app.get('port'));
                 });
             }
 

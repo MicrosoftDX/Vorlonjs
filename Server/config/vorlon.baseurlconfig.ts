@@ -5,6 +5,7 @@ export module VORLON {
     export class BaseURLConfig {
 		
 		public baseURL: string;
+		public baseProxyURL : string;
 		
 		constructor() {
 			var catalogdata: string = fs.readFileSync(path.join(__dirname, "../config.json"), "utf8");            
@@ -15,6 +16,13 @@ export module VORLON {
 			}
 			else {
 				this.baseURL = "";
+			}
+			
+			if (catalog.baseProxyURL != undefined) {
+				this.baseProxyURL = catalog.baseProxyURL;
+			}
+			else {
+				this.baseProxyURL = "";
 			}
 		}
 	}

@@ -32,7 +32,7 @@
         public onWaitingEventsReceived: (message: VorlonMessage) => void;
         public onStopListenReceived: () => void;
         public onRefreshClients: () => void;
-
+        public onReload: (id: string) => void;
         public onError: (err: Error) => void;
 
         public get isConnected(): boolean {
@@ -115,6 +115,14 @@
                     //console.log('messenger refreshclients');
                     if (this.onRefreshClients) {
                         this.onRefreshClients();
+                    }
+                });
+
+                this._socket.on('reload', message => {
+                    //console.log('messenger reloadclient', message);
+                    Core._listenClientId = message;
+                    if (this.onReload) {
+                        this.onReload(message);
                     }
                 });
             }
