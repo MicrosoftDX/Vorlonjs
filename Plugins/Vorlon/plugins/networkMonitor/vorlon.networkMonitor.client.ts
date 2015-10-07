@@ -38,7 +38,7 @@
             //console.log(this.performanceItems);
             var message: any = {};
             message.entries = this.performanceItems;
-            Core.Messenger.sendRealtimeMessage(this.getID(), message, RuntimeSide.Client, "message");
+            this.sendCommandToDashboard( message);
         }
 
         public startClientSide(): void {

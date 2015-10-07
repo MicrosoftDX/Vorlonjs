@@ -5,7 +5,6 @@ declare module VORLON {
         sessionId: string;
         clientId: string;
         listenClientId: string;
-        waitingEvents?: number;
     }
     interface VorlonMessage {
         metadata: VorlonMessageMetadata;
@@ -19,11 +18,9 @@ declare module VORLON {
         private _clientId;
         private _listenClientId;
         private _serverUrl;
-        private _waitingEvents;
         onRealtimeMessageReceived: (message: VorlonMessage) => void;
         onHeloReceived: (id: string) => void;
         onIdentifyReceived: (id: string) => void;
-        onWaitingEventsReceived: (message: VorlonMessage) => void;
         onStopListenReceived: () => void;
         onRefreshClients: () => void;
         onReload: (id: string) => void;
@@ -32,8 +29,7 @@ declare module VORLON {
         clientId: string;
         socketId: string;
         constructor(side: RuntimeSide, serverUrl: string, sessionId: string, clientId: string, listenClientId: string);
-        sendWaitingEvents(pluginID: string, waitingevents: number): void;
-        sendRealtimeMessage(pluginID: string, objectToSend: any, side: RuntimeSide, messageType?: string, incrementVisualIndicator?: boolean, command?: string): void;
+        sendRealtimeMessage(pluginID: string, objectToSend: any, side: RuntimeSide, messageType?: string, command?: string): void;
         sendMonitoringMessage(pluginID: string, message: string): void;
         getMonitoringMessage(pluginID: string, onMonitoringMessage: (messages: string[]) => any, from?: string, to?: string): any;
     }
