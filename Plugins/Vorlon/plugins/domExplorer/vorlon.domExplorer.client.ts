@@ -391,7 +391,8 @@
 
         searchDOMBySelector(selector: string, position: number = 0) {
             var length = 0;
-            if (selector) {
+            try{
+                if (selector) {
                 var elements = document.querySelectorAll(selector);
                 length = elements.length;
                 if (elements.length) {
@@ -405,7 +406,12 @@
                         position++;
                     }
                 }
+            }  
             }
+            catch(e){
+                
+            }
+          
             this.sendCommandToDashboard('searchDOMByResults', { length: length, selector: selector, position: position });
         }
 
