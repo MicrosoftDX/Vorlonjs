@@ -29,7 +29,7 @@
                     message.passed = details.passed;
                     message.total = details.total;
                     message.runtime = details.runtime;
-                    Core.Messenger.sendRealtimeMessage(self.getID(), message, RuntimeSide.Client, "message");
+                    this.sendCommandToDashboard("message", message);
                 });
                 QUnit.done(function (details) {
                     //console.log("QUnit.done");
