@@ -288,7 +288,8 @@
             }
             if (this._rootNode)
                 this._rootNode.dispose();
-            this.treeDiv.parentElement.classList.add('active');
+            if (this.treeDiv.parentElement) 
+                this.treeDiv.parentElement.classList.add('active');
             this._rootNode = new DomExplorerNode(this, null, this.treeDiv, root);
         }
 
@@ -557,7 +558,7 @@
         }
 
         renderDOMNodeContent() {
-            var root = FluentDOM.for(this.element);
+            var root = FluentDOM.forElement(this.element);
             root.append('BUTTON', 'treeNodeButton',(nodeButton) => {
                 nodeButton.element.id = "plusbtn" + this.node.internalId;
                 if (this.node.hasChildNodes && (!this.node.children || this.node.children.length === 0)) {

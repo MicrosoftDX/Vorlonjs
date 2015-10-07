@@ -79,6 +79,9 @@
         }
 
         private _packageNode(node: any): PackagedNode {
+            if (!node)
+                return;
+                
             var packagedNode = {
                 id: node.id,
                 type: node.nodeType,
@@ -95,6 +98,7 @@
                 rootHTML: null,
                 internalId: VORLON.Tools.CreateGUID()
             };
+            
             if (node.innerHTML === "") {
                 packagedNode.isEmpty = true;
             }
@@ -137,7 +141,10 @@
                     this._packageDOM(node, packagedNode, withChildsNodes, highlightElementID);
                 }
 
-                if ((<any>node).__vorlon.ignore) { return; }
+                if ((<any>node).__vorlon && (<any>node).__vorlon.ignore) { 
+                    return; 
+                }
+                
                 packagedObject.children.push(packagedNode);
                 if (highlightElementID === packagedNode.internalId) {
                     highlightElementID = "";
@@ -163,6 +170,10 @@
         }
 
         private _getElementByInternalId(internalId: string, node: HTMLElement): any {
+            if (!node) {
+                return null;
+            }
+            
             if (node.__vorlon && node.__vorlon.internalId === internalId) {
                 return node;
             }
@@ -288,6 +299,14 @@
         }
 
         refresh(): void {
+            //sometimes refresh is called before document was loaded
+            if (!document.body){
+                setTimeout(() => {
+                   this.refresh(); 
+                }, 200);
+                return;
+            }
+            
             var packagedObject = this._packageNode(document.documentElement);
             this._packageDOM(document.documentElement, packagedObject, this._globalloadactive, null);
             this.sendCommandToDashboard('init', packagedObject);

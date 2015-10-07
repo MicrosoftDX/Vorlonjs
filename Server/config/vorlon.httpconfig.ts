@@ -10,7 +10,11 @@ export module VORLON {
         public httpModule;
         public options;
         public port;
-
+        public proxyPort;
+        public enableWebproxy : boolean;
+        public vorlonServerURL : string;
+        public vorlonProxyURL : string;
+        
         public constructor() {            
             var catalogdata: string = fs.readFileSync(path.join(__dirname, "../config.json"), "utf8");            
             var catalogstring = catalogdata.toString().replace(/^\uFEFF/, '');
@@ -31,6 +35,10 @@ export module VORLON {
                 this.httpModule = http;
             }
             this.port = process.env.PORT || catalog.port || 1337;
+            this.proxyPort = catalog.proxyPort || 5050;
+            this.enableWebproxy = catalog.enableWebproxy || false;
+            this.vorlonServerURL = catalog.vorlonServerURL || "";
+            this.vorlonProxyURL = catalog.vorlonProxyURL || "";
         }
     }
 }
