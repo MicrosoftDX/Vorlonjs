@@ -23,7 +23,10 @@ html(lang='en')
         input#url(type='text', placeholder='enter website url')
       div.button
         div.spacebutton
-          a#inject.btn.btn-default.left Open with VORLON.JS
+          a#inject.btn.btn-default.left Inspect with VORLON.JS
+          a#openSite.btn.btn-default.left Open website only
+          a#openDashboard.btn.btn-default.left Open dashboard only
+          a#error.message.left.error.hide URL is not valid
 
  script(type='text/javascript').
  	$(document).ready(function() {	
@@ -44,17 +47,47 @@ html(lang='en')
      }
      
      function inject(){
-       var url = document.querySelector("#url").value;
-       if (url && url.length){
-        openProxiedWindow(url);
-        openDashboard(url);
+       var url = urlinput.value;
+         if (checkUrl()) {
+           openProxiedWindow(url);
+           openDashboard(url);
+         }
+     }
+     
+     function checkUrl() {
+       var url = urlinput.value;
+       if (url && url.length) {
+         if (url.match(/^(http[s]?:\/\/)/)) {
+           document.querySelector("#error").classList.add("hide");
+           return true;
+         } else {
+           document.querySelector("#error").classList.remove("hide");
+           return false;
+         }
        }
      }
      
-     var btninject = document.querySelector("#inject");
      var urlinput = document.querySelector("#url");
+     
+     var btninject = document.querySelector("#inject");
      btninject.addEventListener("click", function () {
        inject();
+     });
+     
+     var btnopenSite = document.querySelector("#openSite");
+     btnopenSite.addEventListener("click", function () {
+       var url = urlinput.value;
+         if (checkUrl()) {
+           openProxiedWindow(url);
+         }
+     });
+     
+     var btnopenDashboard = document.querySelector("#openDashboard");
+     btnopenDashboard.addEventListener("click", function () {
+       var url = urlinput.value;
+         if (checkUrl()) {
+           openDashboard(url);
+         }
      });
      
      urlinput.addEventListener("keypress", function(e){
@@ -63,5 +96,9 @@ html(lang='en')
          e.preventDefault();
          inject();
        }
+     });
+     
+     urlinput.addEventListener("blur", function (e) {
+       checkUrl();
      });
  	});

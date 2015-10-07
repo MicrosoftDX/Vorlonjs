@@ -30,6 +30,10 @@ body {
   text-align: justify;
 }
 
+.home .message.error {
+  color: red;
+}
+
 .home .form .input input {
   padding: 6px 12px;
   border-color: #411748;  
@@ -46,7 +50,7 @@ body {
   cursor: pointer;
   display: inline-block;
   font-weight: 400;
-  margin: 10px 0;
+  margin: 10px 0 0 0;
   padding: 8px 10px;
   text-align: center;
   width: 100%;
@@ -67,6 +71,6 @@ body {
   color: #444;
 }
 
-.btn + .btn {
-  margin-left: 15px;
+.hide {
+  display: none;
 }

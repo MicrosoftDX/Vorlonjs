@@ -79,7 +79,8 @@ export module VORLON {
         }
         
         private login(req: express.Request, res: express.Response) {
-            res.render('login', { message: 'Please login' });
+             this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();       
+            res.render('login', {  baseURL: this.baseURLConfig.baseURL, message: 'Please login' });
         }
         
         private logout(req: any, res: any) {
