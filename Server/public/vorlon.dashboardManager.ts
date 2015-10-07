@@ -1,20 +1,27 @@
 ﻿/// <reference path="../Scripts/typings/vorlon/vorlon.core.d.ts" /> 
 /// <reference path="../Scripts/typings/vorlon/vorlon.clientMessenger.d.ts" /> 
 /// <reference path="../Scripts/typings/vorlon/vorlon.plugin.d.ts" /> 
+
+
 module VORLON {
     declare var $: any;
+    declare var vorlonBaseURL: string;
+    
     export class DashboardManager {
-        private _catalogUrl: string = "/config.json";
+        static CatalogUrl: string;
         static ListenClientid: string;
         static ListenClientDisplayid: string;
         static SessionId: string;
         static ClientList: Array<any>;
+        
         constructor(sessionid: string, listenClientid: string) {
+            //Dashboard session id
             DashboardManager.SessionId = sessionid;
+            //Client ID
             DashboardManager.ListenClientid = listenClientid;
             DashboardManager.ClientList = new Array<any>();
             DashboardManager.RefreshClients();
-            this.loadPlugins();
+            DashboardManager.CatalogUrl =  vorlonBaseURL + "/config.json";
         }
 
         static UpdateClientInfo() {
@@ -27,7 +34,7 @@ module VORLON {
             document.querySelector('[data-hook~=client-id]').textContent = DashboardManager.ListenClientDisplayid;
         }
 
-        public loadPlugins(): void {
+        public static loadPlugins(): void {
             var xhr = new XMLHttpRequest();
             var divPluginsBottom = <HTMLDivElement> document.getElementById("pluginsPaneBottom");
             var divPluginsTop = <HTMLDivElement> document.getElementById("pluginsPaneTop");
@@ -91,17 +98,17 @@ module VORLON {
                                 }
                             }
                             var pluginscript = document.createElement("script");
-                            pluginscript.setAttribute("src", "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".dashboard.min.js");
+                            pluginscript.setAttribute("src", vorlonBaseURL + "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".dashboard.min.js");
 
                             pluginscript.onload = (oError) => {
                                 pluginLoaded++;
                                 if (pluginLoaded >= pluginstoload) {
                                     var getUrl = window.location;
                                     var baseUrl = getUrl.protocol + "//" + getUrl.host;
-                                    Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, DashboardManager.ListenClientid, this.divMapper);
+                                    Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, DashboardManager.ListenClientid, DashboardManager.divMapper);
                                     if (!coreLoaded && !Core.Messenger.onWaitingEventsReceived) {
-                                        Core.Messenger.onWaitingEventsReceived = this._onClientUpdateWaitingEvents;
-                                        Core.Messenger.onRefreshClients = this._onRefreshClients;
+                                        Core.Messenger.onWaitingEventsReceived = DashboardManager._onClientUpdateWaitingEvents;
+                                        Core.Messenger.onRefreshClients = DashboardManager._onRefreshClients;
                                         coreLoaded = true;
                                     }
                                 }
@@ -139,11 +146,11 @@ module VORLON {
                 }
             }
 
-            xhr.open("GET", this._catalogUrl);
+            xhr.open("GET", DashboardManager.CatalogUrl);
             xhr.send();
         }
 
-        public divMapper(pluginId: string): HTMLDivElement {
+        public static divMapper(pluginId: string): HTMLDivElement {
             var divId = pluginId + "div";
             return <HTMLDivElement> (document.getElementById(divId) || document.querySelector(`[data-plugin=${pluginId}]`));
         }
@@ -154,20 +161,22 @@ module VORLON {
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        DashboardManager.ClientList = new Array<any>();
-
-                        var clients = JSON.parse(xhr.responseText);
-                        //console.log("dashboard clients ", clients);
                         
+                        DashboardManager.ClientList = new Array<any>();
+                        //Loading client list 
+                        var clients = JSON.parse(xhr.responseText);
                         var divClientsListPane = <HTMLDivElement> document.getElementById("clientsListPaneContent");
 
+                        //Remove old clients from the HTML list if any
                         while (divClientsListPane.hasChildNodes()) {
                             divClientsListPane.removeChild(divClientsListPane.lastChild);
                         }
-
+                        
+                        //Create the new empty list
                         var clientlist = document.createElement("ul");
                         divClientsListPane.appendChild(clientlist);
 
+                        //Test if the current client is in the list
                         var contains = false;
                         if (clients && clients.length) {
                             for (var j = 0; j < clients.length; j++) {
@@ -177,15 +186,18 @@ module VORLON {
                                 }
                             }
                         }
-                        if (!contains || clients.length === 0) {
-                            var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
-                            VORLON.Tools.RemoveClass(elt, 'hidden');
-                        }
-
+                        
+                        var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+                        // if (contains && clients.length !== 0) {
+                        //     VORLON.Tools.RemoveClass(elt, 'hidden');
+                        //     VORLON.Tools.AddClass(elt, 'bounce');
+                        // }
+                       
+                        //if not client, reset the dashboard without reloading the page
                         if (clients.length === 0) {
                             DashboardManager.ResetDashboard(false);
                         }
-
+                        
                         for (var i = 0; i < clients.length; i++) {
                             var client = clients[i];
                             if (DashboardManager.ListenClientid === "") {
@@ -201,18 +213,32 @@ module VORLON {
 
                             var pluginlistelementa = document.createElement("a");
                             pluginlistelementa.textContent = " " + client.name + " - " + client.displayid;
-                            pluginlistelementa.setAttribute("href", "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
+                            pluginlistelementa.setAttribute("href", vorlonBaseURL + "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
                             pluginlistelementa.id = client.clientid;
                             pluginlistelement.appendChild(pluginlistelementa);
 
                             DashboardManager.ClientList.push(client);
                             DashboardManager.UpdateClientWaitingInfo(client.clientid, client.waitingevents);
                         }
+                        
+                        if (contains) {
+                             DashboardManager.loadPlugins();
+                        }
+                        else {
+                            var getUrl = window.location;
+                            var baseUrl = getUrl.protocol + "//" + getUrl.host;
+                            Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, "", DashboardManager.divMapper);
+                            Core.Messenger.onWaitingEventsReceived = DashboardManager._onClientUpdateWaitingEvents;
+                            Core.Messenger.onRefreshClients = DashboardManager._onRefreshClients;
+                        }
+                        // else{
+                        //     VORLON.Tools.RemoveClass(elt, 'hidden');
+                        //     VORLON.Tools.RemoveClass(elt, 'bounce');
+                        // }
                     }
                 }
             }
-
-            xhr.open("GET", "/api/getclients/" + DashboardManager.SessionId);
+            xhr.open("GET", vorlonBaseURL + "/api/getclients/" + DashboardManager.SessionId);
             xhr.send();
         }
 
@@ -233,15 +259,15 @@ module VORLON {
                 }
             }
 
-            xhr.open("GET", "/api/reset/" + sessionid);
+            xhr.open("GET", vorlonBaseURL + "/api/reset/" + sessionid);
             xhr.send();
         }
 
-        private _onRefreshClients(): void {
+        private static _onRefreshClients(): void {
             DashboardManager.RefreshClients();
         }
 
-        private _onClientUpdateWaitingEvents(message: VorlonMessage): void {
+        private static _onClientUpdateWaitingEvents(message: VorlonMessage): void {
             DashboardManager.UpdateClientWaitingInfo(message.metadata.clientId, message.metadata.waitingEvents);
         }
 
@@ -262,14 +288,13 @@ module VORLON {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         var sessionId = xhr.responseText;
-                        window.location.assign("/dashboard/" + sessionId);
+                        window.location.assign(vorlonBaseURL + "/dashboard/" + sessionId);
                     }
                 }
             }
 
-            xhr.open("GET", "/api/createsession");
+            xhr.open("GET", vorlonBaseURL + "/api/createsession");
             xhr.send();
         }
     }
 }
-

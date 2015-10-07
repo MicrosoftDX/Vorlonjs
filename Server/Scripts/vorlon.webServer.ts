@@ -7,7 +7,7 @@ import fs = require("fs");
 import iwsc = require("./vorlon.IWebServerComponent");
 import vauth = require("./vorlon.authentication");
 import httpConfig = require("../config/vorlon.httpconfig"); 
-
+import baseURLConfig = require("../config/vorlon.baseurlconfig"); 
 
 export module VORLON {
     export class WebServer {
@@ -25,11 +25,13 @@ export module VORLON {
         private _components: Array<iwsc.VORLON.IWebServerComponent>;
         private http: httpConfig.VORLON.HttpConfig;
         private _app: express.Express;
+        private baseURLConfig: baseURLConfig.VORLON.BaseURLConfig;
 
         constructor() {
             this._app = express();
             this._components = new Array<iwsc.VORLON.IWebServerComponent>();
             this.http = new httpConfig.VORLON.HttpConfig();
+            this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();  
         }
 
         public init(): void {
@@ -74,7 +76,7 @@ export module VORLON {
             }
 
             //Sets
-            app.set('port', process.env.PORT || 1337);
+            app.set('port', this.http.port);
             app.set('views', path.join(__dirname, '../views'));
             app.set('view engine', 'jade');
 
@@ -101,7 +103,7 @@ export module VORLON {
             }); 
 
             app.use(stylus.middleware(path.join(__dirname, '../public')));
-            app.use(express.static(path.join(__dirname, '../public')));
+            app.use(this.baseURLConfig.baseURL, express.static(path.join(__dirname, '../public')));
             app.use(this._bodyParser.urlencoded({ extended: false }));
             app.use(this._bodyParser.json());
             app.use(this._cookieParser());

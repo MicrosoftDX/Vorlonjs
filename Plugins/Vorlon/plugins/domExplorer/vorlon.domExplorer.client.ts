@@ -12,6 +12,7 @@
         constructor() {
             super("domExplorer");
             this._id = "DOM";
+            //this.debug = true;
             this._ready = false;
         }
 
@@ -294,32 +295,47 @@
         
         inspect(): void {
             if (document.elementFromPoint) {
-                console.info("INSPECT");
+                this.trace("INSPECT");
                 var overlay = document.createElement("DIV");
-                overlay.style.position = "absolute";
+                overlay.style.position = "fixed";
                 overlay.style.left = "0";
                 overlay.style.right = "0";
                 overlay.style.top = "0";
                 overlay.style.bottom = "0";
+                overlay.style.touchAction = "manipulation";
                 overlay.style.backgroundColor = "rgba(255,0,0,0.2)";
                 document.body.appendChild(overlay);
-                overlay.addEventListener("mousedown", (arg) => {
-                    console.log(arg);
+                var event = "mousedown";
+                if (overlay.onpointerdown !== undefined){
+                    event = "pointerdown";
+                }
+                else if ((<any>overlay).ontouchstart !== undefined){
+                    event = "touchstart";
+                }
+                overlay.addEventListener(event, (arg) => {
+                    var evt = <any>arg;
+                    this.trace("tracking element at " + evt.clientX + "/" +  evt.clientY);
                     overlay.parentElement.removeChild(overlay);
-                    var el = <HTMLElement>document.elementFromPoint(arg.pageX, arg.pageY);
+                    var el = <HTMLElement>document.elementFromPoint(evt.clientX, evt.clientY);
                     if (el) {
-                        console.log("element found", el.innerHTML);
-                        var parentId = this.getFirstParentWithInternalId(el);
-                        if (parentId) {
-                            this.refreshbyId(parentId, this._packageNode(el).internalId);
-                        }
+                        this.trace("element found");
+                        this.openElementInDashboard(el);
                     } else {
-                        console.log("element not found");
+                        this.trace("element not found");
                     }
                 });
             } else {
                 //TODO : send message back to dashboard and disable button
-                console.warn("VORLON, inspection not supported");
+                this.trace("VORLON, inspection not supported");
+            }
+        }
+        
+        openElementInDashboard(element : Element){
+            if (element){
+                var parentId = this.getFirstParentWithInternalId(element);
+                if (parentId) {
+                    this.refreshbyId(parentId, this._packageNode(element).internalId);
+                }
             }
         }
 
