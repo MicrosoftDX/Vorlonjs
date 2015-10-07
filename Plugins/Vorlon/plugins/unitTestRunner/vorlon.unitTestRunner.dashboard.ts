@@ -64,7 +64,7 @@
                     message.testContent = this._txtRunTest.value;
                     //console.log("runTest");
                     //console.log(message);
-                    Core.Messenger.sendRealtimeMessage(self.getID(), message, RuntimeSide.Dashboard, "message");
+                    this.sendCommandToClient(message);
                 });
 
                 this._containerList = Tools.QuerySelectorById(div, "testResultsList");
