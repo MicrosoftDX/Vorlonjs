@@ -26,7 +26,7 @@
     "enableWebproxy" : true,
     "baseProxyURL": "",
     "proxyPort" : 5050,
-    "vorlonServerURL": "",
-    "vorlonProxyURL": ""
+    "vorlonServerURL": "htpp://vorlonjs6050.azurewebsites.net",
+    "vorlonProxyURL": "htpp://vorlonjs6050.azurewebsites.net"
     
 }
