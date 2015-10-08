@@ -12,15 +12,15 @@
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void { }
 
         
-        public sendToDashboard(data: any, incrementVisualIndicator: boolean = false){
+        public sendToDashboard(data: any){
             if (Core.Messenger)
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator);
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message");
         }
         
-        public sendCommandToDashboard(command: string, data: any = null, incrementVisualIndicator: boolean = false) {
+        public sendCommandToDashboard(command: string, data: any = null) {
             if (Core.Messenger) {
                 this.trace(this.getID() + ' send command to dashboard ' + command);
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", incrementVisualIndicator, command);
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Client, "message", command);
             }
         }
 
