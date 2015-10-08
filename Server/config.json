@@ -24,7 +24,7 @@
     "port": 1337,
     
     "enableWebproxy" : true,
-    "baseProxyURL": "",
+    "baseProxyURL": "http://vorlonjs6050.azurewebsites.net",
     "proxyPort" : 5050,
     "vorlonServerURL": "http://vorlonjs6050.azurewebsites.net",
     "vorlonProxyURL": "http://vorlonjs6050.azurewebsites.net:5050"
