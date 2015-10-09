@@ -460,8 +460,7 @@ module VORLON {
         }
 
         setRule(rule) {
-            this.element.innerHTML = "";
-            
+            this.element.innerHTML = "";            
 
             var fluent = FluentDOM.forElement(this.element);
             fluent.append("DIV", "ruledetailpanel-content", (content) => {
@@ -470,7 +469,8 @@ module VORLON {
                         item.addClass(rule.type);
                 
                     item.append("H1", "title", (title) => {
-                        title.html(rule.title);
+                        title.createChild("SPAN", "state fa " + (rule.failed ? "fa-close" : "fa-check"));
+                        title.createChild("SPAN", "text").html(rule.title);
                     });
 
                     if (rule.description) {
