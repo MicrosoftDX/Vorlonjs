@@ -24,8 +24,11 @@ export module VORLON {
         private _vorlonScript = "vorlon.max.js";
         private baseURLConfig: baseURLConfig.VORLON.BaseURLConfig;
         private httpConfig: httpConfig.VORLON.HttpConfig;
-
-        constructor() {
+        private _passport = require("passport");
+        private _startProxyOnly =false;
+        
+        constructor(startProxyOnly:boolean=false) {
+            this._startProxyOnly=startProxyOnly;
             this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();
             this.httpConfig = new httpConfig.VORLON.HttpConfig();
             this._proxy = httpProxy.createProxyServer({});
@@ -46,9 +49,11 @@ export module VORLON {
         }
 
         public start(): void {
+                  this.addRoutes(express(),this._passport);
         }
 
         public addRoutes(app: express.Express, passport: any): void {
+         if(!this._startProxyOnly){
             app.get(this.baseURLConfig.baseURL + "/httpproxy/fetch", this.fetchFile());
             app.get(this.baseURLConfig.baseURL + "/browserspecificcontent", this.browserSpecificContent());
 
@@ -57,9 +62,10 @@ export module VORLON {
                 return;
             }
             app.get(this.baseURLConfig.baseURL + "/httpproxy", this.home());
-            app.get(this.baseURLConfig.baseURL + "/httpproxy/inject", this.inject());
-
-            this.startProxyServer();
+            app.get(this.baseURLConfig.baseURL + "/httpproxy/inject", this.inject());      
+         }  
+         
+         this.startProxyServer();
         }
 
         public startProxyServer() {
