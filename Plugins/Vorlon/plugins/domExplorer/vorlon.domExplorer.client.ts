@@ -81,7 +81,7 @@
         private _packageNode(node: any): PackagedNode {
             if (!node)
                 return;
-                
+
             var packagedNode = {
                 id: node.id,
                 type: node.nodeType,
@@ -89,7 +89,7 @@
                 classes: node.className,
                 content: null,
                 hasChildNodes: false,
-                attributes: node.attributes ? Array.prototype.map.call(node.attributes,(attr) => {
+                attributes: node.attributes ? Array.prototype.map.call(node.attributes, (attr) => {
                     return [attr.name, attr.value];
                 }) : [],
                 styles: DOMExplorerClient.GetAppliedStyles(node),
@@ -98,7 +98,7 @@
                 rootHTML: null,
                 internalId: VORLON.Tools.CreateGUID()
             };
-            
+
             if (node.innerHTML === "") {
                 packagedNode.isEmpty = true;
             }
@@ -130,7 +130,8 @@
                 var node = <HTMLElement>root.childNodes[index];
                 var packagedNode = this._packageNode(node);
                 var b = false;
-                if (node.childNodes && node.childNodes.length > 1) {
+                
+                if (node.childNodes && node.childNodes.length > 1 || (node && node.nodeName && (node.nodeName.toLowerCase() === "script"|| node.nodeName.toLowerCase() === "style"))) {
                     packagedNode.hasChildNodes = true;
                 }
                 else if (withChildsNodes || node.childNodes.length == 1) {
@@ -141,10 +142,10 @@
                     this._packageDOM(node, packagedNode, withChildsNodes, highlightElementID);
                 }
 
-                if ((<any>node).__vorlon && (<any>node).__vorlon.ignore) { 
-                    return; 
+                if ((<any>node).__vorlon && (<any>node).__vorlon.ignore) {
+                    return;
                 }
-                
+
                 packagedObject.children.push(packagedNode);
                 if (highlightElementID === packagedNode.internalId) {
                     highlightElementID = "";
@@ -173,7 +174,7 @@
             if (!node) {
                 return null;
             }
-            
+
             if (node.__vorlon && node.__vorlon.internalId === internalId) {
                 return node;
             }
@@ -300,18 +301,18 @@
 
         refresh(): void {
             //sometimes refresh is called before document was loaded
-            if (!document.body){
+            if (!document.body) {
                 setTimeout(() => {
-                   this.refresh(); 
+                    this.refresh();
                 }, 200);
                 return;
             }
-            
+
             var packagedObject = this._packageNode(document.documentElement);
             this._packageDOM(document.documentElement, packagedObject, this._globalloadactive, null);
             this.sendCommandToDashboard('init', packagedObject);
         }
-        
+
         inspect(): void {
             if (document.elementFromPoint) {
                 this.trace("INSPECT");
@@ -325,15 +326,15 @@
                 overlay.style.backgroundColor = "rgba(255,0,0,0.2)";
                 document.body.appendChild(overlay);
                 var event = "mousedown";
-                if (overlay.onpointerdown !== undefined){
+                if (overlay.onpointerdown !== undefined) {
                     event = "pointerdown";
                 }
-                else if ((<any>overlay).ontouchstart !== undefined){
+                else if ((<any>overlay).ontouchstart !== undefined) {
                     event = "touchstart";
                 }
                 overlay.addEventListener(event, (arg) => {
                     var evt = <any>arg;
-                    this.trace("tracking element at " + evt.clientX + "/" +  evt.clientY);
+                    this.trace("tracking element at " + evt.clientX + "/" + evt.clientY);
                     overlay.parentElement.removeChild(overlay);
                     var el = <HTMLElement>document.elementFromPoint(evt.clientX, evt.clientY);
                     if (el) {
@@ -348,9 +349,9 @@
                 this.trace("VORLON, inspection not supported");
             }
         }
-        
-        openElementInDashboard(element : Element){
-            if (element){
+
+        openElementInDashboard(element: Element) {
+            if (element) {
                 var parentId = this.getFirstParentWithInternalId(element);
                 if (parentId) {
                     this.refreshbyId(parentId, this._packageNode(element).internalId);
@@ -391,21 +392,27 @@
 
         searchDOMBySelector(selector: string, position: number = 0) {
             var length = 0;
-            if (selector) {
-                var elements = document.querySelectorAll(selector);
-                length = elements.length;
-                if (elements.length) {
-                    if (!elements[position])
-                        position = 0;
-                    var parentId = this.getFirstParentWithInternalId(elements[position]);
-                    if (parentId) {
-                        this.refreshbyId(parentId, this._packageNode(elements[position]).internalId);
-                    }
-                    if (position < elements.length + 1) {
-                        position++;
+            try {
+                if (selector) {
+                    var elements = document.querySelectorAll(selector);
+                    length = elements.length;
+                    if (elements.length) {
+                        if (!elements[position])
+                            position = 0;
+                        var parentId = this.getFirstParentWithInternalId(elements[position]);
+                        if (parentId) {
+                            this.refreshbyId(parentId, this._packageNode(elements[position]).internalId);
+                        }
+                        if (position < elements.length + 1) {
+                            position++;
+                        }
                     }
                 }
             }
+            catch (e) {
+
+            }
+
             this.sendCommandToDashboard('searchDOMByResults', { length: length, selector: selector, position: position });
         }
 
@@ -497,7 +504,7 @@
             var plugin = <DOMExplorerClient>this;
             plugin.refresh();
         },
-        
+
         inspect() {
             var plugin = <DOMExplorerClient>this;
             plugin.inspect();

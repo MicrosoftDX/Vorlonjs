@@ -17,6 +17,7 @@ module VORLON {
         }
 
         private _startCheckButton: HTMLButtonElement;
+        private _cancelCheckButton: HTMLButtonElement;
         private _rootDiv: HTMLElement;
         private _currentAnalyse = null;
         private _rulesPanel: WebStandardsRulesPanel = null;
@@ -32,13 +33,28 @@ module VORLON {
                 this._rulesPanel = new WebStandardsRulesPanel(filledDiv.querySelector('#webstandards-rulespanel'), this._ruleDetailPanel);
 
                 this._startCheckButton = <HTMLButtonElement>filledDiv.querySelector('#startCheck');
+                this._cancelCheckButton = <HTMLButtonElement>filledDiv.querySelector('#cancelCheck');
                 this._rootDiv = <HTMLElement>filledDiv;
 
                 this._startCheckButton.addEventListener("click", (evt) => {
-                    this._currentAnalyse = { processing: true };
+                    this._startCheckButton.disabled = true;
+                    this._cancelCheckButton.disabled = false;
+                    this._currentAnalyse = { 
+                        processing: true, 
+                        id: VORLON.Tools.CreateGUID() 
+                    };
                     this._rootDiv.classList.add("loading");
                     this._rulesPanel.clear("analyse in progress...");
-                    this.sendCommandToClient('startNewAnalyse');
+                    this.sendCommandToClient('startNewAnalyse', { id: this._currentAnalyse.id });
+                });
+                
+                this._cancelCheckButton.addEventListener("click", (evt) => {
+                    this._startCheckButton.disabled = false;
+                    this._cancelCheckButton.disabled = true;
+                    this._currentAnalyse.processing = false;
+                    this._currentAnalyse.canceled = true;
+                    this._rootDiv.classList.remove("loading");
+                    this._rulesPanel.clear("retry by clicking on start button");
                 });
 
                 clearInterval(_webstandardsRefreshLoop);
@@ -49,7 +65,7 @@ module VORLON {
         }
 
         checkLoadingState() {
-            if (!this._currentAnalyse || this._currentAnalyse.ended) {
+            if (!this._currentAnalyse || this._currentAnalyse.ended || this._currentAnalyse.canceled) {
                 return;
             }
 
@@ -61,10 +77,12 @@ module VORLON {
                 this._currentAnalyse.ended = true;
                 this._ruleDetailPanel.setMessage("click on a rule in the result panel to show details");
                 this._rulesPanel.setRules(this._currentAnalyse);
+                this._startCheckButton.disabled = false;
+                this._cancelCheckButton.disabled = true;
             }
         }
 
-        receiveHtmlContent(data: { html: string, doctype: any, url:any, browserDetection : any }) {
+        receiveHtmlContent(data: { id: string, html: string, doctype: any, url:any, browserDetection : any }) {
             if (!this._currentAnalyse) {
                 this._currentAnalyse = { processing: true };
             }
@@ -91,7 +109,7 @@ module VORLON {
                     var isVorlon = src.value.indexOf('vorlon.js') > 0 || src.value.indexOf('vorlon.min.js') > 0 || src.value.indexOf('vorlon.max.js') > 0;
                     if (!isVorlon) {
                         this._currentAnalyse.files.scripts[src.value] = { loaded: false, content: null };
-                        this.sendCommandToClient('fetchDocument', { url: src.value });
+                        this.sendCommandToClient('fetchDocument', { url: src.value, id: this._currentAnalyse.id });
                         this._currentAnalyse.pendingLoad++;
                     }
                 }
@@ -104,7 +122,7 @@ module VORLON {
                 var href = s.attributes.getNamedItem("href");
                 if (href) {
                     this._currentAnalyse.files.stylesheets[href.value] = { loaded: false, content: null };
-                    this.sendCommandToClient('fetchDocument', { url: href.value });
+                    this.sendCommandToClient('fetchDocument', { url: href.value, id: this._currentAnalyse.id });
                     this._currentAnalyse.pendingLoad++;
                 }
             }
@@ -114,7 +132,7 @@ module VORLON {
             this.analyseDOM(fragment, data.html, this._currentAnalyse);
         }
 
-        receiveDocumentContent(data: { url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number }) {
+        receiveDocumentContent(data: { id: string, url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number }) {
             var item = null;
             var itemContainer = null;
             for (var n in this._currentAnalyse.files){
@@ -364,7 +382,7 @@ module VORLON {
 
         clear(msg) {
             this.element.style.display = "none";
-            this.detailpanel.clear();
+            this.detailpanel.clear(msg);
         }
 
         setRules(analyse) {
@@ -442,8 +460,7 @@ module VORLON {
         }
 
         setRule(rule) {
-            this.element.innerHTML = "";
-            
+            this.element.innerHTML = "";            
 
             var fluent = FluentDOM.forElement(this.element);
             fluent.append("DIV", "ruledetailpanel-content", (content) => {
@@ -452,7 +469,8 @@ module VORLON {
                         item.addClass(rule.type);
                 
                     item.append("H1", "title", (title) => {
-                        title.html(rule.title);
+                        title.createChild("SPAN", "state fa " + (rule.failed ? "fa-close" : "fa-check"));
+                        title.createChild("SPAN", "text").html(rule.title);
                     });
 
                     if (rule.description) {
@@ -497,8 +515,8 @@ module VORLON {
             });
         }
 
-        clear() {
-            this.setMessage("loading...");
+        clear(msg) {
+            this.setMessage(msg);
         }
 
         setMessage(msg) {

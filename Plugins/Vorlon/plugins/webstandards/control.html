@@ -1,8 +1,11 @@
 <div id="webstandardspanel">  
     <x-controlbar>
-        <x-action id="startCheck" event="startCheck" tabindex="0" title="start checks">
+        <button id="startCheck" event="startCheck" tabindex="0" title="start checks">
             <i class="fa fa-play"></i>
-        </x-action>
+        </button>
+        <button id="cancelCheck" event="cancelCheck" disabled tabindex="0" title="start checks">
+            <i class="fa fa-close"></i>
+        </button>
         <div class="loadingstate">
             <i class="fa fa-spinner fa-spin"></i>
         </div>

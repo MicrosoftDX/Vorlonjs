@@ -13,7 +13,7 @@ var dashboard = new vorlonDashboard.VORLON.Dashboard();
 var server = new vorlonServer.VORLON.Server();
 
 //VORLON HTTPPROXY
-var HttpProxy = new vorlonHttpProxy.VORLON.HttpProxy();
+var HttpProxy = new vorlonHttpProxy.VORLON.HttpProxy(false);
 
 webServer.components.push(dashboard);
 webServer.components.push(server);

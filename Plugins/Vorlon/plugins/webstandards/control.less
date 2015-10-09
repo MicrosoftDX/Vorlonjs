@@ -1,3 +1,5 @@
+@import "../vorlontheme.less";
+
 .plugin-webstandards {
     #webstandardspanel {
         width: 100%;
@@ -73,6 +75,16 @@
                             text-transform: uppercase;
                         }
                     }
+                    
+                     &.level2, &.level3, &.level4{
+                        &:hover{
+                            background-color: #AAA;
+                        }
+                        
+                        &:hover.selected, &.selected{
+                            background-color: #CCC;
+                        }
+                     }
                 }
             }
             
@@ -86,6 +98,34 @@
                     max-width: 400px;
                     color: #BBB;
                     text-align: center;    
+                }
+                
+                h1.title{
+                    display: -webkit-flex;
+                    display: flex;
+                    flex-flow: row nowrap;
+                    align-items : center;
+                    .state{
+                                        display: inline-block;
+                                        width: 28px;
+                                        height : 28px;
+                                        line-height: 24px;
+                                        text-align: center;
+                                        border-radius: 50%;
+                                        border : 2px solid #999;
+                                        box-sizing: border-box;
+                                        margin-right : 8px;
+                                        
+                                        &.fa-check{
+                                            color : seagreen;
+                                            border-color : seagreen;
+                                        }
+                                        
+                                        &.fa-close{
+                                            color : indianred;
+                                            border-color : indianred;
+                                        }
+                                    }
                 }
                 
                 .ruledetailpanel-content {
@@ -139,6 +179,7 @@
                             >.item{
                                 >.title{
                                     font-weight: 500;
+                                    
                                 }
                                 
                                 >.content{
