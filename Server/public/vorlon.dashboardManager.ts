@@ -113,8 +113,7 @@ module VORLON {
                                     var getUrl = window.location;
                                     var baseUrl = getUrl.protocol + "//" + getUrl.host;
                                     Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, DashboardManager.ListenClientid, DashboardManager.divMapper);
-                                    if (!coreLoaded && !Core.Messenger.onWaitingEventsReceived) {
-                                        Core.Messenger.onWaitingEventsReceived = DashboardManager._onClientUpdateWaitingEvents;
+                                    if (!coreLoaded && !Core.Messenger.onRefreshClients) {
                                         Core.Messenger.onRefreshClients = DashboardManager._onRefreshClients;
                                         coreLoaded = true;
                                     }
@@ -229,7 +228,7 @@ module VORLON {
                             pluginlistelement.appendChild(pluginlistelementa);
 
                             DashboardManager.ClientList.push(client);
-                            DashboardManager.UpdateClientWaitingInfo(client.clientid, client.waitingevents);
+                            DashboardManager.UpdateClientWaitingInfo(client.clientid);
                         }
                         
                         if (contains && !DashboardManager.DisplayingClient) {
@@ -240,7 +239,6 @@ module VORLON {
                             var getUrl = window.location;
                             var baseUrl = getUrl.protocol + "//" + getUrl.host;
                             Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, "", DashboardManager.divMapper);
-                            Core.Messenger.onWaitingEventsReceived = DashboardManager._onClientUpdateWaitingEvents;
                             Core.Messenger.onRefreshClients = DashboardManager._onRefreshClients;
                             var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
                             VORLON.Tools.RemoveClass(elt, 'hidden');
@@ -281,16 +279,12 @@ module VORLON {
             DashboardManager.RefreshClients();
         }
 
-        private static _onClientUpdateWaitingEvents(message: VorlonMessage): void {
-            DashboardManager.UpdateClientWaitingInfo(message.metadata.clientId, message.metadata.waitingEvents);
-        }
-
-        public static UpdateClientWaitingInfo(clientid: string, waitingevents: number): void {
+        public static UpdateClientWaitingInfo(clientid: string): void {
             var clientLink = document.getElementById(clientid);
             for (var id in DashboardManager.ClientList) {
                 var client = DashboardManager.ClientList[id];
                 if (client.clientid === clientid) {
-                    clientLink.textContent = " " + client.name + " - " + client.displayid + " (" + waitingevents + ")";
+                    clientLink.textContent = " " + client.name + " - " + client.displayid;
                 }
             }
         }

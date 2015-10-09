@@ -125,7 +125,7 @@ export module VORLON {
                         var currentclient = session.connectedClients[client];
                         if (currentclient.opened) {
                             var name = tools.VORLON.Tools.GetOperatingSystem(currentclient.ua);
-                            clients.push({ "clientid": currentclient.clientId, "displayid": currentclient.displayId, "waitingevents": currentclient.waitingevents, "name": name });
+                            clients.push({ "clientid": currentclient.clientId, "displayid": currentclient.displayId, "name": name });
                             nbClients++;
                         }
                     }
@@ -401,20 +401,6 @@ export module VORLON {
                 }
             });
 
-            socket.on("waitingevents",(message: string) => {
-                //this._log.warn("CLIENT waitingevents " + message);
-                var receiveMessage = <VorlonMessage>JSON.parse(message);
-                var dashboard = this.dashboards[receiveMessage.metadata.sessionId];
-                if (dashboard != null) {
-                    dashboard.emit("waitingevents", message);
-                    var session = this.sessions[receiveMessage.metadata.sessionId];
-                    if (session && session.connectedClients) {
-                        var client = session.connectedClients[receiveMessage.metadata.clientId];
-                        client.waitingevents = receiveMessage.metadata.waitingEvents;
-                    }
-                }
-            });
-
             socket.on("disconnect",(message: string) => {
                 //this._log.warn("CLIENT disconnect " + message);
                 for (var sessionId in this.sessions) {
@@ -622,7 +608,6 @@ export module VORLON {
         public displayId: number;
         public socket: SocketIO.Socket;
         public opened: boolean;
-        public waitingevents: number;
         public ua: string;
 
         constructor(clientId: string, ua: string, socket: SocketIO.Socket, displayId: number, opened: boolean = true) {
@@ -631,7 +616,6 @@ export module VORLON {
             this.socket = socket;
             this.displayId = displayId;
             this.opened = opened;
-            this.waitingevents = 0;
         }
     }
 
@@ -641,7 +625,6 @@ export module VORLON {
         sessionId: string;
         clientId: string;
         listenClientId: string;
-        waitingEvents?: number;
     }
 
     export interface VorlonMessage {

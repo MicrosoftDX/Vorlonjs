@@ -36,7 +36,7 @@
             message.localStorageList = this.localStorageList;
             message.sessionStorageList = this.sessionStorageList;
             message.cookiesList = this.cookiesList;
-            Core.Messenger.sendRealtimeMessage(this.getID(), message, RuntimeSide.Client, "message");
+            this.sendCommandToDashboard(message);
         }
 
         public startClientSide(): void {

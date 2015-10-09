@@ -4,8 +4,8 @@ declare module VORLON {
         constructor(name: string);
         startClientSide(): void;
         onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void;
-        sendToDashboard(data: any, incrementVisualIndicator?: boolean): void;
-        sendCommandToDashboard(command: string, data?: any, incrementVisualIndicator?: boolean): void;
+        sendToDashboard(data: any): void;
+        sendCommandToDashboard(command: string, data?: any): void;
         refresh(): void;
         _loadNewScriptAsync(scriptName: string, callback: () => void, waitForDOMContentLoaded?: boolean): void;
     }
