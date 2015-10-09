@@ -222,7 +222,7 @@ export module VORLON {
                         target: targetProxyUrl,
                         changeOrigin: true
                     };
-                    req.isVorlonTargetRequest = true;
+                    
                     if (targetProxyUrl.indexOf("https:") === 0) {
                         opt.secure = true;
                     }
@@ -362,7 +362,7 @@ export module VORLON {
                 res.header('Pragma', 'no-cache');
                 res.header("content-security-policy", "");
 
-                var location = res._headers["location"];
+                var location = (<any>res)._headers["location"];
                 location = location.substr(0, location.indexOf("?vorlonproxytarget="));
                 var vorlonsessionid = _proxy.vorlonSessionIdFor(targetProxyUrl, req);
                 res.header("location", "?vorlonproxytarget=" + encodeURIComponent(location) + "&vorlonsessionid=" + encodeURIComponent(vorlonsessionid));
