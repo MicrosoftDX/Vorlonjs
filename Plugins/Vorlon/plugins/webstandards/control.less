@@ -1,3 +1,5 @@
+@import "../vorlontheme.less";
+
 .plugin-webstandards {
     #webstandardspanel {
         width: 100%;
@@ -73,6 +75,16 @@
                             text-transform: uppercase;
                         }
                     }
+                    
+                     &.level2, &.level3, &.level4{
+                        &:hover{
+                            background-color: #AAA;
+                        }
+                        
+                        &:hover.selected, &.selected{
+                            background-color: #CCC;
+                        }
+                     }
                 }
             }
             
