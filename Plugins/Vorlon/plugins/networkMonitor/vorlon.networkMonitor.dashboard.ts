@@ -31,7 +31,7 @@
             }
             var maxTime = 0;
             
-            if (!receivedObject.entries)
+            if (!receivedObject || !receivedObject.entries)
                 return;
                 
             for (var n = 0; n < receivedObject.entries.length; n++) {

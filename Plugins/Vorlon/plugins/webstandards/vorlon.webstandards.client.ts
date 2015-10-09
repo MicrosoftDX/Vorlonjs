@@ -45,7 +45,7 @@ module VORLON {
             });
         }
         
-        public startNewAnalyse(): void {
+        public startNewAnalyse(data): void {
             var allHTML = document.documentElement.outerHTML;
             this.sendedHTML = allHTML;
             
@@ -67,10 +67,10 @@ module VORLON {
                 }
             }
             
-            this.sendCommandToDashboard("htmlContent", { html : allHTML, doctype: doctype, url : window.location, browserDetection : this.browserDetectionHook });
+            this.sendCommandToDashboard("htmlContent", { html : allHTML, doctype: doctype, url : window.location, browserDetection : this.browserDetectionHook, id : data.id });
         }
         
-        public fetchDocument(data: { url : string }){
+        public fetchDocument(data: { id: string, url : string }){
             var xhr = null;
             if (!data || !data.url){
                 this.trace("invalid fetch request");
@@ -103,10 +103,10 @@ module VORLON {
                             var contentLength = xhr.getResponseHeader("content-length");
                             this.trace("encoding for " + documentUrl + " is " + encoding);
                             //TODO getting encoding is not working in IE (but do in Chrome), must try on other browsers because getting it may enable performance rules
-                            this.sendCommandToDashboard("documentContent", { url : data.url, status : xhr.status, content : xhr.responseText, contentLength: contentLength, encoding : encoding });
+                            this.sendCommandToDashboard("documentContent", { id : data.id, url : data.url, status : xhr.status, content : xhr.responseText, contentLength: contentLength, encoding : encoding });
                         } 
                         else  {
-                            this.sendCommandToDashboard("documentContent", { url : data.url, status : xhr.status, content : null, error :  xhr.statusText });
+                            this.sendCommandToDashboard("documentContent", { id : data.id, url : data.url, status : xhr.status, content : null, error :  xhr.statusText });
                         } 
                     } 
                 };
@@ -115,7 +115,7 @@ module VORLON {
                 xhr.send(null); 
             } catch(e) {
                 console.error(e); 
-                this.sendCommandToDashboard("documentContent", { url : data.url, status : 0, content : null, error : e.message });
+                this.sendCommandToDashboard("documentContent", { id : data.id, url : data.url, status : 0, content : null, error : e.message });
             }
         }    
         
@@ -129,7 +129,7 @@ module VORLON {
     WebStandardsClient.prototype.ClientCommands = {
         startNewAnalyse: function (data: any) {
             var plugin = <WebStandardsClient>this;
-            plugin.startNewAnalyse();
+            plugin.startNewAnalyse(data);
         },
         
         fetchDocument : function(data: any){
