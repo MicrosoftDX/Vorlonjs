@@ -129,8 +129,8 @@
             for (var index = 0; index < root.childNodes.length; index++) {
                 var node = <HTMLElement>root.childNodes[index];
                 var packagedNode = this._packageNode(node);
-                var b = false;              
-                if (node.childNodes && node.childNodes.length > 1 || (node && node.nodeName && node.nodeName.toLowerCase() === "script")) {
+                var b = false;
+                if (node.childNodes && node.childNodes.length > 1 || (node && node.nodeName && (node.nodeName.toLowerCase() === "script"|| node.nodeName.toLowerCase() === "style")) {
                     packagedNode.hasChildNodes = true;
                 }
                 else if (withChildsNodes || node.childNodes.length == 1) {
