@@ -10,6 +10,7 @@ module VORLON {
     export class DashboardManager {
         static CatalogUrl: string;
         static ListenClientid: string;
+        static DisplayingClient: boolean;
         static ListenClientDisplayid: string;
         static SessionId: string;
         static ClientList: Array<any>;
@@ -19,6 +20,7 @@ module VORLON {
             //Dashboard session id
             DashboardManager.SessionId = sessionid;
             DashboardManager.PluginsLoaded = false;
+            DashboardManager.DisplayingClient = false;
             //Client ID
             DashboardManager.ListenClientid = listenClientid;
             DashboardManager.ClientList = new Array<any>();
@@ -32,9 +34,16 @@ module VORLON {
             var baseUrl = getUrl.protocol + "//" + getUrl.host;
             Core.StopListening(); 
             Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, clientid, DashboardManager.divMapper);
-            if(!Core.Messenger.onAddClient && !Core.Messenger.onAddClient){
+                if(!Core.Messenger.onAddClient && !Core.Messenger.onAddClient){
                 Core.Messenger.onAddClient = DashboardManager.addClient;
                 Core.Messenger.onRemoveClient = DashboardManager.removeClient;
+            }
+            
+            if(clientid !== ""){
+                DashboardManager.DisplayingClient = true;
+            }
+            else {
+                DashboardManager.DisplayingClient = false;
             }
         }
         
@@ -293,9 +302,8 @@ module VORLON {
         }
 
         public static addClient(client: any): void {
-            let needsReload:boolean = DashboardManager.ListenClientid === "";
             DashboardManager.AddClientToList(client);
-            if(needsReload){
+            if(!DashboardManager.DisplayingClient){
                 DashboardManager.loadPlugins();
             }
         }

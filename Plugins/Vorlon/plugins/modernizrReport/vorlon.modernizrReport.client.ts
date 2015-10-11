@@ -17,7 +17,7 @@
         public startClientSide(): void {
             this._loadNewScriptAsync("modernizr.js", () => {
                 this.checkSupportedFeatures();            
-            }, true);
+            }, false);
         }
 
         public checkSupportedFeatures() {
