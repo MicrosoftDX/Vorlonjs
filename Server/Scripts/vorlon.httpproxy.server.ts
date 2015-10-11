@@ -72,7 +72,10 @@ export module VORLON {
 
         public startProxyServer() {
             this._server = express();
-            this._server.set('port', this.httpConfig.proxyPort);
+            if(this.httpConfig.proxyEnvPort)
+                this._server.set('port', process.env.PORT);            
+            else
+                this._server.set('port', this.httpConfig.proxyPort);
             this._server.use(cookieParser());
             this._server.use(this.baseURLConfig.baseProxyURL + "/vorlonproxy/root.html", this.proxyForTarget());
             this._server.use(this.baseURLConfig.baseProxyURL + "/vorlonproxy/*", this.proxyForRelativePath());
@@ -127,7 +130,7 @@ export module VORLON {
                 }
             }
         }
-
+        
         private fetchFile() {
             return (req: express.Request, res: express.Response) => {
                 var targetProxyUrl = req.query.fetchurl;
