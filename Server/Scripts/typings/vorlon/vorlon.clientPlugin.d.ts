@@ -7,6 +7,6 @@ declare module VORLON {
         sendToDashboard(data: any): void;
         sendCommandToDashboard(command: string, data?: any): void;
         refresh(): void;
-        _loadNewScriptAsync(scriptName: string, callback: () => void): void;
+        _loadNewScriptAsync(scriptName: string, callback: () => void, waitForDOMContentLoaded?: boolean): void;
     }
 }

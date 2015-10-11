@@ -17,17 +17,10 @@
         public startClientSide(): void {
             this._loadNewScriptAsync("modernizr.js", () => {
                 this.checkSupportedFeatures();            
-            });
+            }, true);
         }
 
         public checkSupportedFeatures() {
-            if (!document.body) {
-                setTimeout(() => {
-                    this.checkSupportedFeatures();
-                }, 200);
-                return;
-            }
-            
             if (Modernizr) {
                 this.supportedFeatures = [];
 
@@ -109,14 +102,6 @@
         }
 
         public refresh(): void {
-            //sometimes refresh is called before document was loaded
-            if (!document.body) {
-                setTimeout(() => {
-                    this.refresh();
-                }, 200);
-                return;
-            }
-
             var message: any = {};
 
             message.features = this.supportedFeatures;
