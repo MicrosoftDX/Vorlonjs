@@ -14,6 +14,7 @@ export module VORLON {
         public enableWebproxy : boolean;
         public vorlonServerURL : string;
         public vorlonProxyURL : string;
+        public proxyEnvPort:boolean;
         
         public constructor() {            
             var catalogdata: string = fs.readFileSync(path.join(__dirname, "../config.json"), "utf8");            
@@ -34,6 +35,7 @@ export module VORLON {
                 this.protocol = "http";
                 this.httpModule = http;
             }
+            this.proxyEnvPort=catalog.proxyEnvPort;
             if(catalog.proxyEnvPort)
                 this.proxyPort = process.env.PORT;  
             else
