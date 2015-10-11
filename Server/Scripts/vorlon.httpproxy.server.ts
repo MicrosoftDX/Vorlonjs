@@ -49,7 +49,9 @@ export module VORLON {
         }
 
         public start(): void {
-                  this.addRoutes(express(),this._passport);
+            if(this._startProxyOnly){
+                this.addRoutes(express(),this._passport);
+            }
         }
 
         public addRoutes(app: express.Express, passport: any): void {
@@ -70,7 +72,10 @@ export module VORLON {
 
         public startProxyServer() {
             this._server = express();
-            this._server.set('port', this.httpConfig.proxyPort);
+            if(this.httpConfig.proxyEnvPort)
+                this._server.set('port', process.env.PORT);            
+            else
+                this._server.set('port', this.httpConfig.proxyPort);
             this._server.use(cookieParser());
             this._server.use(this.baseURLConfig.baseProxyURL + "/vorlonproxy/root.html", this.proxyForTarget());
             this._server.use(this.baseURLConfig.baseProxyURL + "/vorlonproxy/*", this.proxyForRelativePath());
@@ -82,11 +87,11 @@ export module VORLON {
             
             
             if (this.httpConfig.useSSL) {
-                this.httpConfig.httpModule.createServer(this.httpConfig.options, this._server).listen(this._server.get('port'), () => {
+                https.createServer(this.httpConfig.options, this._server).listen(this._server.get('port'), () => {
                     console.log('Vorlon.js PROXY with SSL listening on port ' + this._server.get('port'));
                 });
             } else {
-                this.httpConfig.httpModule = this.httpConfig.httpModule.createServer(this._server).listen(this._server.get('port'), () => {
+                http.createServer(this._server).listen(this._server.get('port'), () => {
                     console.log('Vorlon.js PROXY listening on port ' + this._server.get('port'));
                 });
             }
@@ -125,7 +130,7 @@ export module VORLON {
                 }
             }
         }
-
+        
         private fetchFile() {
             return (req: express.Request, res: express.Response) => {
                 var targetProxyUrl = req.query.fetchurl;

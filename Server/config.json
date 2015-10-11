@@ -26,7 +26,7 @@
     "enableWebproxy" : true,
     "baseProxyURL": "",
     "proxyPort" : 5050,
-    "proxyEnvPort":false,
+    "proxyEnvPort": false,
     "vorlonServerURL": "",
     "vorlonProxyURL": ""
     
