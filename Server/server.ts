@@ -1,4 +1,4 @@
-﻿import vorlonServer = require("./Scripts/vorlon.server");
+import vorlonServer = require("./Scripts/vorlon.server");
 import vorlonDashboard = require("./Scripts/vorlon.dashboard");
 import vorlonWebserver = require("./Scripts/vorlon.webServer");
 import vorlonHttpProxy = require("./Scripts/vorlon.httpproxy.server");
@@ -19,3 +19,11 @@ webServer.components.push(dashboard);
 webServer.components.push(server);
 webServer.components.push(HttpProxy);
 webServer.start();
+
+// comment above to deploy a standalone instance of httpProxy
+// and uncomment the following
+
+/*import httpproxyServer = require("./Scripts/vorlon.httpproxy.server");
+
+var server = new httpproxyServer.VORLON.HttpProxy(true);
+server.start();*/
