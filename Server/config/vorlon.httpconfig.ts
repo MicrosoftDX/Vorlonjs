@@ -34,6 +34,7 @@ export module VORLON {
                 this.protocol = "http";
                 this.httpModule = http;
             }
+            console.log(catalog.proxyEnvPort);
             if(catalog.proxyEnvPort)
                 this.proxyPort = process.env.PORT;  
             else
