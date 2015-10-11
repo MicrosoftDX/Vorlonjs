@@ -49,8 +49,9 @@ export module VORLON {
         }
 
         public start(): void {
-            if(this._startProxyOnly)
-                 this.addRoutes(express(),this._passport);
+            if(this._startProxyOnly){
+                this.addRoutes(express(),this._passport);
+            }
         }
 
         public addRoutes(app: express.Express, passport: any): void {
@@ -86,11 +87,11 @@ export module VORLON {
             
             
             if (this.httpConfig.useSSL) {
-                this.httpConfig.httpModule.createServer(this.httpConfig.options, this._server).listen(this._server.get('port'), () => {
+                https.createServer(this.httpConfig.options, this._server).listen(this._server.get('port'), () => {
                     console.log('Vorlon.js PROXY with SSL listening on port ' + this._server.get('port'));
                 });
             } else {
-                this.httpConfig.httpModule = this.httpConfig.httpModule.createServer(this._server).listen(this._server.get('port'), () => {
+                http.createServer(this._server).listen(this._server.get('port'), () => {
                     console.log('Vorlon.js PROXY listening on port ' + this._server.get('port'));
                 });
             }
