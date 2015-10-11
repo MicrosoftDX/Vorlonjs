@@ -131,6 +131,12 @@
                 });
             }
         }
+        
+        public stopListening(): void{
+            if(this._socket){
+                this._socket.removeAllListeners();
+            }
+        }
 
         public sendRealtimeMessage(pluginID: string, objectToSend: any, side: RuntimeSide, messageType = "message", command?:string): void {
             var message: VorlonMessage = {
