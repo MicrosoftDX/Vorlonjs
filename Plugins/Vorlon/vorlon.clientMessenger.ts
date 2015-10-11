@@ -17,7 +17,7 @@
     }
 
     export class ClientMessenger {
-        private _socket: Socket;
+        private _socket: any;
         private _isConnected = false;
         private _sessionId: string;
         private _clientId: string;
