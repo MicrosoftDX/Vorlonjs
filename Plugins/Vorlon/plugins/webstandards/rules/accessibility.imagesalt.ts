@@ -2,7 +2,7 @@ module VORLON.WebStandards.Rules.DOM {
     
     export var imagesShouldHaveAlt = <IDOMRule>{
         id: "accessibility.images-should-have-alt",
-        title: "Images should have alt attribute",
+        title: "images should have alt attribute",
         description : "Add alt attribute on images to enable blind people to get meaning for images.",
         nodeTypes: ["IMG", "AREA"],
         
