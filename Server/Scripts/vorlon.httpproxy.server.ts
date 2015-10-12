@@ -288,11 +288,12 @@ export module VORLON {
                 if (this.httpConfig.vorlonProxyURL) {
                     rootUrl = this.httpConfig.vorlonProxyURL;
                 }
-                res.end(rootUrl + "/vorlonproxy/root.html?vorlonproxytarget=" + encodeURIComponent(req.query.url));
+                var sessionid = this.vorlonSessionIdFor(uri.protocol + "//" + uri.hostname);
+                res.end(JSON.stringify({ url : rootUrl + "/vorlonproxy/root.html?vorlonproxytarget=" + encodeURIComponent(req.query.url)+"&vorlonsessionid=" + sessionid, session : sessionid }));
             };
         }
 
-        private vorlonSessionIdFor(targeturl, req) {
+        private vorlonSessionIdFor(targeturl, req?) {
             if (req && req.query.vorlonsessionid) {
                 return req.query.vorlonsessionid;
             }else if (req && req.cookies[this._proxySessionCookieName]){
@@ -301,7 +302,7 @@ export module VORLON {
             var uri = url.parse(targeturl);
             var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
             var match = uri.href.match(pat);
-            var vorlonsessionid = match[2];
+            var vorlonsessionid = match[2].replace(".","");
             return vorlonsessionid;
         }
         
@@ -329,8 +330,6 @@ export module VORLON {
         private proxyResult(proxyRes, req: express.Request, res: express.Response) {
             var _proxy = this;
             var chunks, end = res.end, writeHead = res.writeHead, write = res.write;
-
-
 
             var targetProxyUrl = req.query.vorlonproxytarget;
             if (!targetProxyUrl) {
