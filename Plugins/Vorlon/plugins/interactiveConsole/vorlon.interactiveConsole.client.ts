@@ -162,6 +162,9 @@
         }
 
         public startClientSide(): void {
+            this._cache = [];
+            this._pendingEntries = [];
+            
             // Overrides clear, log, error and warn
             this._hooks.clear = Tools.Hook(window.console, "clear",(): void => {
                 this.clearClientConsole();

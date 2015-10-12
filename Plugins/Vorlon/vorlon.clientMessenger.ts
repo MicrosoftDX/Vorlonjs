@@ -17,7 +17,7 @@
     }
 
     export class ClientMessenger {
-        private _socket: Socket;
+        private _socket: any;
         private _isConnected = false;
         private _sessionId: string;
         private _clientId: string;
@@ -27,6 +27,8 @@
         public onRealtimeMessageReceived: (message: VorlonMessage) => void;
         public onHeloReceived: (id: string) => void;
         public onIdentifyReceived: (id: string) => void;
+        public onRemoveClient: (id: any) => void;
+        public onAddClient: (id: any) => void;
         public onStopListenReceived: () => void;
         public onRefreshClients: () => void;
         public onReload: (id: string) => void;
@@ -105,6 +107,20 @@
                         this.onRefreshClients();
                     }
                 });
+                
+                this._socket.on('addclient', client => {
+                    //console.log('messenger refreshclients');
+                    if (this.onAddClient) {
+                        this.onAddClient(client);
+                    }
+                });
+
+                this._socket.on('removeclient', client => {
+                    //console.log('messenger refreshclients');
+                    if (this.onRemoveClient) {
+                        this.onRemoveClient(client);
+                    }
+                });
 
                 this._socket.on('reload', message => {
                     //console.log('messenger reloadclient', message);
@@ -113,6 +129,12 @@
                         this.onReload(message);
                     }
                 });
+            }
+        }
+        
+        public stopListening(): void{
+            if(this._socket){
+                this._socket.removeAllListeners();
             }
         }
 

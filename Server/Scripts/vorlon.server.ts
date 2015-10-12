@@ -125,7 +125,7 @@ export module VORLON {
                         var currentclient = session.connectedClients[client];
                         if (currentclient.opened) {
                             var name = tools.VORLON.Tools.GetOperatingSystem(currentclient.ua);
-                            clients.push({ "clientid": currentclient.clientId, "displayid": currentclient.displayId, "name": name });
+                            clients.push(currentclient.data);
                             nbClients++;
                         }
                     }
@@ -345,9 +345,9 @@ export module VORLON {
                 if (client == undefined) {
                     var client = new Client(metadata.clientId, data.ua, socket, ++session.nbClients);
                     session.connectedClients[metadata.clientId] = client;
-                    this._log.info(formatLog("PLUGIN", "Send Refresh clientlist to dashboard (" + client.displayId + ")[" + data.ua + "] socketid = " + socket.id, receiveMessage));
+                    this._log.info(formatLog("PLUGIN", "Send Add Client to dashboard (" + client.displayId + ")[" + data.ua + "] socketid = " + socket.id, receiveMessage));
                     if (dashboard != undefined) {
-                        dashboard.emit("refreshclients");
+                        dashboard.emit("addclient", client.data);
                     }
 
                     this._log.info(formatLog("PLUGIN", "New client (" + client.displayId + ")[" + data.ua + "] socketid = " + socket.id, receiveMessage));
@@ -356,7 +356,7 @@ export module VORLON {
                     client.socket = socket;
                     client.opened = true;
                     if (dashboard != undefined) {
-                        dashboard.emit("refreshclients");
+                        dashboard.emit("addclient", client.data);
                     }
                     this._log.info(formatLog("PLUGIN", "Client Reconnect (" + client.displayId + ")[" + data.ua + "] socketid=" + socket.id, receiveMessage));
                 }
@@ -401,20 +401,6 @@ export module VORLON {
                 }
             });
 
-            socket.on("disconnect",(message: string) => {
-                //this._log.warn("CLIENT disconnect " + message);
-                for (var sessionId in this.sessions) {
-                    var session = this.sessions[sessionId]
-                    for (var clientId in session.connectedClients) {
-                        var client = session.connectedClients[clientId];
-                        if (client.socket.id === socket.id) {
-                            client.opened = false;
-                            this._log.info(formatLog("PLUGIN", "Delete client socket " + socket.id));
-                        }
-                    }
-                }
-            });
-
             socket.on("clientclosed",(message: string) => {
                 //this._log.warn("CLIENT clientclosed " + message);
                 var receiveMessage = <VorlonMessage>JSON.parse(message);
@@ -423,8 +409,8 @@ export module VORLON {
                         if (receiveMessage.data.socketid === this.sessions[session].connectedClients[client].socket.id) {
                             this.sessions[session].connectedClients[client].opened = false;
                             if (this.dashboards[session]) {
-                                this._log.info(formatLog("PLUGIN", "Send RefreshClients to Dashboard " + socket.id, receiveMessage));
-                                this.dashboards[session].emit("refreshclients");
+                                this._log.info(formatLog("PLUGIN", "Send RemoveClient to Dashboard " + socket.id, receiveMessage));
+                                this.dashboards[session].emit("removeclient", this.sessions[session].connectedClients[client].data);
                             } else {
                                 this._log.info(formatLog("PLUGIN", "NOT sending RefreshClients, no Dashboard " + socket.id, receiveMessage));
                             }
@@ -609,6 +595,10 @@ export module VORLON {
         public socket: SocketIO.Socket;
         public opened: boolean;
         public ua: string;
+        
+        public get data(): any {
+            return { "clientid": this.clientId, "displayid": this.displayId, "ua": this.ua, "name": tools.VORLON.Tools.GetOperatingSystem(this.ua) };
+        }
 
         constructor(clientId: string, ua: string, socket: SocketIO.Socket, displayId: number, opened: boolean = true) {
             this.clientId = clientId;

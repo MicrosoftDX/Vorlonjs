@@ -92,7 +92,7 @@
                 attributes: node.attributes ? Array.prototype.map.call(node.attributes, (attr) => {
                     return [attr.name, attr.value];
                 }) : [],
-                styles: DOMExplorerClient.GetAppliedStyles(node),
+                //styles: DOMExplorerClient.GetAppliedStyles(node),
                 children: [],
                 isEmpty: false,
                 rootHTML: null,
@@ -264,10 +264,11 @@
             var p = element.getBoundingClientRect();
             var w = element.offsetWidth;
             var h = element.offsetHeight;
-            return { x: p.top, y: p.left, width: w, height: h };
+            //console.log("check offset for highlight " + p.top + "," + p.left);
+            return { x: p.top - element.scrollTop, y: p.left - element.scrollLeft, width: w, height: h };
         }
 
-        public setClientSelectedElement(elementId: string) {
+        public setClientHighlightedElement(elementId: string) {
             var element = this._getElementByInternalId(elementId, document.documentElement);
 
             if (!element) {
@@ -276,7 +277,7 @@
             if (!this._overlay) {
                 this._overlay = document.createElement("div");
                 this._overlay.id = "vorlonOverlay";
-                this._overlay.style.position = "absolute";
+                this._overlay.style.position = "fixed";
                 this._overlay.style.backgroundColor = "rgba(255,255,0,0.4)";
                 this._overlay.style.pointerEvents = "none";
                 (<any>  this._overlay).__vorlon = { ignore: true };
@@ -290,7 +291,7 @@
             this._overlay.style.height = position.height + "px";
         }
 
-        public unselectClientElement(internalId?: string) {
+        public unhighlightClientElement(internalId?: string) {
             if (this._overlay)
                 this._overlay.style.display = "none";
         }
@@ -447,14 +448,17 @@
             var element = this._getElementByInternalId(internaID, document.documentElement);
             element.innerHTML = value;
         }
+        
+        public getNodeStyle(internalID: string){
+            var element = this._getElementByInternalId(internalID, document.documentElement);
+            if (element){
+                var styles = DOMExplorerClient.GetAppliedStyles(element);
+                this.sendCommandToDashboard('nodeStyle', { internalID: internalID, styles: styles });
+            }
+        }
     }
 
     DOMExplorerClient.prototype.ClientCommands = {
-        select(data: any) {
-            var plugin = <DOMExplorerClient>this;
-            plugin.unselectClientElement();
-            plugin.setClientSelectedElement(data.order);
-        },
         getMutationObeserverAvailability() {
             var plugin = <DOMExplorerClient>this;
             plugin.getMutationObeserverAvailability();
@@ -490,14 +494,38 @@
             plugin.setElementValue(data.order, data.value);
         },
 
+        select(data: any) {
+            var plugin = <DOMExplorerClient>this;
+            plugin.unhighlightClientElement();
+            plugin.setClientHighlightedElement(data.order);
+            plugin.getNodeStyle(data.order);
+        },
+        
         unselect(data: any) {
             var plugin = <DOMExplorerClient>this;
-            plugin.unselectClientElement(data.order);
+            plugin.unhighlightClientElement(data.order);
+        },
+        
+        highlight(data: any) {
+            var plugin = <DOMExplorerClient>this;
+            plugin.unhighlightClientElement();
+            plugin.setClientHighlightedElement(data.order);            
+        },
+        
+        unhighlight(data: any) {
+            var plugin = <DOMExplorerClient>this;
+            plugin.unhighlightClientElement(data.order);
         },
 
         refreshNode(data: any) {
             var plugin = <DOMExplorerClient>this;
             plugin.refreshbyId(data.order);
+        },
+        
+        getNodeStyles(data: any) {
+            var plugin = <DOMExplorerClient>this;
+            console.log("get node style");
+            //plugin.refreshbyId(data.order);
         },
 
         refresh() {

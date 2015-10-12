@@ -3,12 +3,15 @@
 
     export class ClientPlugin extends BasePlugin  {
         public ClientCommands: any;
-
+        public domReady : boolean;
+        
         constructor(name: string) {
             super(name);
+            
         }
 
         public startClientSide(): void { }
+        public whenDOMReady(): void { }
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void { }
 
         
@@ -43,13 +46,13 @@
                 var first = document.getElementsByTagName('script')[0];
                 first.parentNode.insertBefore(scriptToLoad, first);
             }
-            if (!waitForDOMContentLoaded) {
+            if (!waitForDOMContentLoaded || this.domReady) {
                 loadScript();
             }
             else {
-                document.addEventListener("onload", () => {
-                      loadScript();  
-                })
+                setTimeout(() => {
+                    this._loadNewScriptAsync(scriptName, callback, waitForDOMContentLoaded);
+                }, 100);
             }
         }
     }
