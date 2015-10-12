@@ -4,7 +4,7 @@ module VORLON.WebStandards.Rules.DOM {
         id: "accessibility.images-should-have-alt",
         title: "Images should have alt attribute",
         description : "Add alt attribute on images to enable blind people to get meaning for images.",
-        nodeTypes: ["IMG"],
+        nodeTypes: ["IMG", "AREA"],
         
         prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
             rulecheck.items = rulecheck.items || [];   
