@@ -41,7 +41,7 @@ module VORLON {
                 //this.trace("browser detection " + stack.file);
                 //this.trace(stack.stack);
                 if (stack.file){
-                    if (this.exceptions.some((s) =>{ return stack.file.indexOf(s) >= 0}){
+                    if (this.exceptions.some((s) =>{ return stack.file.indexOf(s) >= 0})) {
                         //this.trace("skip browser detection access " + stack.file)
                         
                         return;
