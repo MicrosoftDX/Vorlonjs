@@ -8,6 +8,12 @@ module VORLON {
             product: [],
             vendor: [],
         };
+        private exceptions = [
+            "vorlon.max.js",
+            "vorlon.min.js",
+            "vorlon.js",            
+            "google-analytics.com"
+        ];
         
         constructor() {
             super("webstandards");
@@ -32,11 +38,11 @@ module VORLON {
         
         public hook(root, prop){
             VORLON.Tools.HookProperty(root, prop, (stack) => {
-                this.trace("browser detection " + stack.file);
-                this.trace(stack.stack);
+                //this.trace("browser detection " + stack.file);
+                //this.trace(stack.stack);
                 if (stack.file){
-                    if (stack.file.indexOf("vorlon.max.js") >= 0 || stack.file.indexOf("vorlon.min.js") >= 0 || stack.file.indexOf("vorlon.js") >= 0){
-                        this.trace("skip browser detection access " + stack.file)
+                    if (this.exceptions.some((s) =>{ return stack.file.indexOf(s) >= 0}){
+                        //this.trace("skip browser detection access " + stack.file)
                         
                         return;
                     }

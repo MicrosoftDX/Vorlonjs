@@ -346,7 +346,8 @@ export module VORLON {
             if (req.query.vorlonproxytarget && proxyRes.statusCode >= 300 && proxyRes.statusCode < 400) {
                 return this.proxyResultForRedirection(targetProxyUrl, proxyRes, req, res);
             }
-
+            
+            console.log("PROXY content type " + proxyRes.headers["content-type"]);
             if (targetProxyUrl && proxyRes.headers && proxyRes.headers["content-type"] && proxyRes.headers["content-type"].match("text/html")) {
                 return this.proxyResultForPageContent(targetProxyUrl, proxyRes, req, res);
             } else {
@@ -410,6 +411,7 @@ export module VORLON {
                     res.header("content-security-policy", "");
                     res.header('Pragma', 'no-cache');
                     res.header('Content-Encoding', '');
+                    //res.header('Content-Type', 'text/html; charset=utf-8');                    
                     res.removeHeader('Content-Encoding');
                     res.removeHeader('Content-Length');
                         
@@ -438,7 +440,8 @@ export module VORLON {
 
                 uncompress.on('end', (data) => {
                     if (chunks && chunks.toString) {
-                        var tmp = _proxy.insertVorlonScript(chunks.toString(), uri, _script, vorlonsessionid);
+                        var contentstring = chunks.toString();
+                        var tmp = _proxy.insertVorlonScript(contentstring, uri, _script, vorlonsessionid);
 
                         write.apply(res, [tmp]);
                     }
