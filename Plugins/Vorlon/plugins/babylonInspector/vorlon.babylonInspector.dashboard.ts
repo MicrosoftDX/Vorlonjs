@@ -1115,7 +1115,7 @@ module VORLON {
         constructor() {
             //     name   ,  html for dash   css for dash
             super("babylonInspector", "control.html", "control.css");
-            this._ready = true;
+            this._ready = false;
             this.id = 'BABYLONINSPECTOR';
             this._dataTreeGenerator = new DataTreeGenerator(this);
             this.treeRoot = null;

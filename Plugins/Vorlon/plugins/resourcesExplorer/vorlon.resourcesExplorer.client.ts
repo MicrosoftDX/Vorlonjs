@@ -7,10 +7,8 @@
         constructor() {
             super("resourcesExplorer");
             this._ready = true;
-        }
-
-        public getID(): string {
-            return "RESOURCES";
+            this._id = "RESOURCES";
+            //this.debug = true;
         }
 
         public sendClientData(): void {
@@ -36,20 +34,27 @@
             message.localStorageList = this.localStorageList;
             message.sessionStorageList = this.sessionStorageList;
             message.cookiesList = this.cookiesList;
-            this.sendCommandToDashboard(message);
+            this.sendCommandToDashboard("resourceitems", message);
         }
 
-        public startClientSide(): void {
+        public whenDOMReady(): void {
             var that = this;
-            window.onload = (event) => {
+            window.addEventListener("load", function(){
                 that.sendClientData();
-            };
+            });
         }
 
         public refresh(): void {
             this.sendClientData();
         }
     }
+    
+    ResourcesExplorerClient.prototype.ClientCommands = {
+        refresh: function (data: any) {
+            var plugin = <ResourcesExplorerClient>this;
+            plugin.refresh();
+        }
+    };
 
     //Register the plugin with vorlon core 
     Core.RegisterClientPlugin(new ResourcesExplorerClient());
