@@ -62,7 +62,8 @@
         }
 
         public setTableValue(cssClass: string, value: string): void {
-            this._table.querySelector('.' + cssClass).textContent = value;
+            if (this._table)
+                this._table.querySelector('.' + cssClass).textContent = value;
         }
         
         private round2decimals(value: any):number{

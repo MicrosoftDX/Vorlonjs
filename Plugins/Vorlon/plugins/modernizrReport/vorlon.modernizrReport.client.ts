@@ -8,20 +8,29 @@
         constructor() {
             super("modernizrReport");
             this._ready = false;
-        }
-
-        public getID(): string {
-            return "MODERNIZR";
+            this._id = "MODERNIZR";
+            //this.debug = true;
         }
 
         public startClientSide(): void {
+            
+        }
+        
+        public whenDOMReady():void{
+            this.loadModernizrFeatures();
+        }
+        
+        public loadModernizrFeatures(){
+            this.trace("loading modernizr script");
             this._loadNewScriptAsync("modernizr.js", () => {
-                this.checkSupportedFeatures();            
-            }, false);
+                this.trace("modernizr script loaded");
+                this.checkSupportedFeatures();
+            }, true);
         }
 
         public checkSupportedFeatures() {
             if (Modernizr) {
+                this.trace("checkin client features with Modernizr");
                 this.supportedFeatures = [];
 
                 this.supportedFeatures.push({ featureName: "Application cache", isSupported: Modernizr.applicationcache, type: "html" });
@@ -94,25 +103,34 @@
                 //this.supportedFeatures.push({ featureName: "", isSupported: Modernizr.display-runin, type: "noncore" });
                 //this.supportedFeatures.push({ featureName: "", isSupported: Modernizr.display-table, type: "noncore" });
 
-                var message: any = {};
-                message.features = this.supportedFeatures;
-
-                this.sendToDashboard(message);
+                this.sendFeaturesToDashboard();
             }
         }
 
-        public refresh(): void {
+        public sendFeaturesToDashboard() {
             var message: any = {};
-
-            message.features = this.supportedFeatures;
-            this.sendToDashboard(message);
+            message.features = this.supportedFeatures || [];
+            this.trace("sending " + message.features.length + " features");
+            this.sendCommandToDashboard("clientfeatures", message);
         }
 
-        public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
-
+        public refresh(): void {
+            this.trace("refreshing Modernizr");
+            if (this.supportedFeatures && this.supportedFeatures.length){
+                this.sendFeaturesToDashboard();
+            }else{
+                this.loadModernizrFeatures();
+            }
         }
     }
 
+    ModernizrReportClient.prototype.ClientCommands = {
+        refresh: function(data: any) {
+            var plugin = <NetworkMonitorClient>this;
+            plugin.refresh();
+        }
+    };
+    
     // Register
     Core.RegisterClientPlugin(new ModernizrReportClient());
 }

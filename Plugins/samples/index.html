@@ -122,6 +122,8 @@
         window.samplePageObjectTest.testForArray = [1, 2, 3, 4, 5, 6];
         window.samplePageObjectTest.captainAge = 42;
         window.samplePageObjectTest.child = new SampleObj('another test for nested objects');
+
+       	window.localStorage["someTest"] = JSON.stringify(window.samplePageObjectTest);
     </script>
   </body>
 </html>

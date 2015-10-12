@@ -775,19 +775,19 @@ module VORLON {
         /**
          * Start the clientside code : initilization etc
          */
-        public startClientSide(): void {
+        public whenDOMReady(): void {
             if(!BABYLON.Engine.isSupported()) {
                 //error
             } else {
             }
 
-            document.addEventListener("DOMContentLoaded", () => {
+            //document.addEventListener("DOMContentLoaded", () => {
                 this.engine = this._getBabylonEngine();
                 if (this.engine) {
                     this.scenes = this.engine.scenes;
                     this.refresh();
                 }
-            });
+            //});
         }
 
         /**
