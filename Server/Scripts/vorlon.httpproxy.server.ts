@@ -415,9 +415,12 @@ export module VORLON {
                     res.header("content-security-policy", "");
                     res.header('Pragma', 'no-cache');
                     res.header('Content-Encoding', '');
+                                        
                     //res.header('Content-Type', 'text/html; charset=utf-8');                    
                     res.removeHeader('Content-Encoding');
                     res.removeHeader('Content-Length');
+                    
+                    res.header('X-VorlonProxyEncoding', encoding);
                         
                     //we must set cookie only if url was requested through Vorlon
                     if (req.query.vorlonproxytarget) {
@@ -467,7 +470,7 @@ export module VORLON {
                     res.header('Expires', '-1');
                     res.header('Pragma', 'no-cache');
                     res.header("content-security-policy", "");
-                    
+                    res.header('X-VorlonProxyEncoding', encoding);
                     //we must set cookie only if url was requested through Vorlon
                     if (req.query.vorlonproxytarget) {
                         console.log("set cookie " + req.query.vorlonproxytarget);
