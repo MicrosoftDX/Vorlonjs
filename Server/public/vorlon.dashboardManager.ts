@@ -317,7 +317,7 @@ module VORLON {
                     DashboardManager.DisplayWaitingLogo();
                 }
                 
-                clientInList.remove();   
+                clientInList.parentElement.removeChild(clientInList);   
                 DashboardManager.removeInClientList(client);
                         
                 if (DashboardManager.ClientList.length === 0) {

@@ -38,7 +38,7 @@ module VORLON.WebStandards.Rules.DOM {
         
     export var useAriaAttributes = <IDOMRule>{
         id: "accessibility.use-aria",
-        title: "Use aria attributes",
+        title: "use aria attributes",
         description : "Use accessibility attributes like aria-label to provide meaningful information for people with visual disabilities.",
         nodeTypes: [],
 		

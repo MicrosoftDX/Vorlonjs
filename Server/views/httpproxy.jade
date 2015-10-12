@@ -30,12 +30,12 @@ html(lang='en')
 
  script(type='text/javascript').
  	$(document).ready(function() {	
-     function openProxiedWindow(url){
+     function getProxyData(url, callback){
        $.ajax({
             type: "GET",
             url: "/HttpProxy/inject?url=" + encodeURIComponent(url) + "&ts=" + new Date(),
             success: function (data) {
-              window.open(data);
+              callback(JSON.parse(data));
             },
        });
      }
@@ -43,14 +43,19 @@ html(lang='en')
      function openDashboard(url){
        var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
        var match = url.match(pat); 
-       window.open("/dashboard/" + match[2]);
+       var target = match[2].replace('.', '');
+       window.open("/dashboard/" + target);
      }
      
      function inject(){
        var url = urlinput.value;
          if (checkUrl()) {
-           openProxiedWindow(url);
-           openDashboard(url);
+           getProxyData(url, function(data){              
+              window.open("/dashboard/" + data.session);
+              setTimeout(function(){
+                window.open(data.url);
+              }, 200);
+           });
          }
      }
      
@@ -78,7 +83,9 @@ html(lang='en')
      btnopenSite.addEventListener("click", function () {
        var url = urlinput.value;
          if (checkUrl()) {
-           openProxiedWindow(url);
+           getProxyData(url, function(data){   
+             window.open(data.url);   
+           });
          }
      });
      
@@ -86,7 +93,9 @@ html(lang='en')
      btnopenDashboard.addEventListener("click", function () {
        var url = urlinput.value;
          if (checkUrl()) {
-           openDashboard(url);
+           getProxyData(url, function(data){   
+             window.open("/dashboard/" + data.session);
+           });
          }
      });
      

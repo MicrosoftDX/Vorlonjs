@@ -5,7 +5,8 @@ module VORLON {
     var rulesLabels = {
         "webstandards": "Web standards",
         "accessibility": "Accessibility",
-        "performances": "Performances"
+        "performances": "Performances",
+        "mobileweb": "Mobile web",
     }
 
     export class WebStandardsDashboard extends DashboardPlugin {
