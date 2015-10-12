@@ -121,6 +121,7 @@
         }
 
         public clearDashboard() {
+            this._logEntries.splice(0, this._logEntries.length);
             this._containerDiv.innerHTML = '';
         }
 

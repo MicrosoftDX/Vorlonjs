@@ -21,6 +21,8 @@ declare module VORLON {
         onRealtimeMessageReceived: (message: VorlonMessage) => void;
         onHeloReceived: (id: string) => void;
         onIdentifyReceived: (id: string) => void;
+        onRemoveClient: (id: any) => void;
+        onAddClient: (id: any) => void;
         onStopListenReceived: () => void;
         onRefreshClients: () => void;
         onReload: (id: string) => void;
@@ -29,6 +31,7 @@ declare module VORLON {
         clientId: string;
         socketId: string;
         constructor(side: RuntimeSide, serverUrl: string, sessionId: string, clientId: string, listenClientId: string);
+        stopListening(): void;
         sendRealtimeMessage(pluginID: string, objectToSend: any, side: RuntimeSide, messageType?: string, command?: string): void;
         sendMonitoringMessage(pluginID: string, message: string): void;
         getMonitoringMessage(pluginID: string, onMonitoringMessage: (messages: string[]) => any, from?: string, to?: string): any;

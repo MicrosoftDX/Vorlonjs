@@ -33,6 +33,13 @@
             Core._dashboardPlugins.push(plugin);
         }
         
+        public StopListening():void{
+            if(Core._messenger){
+                Core._messenger.stopListening();
+                delete Core._messenger;
+            }
+        }
+        
         public StartClientSide(serverUrl = "'http://localhost:1337/'", sessionId = "", listenClientId = ""): void {
             Core._side = RuntimeSide.Client;
             Core._sessionID = sessionId;
@@ -64,6 +71,10 @@
             }
 
             // Creating the messenger
+            if(Core._messenger){
+                Core._messenger.stopListening();
+                delete Core._messenger;
+            }
             Core._messenger = new ClientMessenger(Core._side, serverUrl, sessionId, clientId, listenClientId);
 
             // Connect messenger to dispatcher
@@ -208,6 +219,11 @@
             }
 
             // Creating the messenger
+            if(Core._messenger){
+                Core._messenger.stopListening();
+                delete Core._messenger;
+            }
+            
             Core._messenger = new ClientMessenger(Core._side, serverUrl, sessionId, clientId, listenClientId);
 
             // Connect messenger to dispatcher
