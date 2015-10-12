@@ -49,7 +49,7 @@ module VORLON.WebStandards.Rules.CSS {
 }
 
 module VORLON.WebStandards.Rules.DOM {
-    export var useAriaAttributes = <IDOMRule>{
+    export var mobileMediaqueries = <IDOMRule>{
         id: "mobileweb.usemediaqueries",
         title: "use responsive approaches",
         description: "Even if your website target only certain devices, you may have users with unexpected devices or screen ratio.",        
