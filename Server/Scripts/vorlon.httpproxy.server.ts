@@ -162,9 +162,13 @@ export module VORLON {
             var writeHead = res.writeHead;
             res.writeHead = function() {
                 res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-                res.header('Access-Control-Expose-Headers', 'Accept-Ranges, Content-Encoding, Content-Length, Content-Range');
+                res.header('Access-Control-Expose-Headers', 'Accept-Ranges, Content-Encoding, Content-Length, Content-Range, X-VorlonProxyEncoding');
                 res.header('Expires', '-1');
                 res.header('Pragma', 'no-cache');
+                
+                var encoding = proxyRes.headers["content-encoding"] || "none";         
+                res.header('X-VorlonProxyEncoding', encoding);
+                
                 writeHead.apply(res, arguments);
             };
         }

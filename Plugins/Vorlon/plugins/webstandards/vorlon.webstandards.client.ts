@@ -105,7 +105,7 @@ module VORLON {
                     {
                         if(xhr.status == 200)
                         { 
-                            var encoding = xhr.getResponseHeader("content-encoding");
+                            var encoding = xhr.getResponseHeader("X-VorlonProxyEncoding") || xhr.getResponseHeader("content-encoding");
                             var contentLength = xhr.getResponseHeader("content-length");
                             this.trace("encoding for " + documentUrl + " is " + encoding);
                             //TODO getting encoding is not working in IE (but do in Chrome), must try on other browsers because getting it may enable performance rules
