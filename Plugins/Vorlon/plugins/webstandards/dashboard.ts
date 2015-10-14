@@ -40,15 +40,15 @@ module VORLON {
                 this._startCheckButton.addEventListener("click", (evt) => {
                     this._startCheckButton.disabled = true;
                     this._cancelCheckButton.disabled = false;
-                    this._currentAnalyse = { 
-                        processing: true, 
-                        id: VORLON.Tools.CreateGUID() 
+                    this._currentAnalyse = {
+                        processing: true,
+                        id: VORLON.Tools.CreateGUID()
                     };
                     this._rootDiv.classList.add("loading");
                     this._rulesPanel.clear("analyse in progress...");
                     this.sendCommandToClient('startNewAnalyse', { id: this._currentAnalyse.id });
                 });
-                
+
                 this._cancelCheckButton.addEventListener("click", (evt) => {
                     this._startCheckButton.disabled = false;
                     this._cancelCheckButton.disabled = true;
@@ -83,11 +83,11 @@ module VORLON {
             }
         }
 
-        receiveHtmlContent(data: { id: string, html: string, doctype: any, url:any, browserDetection : any }) {
+        receiveHtmlContent(data: { id: string, html: string, doctype: any, url: any, browserDetection: any, fallBackErrorList: Array<string> }) {
             if (!this._currentAnalyse) {
                 this._currentAnalyse = { processing: true };
             }
-            
+
             if (!this._currentAnalyse.files) {
                 this._currentAnalyse.files = {};
             }
@@ -95,8 +95,8 @@ module VORLON {
             this._currentAnalyse.html = data.html;
             this._currentAnalyse.doctype = data.doctype;
             this._currentAnalyse.location = data.url;
-            this._currentAnalyse.browserDetection  = data.browserDetection;
-            
+            this._currentAnalyse.browserDetection = data.browserDetection;
+
             var fragment: HTMLDocument = document.implementation.createHTMLDocument("analyse");
             fragment.documentElement.innerHTML = data.html;
             this._currentAnalyse.pendingLoad = 0;
@@ -127,22 +127,31 @@ module VORLON {
                     this._currentAnalyse.pendingLoad++;
                 }
             }
-            
-            this._currentAnalyse.results = {};            
-            this.prepareAnalyse(this._currentAnalyse) 
+
+            this._currentAnalyse.results = {};
+            this.prepareAnalyse(this._currentAnalyse)
+            this._currentAnalyse.results.rules.webstandards.rules.cssFallBack = { id: ".cssFallBack", title: "CSS FallBack", description: "CSS FallBack failed on:" };
+            if (data.fallBackErrorList && data.fallBackErrorList.length) {
+                this._currentAnalyse.results.rules.webstandards.rules.cssFallBack.failed = true;
+                this._currentAnalyse.results.rules.webstandards.rules.cssFallBack.items = [];
+                for (var ind = 0; ind < data.fallBackErrorList.length; ind++) {
+                    var csspropname = data.fallBackErrorList[ind].replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+                    this._currentAnalyse.results.rules.webstandards.rules.cssFallBack.items.push({ failed: true, id: "." + data.fallBackErrorList[ind], items: [], title: "from -webkit-" + csspropname + " to " + csspropname, type: "blockitems" });
+                }
+            }
             this.analyseDOM(fragment, data.html, this._currentAnalyse);
         }
 
         receiveDocumentContent(data: { id: string, url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number }) {
             var item = null;
             var itemContainer = null;
-            for (var n in this._currentAnalyse.files){
+            for (var n in this._currentAnalyse.files) {
                 var container = this._currentAnalyse.files[n];
-                if (container[data.url]){
+                if (container[data.url]) {
                     item = container[data.url];
                     itemContainer = n;
                 }
-            }            
+            }
 
             if (item) {
                 this._currentAnalyse.pendingLoad--;
@@ -161,11 +170,11 @@ module VORLON {
                     this._currentAnalyse.processing = false;
                 }
             }
-            
+
             if (itemContainer === "stylesheets") {
                 this.analyseCssDocument(data.url, data.content, this._currentAnalyse);
             }
-            
+
             if (itemContainer === "scripts") {
                 this.analyseJsDocument(data.url, data.content, this._currentAnalyse);
             }
@@ -174,7 +183,7 @@ module VORLON {
         analyseDOM(document: HTMLDocument, htmlContent: string, analyse) {
             var generalRules = [];
             var commonRules = [];
-            
+
             var rules = {
                 domRulesIndex: <any>{},
                 domRulesForAllNodes: []
@@ -194,7 +203,7 @@ module VORLON {
                     } else {
                         commonRules.push(rule);
                         if (rule.nodeTypes.length) {
-                            rule.nodeTypes.forEach(function(n) {
+                            rule.nodeTypes.forEach(function (n) {
                                 n = n.toUpperCase();
                                 if (!rules.domRulesIndex[n])
                                     rules.domRulesIndex[n] = [];
@@ -235,7 +244,7 @@ module VORLON {
                 specificRules.forEach((r) => {
                     this.applyDOMNodeRule(node, r, analyse, htmlContent);
                 });
-            } 
+            }
 
             if (rules.domRulesForAllNodes && rules.domRulesForAllNodes.length) {
                 rules.domRulesForAllNodes.forEach((r) => {
@@ -253,7 +262,7 @@ module VORLON {
             var current = analyse.results;
             var id = "";
             current.rules = current.rules || {};
-            tokens.forEach(function(t) {
+            tokens.forEach(function (t) {
                 id = (id.length > 0) ? "." + t : t;
 
                 if (!current.rules) {
@@ -293,6 +302,7 @@ module VORLON {
                     rule.check(url, parsed, current, analyse);
                 }
             }
+
         }
 
         analyseJsDocument(url, content, analyse) {
@@ -325,16 +335,16 @@ module VORLON {
                 }
             }
         }
-        
+
         endAnalyse(analyse) {
             for (var n in VORLON.WebStandards.Rules.DOM) {
-                var rule = <IDOMRule>VORLON.WebStandards.Rules.DOM[n];                
+                var rule = <IDOMRule>VORLON.WebStandards.Rules.DOM[n];
                 if (rule && !rule.generalRule && rule.endcheck) {
                     var current = this.initialiseRuleSummary(rule, analyse);
                     rule.endcheck(current, analyse, this._currentAnalyse.html);
                 }
-            }   
-            
+            }
+
             for (var n in VORLON.WebStandards.Rules.CSS) {
                 var cssrule = <ICSSRule>VORLON.WebStandards.Rules.CSS[n];
                 if (cssrule) {
@@ -356,12 +366,12 @@ module VORLON {
     }
 
     WebStandardsDashboard.prototype.DashboardCommands = {
-        htmlContent: function(data: any) {
+        htmlContent: function (data: any) {
             var plugin = <WebStandardsDashboard>this;
             plugin.receiveHtmlContent(data);
         },
 
-        documentContent: function(data: any) {
+        documentContent: function (data: any) {
             var plugin = <WebStandardsDashboard>this;
             plugin.receiveDocumentContent(data);
         }
@@ -409,7 +419,7 @@ module VORLON {
                 //}  
             }
 
-            items.sort(function(a, b) {
+            items.sort(function (a, b) {
                 return a.title.localeCompare(b.title);
             })
 
@@ -461,14 +471,14 @@ module VORLON {
         }
 
         setRule(rule) {
-            this.element.innerHTML = "";            
+            this.element.innerHTML = "";
 
             var fluent = FluentDOM.forElement(this.element);
             fluent.append("DIV", "ruledetailpanel-content", (content) => {
                 content.append("DIV", "item", (item) => {
                     if (rule.type)
                         item.addClass(rule.type);
-                
+
                     item.append("H1", "title", (title) => {
                         title.createChild("SPAN", "state fa " + (rule.failed ? "fa-close" : "fa-check"));
                         title.createChild("SPAN", "text").html(rule.title);
