@@ -40,15 +40,15 @@ module VORLON {
                 this._startCheckButton.addEventListener("click", (evt) => {
                     this._startCheckButton.disabled = true;
                     this._cancelCheckButton.disabled = false;
-                    this._currentAnalyse = { 
-                        processing: true, 
-                        id: VORLON.Tools.CreateGUID() 
+                    this._currentAnalyse = {
+                        processing: true,
+                        id: VORLON.Tools.CreateGUID()
                     };
                     this._rootDiv.classList.add("loading");
                     this._rulesPanel.clear("analyse in progress...");
                     this.sendCommandToClient('startNewAnalyse', { id: this._currentAnalyse.id });
                 });
-                
+
                 this._cancelCheckButton.addEventListener("click", (evt) => {
                     this._startCheckButton.disabled = false;
                     this._cancelCheckButton.disabled = true;
@@ -83,11 +83,11 @@ module VORLON {
             }
         }
 
-        receiveHtmlContent(data: { id: string, html: string, doctype: any, url:any, browserDetection : any }) {
+        receiveHtmlContent(data: { id: string, html: string, doctype: any, url: any, browserDetection: any, fallBackErrorList: Array<any> }) {
             if (!this._currentAnalyse) {
                 this._currentAnalyse = { processing: true };
             }
-            
+
             if (!this._currentAnalyse.files) {
                 this._currentAnalyse.files = {};
             }
@@ -95,8 +95,8 @@ module VORLON {
             this._currentAnalyse.html = data.html;
             this._currentAnalyse.doctype = data.doctype;
             this._currentAnalyse.location = data.url;
-            this._currentAnalyse.browserDetection  = data.browserDetection;
-            
+            this._currentAnalyse.browserDetection = data.browserDetection;
+
             var fragment: HTMLDocument = document.implementation.createHTMLDocument("analyse");
             fragment.documentElement.innerHTML = data.html;
             this._currentAnalyse.pendingLoad = 0;
@@ -127,22 +127,23 @@ module VORLON {
                     this._currentAnalyse.pendingLoad++;
                 }
             }
-            
-            this._currentAnalyse.results = {};            
-            this.prepareAnalyse(this._currentAnalyse) 
+
+            this._currentAnalyse.results = {};
+            this.prepareAnalyse(this._currentAnalyse)
+            this._currentAnalyse.fallBackErrorList = data.fallBackErrorList;
             this.analyseDOM(fragment, data.html, this._currentAnalyse);
         }
 
         receiveDocumentContent(data: { id: string, url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number }) {
             var item = null;
             var itemContainer = null;
-            for (var n in this._currentAnalyse.files){
+            for (var n in this._currentAnalyse.files) {
                 var container = this._currentAnalyse.files[n];
-                if (container[data.url]){
+                if (container[data.url]) {
                     item = container[data.url];
                     itemContainer = n;
                 }
-            }            
+            }
 
             if (item) {
                 this._currentAnalyse.pendingLoad--;
@@ -161,11 +162,11 @@ module VORLON {
                     this._currentAnalyse.processing = false;
                 }
             }
-            
+
             if (itemContainer === "stylesheets") {
                 this.analyseCssDocument(data.url, data.content, this._currentAnalyse);
             }
-            
+
             if (itemContainer === "scripts") {
                 this.analyseJsDocument(data.url, data.content, this._currentAnalyse);
             }
@@ -174,7 +175,7 @@ module VORLON {
         analyseDOM(document: HTMLDocument, htmlContent: string, analyse) {
             var generalRules = [];
             var commonRules = [];
-            
+
             var rules = {
                 domRulesIndex: <any>{},
                 domRulesForAllNodes: []
@@ -235,7 +236,7 @@ module VORLON {
                 specificRules.forEach((r) => {
                     this.applyDOMNodeRule(node, r, analyse, htmlContent);
                 });
-            } 
+            }
 
             if (rules.domRulesForAllNodes && rules.domRulesForAllNodes.length) {
                 rules.domRulesForAllNodes.forEach((r) => {
@@ -293,6 +294,7 @@ module VORLON {
                     rule.check(url, parsed, current, analyse);
                 }
             }
+
         }
 
         analyseJsDocument(url, content, analyse) {
@@ -325,16 +327,16 @@ module VORLON {
                 }
             }
         }
-        
+
         endAnalyse(analyse) {
             for (var n in VORLON.WebStandards.Rules.DOM) {
-                var rule = <IDOMRule>VORLON.WebStandards.Rules.DOM[n];                
+                var rule = <IDOMRule>VORLON.WebStandards.Rules.DOM[n];
                 if (rule && !rule.generalRule && rule.endcheck) {
                     var current = this.initialiseRuleSummary(rule, analyse);
                     rule.endcheck(current, analyse, this._currentAnalyse.html);
                 }
-            }   
-            
+            }
+
             for (var n in VORLON.WebStandards.Rules.CSS) {
                 var cssrule = <ICSSRule>VORLON.WebStandards.Rules.CSS[n];
                 if (cssrule) {
@@ -461,14 +463,14 @@ module VORLON {
         }
 
         setRule(rule) {
-            this.element.innerHTML = "";            
+            this.element.innerHTML = "";
 
             var fluent = FluentDOM.forElement(this.element);
             fluent.append("DIV", "ruledetailpanel-content", (content) => {
                 content.append("DIV", "item", (item) => {
                     if (rule.type)
                         item.addClass(rule.type);
-                
+
                     item.append("H1", "title", (title) => {
                         title.createChild("SPAN", "state fa " + (rule.failed ? "fa-close" : "fa-check"));
                         title.createChild("SPAN", "text").html(rule.title);
@@ -496,7 +498,10 @@ module VORLON {
                 if (item.type) {
                     itemelt.addClass(item.type);
                 }
-                if (item.title) {
+                if (item.title&&item.alert) {
+                    itemelt.createChild("SPAN", "state fa " + (item.failed ? "fa-close" : "fa-check")).html(item.title);
+                }
+                else if (item.title) {
                     itemelt.createChild("DIV", "title").html(item.title);
                 }
                 if (item.message) {
