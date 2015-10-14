@@ -83,7 +83,7 @@ module VORLON {
             }
         }
 
-        receiveHtmlContent(data: { id: string, html: string, doctype: any, url: any, browserDetection: any, fallBackErrorList: Array<string> }) {
+        receiveHtmlContent(data: { id: string, html: string, doctype: any, url: any, browserDetection: any, fallBackErrorList: Array<any> }) {
             if (!this._currentAnalyse) {
                 this._currentAnalyse = { processing: true };
             }
@@ -130,15 +130,7 @@ module VORLON {
 
             this._currentAnalyse.results = {};
             this.prepareAnalyse(this._currentAnalyse)
-            this._currentAnalyse.results.rules.webstandards.rules.cssFallBack = { id: ".cssFallBack", title: "CSS FallBack", description: "CSS FallBack failed on:" };
-            if (data.fallBackErrorList && data.fallBackErrorList.length) {
-                this._currentAnalyse.results.rules.webstandards.rules.cssFallBack.failed = true;
-                this._currentAnalyse.results.rules.webstandards.rules.cssFallBack.items = [];
-                for (var ind = 0; ind < data.fallBackErrorList.length; ind++) {
-                    var csspropname = data.fallBackErrorList[ind].replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
-                    this._currentAnalyse.results.rules.webstandards.rules.cssFallBack.items.push({ failed: true, id: "." + data.fallBackErrorList[ind], items: [], title: "from -webkit-" + csspropname + " to " + csspropname, type: "blockitems" });
-                }
-            }
+            this._currentAnalyse.fallBackErrorList = data.fallBackErrorList;
             this.analyseDOM(fragment, data.html, this._currentAnalyse);
         }
 
@@ -203,7 +195,7 @@ module VORLON {
                     } else {
                         commonRules.push(rule);
                         if (rule.nodeTypes.length) {
-                            rule.nodeTypes.forEach(function (n) {
+                            rule.nodeTypes.forEach(function(n) {
                                 n = n.toUpperCase();
                                 if (!rules.domRulesIndex[n])
                                     rules.domRulesIndex[n] = [];
@@ -262,7 +254,7 @@ module VORLON {
             var current = analyse.results;
             var id = "";
             current.rules = current.rules || {};
-            tokens.forEach(function (t) {
+            tokens.forEach(function(t) {
                 id = (id.length > 0) ? "." + t : t;
 
                 if (!current.rules) {
@@ -366,12 +358,12 @@ module VORLON {
     }
 
     WebStandardsDashboard.prototype.DashboardCommands = {
-        htmlContent: function (data: any) {
+        htmlContent: function(data: any) {
             var plugin = <WebStandardsDashboard>this;
             plugin.receiveHtmlContent(data);
         },
 
-        documentContent: function (data: any) {
+        documentContent: function(data: any) {
             var plugin = <WebStandardsDashboard>this;
             plugin.receiveDocumentContent(data);
         }
@@ -419,7 +411,7 @@ module VORLON {
                 //}  
             }
 
-            items.sort(function (a, b) {
+            items.sort(function(a, b) {
                 return a.title.localeCompare(b.title);
             })
 
@@ -506,7 +498,10 @@ module VORLON {
                 if (item.type) {
                     itemelt.addClass(item.type);
                 }
-                if (item.title) {
+                if (item.title&&item.alert) {
+                    itemelt.createChild("SPAN", "state fa " + (item.failed ? "fa-close" : "fa-check")).html(item.title);
+                }
+                else if (item.title) {
                     itemelt.createChild("DIV", "title").html(item.title);
                 }
                 if (item.message) {
