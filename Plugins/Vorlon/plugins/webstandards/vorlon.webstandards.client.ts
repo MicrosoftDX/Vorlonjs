@@ -101,16 +101,15 @@ module VORLON {
                 'transitionTimingFunction': 'linear',
                 'userSelect': 'none',
             }
-            //var styleelement = document.createElement('style');
-            //styleelement.innerHTML = compatiblePrefixes;
-            //div.appendChild(styleelement);
             var divTest = document.createElement('div');
-            //div.appendChild(divTest);
             var fallBackErrorList = [];
             for (var n in styleList) {
                 divTest.style['webkit' + this.capitalizeFirstLetter(n)] = styleList[n];
                 if (divTest.style[n] != styleList[n]) {
-                    fallBackErrorList.push(n);
+                    fallBackErrorList.push({ name: n, failed: true });
+                }
+                else {
+                    fallBackErrorList.push({ name: n, failed: false });
                 }
             }
             return fallBackErrorList;
@@ -196,12 +195,12 @@ module VORLON {
     }
 
     WebStandardsClient.prototype.ClientCommands = {
-        startNewAnalyse: function (data: any) {
+        startNewAnalyse: function(data: any) {
             var plugin = <WebStandardsClient>this;
             plugin.startNewAnalyse(data);
         },
 
-        fetchDocument: function (data: any) {
+        fetchDocument: function(data: any) {
             var plugin = <WebStandardsClient>this;
             plugin.fetchDocument(data);
         }
