@@ -20,7 +20,7 @@ module VORLON {
         private _startCheckButton: HTMLButtonElement;
         private _cancelCheckButton: HTMLButtonElement;
         private _rootDiv: HTMLElement;
-        private _currentAnalyse = null;
+        private _currentAnalyze = null;
         private _rulesPanel: WebStandardsRulesPanel = null;
         private _ruleDetailPanel: WebStandardsRuleDetailPanel = null;
         public analyzeCssFallback: boolean = true;
@@ -40,20 +40,20 @@ module VORLON {
                 this._startCheckButton.addEventListener("click", (evt) => {
                     this._startCheckButton.disabled = true;
                     this._cancelCheckButton.disabled = false;
-                    this._currentAnalyse = {
+                    this._currentAnalyze = {
                         processing: true,
                         id: VORLON.Tools.CreateGUID()
                     };
                     this._rootDiv.classList.add("loading");
                     this._rulesPanel.clear("analyze in progress...");
-                    this.sendCommandToClient('startNewAnalyse', { id: this._currentAnalyse.id,analyzeCssFallback:this.analyzeCssFallback });
+                    this.sendCommandToClient('startNewAnalyze', { id: this._currentAnalyze.id,analyzeCssFallback:this.analyzeCssFallback });
                 });
 
                 this._cancelCheckButton.addEventListener("click", (evt) => {
                     this._startCheckButton.disabled = false;
                     this._cancelCheckButton.disabled = true;
-                    this._currentAnalyse.processing = false;
-                    this._currentAnalyse.canceled = true;
+                    this._currentAnalyze.processing = false;
+                    this._currentAnalyze.canceled = true;
                     this._rootDiv.classList.remove("loading");
                     this._rulesPanel.clear("retry by clicking on start button");
                 });
@@ -66,42 +66,42 @@ module VORLON {
         }
 
         checkLoadingState() {
-            if (!this._currentAnalyse || this._currentAnalyse.ended || this._currentAnalyse.canceled) {
+            if (!this._currentAnalyze || this._currentAnalyze.ended || this._currentAnalyze.canceled) {
                 return;
             }
 
-            if (this._currentAnalyse.processing) {
+            if (this._currentAnalyze.processing) {
 
             } else {
-                this.endAnalyse(this._currentAnalyse);
+                this.endAnalyze(this._currentAnalyze);
                 this._rootDiv.classList.remove("loading");
-                this._currentAnalyse.ended = true;
+                this._currentAnalyze.ended = true;
                 this._ruleDetailPanel.setMessage("click on a rule in the result panel to show details");
-                this._rulesPanel.setRules(this._currentAnalyse);
+                this._rulesPanel.setRules(this._currentAnalyze);
                 this._startCheckButton.disabled = false;
                 this._cancelCheckButton.disabled = true;
             }
         }
 
         receiveHtmlContent(data: { id: string, html: string, doctype: any, url: any, browserDetection: any, fallBackErrorList: Array<any> }) {
-            if (!this._currentAnalyse) {
-                this._currentAnalyse = { processing: true };
+            if (!this._currentAnalyze) {
+                this._currentAnalyze = { processing: true };
             }
 
-            if (!this._currentAnalyse.files) {
-                this._currentAnalyse.files = {};
+            if (!this._currentAnalyze.files) {
+                this._currentAnalyze.files = {};
             }
 
-            this._currentAnalyse.html = data.html;
-            this._currentAnalyse.doctype = data.doctype;
-            this._currentAnalyse.location = data.url;
-            this._currentAnalyse.browserDetection = data.browserDetection;
+            this._currentAnalyze.html = data.html;
+            this._currentAnalyze.doctype = data.doctype;
+            this._currentAnalyze.location = data.url;
+            this._currentAnalyze.browserDetection = data.browserDetection;
 
             var fragment: HTMLDocument = document.implementation.createHTMLDocument("analyze");
             fragment.documentElement.innerHTML = data.html;
-            this._currentAnalyse.pendingLoad = 0;
+            this._currentAnalyze.pendingLoad = 0;
 
-            this._currentAnalyse.files.scripts = {};
+            this._currentAnalyze.files.scripts = {};
             var scripts = fragment.querySelectorAll("script");
             for (var i = 0; i < scripts.length; i++) {
                 var s = scripts[i];
@@ -109,36 +109,36 @@ module VORLON {
                 if (src && src.value) {
                     var isVorlon = src.value.indexOf('vorlon.js') > 0 || src.value.indexOf('vorlon.min.js') > 0 || src.value.indexOf('vorlon.max.js') > 0;
                     if (!isVorlon) {
-                        this._currentAnalyse.files.scripts[src.value] = { loaded: false, content: null };
-                        this.sendCommandToClient('fetchDocument', { url: src.value, id: this._currentAnalyse.id });
-                        this._currentAnalyse.pendingLoad++;
+                        this._currentAnalyze.files.scripts[src.value] = { loaded: false, content: null };
+                        this.sendCommandToClient('fetchDocument', { url: src.value, id: this._currentAnalyze.id });
+                        this._currentAnalyze.pendingLoad++;
                     }
                 }
             }
 
-            this._currentAnalyse.files.stylesheets = {};
+            this._currentAnalyze.files.stylesheets = {};
             var stylesheets = fragment.querySelectorAll("link[rel=stylesheet]");
             for (var i = 0; i < stylesheets.length; i++) {
                 var s = stylesheets[i];
                 var href = s.attributes.getNamedItem("href");
                 if (href) {
-                    this._currentAnalyse.files.stylesheets[href.value] = { loaded: false, content: null };
-                    this.sendCommandToClient('fetchDocument', { url: href.value, id: this._currentAnalyse.id });
-                    this._currentAnalyse.pendingLoad++;
+                    this._currentAnalyze.files.stylesheets[href.value] = { loaded: false, content: null };
+                    this.sendCommandToClient('fetchDocument', { url: href.value, id: this._currentAnalyze.id });
+                    this._currentAnalyze.pendingLoad++;
                 }
             }
 
-            this._currentAnalyse.results = {};
-            this.prepareAnalyse(this._currentAnalyse)
-            this._currentAnalyse.fallBackErrorList = data.fallBackErrorList;
-            this.analyzeDOM(fragment, data.html, this._currentAnalyse);
+            this._currentAnalyze.results = {};
+            this.prepareAnalyze(this._currentAnalyze)
+            this._currentAnalyze.fallBackErrorList = data.fallBackErrorList;
+            this.analyzeDOM(fragment, data.html, this._currentAnalyze);
         }
 
         receiveDocumentContent(data: { id: string, url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number }) {
             var item = null;
             var itemContainer = null;
-            for (var n in this._currentAnalyse.files) {
-                var container = this._currentAnalyse.files[n];
+            for (var n in this._currentAnalyze.files) {
+                var container = this._currentAnalyze.files[n];
                 if (container[data.url]) {
                     item = container[data.url];
                     itemContainer = n;
@@ -146,7 +146,7 @@ module VORLON {
             }
 
             if (item) {
-                this._currentAnalyse.pendingLoad--;
+                this._currentAnalyze.pendingLoad--;
                 item.loaded = true;
                 item.encoding = data.encoding;
                 item.content = data.content;
@@ -158,17 +158,17 @@ module VORLON {
                     item.loaded = false;
                 }
 
-                if (this._currentAnalyse.pendingLoad == 0) {
-                    this._currentAnalyse.processing = false;
+                if (this._currentAnalyze.pendingLoad == 0) {
+                    this._currentAnalyze.processing = false;
                 }
             }
 
             if (itemContainer === "stylesheets") {
-                this.analyzeCssDocument(data.url, data.content, this._currentAnalyse);
+                this.analyzeCssDocument(data.url, data.content, this._currentAnalyze);
             }
 
             if (itemContainer === "scripts") {
-                this.analyzeJsDocument(data.url, data.content, this._currentAnalyse);
+                this.analyzeJsDocument(data.url, data.content, this._currentAnalyze);
             }
         }
 
@@ -308,7 +308,7 @@ module VORLON {
             }
         }
 
-        prepareAnalyse(analyze) {
+        prepareAnalyze(analyze) {
             for (var n in VORLON.WebStandards.Rules.CSS) {
                 var cssrule = <ICSSRule>VORLON.WebStandards.Rules.CSS[n];
                 if (cssrule) {
@@ -328,12 +328,12 @@ module VORLON {
             }
         }
 
-        endAnalyse(analyze) {
+        endAnalyze(analyze) {
             for (var n in VORLON.WebStandards.Rules.DOM) {
                 var rule = <IDOMRule>VORLON.WebStandards.Rules.DOM[n];
                 if (rule && !rule.generalRule && rule.endcheck) {
                     var current = this.initialiseRuleSummary(rule, analyze);
-                    rule.endcheck(current, analyze, this._currentAnalyse.html);
+                    rule.endcheck(current, analyze, this._currentAnalyze.html);
                 }
             }
 
@@ -389,7 +389,7 @@ module VORLON {
         }
 
         setRules(analyze) {
-            console.log("RENDER ANALYSE");
+            console.log("RENDER ANALYZE");
             console.log(analyze);
             this.element.style.display = "";
             this.element.innerHTML = "";

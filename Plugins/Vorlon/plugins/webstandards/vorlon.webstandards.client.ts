@@ -4,7 +4,7 @@ module VORLON {
     export class WebStandardsClient extends ClientPlugin {
         public sendedHTML: string;
         private _doctype: any;
-        private _currentAnalyse: any = {};
+        private _currentAnalyze: any = {};
         public browserDetectionHook = {
             userAgent: [],
             appVersion: [],
@@ -61,9 +61,9 @@ module VORLON {
 
         public checkLocalFallBack(id: any) {
             var fallBackErrorList = [];
-            if (this._currentAnalyse && this._currentAnalyse.processing)
+            if (this._currentAnalyze && this._currentAnalyze.processing)
                 return;
-            this._currentAnalyse = {
+            this._currentAnalyze = {
                 processing: true,
                 pendingLoad: 0,
                 stylesheets: [],
@@ -75,16 +75,16 @@ module VORLON {
                 var s = stylesheets[i];
                 var href = s.attributes.getNamedItem("href");
                 if (href) {
-                    this._currentAnalyse.stylesheets[href.value] = { loaded: false, content: null };
+                    this._currentAnalyze.stylesheets[href.value] = { loaded: false, content: null };
                     this.localFetchDocument({ url: href.value, id: id })
-                    this._currentAnalyse.pendingLoad++;
+                    this._currentAnalyze.pendingLoad++;
                 }
             }
             return fallBackErrorList;
         }
 
 
-        public startNewAnalyse(data): void {
+        public startNewAnalyze(data): void {
             var allHTML = document.documentElement.outerHTML;
             this.sendedHTML = allHTML;
 
@@ -161,13 +161,13 @@ module VORLON {
 
         private documentContent(data: { id: string, url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number }) {
             var item = null;
-            var container = this._currentAnalyse.stylesheets;
+            var container = this._currentAnalyze.stylesheets;
             if (container[data.url]) {
                 item = container[data.url];
 
             }
             if (item) {
-                this._currentAnalyse.pendingLoad--;
+                this._currentAnalyze.pendingLoad--;
                 item.loaded = true;
                 item.encoding = data.encoding;
                 item.content = data.content;
@@ -179,11 +179,11 @@ module VORLON {
                     item.loaded = false;
                 }
 
-                if (this._currentAnalyse.pendingLoad == 0) {
-                    this._currentAnalyse.processing = false;
+                if (this._currentAnalyze.pendingLoad == 0) {
+                    this._currentAnalyze.processing = false;
                 }
             }
-            this.analyzeCssDocument(data.url, data.content, this._currentAnalyse, data.id);
+            this.analyzeCssDocument(data.url, data.content, this._currentAnalyze, data.id);
 
         }
 
@@ -249,21 +249,21 @@ module VORLON {
 
                 var resultsList = this.checkPrefix(rules);
                 if (resultsList.length > 0) {
-                    if (!this._currentAnalyse.results[url])
-                        this._currentAnalyse.results[url] = {}
-                    if (!this._currentAnalyse.results[url][selector])
-                        this._currentAnalyse.results[url][selector] = [];
+                    if (!this._currentAnalyze.results[url])
+                        this._currentAnalyze.results[url] = {}
+                    if (!this._currentAnalyze.results[url][selector])
+                        this._currentAnalyze.results[url][selector] = [];
                     for (var x = 0; x < resultsList.length; x++) {
-                        this._currentAnalyse.results[url][selector].push(resultsList[x]);
+                        this._currentAnalyze.results[url][selector].push(resultsList[x]);
                     }
                 }
 
 
             }
 
-            if (this._currentAnalyse.pendingLoad == 0) {
-                // this.sendCommandToDashboard("cssPrefixeResutls", { data: this._currentAnalyse.results });
-                this.sendCommandToDashboard("htmlContent", { html: this.sendedHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: id, fallBackErrorList: this._currentAnalyse.results });
+            if (this._currentAnalyze.pendingLoad == 0) {
+                // this.sendCommandToDashboard("cssPrefixeResutls", { data: this._currentAnalyze.results });
+                this.sendCommandToDashboard("htmlContent", { html: this.sendedHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: id, fallBackErrorList: this._currentAnalyze.results });
             }
 
         }
@@ -323,9 +323,9 @@ module VORLON {
     }
 
     WebStandardsClient.prototype.ClientCommands = {
-        startNewAnalyse: function (data: any) {
+        startNewAnalyze: function (data: any) {
             var plugin = <WebStandardsClient>this;
-            plugin.startNewAnalyse(data);
+            plugin.startNewAnalyze(data);
         },
 
         fetchDocument: function (data: any) {
