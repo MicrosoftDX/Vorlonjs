@@ -6,11 +6,11 @@ module VORLON.WebStandards.Rules.DOM {
         description: "Use meta viewport tag to choose how your website will get scaled on smaller devices like phones. Define at least &lt;meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"&gt;",
         nodeTypes: ["meta"],
 
-        prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+        prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
             rulecheck.failed = true;
         },
 
-        check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlString: string) {
+        check: function(node: HTMLElement, rulecheck: any, analyzeSummary: any, htmlString: string) {
             var viewportattr = node.getAttribute("name");
             if (viewportattr && viewportattr.toLowerCase() == "viewport") {
                 rulecheck.failed = false;

@@ -6,14 +6,14 @@ module VORLON.WebStandards.Rules.DOM {
         description : "label tag is intended to be used with input field. Label tags help people with disabilities to identify input fields.",
         nodeTypes: ["label"],
                 
-        prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+        prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
             rulecheck.items = rulecheck.items || [];   
             rulecheck.type = "blockitems";      
             rulecheck.nbfailed = 0;
             rulecheck.nbcheck = 0;    
         },
         
-        check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlString: string) {
+        check: function(node: HTMLElement, rulecheck: any, analyzeSummary: any, htmlString: string) {
             var forAttr = node.getAttribute("for");
             rulecheck.nbcheck++;
             if (!forAttr) {

@@ -6,7 +6,7 @@ module VORLON.WebStandards.Rules.DOM {
         description : "lang attribute on HTML tag helps people finding out if they will understand content without having to get deep into it",
         nodeTypes: ["html"],
                 
-        check: function(node: Element, rulecheck: any, analyseSummary: any, htmlString: string) {
+        check: function(node: Element, rulecheck: any, analyzeSummary: any, htmlString: string) {
             var min = htmlString.toLowerCase();
             var start = min.indexOf("<html");
             var end = min.indexOf(">", start);

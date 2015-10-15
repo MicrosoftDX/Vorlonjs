@@ -67,7 +67,7 @@ module VORLON.WebStandards.Rules.CSS {
         id: "webstandards.prefixes",
         title: "incorrect use of prefixes",
         description: "Ensure you use all vendor prefixes and unprefixed version for HTML5 CSS properties.",
-        check: function (url, ast, rulecheck: any, analyseSummary: any) {
+        check: function (url, ast, rulecheck: any, analyzeSummary: any) {
             console.log("check css prefixes");
 
             var nodes: any = [];

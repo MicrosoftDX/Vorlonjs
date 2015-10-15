@@ -5,12 +5,12 @@ module VORLON.WebStandards.Rules.DOM {
         description: "Modern doctype like &lt;!DOCTYPE html&gt; are better for browser compatibility and enable using HTML5 features.",
         nodeTypes: ["META"],
         
-        prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+        prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
             rulecheck.items = rulecheck.items || [];   
             rulecheck.type = "blockitems";          
         },
         
-        check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlString: string) {
+        check: function(node: HTMLElement, rulecheck: any, analyzeSummary: any, htmlString: string) {
             var httpequiv = node.getAttribute("http-equiv");
             
             if (httpequiv && httpequiv.toLowerCase() == "x-ua-compatible"){
@@ -26,9 +26,9 @@ module VORLON.WebStandards.Rules.DOM {
             }
         },
         
-        endcheck: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+        endcheck: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
             //console.log("checking comment " + node.nodeValue);
-            var doctype = analyseSummary.doctype || {};
+            var doctype = analyzeSummary.doctype || {};
             var current = {
                 title : "used doctype is <br/>" + VORLON.Tools.htmlToString(doctype.html)
             }

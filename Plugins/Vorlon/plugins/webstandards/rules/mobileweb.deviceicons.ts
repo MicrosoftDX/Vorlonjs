@@ -6,14 +6,14 @@ module VORLON.WebStandards.Rules.DOM {
         description: "Platform icons helps user pinning your website with an icon that fits well on the device",
         nodeTypes: ["meta", "link"],
 
-        prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+        prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
             rulecheck.items = rulecheck.items || [];   
             rulecheck.hasWindowsIcons = false;
             rulecheck.hasWindowsNotification = false;
             rulecheck.hasIOSIcons = false;
         },
 
-        check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlString: string) {
+        check: function(node: HTMLElement, rulecheck: any, analyzeSummary: any, htmlString: string) {
             if (node.nodeName == "LINK"){
                 var rel = node.getAttribute("rel");
                 if (rel && rel == "apple-touch-icon-precomposed"){
@@ -29,7 +29,7 @@ module VORLON.WebStandards.Rules.DOM {
             }
         },
         
-        endcheck : function(rulecheck, analyseSummary, htmlstring : string){
+        endcheck : function(rulecheck, analyzeSummary, htmlstring : string){
 			if (!rulecheck.hasIOSIcons){
                 rulecheck.failed = true;
                 rulecheck.items.push({

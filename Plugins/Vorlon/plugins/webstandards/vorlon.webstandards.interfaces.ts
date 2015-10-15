@@ -3,9 +3,9 @@ module VORLON {
 		id: string;
 		title : string;
 		nodeTypes : string[];
-		prepare? : (rulecheck, analyse, htmlcontent) => void;
-		check : (node, rulecheck, analyse, htmlcontent) => void;
-		endcheck? : (rulecheck, analyse, htmlcontent) => void;
+		prepare? : (rulecheck, analyze, htmlcontent) => void;
+		check : (node, rulecheck, analyze, htmlcontent) => void;
+		endcheck? : (rulecheck, analyze, htmlcontent) => void;
 		generalRule? : boolean;
 		description?: string;
 	}
@@ -13,18 +13,18 @@ module VORLON {
 	export interface ICSSRule{
 		id: string;
 		title : string;
-		prepare? : (rulecheck, analyseSummary) => void;
-		check : (url: string, ast, rulecheck, analyseSummary) => void;
-		endcheck? : (rulecheck, analyseSummary) => void;
+		prepare? : (rulecheck, analyzeSummary) => void;
+		check : (url: string, ast, rulecheck, analyzeSummary) => void;
+		endcheck? : (rulecheck, analyzeSummary) => void;
 		description?: string;
 	}
 	
 	export interface IScriptRule{
 		id: string;
 		title : string;
-		prepare? : (rulecheck: any, analyseSummary: any) => void;
-		check : (url: string, javascriptContent: string, rulecheck: any, analyseSummary: any) => void;
-		endcheck? : (rulecheck: any, analyseSummary: any) => void;
+		prepare? : (rulecheck: any, analyzeSummary: any) => void;
+		check : (url: string, javascriptContent: string, rulecheck: any, analyzeSummary: any) => void;
+		endcheck? : (rulecheck: any, analyzeSummary: any) => void;
 		description?: string;
 	}		
 }

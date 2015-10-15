@@ -1316,7 +1316,7 @@ declare module BABYLON {
 }
 
 declare module BABYLON {
-    class Analyser {
+    class Analyzer {
         SMOOTHING: number;
         FFT_SIZE: number;
         BARGRAPHAMPLITUDE: number;
@@ -1331,7 +1331,7 @@ declare module BABYLON {
         private _byteFreqs;
         private _byteTime;
         private _floatFreqs;
-        private _webAudioAnalyser;
+        private _webAudioAnalyzer;
         private _debugCanvas;
         private _debugCanvasContext;
         private _scene;
@@ -1355,7 +1355,7 @@ declare module BABYLON {
         private _audioContextInitialized;
         canUseWebAudio: boolean;
         masterGain: GainNode;
-        private _connectedAnalyser;
+        private _connectedAnalyzer;
         WarnedWebAudioUnsupported: boolean;
         audioContext: AudioContext;
         constructor();
@@ -1363,7 +1363,7 @@ declare module BABYLON {
         dispose(): void;
         getGlobalVolume(): number;
         setGlobalVolume(newVolume: number): void;
-        connectToAnalyser(analyser: Analyser): void;
+        connectToAnalyzer(analyzer: Analyzer): void;
     }
 }
 
@@ -1466,7 +1466,7 @@ declare module BABYLON {
         id: number;
         soundCollection: Array<Sound>;
         private _isMainTrack;
-        private _connectedAnalyser;
+        private _connectedAnalyzer;
         constructor(scene: Scene, options?: any);
         dispose(): void;
         AddSound(sound: Sound): void;
@@ -1474,7 +1474,7 @@ declare module BABYLON {
         setVolume(newVolume: number): void;
         switchPanningModelToHRTF(): void;
         switchPanningModelToEqualPower(): void;
-        connectToAnalyser(analyser: Analyser): void;
+        connectToAnalyzer(analyzer: Analyzer): void;
     }
 }
 

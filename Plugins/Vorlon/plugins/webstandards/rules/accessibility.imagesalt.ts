@@ -6,14 +6,14 @@ module VORLON.WebStandards.Rules.DOM {
         description : "Add alt attribute on images to enable blind people to get meaning for images.",
         nodeTypes: ["IMG", "AREA"],
         
-        prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+        prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
             rulecheck.items = rulecheck.items || [];   
             rulecheck.type = "blockitems";      
             rulecheck.nbfailed = 0;
             rulecheck.nbcheck = 0;    
         },
         
-        check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlString: string) {
+        check: function(node: HTMLElement, rulecheck: any, analyzeSummary: any, htmlString: string) {
             console.log("check alt images ");
             var altattr = node.attributes.getNamedItem("alt");
             
