@@ -26,8 +26,8 @@ gulp.task('typescript-to-js', function() {
       ]);
 });
 
-/**
- * Compile less files to their css respective files
+
+ /* Compile less files to their css respective files
  */
 gulp.task('less-to-css', function() {
   return gulp.src(['Vorlon/**/*.less'], { base : '.' })
@@ -41,6 +41,7 @@ gulp.task('less-to-css', function() {
  */
 gulp.task('scripts-noplugin', ['typescript-to-js'], function() {
     return gulp.src([
+            'libs/css.js',
             'release/vorlon.tools.js',
             'release/vorlon.enums.js',
             'release/vorlon.basePlugin.js',
