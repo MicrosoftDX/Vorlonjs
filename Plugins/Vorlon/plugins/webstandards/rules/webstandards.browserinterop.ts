@@ -12,22 +12,22 @@ module VORLON.WebStandards.Rules.DOM {
             "Firefox" : 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0'
         },
 
-        prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+        prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
             rulecheck.items = rulecheck.items || [];
             rulecheck.type = "blockitems";
-            analyseSummary.files.browserInterop = {};
+            analyzeSummary.files.browserInterop = {};
             
             for (var n in this.userAgents){
-                this.fetchHTMLDocument(n, this.userAgents[n], analyseSummary);
+                this.fetchHTMLDocument(n, this.userAgents[n], analyzeSummary);
             }
         },
 
-        check: function(node: Node, rulecheck: any, analyseSummary: any, htmlString: string) {
+        check: function(node: Node, rulecheck: any, analyzeSummary: any, htmlString: string) {
 
         },
 
-        endcheck: function(rulecheck: any, analyseSummary: any, htmlString: string) {
-            var detection = analyseSummary.files.browserInterop;
+        endcheck: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
+            var detection = analyzeSummary.files.browserInterop;
             var comparisons = {};
             
             for (var n in detection){
@@ -46,13 +46,13 @@ module VORLON.WebStandards.Rules.DOM {
             }
         },
 
-        fetchHTMLDocument: function(browser, userAgent, analyseSummary) {
+        fetchHTMLDocument: function(browser, userAgent, analyzeSummary) {
             var xhr = null;            
             
             var serverurl = (<any>VORLON.Core._messenger)._serverUrl;
             if (serverurl[serverurl.length-1] !== '/')
                 serverurl = serverurl + "/";            
-            var documentUrl = serverurl + "httpproxy/fetch?fetchurl=" + encodeURIComponent(analyseSummary.location.href) + "&fetchuseragent=" + encodeURIComponent(userAgent);
+            var documentUrl = serverurl + "httpproxy/fetch?fetchurl=" + encodeURIComponent(analyzeSummary.location.href) + "&fetchuseragent=" + encodeURIComponent(userAgent);
             console.log("getting HTML reference for " + browser + " " + documentUrl);
 
             try {
@@ -62,27 +62,27 @@ module VORLON.WebStandards.Rules.DOM {
                     if (xhr.readyState == 4) {
                         console.log("received content for " + browser + " " + documentUrl + "(" + xhr.status + ")");
 
-                        analyseSummary.pendingLoad--;
+                        analyzeSummary.pendingLoad--;
                         if (xhr.status == 200) {                            
-                            analyseSummary.files.browserInterop[browser] = {
-                                loaded: true, url : analyseSummary.location.href, userAgent : userAgent, status : xhr.status, content : xhr.responseText
+                            analyzeSummary.files.browserInterop[browser] = {
+                                loaded: true, url : analyzeSummary.location.href, userAgent : userAgent, status : xhr.status, content : xhr.responseText
                             }
                         }
                         else {
-                            analyseSummary.files.browserInterop[browser] = {
-                                loaded: false, url : analyseSummary.location.href, userAgent : userAgent, status : xhr.status, content : null, error :  xhr.statusText
+                            analyzeSummary.files.browserInterop[browser] = {
+                                loaded: false, url : analyzeSummary.location.href, userAgent : userAgent, status : xhr.status, content : null, error :  xhr.statusText
                             }
                         }
                     }
                 };
 
                 xhr.open("GET", documentUrl, true);
-                analyseSummary.pendingLoad++;
+                analyzeSummary.pendingLoad++;
                 xhr.send(null);
             } catch (e) {
-                analyseSummary.pendingLoad--;
+                analyzeSummary.pendingLoad--;
                 console.error(e);
-                analyseSummary.files.browserInterop[browser] = { loaded: false, url: analyseSummary.location.href, status: 0, content: null, error: e.message };
+                analyzeSummary.files.browserInterop[browser] = { loaded: false, url: analyzeSummary.location.href, status: 0, content: null, error: e.message };
             }
         }
     }

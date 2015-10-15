@@ -5,6 +5,8 @@ body {
         padding-top: 10px;
         font-family: Helvetica, Arial, sans-serif;
         color: #666;
+        -webkit-transition: ease;
+        -webkit-padding-start: 10px; 
       }
 
       h1, h2 {

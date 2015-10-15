@@ -16,12 +16,12 @@ module VORLON.WebStandards.Rules.DOM {
         description: "Nowadays, browser have very similar user agent, and browser feature moves very fast. Browser detection leads to britle code. Consider using feature detection instead.",
         nodeTypes: ["#comment"],
 
-        prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+        prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
             rulecheck.items = rulecheck.items || [];   
             rulecheck.type = "blockitems";          
         },
 
-        check: function(node: Node, rulecheck: any, analyseSummary: any, htmlString: string) {
+        check: function(node: Node, rulecheck: any, analyzeSummary: any, htmlString: string) {
             
         },
         
@@ -58,8 +58,8 @@ module VORLON.WebStandards.Rules.DOM {
             }
         },
         
-        endcheck: function(rulecheck: any, analyseSummary: any, htmlString: string) {
-            var detection = analyseSummary.browserDetection;
+        endcheck: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
+            var detection = analyzeSummary.browserDetection;
             this.inspectAccesses(detection, "userAgent", rulecheck);
             this.inspectAccesses(detection, "appVersion", rulecheck);
             this.inspectAccesses(detection, "appName", rulecheck);

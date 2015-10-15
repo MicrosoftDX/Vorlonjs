@@ -42,11 +42,11 @@ module VORLON.WebStandards.Rules.DOM {
         description : "Use accessibility attributes like aria-label to provide meaningful information for people with visual disabilities.",
         nodeTypes: [],
 		
-		prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+		prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
             rulecheck.ariaCount = 0;         
         },
         
-        check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlstring : string) {
+        check: function(node: HTMLElement, rulecheck: any, analyzeSummary: any, htmlstring : string) {
 			if (!node.getAttribute) //not an HTML element
 				return;
              
@@ -57,7 +57,7 @@ module VORLON.WebStandards.Rules.DOM {
             })            
         },
         
-        endcheck : function(rulecheck, analyseSummary, htmlstring : string){
+        endcheck : function(rulecheck, analyzeSummary, htmlstring : string){
 			if (rulecheck.ariaCount==0){
                 rulecheck.failed = true;
 			}

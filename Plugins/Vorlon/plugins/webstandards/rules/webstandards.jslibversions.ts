@@ -241,12 +241,12 @@ module VORLON.WebStandards.Rules.JavaScript {
         description: "The following libraries does not looks up to date.",
 
 
-		prepare: function(rulecheck: any, analyseSummary: any) {
+		prepare: function(rulecheck: any, analyzeSummary: any) {
             rulecheck.items = rulecheck.items || [];   
             rulecheck.type = "blockitems";          
         },
 		
-        check: function(url: string, javascriptContent: string, rulecheck: any, analyseSummary: any) {
+        check: function(url: string, javascriptContent: string, rulecheck: any, analyzeSummary: any) {
             rulecheck.items = rulecheck.items || [];
 			var filecheck = null;
 			

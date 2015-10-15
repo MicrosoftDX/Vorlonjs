@@ -23,7 +23,7 @@ module VORLON {
         private _currentAnalyse = null;
         private _rulesPanel: WebStandardsRulesPanel = null;
         private _ruleDetailPanel: WebStandardsRuleDetailPanel = null;
-
+        public analyzeCssFallback: boolean = true;
         public startDashboardSide(div: HTMLDivElement = null): void {
             var script = <HTMLScriptElement>document.createElement("SCRIPT");
             script.src = "/javascripts/css.js";
@@ -45,8 +45,8 @@ module VORLON {
                         id: VORLON.Tools.CreateGUID()
                     };
                     this._rootDiv.classList.add("loading");
-                    this._rulesPanel.clear("analyse in progress...");
-                    this.sendCommandToClient('startNewAnalyse', { id: this._currentAnalyse.id });
+                    this._rulesPanel.clear("analyze in progress...");
+                    this.sendCommandToClient('startNewAnalyse', { id: this._currentAnalyse.id,analyzeCssFallback:this.analyzeCssFallback });
                 });
 
                 this._cancelCheckButton.addEventListener("click", (evt) => {
@@ -97,7 +97,7 @@ module VORLON {
             this._currentAnalyse.location = data.url;
             this._currentAnalyse.browserDetection = data.browserDetection;
 
-            var fragment: HTMLDocument = document.implementation.createHTMLDocument("analyse");
+            var fragment: HTMLDocument = document.implementation.createHTMLDocument("analyze");
             fragment.documentElement.innerHTML = data.html;
             this._currentAnalyse.pendingLoad = 0;
 
@@ -131,7 +131,7 @@ module VORLON {
             this._currentAnalyse.results = {};
             this.prepareAnalyse(this._currentAnalyse)
             this._currentAnalyse.fallBackErrorList = data.fallBackErrorList;
-            this.analyseDOM(fragment, data.html, this._currentAnalyse);
+            this.analyzeDOM(fragment, data.html, this._currentAnalyse);
         }
 
         receiveDocumentContent(data: { id: string, url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number }) {
@@ -164,15 +164,15 @@ module VORLON {
             }
 
             if (itemContainer === "stylesheets") {
-                this.analyseCssDocument(data.url, data.content, this._currentAnalyse);
+                this.analyzeCssDocument(data.url, data.content, this._currentAnalyse);
             }
 
             if (itemContainer === "scripts") {
-                this.analyseJsDocument(data.url, data.content, this._currentAnalyse);
+                this.analyzeJsDocument(data.url, data.content, this._currentAnalyse);
             }
         }
 
-        analyseDOM(document: HTMLDocument, htmlContent: string, analyse) {
+        analyzeDOM(document: HTMLDocument, htmlContent: string, analyze) {
             var generalRules = [];
             var commonRules = [];
 
@@ -185,9 +185,9 @@ module VORLON {
             for (var n in VORLON.WebStandards.Rules.DOM) {
                 var rule = <IDOMRule>VORLON.WebStandards.Rules.DOM[n];
                 if (rule) {
-                    var rulecheck = this.initialiseRuleSummary(rule, analyse);
+                    var rulecheck = this.initialiseRuleSummary(rule, analyze);
                     if (rule.prepare) {
-                        rule.prepare(rulecheck, analyse, htmlContent);
+                        rule.prepare(rulecheck, analyze, htmlContent);
                     }
 
                     if (rule.generalRule) {
@@ -209,16 +209,16 @@ module VORLON {
                 }
             }
 
-            this.analyseDOMNode(document, rules, analyse, htmlContent);
+            this.analyzeDOMNode(document, rules, analyze, htmlContent);
 
             generalRules.forEach((rule) => {
-                this.applyDOMNodeRule(document, rule, analyse, htmlContent);
+                this.applyDOMNodeRule(document, rule, analyze, htmlContent);
             });
         }
 
-        analyseDOMNode(node: Node, rules: any, analyse, htmlContent: string) {
+        analyzeDOMNode(node: Node, rules: any, analyze, htmlContent: string) {
             if (node.nodeName === "STYLE") {
-                this.analyseCssDocument("inline", (<HTMLElement>node).innerHTML, analyse);
+                this.analyzeCssDocument("inline", (<HTMLElement>node).innerHTML, analyze);
             }
 
             if (node.nodeName === "SCRIPT") {
@@ -227,31 +227,31 @@ module VORLON {
                 var hasContent = domnode.innerHTML.trim().length > 0;
 
                 if (!scriptType || scriptType == "text/javascript" && hasContent) {
-                    this.analyseJsDocument("inline", domnode.innerHTML, analyse);
+                    this.analyzeJsDocument("inline", domnode.innerHTML, analyze);
                 }
             }
 
             var specificRules = rules.domRulesIndex[node.nodeName.toUpperCase()];
             if (specificRules && specificRules.length) {
                 specificRules.forEach((r) => {
-                    this.applyDOMNodeRule(node, r, analyse, htmlContent);
+                    this.applyDOMNodeRule(node, r, analyze, htmlContent);
                 });
             }
 
             if (rules.domRulesForAllNodes && rules.domRulesForAllNodes.length) {
                 rules.domRulesForAllNodes.forEach((r) => {
-                    this.applyDOMNodeRule(node, r, analyse, htmlContent);
+                    this.applyDOMNodeRule(node, r, analyze, htmlContent);
                 });
             }
 
             for (var i = 0, l = node.childNodes.length; i < l; i++) {
-                this.analyseDOMNode(node.childNodes[i], rules, analyse, htmlContent);
+                this.analyzeDOMNode(node.childNodes[i], rules, analyze, htmlContent);
             }
         }
 
-        initialiseRuleSummary(rule, analyse) {
+        initialiseRuleSummary(rule, analyze) {
             var tokens = rule.id.split('.');
-            var current = analyse.results;
+            var current = analyze.results;
             var id = "";
             current.rules = current.rules || {};
             tokens.forEach(function(t) {
@@ -276,12 +276,12 @@ module VORLON {
             return current;
         }
 
-        applyDOMNodeRule(node: Node, rule: IDOMRule, analyse, htmlContent: string) {
-            var current = this.initialiseRuleSummary(rule, analyse);
-            rule.check(node, current, analyse, htmlContent);
+        applyDOMNodeRule(node: Node, rule: IDOMRule, analyze, htmlContent: string) {
+            var current = this.initialiseRuleSummary(rule, analyze);
+            rule.check(node, current, analyze, htmlContent);
         }
 
-        analyseCssDocument(url, content, analyse) {
+        analyzeCssDocument(url, content, analyze) {
             var parser = new cssjs();
             var parsed = parser.parseCSS(content);
             console.log("processing css " + url);
@@ -290,68 +290,68 @@ module VORLON {
             for (var n in VORLON.WebStandards.Rules.CSS) {
                 var rule = <ICSSRule>VORLON.WebStandards.Rules.CSS[n];
                 if (rule) {
-                    var current = this.initialiseRuleSummary(rule, analyse);
-                    rule.check(url, parsed, current, analyse);
+                    var current = this.initialiseRuleSummary(rule, analyze);
+                    rule.check(url, parsed, current, analyze);
                 }
             }
 
         }
 
-        analyseJsDocument(url, content, analyse) {
+        analyzeJsDocument(url, content, analyze) {
             console.log("processing script " + url);
             for (var n in VORLON.WebStandards.Rules.JavaScript) {
                 var rule = <IScriptRule>VORLON.WebStandards.Rules.JavaScript[n];
                 if (rule) {
-                    var current = this.initialiseRuleSummary(rule, analyse);
-                    rule.check(url, content, current, analyse);
+                    var current = this.initialiseRuleSummary(rule, analyze);
+                    rule.check(url, content, current, analyze);
                 }
             }
         }
 
-        prepareAnalyse(analyse) {
+        prepareAnalyse(analyze) {
             for (var n in VORLON.WebStandards.Rules.CSS) {
                 var cssrule = <ICSSRule>VORLON.WebStandards.Rules.CSS[n];
                 if (cssrule) {
-                    var current = this.initialiseRuleSummary(cssrule, analyse);
+                    var current = this.initialiseRuleSummary(cssrule, analyze);
                     if (cssrule.prepare)
-                        cssrule.prepare(current, analyse);
+                        cssrule.prepare(current, analyze);
                 }
             }
 
             for (var n in VORLON.WebStandards.Rules.JavaScript) {
                 var scriptrule = <IScriptRule>VORLON.WebStandards.Rules.JavaScript[n];
                 if (scriptrule) {
-                    var current = this.initialiseRuleSummary(scriptrule, analyse);
+                    var current = this.initialiseRuleSummary(scriptrule, analyze);
                     if (scriptrule.prepare)
-                        scriptrule.prepare(current, analyse);
+                        scriptrule.prepare(current, analyze);
                 }
             }
         }
 
-        endAnalyse(analyse) {
+        endAnalyse(analyze) {
             for (var n in VORLON.WebStandards.Rules.DOM) {
                 var rule = <IDOMRule>VORLON.WebStandards.Rules.DOM[n];
                 if (rule && !rule.generalRule && rule.endcheck) {
-                    var current = this.initialiseRuleSummary(rule, analyse);
-                    rule.endcheck(current, analyse, this._currentAnalyse.html);
+                    var current = this.initialiseRuleSummary(rule, analyze);
+                    rule.endcheck(current, analyze, this._currentAnalyse.html);
                 }
             }
 
             for (var n in VORLON.WebStandards.Rules.CSS) {
                 var cssrule = <ICSSRule>VORLON.WebStandards.Rules.CSS[n];
                 if (cssrule) {
-                    var current = this.initialiseRuleSummary(cssrule, analyse);
+                    var current = this.initialiseRuleSummary(cssrule, analyze);
                     if (cssrule.endcheck)
-                        cssrule.endcheck(current, analyse);
+                        cssrule.endcheck(current, analyze);
                 }
             }
 
             for (var n in VORLON.WebStandards.Rules.JavaScript) {
                 var scriptrule = <IScriptRule>VORLON.WebStandards.Rules.JavaScript[n];
                 if (scriptrule) {
-                    var current = this.initialiseRuleSummary(scriptrule, analyse);
+                    var current = this.initialiseRuleSummary(scriptrule, analyze);
                     if (scriptrule.endcheck)
-                        scriptrule.endcheck(current, analyse);
+                        scriptrule.endcheck(current, analyze);
                 }
             }
         }
@@ -388,12 +388,12 @@ module VORLON {
             this.detailpanel.clear(msg);
         }
 
-        setRules(analyse) {
+        setRules(analyze) {
             console.log("RENDER ANALYSE");
-            console.log(analyse);
+            console.log(analyze);
             this.element.style.display = "";
             this.element.innerHTML = "";
-            this.renderRules(analyse.results.rules, this.element, 1);
+            this.renderRules(analyze.results.rules, this.element, 1);
         }
 
         renderRules(rules, parent: HTMLElement, level: number) {
@@ -498,7 +498,7 @@ module VORLON {
                 if (item.type) {
                     itemelt.addClass(item.type);
                 }
-                if (item.title&&item.alert) {
+                if (item.title && item.alert) {
                     itemelt.createChild("SPAN", "state fa " + (item.failed ? "fa-close" : "fa-check")).html(item.title);
                 }
                 else if (item.title) {
