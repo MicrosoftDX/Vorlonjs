@@ -183,7 +183,7 @@ module VORLON {
                     this._currentAnalyse.processing = false;
                 }
             }
-            this.analyseCssDocument(data.url, data.content, this._currentAnalyse, data.id);
+            this.analyzeCssDocument(data.url, data.content, this._currentAnalyse, data.id);
 
         }
 
@@ -239,7 +239,7 @@ module VORLON {
 
             return errorList;
         }
-        analyseCssDocument(url, content, analyse, id) {
+        analyzeCssDocument(url, content, analyze, id) {
             var parser = new cssjs();
             var parsed = parser.parseCSS(content);
             // console.log("processing css " + url);

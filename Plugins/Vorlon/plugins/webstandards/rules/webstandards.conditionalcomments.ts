@@ -5,12 +5,12 @@ module VORLON.WebStandards.Rules.DOM {
         description: "Conditional comments are not the best way to adapt your website to target browser, and support is dropped for IE > 9.",
         nodeTypes: ["#comment"],
 
-        prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+        prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
             rulecheck.items = rulecheck.items || [];   
             rulecheck.type = "blockitems";          
         },
 
-        check: function(node: Node, rulecheck: any, analyseSummary: any, htmlString: string) {
+        check: function(node: Node, rulecheck: any, analyzeSummary: any, htmlString: string) {
             //console.log("checking comment " + node.nodeValue);
             var commentContent = node.nodeValue.toLowerCase();
 

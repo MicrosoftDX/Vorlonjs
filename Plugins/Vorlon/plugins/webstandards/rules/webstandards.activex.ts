@@ -5,12 +5,12 @@ module VORLON.WebStandards.Rules.DOM {
         description : "With HTML5 embed or object tags can often be replaced with HTML5 features.",
         nodeTypes: ["EMBED", "OBJECT"],
         
-        prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+        prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
             rulecheck.items = rulecheck.items || [];   
             rulecheck.type = "blockitems";          
         },
         
-        check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlString: string) {
+        check: function(node: HTMLElement, rulecheck: any, analyzeSummary: any, htmlString: string) {
             console.log("check for plugins");
                         
             var source :string = null, data:string  = null, type:string  = null;

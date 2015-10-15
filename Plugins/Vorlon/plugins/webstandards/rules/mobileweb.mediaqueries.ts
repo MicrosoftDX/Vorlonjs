@@ -4,12 +4,12 @@ module VORLON.WebStandards.Rules.CSS {
         title: "use responsive approaches",
         description: "Even if your website target only certain devices, you may have users with unexpected devices or screen ratio.",
         
-        prepare: function(rulecheck: any, analyseSummary: any) {
+        prepare: function(rulecheck: any, analyzeSummary: any) {
             rulecheck.items = rulecheck.items || [];   
             if (rulecheck.cssnbqueries == undefined) rulecheck.cssnbqueries = 0;          
         },
         
-        check: function (url, ast, rulecheck: any, analyseSummary: any) {
+        check: function (url, ast, rulecheck: any, analyzeSummary: any) {
             console.log("check css prefixes");
 
             this.checkNodes(url, rulecheck, ast);
@@ -37,7 +37,7 @@ module VORLON.WebStandards.Rules.CSS {
             });
         },
         
-        endcheck: function(rulecheck: any, analyseSummary: any){
+        endcheck: function(rulecheck: any, analyzeSummary: any){
             // if (rulecheck.cssnbqueries==0){
             //     rulecheck.failed = true;
             //     rulecheck.items.push({
@@ -55,12 +55,12 @@ module VORLON.WebStandards.Rules.DOM {
         description: "Even if your website target only certain devices, you may have users with unexpected devices or screen ratio.",        
         nodeTypes: ["link"],
 		
-		prepare: function(rulecheck: any, analyseSummary: any, htmlString: string) {
+		prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
             rulecheck.items = rulecheck.items || [];   
             if (rulecheck.domnbqueries == undefined) rulecheck.domnbqueries = 0;       
         },
         
-        check: function(node: HTMLElement, rulecheck: any, analyseSummary: any, htmlstring : string) {
+        check: function(node: HTMLElement, rulecheck: any, analyzeSummary: any, htmlstring : string) {
 			if (!node.getAttribute) //not an HTML element
 				return;
                           
@@ -76,7 +76,7 @@ module VORLON.WebStandards.Rules.DOM {
             }        
         },
         
-        endcheck : function(rulecheck, analyseSummary, htmlstring : string){
+        endcheck : function(rulecheck, analyzeSummary, htmlstring : string){
             console.log("media queries css:" + rulecheck.cssnbqueries + ", dom:" + rulecheck.domnbqueries);
             if (rulecheck.cssnbqueries==0 && rulecheck.domnbqueries==0){
                 if (rulecheck.cssnbqueries==0){
