@@ -3,8 +3,8 @@ declare var cssjs: any;
 module VORLON {
     export class WebStandardsClient extends ClientPlugin {
         public sendedHTML: string;
-                  private _doctype: any;
-                    private _currentAnalyse: any = {};
+        private _doctype: any;
+        private _currentAnalyse: any = {};
         public browserDetectionHook = {
             userAgent: [],
             appVersion: [],
@@ -59,7 +59,7 @@ module VORLON {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
 
-        public checkLocalFallBack(id:any) {
+        public checkLocalFallBack(id: any) {
             var fallBackErrorList = [];
             if (this._currentAnalyse && this._currentAnalyse.processing)
                 return;
@@ -105,8 +105,10 @@ module VORLON {
                     systemId: node.systemId
                 }
             }
-            var fallBackErrorList = this.checkLocalFallBack(data.id);
-            // this.sendCommandToDashboard("htmlContent", { html: allHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: data.id, fallBackErrorList });
+            if (data.analyzeCssFallback)
+                var fallBackErrorList = this.checkLocalFallBack(data.id);
+            else
+                this.sendCommandToDashboard("htmlContent", { html: allHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: data.id, fallBackErrorList: null });
         }
 
         public localFetchDocument(data: { id: string, url: string }) {
@@ -181,7 +183,7 @@ module VORLON {
                     this._currentAnalyse.processing = false;
                 }
             }
-            this.analyseCssDocument(data.url, data.content, this._currentAnalyse,data.id);
+            this.analyseCssDocument(data.url, data.content, this._currentAnalyse, data.id);
 
         }
 
@@ -237,7 +239,7 @@ module VORLON {
 
             return errorList;
         }
-        analyseCssDocument(url, content, analyse,id) {
+        analyseCssDocument(url, content, analyse, id) {
             var parser = new cssjs();
             var parsed = parser.parseCSS(content);
             // console.log("processing css " + url);
@@ -247,10 +249,12 @@ module VORLON {
 
                 var resultsList = this.checkPrefix(rules);
                 if (resultsList.length > 0) {
-                    if (!this._currentAnalyse.results[selector])
-                        this._currentAnalyse.results[selector] = [];
+                    if (!this._currentAnalyse.results[url])
+                        this._currentAnalyse.results[url] = {}
+                    if (!this._currentAnalyse.results[url][selector])
+                        this._currentAnalyse.results[url][selector] = [];
                     for (var x = 0; x < resultsList.length; x++) {
-                        this._currentAnalyse.results[selector].push(resultsList[x]);
+                        this._currentAnalyse.results[url][selector].push(resultsList[x]);
                     }
                 }
 
@@ -259,7 +263,8 @@ module VORLON {
 
             if (this._currentAnalyse.pendingLoad == 0) {
                 // this.sendCommandToDashboard("cssPrefixeResutls", { data: this._currentAnalyse.results });
-                      this.sendCommandToDashboard("htmlContent", { html: this.sendedHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: id, fallBackErrorList:this._currentAnalyse.results });  }
+                this.sendCommandToDashboard("htmlContent", { html: this.sendedHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: id, fallBackErrorList: this._currentAnalyse.results });
+            }
 
         }
 
@@ -318,12 +323,12 @@ module VORLON {
     }
 
     WebStandardsClient.prototype.ClientCommands = {
-        startNewAnalyse: function(data: any) {
+        startNewAnalyse: function (data: any) {
             var plugin = <WebStandardsClient>this;
             plugin.startNewAnalyse(data);
         },
 
-        fetchDocument: function(data: any) {
+        fetchDocument: function (data: any) {
             var plugin = <WebStandardsClient>this;
             plugin.fetchDocument(data);
         }
