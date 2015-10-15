@@ -23,7 +23,7 @@ module VORLON {
         private _currentAnalyse = null;
         private _rulesPanel: WebStandardsRulesPanel = null;
         private _ruleDetailPanel: WebStandardsRuleDetailPanel = null;
-
+        public analyzeCssFallback: boolean = true;
         public startDashboardSide(div: HTMLDivElement = null): void {
             var script = <HTMLScriptElement>document.createElement("SCRIPT");
             script.src = "/javascripts/css.js";
@@ -46,7 +46,7 @@ module VORLON {
                     };
                     this._rootDiv.classList.add("loading");
                     this._rulesPanel.clear("analyse in progress...");
-                    this.sendCommandToClient('startNewAnalyse', { id: this._currentAnalyse.id });
+                    this.sendCommandToClient('startNewAnalyse', { id: this._currentAnalyse.id,analyzeCssFallback:this.analyzeCssFallback });
                 });
 
                 this._cancelCheckButton.addEventListener("click", (evt) => {
@@ -498,7 +498,7 @@ module VORLON {
                 if (item.type) {
                     itemelt.addClass(item.type);
                 }
-                if (item.title&&item.alert) {
+                if (item.title && item.alert) {
                     itemelt.createChild("SPAN", "state fa " + (item.failed ? "fa-close" : "fa-check")).html(item.title);
                 }
                 else if (item.title) {
