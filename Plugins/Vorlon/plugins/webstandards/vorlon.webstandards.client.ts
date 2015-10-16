@@ -94,7 +94,6 @@ module VORLON {
                 }
             }
             if (empty) {
-
                 this.sendCommandToDashboard("htmlContent", { html: this.sendedHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: id, fallBackErrorList: [] });
             }
         }

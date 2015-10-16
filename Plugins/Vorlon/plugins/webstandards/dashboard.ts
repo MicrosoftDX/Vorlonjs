@@ -46,7 +46,7 @@ module VORLON {
                     };
                     this._rootDiv.classList.add("loading");
                     this._rulesPanel.clear("analyze in progress...");
-                    this.sendCommandToClient('startNewAnalyze', { id: this._currentAnalyze.id,analyzeCssFallback:this.analyzeCssFallback });
+                    this.sendCommandToClient('startNewAnalyze', { id: this._currentAnalyze.id, analyzeCssFallback: this.analyzeCssFallback });
                 });
 
                 this._cancelCheckButton.addEventListener("click", (evt) => {
@@ -103,6 +103,7 @@ module VORLON {
 
             this._currentAnalyze.files.scripts = {};
             var scripts = fragment.querySelectorAll("script");
+            var nbScripts = scripts.length;
             for (var i = 0; i < scripts.length; i++) {
                 var s = scripts[i];
                 var src = s.attributes.getNamedItem("src");
@@ -118,6 +119,7 @@ module VORLON {
 
             this._currentAnalyze.files.stylesheets = {};
             var stylesheets = fragment.querySelectorAll("link[rel=stylesheet]");
+            var nbStylesheets = stylesheets.length;
             for (var i = 0; i < stylesheets.length; i++) {
                 var s = stylesheets[i];
                 var href = s.attributes.getNamedItem("href");
@@ -132,6 +134,7 @@ module VORLON {
             this.prepareAnalyze(this._currentAnalyze)
             this._currentAnalyze.fallBackErrorList = data.fallBackErrorList;
             this.analyzeDOM(fragment, data.html, this._currentAnalyze);
+            this.analyzeFiles(nbStylesheets, nbScripts, this._currentAnalyze)
         }
 
         receiveDocumentContent(data: { id: string, url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number }) {
@@ -295,6 +298,16 @@ module VORLON {
                 }
             }
 
+        }
+
+        analyzeFiles(nbStylesheets, nbScripts, analyze) {
+            for (var n in VORLON.WebStandards.Rules.Files) {
+                var rule = <IFileRule>VORLON.WebStandards.Rules.Files[n];
+                if (rule) {
+                    var current = this.initialiseRuleSummary(rule, analyze);
+                    rule.check(nbStylesheets, nbScripts, current, analyze);
+                }
+            }
         }
 
         analyzeJsDocument(url, content, analyze) {
