@@ -24,7 +24,7 @@ module VORLON {
         private _rulesPanel: WebStandardsRulesPanel = null;
         private _ruleDetailPanel: WebStandardsRuleDetailPanel = null;
         public analyzeCssFallback: boolean = true;
-        
+
         public startDashboardSide(div: HTMLDivElement = null): void {
             var script = <HTMLScriptElement>document.createElement("SCRIPT");
             script.src = "/javascripts/css.js";
@@ -84,7 +84,7 @@ module VORLON {
             }
         }
 
-        receiveHtmlContent(data: { id: string, html: string, doctype: any, url: any, browserDetection: any, fallBackErrorList: Array<any> }) {
+        receiveHtmlContent(data: { id: string, html: string, doctype: any, url: any, browserDetection: any, stylesheetErrors: any }) {
             if (!this._currentAnalyze) {
                 this._currentAnalyze = { processing: true };
             }
@@ -92,7 +92,7 @@ module VORLON {
             if (!this._currentAnalyze.files) {
                 this._currentAnalyze.files = {};
             }
-            
+
             this._currentAnalyze.lastActivity = new Date();
 
             this._currentAnalyze.html = data.html;
@@ -114,7 +114,7 @@ module VORLON {
                     var isVorlon = src.value.indexOf('vorlon.js') > 0 || src.value.indexOf('vorlon.min.js') > 0 || src.value.indexOf('vorlon.max.js') > 0;
                     if (!isVorlon) {
                         this._currentAnalyze.files.scripts[src.value] = { loaded: false, content: null };
-                        this.sendCommandToClient('fetchDocument', { url: src.value, id: this._currentAnalyze.id, type:"script" });
+                        this.sendCommandToClient('fetchDocument', { url: src.value, id: this._currentAnalyze.id, type: "script" });
                         this._currentAnalyze.pendingLoad++;
                         console.log("request file " + src.value + " " + this._currentAnalyze.pendingLoad);
                     }
@@ -129,26 +129,29 @@ module VORLON {
                 var href = s.attributes.getNamedItem("href");
                 if (href) {
                     this._currentAnalyze.files.stylesheets[href.value] = { loaded: false, content: null };
-                    this.sendCommandToClient('fetchDocument', { url: href.value, id: this._currentAnalyze.id, type:"stylesheet" });
+                    this.sendCommandToClient('fetchDocument', { url: href.value, id: this._currentAnalyze.id, type: "stylesheet", analyzeCssFallback: this.analyzeCssFallback });
                     this._currentAnalyze.pendingLoad++;
                     console.log("request file " + href.value + " " + this._currentAnalyze.pendingLoad);
                 }
             }
+            if (!this._currentAnalyze.fallBackErrorList)
+                this._currentAnalyze.fallBackErrorList = [];
 
+            if (data.stylesheetErrors)
+                this._currentAnalyze.fallBackErrorList.push(data.stylesheetErrors);
             this._currentAnalyze.results = {};
             this.prepareAnalyze(this._currentAnalyze)
-            this._currentAnalyze.fallBackErrorList = data.fallBackErrorList;
             this.analyzeDOM(fragment, data.html, this._currentAnalyze);
-            
+
         }
 
-        receiveDocumentContent(data: { id: string, url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number }) {
+        receiveDocumentContent(data: { id: string, url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number, stylesheetErrors: any }) {
             var item = null;
             var itemContainer = null;
-            
+
             this._currentAnalyze.lastActivity = new Date();
-            
-            
+
+
             for (var n in this._currentAnalyze.files) {
                 var container = this._currentAnalyze.files[n];
                 if (container[data.url]) {
@@ -177,6 +180,16 @@ module VORLON {
             }
 
             if (itemContainer === "stylesheets") {
+                if (this.analyzeCssFallback) {
+                    if (!this._currentAnalyze.fallBackErrorList)
+                        this._currentAnalyze.fallBackErrorList = [];
+                    if (data.stylesheetErrors)
+                        this._currentAnalyze.fallBackErrorList.push(data.stylesheetErrors);
+
+                }
+                else {
+                    this._currentAnalyze.fallBackErrorList = null;
+                }
                 this.analyzeCssDocument(data.url, data.content, this._currentAnalyze);
             }
 
@@ -209,7 +222,7 @@ module VORLON {
                     } else {
                         commonRules.push(rule);
                         if (rule.nodeTypes.length) {
-                            rule.nodeTypes.forEach(function(n) {
+                            rule.nodeTypes.forEach(function (n) {
                                 n = n.toUpperCase();
                                 if (!rules.domRulesIndex[n])
                                     rules.domRulesIndex[n] = [];
@@ -268,7 +281,7 @@ module VORLON {
             var current = analyze.results;
             var id = "";
             current.rules = current.rules || {};
-            tokens.forEach(function(t) {
+            tokens.forEach(function (t) {
                 id = (id.length > 0) ? "." + t : t;
 
                 if (!current.rules) {
@@ -377,18 +390,18 @@ module VORLON {
                         scriptrule.endcheck(current, analyze);
                 }
             }
-            
+
             this.analyzeFiles(this._currentAnalyze);
         }
     }
 
     WebStandardsDashboard.prototype.DashboardCommands = {
-        htmlContent: function(data: any) {
+        htmlContent: function (data: any) {
             var plugin = <WebStandardsDashboard>this;
             plugin.receiveHtmlContent(data);
         },
 
-        documentContent: function(data: any) {
+        documentContent: function (data: any) {
             var plugin = <WebStandardsDashboard>this;
             plugin.receiveDocumentContent(data);
         }
@@ -436,7 +449,7 @@ module VORLON {
                 //}  
             }
 
-            items.sort(function(a, b) {
+            items.sort(function (a, b) {
                 return a.title.localeCompare(b.title);
             })
 
