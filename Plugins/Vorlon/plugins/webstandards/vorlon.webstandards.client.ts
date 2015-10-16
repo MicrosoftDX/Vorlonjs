@@ -60,7 +60,7 @@ module VORLON {
         }
 
         public checkLocalFallBack(id: any) {
-            var fallBackErrorList = [];
+
             if (this._currentAnalyze && this._currentAnalyze.processing)
                 return;
             this._currentAnalyze = {
@@ -71,16 +71,32 @@ module VORLON {
                 results: {}
             };
             var stylesheets = document.querySelectorAll("link[rel=stylesheet]");
-            for (var i = 0; i < stylesheets.length; i++) {
-                var s = stylesheets[i];
-                var href = s.attributes.getNamedItem("href");
-                if (href) {
-                    this._currentAnalyze.stylesheets[href.value] = { loaded: false, content: null };
-                    this.localFetchDocument({ url: href.value, id: id })
+            var inlineStylesheets = document.querySelectorAll("style");
+            var empty = true;
+            if (inlineStylesheets.length) {
+                empty = false;
+                for (var x = 0; x < inlineStylesheets.length; x++) {
                     this._currentAnalyze.pendingLoad++;
+                    this._currentAnalyze.stylesheets.inline = {};
+                    this.documentContent({ id: id, url: "inline", content: (<HTMLElement>inlineStylesheets[x]).innerHTML, status: 200 })
                 }
             }
-            return fallBackErrorList;
+            if (stylesheets.length) {
+                empty = false;
+                for (var i = 0; i < stylesheets.length; i++) {
+                    var s = stylesheets[i];
+                    var href = s.attributes.getNamedItem("href");
+                    if (href) {
+                        this._currentAnalyze.stylesheets[href.value] = { loaded: false, content: null };
+                        this.localFetchDocument({ url: href.value, id: id })
+                        this._currentAnalyze.pendingLoad++;
+                    }
+                }
+            }
+            if (empty) {
+
+                this.sendCommandToDashboard("htmlContent", { html: this.sendedHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: id, fallBackErrorList: [] });
+            }
         }
 
 
