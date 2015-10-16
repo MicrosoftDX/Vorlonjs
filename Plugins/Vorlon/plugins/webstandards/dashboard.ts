@@ -24,6 +24,7 @@ module VORLON {
         private _rulesPanel: WebStandardsRulesPanel = null;
         private _ruleDetailPanel: WebStandardsRuleDetailPanel = null;
         public analyzeCssFallback: boolean = true;
+        
         public startDashboardSide(div: HTMLDivElement = null): void {
             var script = <HTMLScriptElement>document.createElement("SCRIPT");
             script.src = "/javascripts/css.js";
