@@ -150,6 +150,7 @@ export module VORLON {
         private proxyFetchRequest(proxyReq, req: express.Request, res: express.Response, opt) {
             var e = proxyReq;
             proxyReq.path = req.query.fetchurl;
+            
             if (req.query.fetchuseragent) {
                 proxyReq._headers["user-agent"] = req.query.fetchuseragent;
                 console.log("FETCH ISSUING UA REQUEST TO " + proxyReq.path);
@@ -160,13 +161,15 @@ export module VORLON {
 
         private proxyFetchResult(proxyRes, req: express.Request, res: express.Response) {
             var writeHead = res.writeHead;
+            var encoding = proxyRes.headers["content-encoding"] || "none";    
             res.writeHead = function() {
                 res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
                 res.header('Access-Control-Expose-Headers', 'Accept-Ranges, Content-Encoding, Content-Length, Content-Range, X-VorlonProxyEncoding');
                 res.header('Expires', '-1');
                 res.header('Pragma', 'no-cache');
                 
-                var encoding = proxyRes.headers["content-encoding"] || "none";         
+                var encoding = proxyRes.headers["content-encoding"] || "none";    
+                    
                 res.header('X-VorlonProxyEncoding', encoding);
                 
                 writeHead.apply(res, arguments);
@@ -355,17 +358,20 @@ export module VORLON {
             if (targetProxyUrl && proxyRes.headers && proxyRes.headers["content-type"] && proxyRes.headers["content-type"].match("text/html")) {
                 return this.proxyResultForPageContent(targetProxyUrl, proxyRes, req, res);
             } else {
+                var encoding = proxyRes.headers["content-encoding"];            
                 res.writeHead = function() {
                     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
                     res.header('Access-Control-Expose-Headers', 'Accept-Ranges, Content-Encoding, Content-Length, Content-Range');
                     res.header('Expires', '-1');
                     res.header('Pragma', 'no-cache');
                     res.header("content-security-policy", "");
+                    res.header("content-security-policy", "");
+                    res.header('X-VorlonProxyEncoding', encoding || "none");
+                    
                     writeHead.apply(res, arguments);
                 };
             }
         }
-
 
         private proxyResultForRedirection(targetProxyUrl: string, proxyRes, req: express.Request, res: express.Response) {
             var _proxy = this;
@@ -420,7 +426,7 @@ export module VORLON {
                     res.removeHeader('Content-Encoding');
                     res.removeHeader('Content-Length');
                     
-                    res.header('X-VorlonProxyEncoding', encoding);
+                    res.header('X-VorlonProxyEncoding', encoding || "none");
                         
                     //we must set cookie only if url was requested through Vorlon
                     if (req.query.vorlonproxytarget) {
@@ -470,7 +476,7 @@ export module VORLON {
                     res.header('Expires', '-1');
                     res.header('Pragma', 'no-cache');
                     res.header("content-security-policy", "");
-                    res.header('X-VorlonProxyEncoding', encoding);
+                    res.header('X-VorlonProxyEncoding', encoding || "none");
                     //we must set cookie only if url was requested through Vorlon
                     if (req.query.vorlonproxytarget) {
                         console.log("set cookie " + req.query.vorlonproxytarget);

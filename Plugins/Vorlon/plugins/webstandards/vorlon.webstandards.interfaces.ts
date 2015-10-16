@@ -22,7 +22,7 @@ module VORLON {
 	export interface IFileRule {
 		id: string;
 		title: string;
-		check: (cssFilesCount: number, jsFilesCount: number, rulecheck: any, analyzeSummary: any) => void;
+		check: (rulecheck: any, analyzeSummary: any) => void;
 		description?: string;
 	}
 	export interface IScriptRule {

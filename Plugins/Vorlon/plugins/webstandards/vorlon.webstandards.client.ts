@@ -138,6 +138,9 @@ module VORLON {
             if (documentUrl.indexOf("//") === 0) {
                 documentUrl = window.location.protocol + documentUrl;
             }
+            
+            documentUrl = this.getAbsolutePath(documentUrl);
+            
             if (documentUrl.indexOf("http") === 0) {
                 //external resources may not have Access Control headers, we make a proxied request to prevent CORS issues
                 var serverurl = (<any>VORLON.Core._messenger)._serverUrl;
@@ -284,7 +287,7 @@ module VORLON {
 
         }
 
-        public fetchDocument(data: { id: string, url: string }, localFetch: boolean = false) {
+        public fetchDocument(data: { id: string, url: string, type:string }, localFetch: boolean = false) {
             var xhr = null;
             if (!data || !data.url) {
                 this.trace("invalid fetch request");
@@ -295,6 +298,8 @@ module VORLON {
             if (documentUrl.indexOf("//") === 0) {
                 documentUrl = window.location.protocol + documentUrl;
             }
+            
+            documentUrl = this.getAbsolutePath(documentUrl);
             if (documentUrl.indexOf("http") === 0) {
                 //external resources may not have Access Control headers, we make a proxied request to prevent CORS issues
                 var serverurl = (<any>VORLON.Core._messenger)._serverUrl;
