@@ -8,7 +8,7 @@
         private _globalloadactive = false;
         private _overlay: HTMLElement;
         private _observerMutationObserver;
-
+        private _overlayInspect: HTMLElement;
         constructor() {
             super("domExplorer");
             this._id = "DOM";
@@ -316,24 +316,27 @@
 
         inspect(): void {
             if (document.elementFromPoint) {
+                if (this._overlayInspect)
+                    return;
                 this.trace("INSPECT");
-                var overlay = document.createElement("DIV");
-                overlay.style.position = "fixed";
-                overlay.style.left = "0";
-                overlay.style.right = "0";
-                overlay.style.top = "0";
-                overlay.style.bottom = "0";
-                overlay.style.touchAction = "manipulation";
-                overlay.style.backgroundColor = "rgba(255,0,0,0.2)";
-                document.body.appendChild(overlay);
+                this._overlayInspect = document.createElement("DIV");
+                this._overlayInspect.__vorlon = { ignore: true };
+                this._overlayInspect.style.position = "fixed";
+                this._overlayInspect.style.left = "0";
+                this._overlayInspect.style.right = "0";
+                this._overlayInspect.style.top = "0";
+                this._overlayInspect.style.bottom = "0";
+                this._overlayInspect.style.touchAction = "manipulation";
+                this._overlayInspect.style.backgroundColor = "rgba(255,0,0,0.2)";
+                document.body.appendChild(this._overlayInspect);
                 var event = "mousedown";
-                if (overlay.onpointerdown !== undefined) {
+                if (this._overlayInspect.onpointerdown !== undefined) {
                     event = "pointerdown";
                 }
-                overlay.addEventListener(event, (arg) => {
+                this._overlayInspect.addEventListener(event, (arg) => {
                     var evt = <any>arg;
                     this.trace("tracking element at " + evt.clientX + "/" + evt.clientY);
-                    overlay.parentElement.removeChild(overlay);
+                    this._overlayInspect.parentElement.removeChild(this._overlayInspect);
                     var el = <HTMLElement>document.elementFromPoint(evt.clientX, evt.clientY);
                     if (el) {
                         this.trace("element found");
@@ -341,6 +344,7 @@
                     } else {
                         this.trace("element not found");
                     }
+                    this._overlayInspect = null;
                 });
             } else {
                 //TODO : send message back to dashboard and disable button
