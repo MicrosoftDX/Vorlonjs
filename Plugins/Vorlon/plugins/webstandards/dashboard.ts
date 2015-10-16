@@ -91,6 +91,8 @@ module VORLON {
             if (!this._currentAnalyze.files) {
                 this._currentAnalyze.files = {};
             }
+            
+            this._currentAnalyze.lastActivity = new Date();
 
             this._currentAnalyze.html = data.html;
             this._currentAnalyze.doctype = data.doctype;
@@ -113,6 +115,7 @@ module VORLON {
                         this._currentAnalyze.files.scripts[src.value] = { loaded: false, content: null };
                         this.sendCommandToClient('fetchDocument', { url: src.value, id: this._currentAnalyze.id });
                         this._currentAnalyze.pendingLoad++;
+                        console.log("request file " + src.value + " " + this._currentAnalyze.pendingLoad);
                     }
                 }
             }
@@ -127,6 +130,7 @@ module VORLON {
                     this._currentAnalyze.files.stylesheets[href.value] = { loaded: false, content: null };
                     this.sendCommandToClient('fetchDocument', { url: href.value, id: this._currentAnalyze.id });
                     this._currentAnalyze.pendingLoad++;
+                    console.log("request file " + href.value + " " + this._currentAnalyze.pendingLoad);
                 }
             }
 
@@ -134,12 +138,16 @@ module VORLON {
             this.prepareAnalyze(this._currentAnalyze)
             this._currentAnalyze.fallBackErrorList = data.fallBackErrorList;
             this.analyzeDOM(fragment, data.html, this._currentAnalyze);
-            this.analyzeFiles(nbStylesheets, nbScripts, this._currentAnalyze)
+            
         }
 
         receiveDocumentContent(data: { id: string, url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number }) {
             var item = null;
             var itemContainer = null;
+            
+            this._currentAnalyze.lastActivity = new Date();
+            
+            
             for (var n in this._currentAnalyze.files) {
                 var container = this._currentAnalyze.files[n];
                 if (container[data.url]) {
@@ -162,6 +170,7 @@ module VORLON {
                 }
 
                 if (this._currentAnalyze.pendingLoad == 0) {
+                    console.log("resource load completed");
                     this._currentAnalyze.processing = false;
                 }
             }
@@ -173,6 +182,7 @@ module VORLON {
             if (itemContainer === "scripts") {
                 this.analyzeJsDocument(data.url, data.content, this._currentAnalyze);
             }
+            console.log("receive content " + data.url + " " + this._currentAnalyze.pendingLoad);
         }
 
         analyzeDOM(document: HTMLDocument, htmlContent: string, analyze) {
@@ -297,15 +307,14 @@ module VORLON {
                     rule.check(url, parsed, current, analyze);
                 }
             }
-
         }
 
-        analyzeFiles(nbStylesheets, nbScripts, analyze) {
+        analyzeFiles(analyze) {
             for (var n in VORLON.WebStandards.Rules.Files) {
                 var rule = <IFileRule>VORLON.WebStandards.Rules.Files[n];
                 if (rule) {
                     var current = this.initialiseRuleSummary(rule, analyze);
-                    rule.check(nbStylesheets, nbScripts, current, analyze);
+                    rule.check(current, analyze);
                 }
             }
         }
@@ -367,6 +376,8 @@ module VORLON {
                         scriptrule.endcheck(current, analyze);
                 }
             }
+            
+            this.analyzeFiles(this._currentAnalyze);
         }
     }
 
