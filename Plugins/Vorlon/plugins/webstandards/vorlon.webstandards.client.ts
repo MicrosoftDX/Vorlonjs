@@ -73,14 +73,7 @@ module VORLON {
             var stylesheets = document.querySelectorAll("link[rel=stylesheet]");
             var inlineStylesheets = document.querySelectorAll("style");
             var empty = true;
-            if (inlineStylesheets.length) {
-                empty = false;
-                for (var x = 0; x < inlineStylesheets.length; x++) {
-                    this._currentAnalyze.pendingLoad++;
-                    this._currentAnalyze.stylesheets.inline = {};
-                    this.documentContent({ id: id, url: "inline", content: (<HTMLElement>inlineStylesheets[x]).innerHTML, status: 200 })
-                }
-            }
+
             if (stylesheets.length) {
                 empty = false;
                 for (var i = 0; i < stylesheets.length; i++) {
@@ -91,6 +84,14 @@ module VORLON {
                         this.localFetchDocument({ url: href.value, id: id })
                         this._currentAnalyze.pendingLoad++;
                     }
+                }
+            }
+            this._currentAnalyze.pendingLoad += inlineStylesheets.length;
+            if (inlineStylesheets.length) {
+                empty = false;
+                for (var x = 0; x < inlineStylesheets.length; x++) {
+                    this._currentAnalyze.stylesheets.inline = {};
+                    this.documentContent({ id: id, url: "inline", content: (<HTMLElement>inlineStylesheets[x]).innerHTML, status: 200 })
                 }
             }
             if (empty) {
@@ -338,12 +339,12 @@ module VORLON {
     }
 
     WebStandardsClient.prototype.ClientCommands = {
-        startNewAnalyze: function (data: any) {
+        startNewAnalyze: function(data: any) {
             var plugin = <WebStandardsClient>this;
             plugin.startNewAnalyze(data);
         },
 
-        fetchDocument: function (data: any) {
+        fetchDocument: function(data: any) {
             var plugin = <WebStandardsClient>this;
             plugin.fetchDocument(data);
         }
