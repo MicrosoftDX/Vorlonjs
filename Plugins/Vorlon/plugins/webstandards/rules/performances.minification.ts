@@ -6,7 +6,7 @@ module VORLON.WebStandards.Rules.Files {
        
         check: function(rulecheck: any, analyzeSummary: any) {
             rulecheck.items = rulecheck.items || [];
-            
+            rulecheck.type = "blockitems";    
             for (var n in analyzeSummary.files.stylesheets){                
                 var charPerLines = this.getAverageCharacterPerLine(analyzeSummary.files.stylesheets[n].content);                
                 if (charPerLines < 50){

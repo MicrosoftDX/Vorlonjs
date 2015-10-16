@@ -6,7 +6,7 @@ module VORLON.WebStandards.Rules.Files {
        
         check: function(rulecheck: any, analyzeSummary: any) {
             rulecheck.items = rulecheck.items || [];
-            
+            rulecheck.type = "blockitems";    
             for (var n in analyzeSummary.files.stylesheets){                
                 if (analyzeSummary.files.stylesheets[n].encoding && analyzeSummary.files.stylesheets[n].encoding == "none"){
                     rulecheck.failed = true;

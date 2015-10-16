@@ -287,7 +287,7 @@ module VORLON {
 
         }
 
-        public fetchDocument(data: { id: string, url: string }, localFetch: boolean = false) {
+        public fetchDocument(data: { id: string, url: string, type:string }, localFetch: boolean = false) {
             var xhr = null;
             if (!data || !data.url) {
                 this.trace("invalid fetch request");

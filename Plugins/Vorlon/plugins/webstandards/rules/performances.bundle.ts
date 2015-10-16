@@ -9,6 +9,7 @@ module VORLON.WebStandards.Rules.Files {
        
         check: function(rulecheck: any, analyzeSummary: any) {
             rulecheck.items = rulecheck.items || [];
+            rulecheck.type = "blockitems";    
             var countStylesheets = 0;
             for (var n in analyzeSummary.files.stylesheets){                
                 countStylesheets++;

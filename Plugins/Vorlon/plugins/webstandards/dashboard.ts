@@ -114,7 +114,7 @@ module VORLON {
                     var isVorlon = src.value.indexOf('vorlon.js') > 0 || src.value.indexOf('vorlon.min.js') > 0 || src.value.indexOf('vorlon.max.js') > 0;
                     if (!isVorlon) {
                         this._currentAnalyze.files.scripts[src.value] = { loaded: false, content: null };
-                        this.sendCommandToClient('fetchDocument', { url: src.value, id: this._currentAnalyze.id });
+                        this.sendCommandToClient('fetchDocument', { url: src.value, id: this._currentAnalyze.id, type:"script" });
                         this._currentAnalyze.pendingLoad++;
                         console.log("request file " + src.value + " " + this._currentAnalyze.pendingLoad);
                     }
@@ -129,7 +129,7 @@ module VORLON {
                 var href = s.attributes.getNamedItem("href");
                 if (href) {
                     this._currentAnalyze.files.stylesheets[href.value] = { loaded: false, content: null };
-                    this.sendCommandToClient('fetchDocument', { url: href.value, id: this._currentAnalyze.id });
+                    this.sendCommandToClient('fetchDocument', { url: href.value, id: this._currentAnalyze.id, type:"stylesheet" });
                     this._currentAnalyze.pendingLoad++;
                     console.log("request file " + href.value + " " + this._currentAnalyze.pendingLoad);
                 }
