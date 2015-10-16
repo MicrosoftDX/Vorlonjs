@@ -59,46 +59,6 @@ module VORLON {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
 
-        public checkLocalFallBack(id: any) {
-
-            if (this._currentAnalyze && this._currentAnalyze.processing)
-                return;
-            this._currentAnalyze = {
-                processing: true,
-                pendingLoad: 0,
-                stylesheets: [],
-                id: Math.floor(Math.random() * 10000000) + 1,
-                results: {}
-            };
-            var stylesheets = document.querySelectorAll("link[rel=stylesheet]");
-            var inlineStylesheets = document.querySelectorAll("style");
-            var empty = true;
-
-            if (stylesheets.length) {
-                empty = false;
-                for (var i = 0; i < stylesheets.length; i++) {
-                    var s = stylesheets[i];
-                    var href = s.attributes.getNamedItem("href");
-                    if (href) {
-                        this._currentAnalyze.stylesheets[href.value] = { loaded: false, content: null };
-                        this.localFetchDocument({ url: href.value, id: id })
-                        this._currentAnalyze.pendingLoad++;
-                    }
-                }
-            }
-            this._currentAnalyze.pendingLoad += inlineStylesheets.length;
-            if (inlineStylesheets.length) {
-                empty = false;
-                for (var x = 0; x < inlineStylesheets.length; x++) {
-                    this._currentAnalyze.stylesheets.inline = {};
-                    this.documentContent({ id: id, url: "inline", content: (<HTMLElement>inlineStylesheets[x]).innerHTML, status: 200 })
-                }
-            }
-            if (empty) {
-                this.sendCommandToDashboard("htmlContent", { html: this.sendedHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: id, fallBackErrorList: [] });
-            }
-        }
-
 
         public startNewAnalyze(data): void {
             var allHTML = document.documentElement.outerHTML;
@@ -121,90 +81,20 @@ module VORLON {
                     systemId: node.systemId
                 }
             }
-            if (data.analyzeCssFallback)
-                var fallBackErrorList = this.checkLocalFallBack(data.id);
-            else
-                this.sendCommandToDashboard("htmlContent", { html: allHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: data.id, fallBackErrorList: null });
-        }
-
-        public localFetchDocument(data: { id: string, url: string }) {
-            var xhr = null;
-            if (!data || !data.url) {
-                this.trace("invalid localFetch request");
-                return;
-            }
-
-            var documentUrl = data.url;
-            if (documentUrl.indexOf("//") === 0) {
-                documentUrl = window.location.protocol + documentUrl;
-            }
-            
-            documentUrl = this.getAbsolutePath(documentUrl);
-            
-            if (documentUrl.indexOf("http") === 0) {
-                //external resources may not have Access Control headers, we make a proxied request to prevent CORS issues
-                var serverurl = (<any>VORLON.Core._messenger)._serverUrl;
-                if (serverurl[serverurl.length - 1] !== '/')
-                    serverurl = serverurl + "/";
-                var target = this.getAbsolutePath(data.url);
-                documentUrl = serverurl + "httpproxy/fetch?fetchurl=" + encodeURIComponent(target);
-            }
-            this.trace("local fetching " + documentUrl);
-
-            try {
-
-                xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = () => {
-                    if (xhr.readyState == 4) {
-                        if (xhr.status == 200) {
-                            var encoding = xhr.getResponseHeader("X-VorlonProxyEncoding") || xhr.getResponseHeader("content-encoding");
-                            var contentLength = xhr.getResponseHeader("content-length");
-                            this.trace("encoding for " + documentUrl + " is " + encoding);
-
-                            this.documentContent({ id: data.id, url: data.url, status: xhr.status, content: xhr.responseText, contentLength: contentLength, encoding: encoding });
-                        }
-                        else {
-                            this.documentContent({ id: data.id, url: data.url, status: xhr.status, content: null, error: xhr.statusText });
-                        }
+            var inlineStylesheets = document.querySelectorAll("style");
+            var stylesheetErrors = null;
+            if (data.analyzeCssFallback) {
+                stylesheetErrors = {}
+                if (inlineStylesheets.length) {
+                    for (var x = 0; x < inlineStylesheets.length; x++) {
+                        this.analyzeCssDocument("inline" + [x], (<HTMLElement>inlineStylesheets[x]).innerHTML, data.id, stylesheetErrors);
                     }
-                };
-
-                xhr.open("GET", documentUrl, true);
-                xhr.send(null);
-            } catch (e) {
-                console.error(e);
-                this.documentContent({ id: data.id, url: data.url, status: 0, content: null, error: e.message });
+                }
             }
+            this.sendCommandToDashboard("htmlContent", { html: allHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: data.id, stylesheetErrors: stylesheetErrors });
         }
 
 
-        private documentContent(data: { id: string, url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number }) {
-            var item = null;
-            var container = this._currentAnalyze.stylesheets;
-            if (container[data.url]) {
-                item = container[data.url];
-
-            }
-            if (item) {
-                this._currentAnalyze.pendingLoad--;
-                item.loaded = true;
-                item.encoding = data.encoding;
-                item.content = data.content;
-                item.contentLength = data.contentLength;
-                item.error = data.error;
-                item.status = data.status;
-
-                if (data.error) {
-                    item.loaded = false;
-                }
-
-                if (this._currentAnalyze.pendingLoad == 0) {
-                    this._currentAnalyze.processing = false;
-                }
-            }
-            this.analyzeCssDocument(data.url, data.content, this._currentAnalyze, data.id);
-
-        }
 
         checkIfNoPrefix(rules: Array<any>, prefix: string) {
             var present = false;
@@ -258,7 +148,7 @@ module VORLON {
 
             return errorList;
         }
-        analyzeCssDocument(url, content, analyze, id) {
+        analyzeCssDocument(url, content, id, results) {
             var parser = new cssjs();
             var parsed = parser.parseCSS(content);
             // console.log("processing css " + url);
@@ -268,26 +158,19 @@ module VORLON {
 
                 var resultsList = this.checkPrefix(rules);
                 if (resultsList.length > 0) {
-                    if (!this._currentAnalyze.results[url])
-                        this._currentAnalyze.results[url] = {}
-                    if (!this._currentAnalyze.results[url][selector])
-                        this._currentAnalyze.results[url][selector] = [];
+                    if (!results[url])
+                        results[url] = {}
+                    if (!results[url][selector])
+                        results[url][selector] = [];
                     for (var x = 0; x < resultsList.length; x++) {
-                        this._currentAnalyze.results[url][selector].push(resultsList[x]);
+                        results[url][selector].push(resultsList[x]);
                     }
                 }
-
-
-            }
-
-            if (this._currentAnalyze.pendingLoad == 0) {
-                // this.sendCommandToDashboard("cssPrefixeResutls", { data: this._currentAnalyze.results });
-                this.sendCommandToDashboard("htmlContent", { html: this.sendedHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: id, fallBackErrorList: this._currentAnalyze.results });
             }
 
         }
 
-        public fetchDocument(data: { id: string, url: string, type:string }, localFetch: boolean = false) {
+        public fetchDocument(data: { id: string, url: string, type: string, analyzeCssFallback: boolean }, localFetch: boolean = false) {
             var xhr = null;
             if (!data || !data.url) {
                 this.trace("invalid fetch request");
@@ -298,7 +181,7 @@ module VORLON {
             if (documentUrl.indexOf("//") === 0) {
                 documentUrl = window.location.protocol + documentUrl;
             }
-            
+
             documentUrl = this.getAbsolutePath(documentUrl);
             if (documentUrl.indexOf("http") === 0) {
                 //external resources may not have Access Control headers, we make a proxied request to prevent CORS issues
@@ -319,8 +202,13 @@ module VORLON {
                             var encoding = xhr.getResponseHeader("X-VorlonProxyEncoding") || xhr.getResponseHeader("content-encoding");
                             var contentLength = xhr.getResponseHeader("content-length");
                             this.trace("encoding for " + documentUrl + " is " + encoding);
+                            var stylesheetErrors = null;
+                            if (data.type === "stylesheet" && data.analyzeCssFallback === true) {
+                                stylesheetErrors = {};
+                                this.analyzeCssDocument(data.url, xhr.responseText, data.id, stylesheetErrors);
+                            }
                             //TODO getting encoding is not working in IE (but do in Chrome), must try on other browsers because getting it may enable performance rules
-                            this.sendCommandToDashboard("documentContent", { id: data.id, url: data.url, status: xhr.status, content: xhr.responseText, contentLength: contentLength, encoding: encoding });
+                            this.sendCommandToDashboard("documentContent", { id: data.id, url: data.url, status: xhr.status, content: xhr.responseText, contentLength: contentLength, encoding: encoding, stylesheetErrors: stylesheetErrors });
                         }
                         else {
                             this.sendCommandToDashboard("documentContent", { id: data.id, url: data.url, status: xhr.status, content: null, error: xhr.statusText });
@@ -344,12 +232,12 @@ module VORLON {
     }
 
     WebStandardsClient.prototype.ClientCommands = {
-        startNewAnalyze: function(data: any) {
+        startNewAnalyze: function (data: any) {
             var plugin = <WebStandardsClient>this;
             plugin.startNewAnalyze(data);
         },
 
-        fetchDocument: function(data: any) {
+        fetchDocument: function (data: any) {
             var plugin = <WebStandardsClient>this;
             plugin.fetchDocument(data);
         }
