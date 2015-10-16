@@ -113,7 +113,7 @@
             }
             else {
                 if (!node.__vorlon) {
-                    node.__vorlon = <any> {};
+                    node.__vorlon = <any>{};
                 }
                 node.__vorlon.internalId = packagedNode.internalId;
             }
@@ -130,8 +130,8 @@
                 var node = <HTMLElement>root.childNodes[index];
                 var packagedNode = this._packageNode(node);
                 var b = false;
-                
-                if (node.childNodes && node.childNodes.length > 1 || (node && node.nodeName && (node.nodeName.toLowerCase() === "script"|| node.nodeName.toLowerCase() === "style"))) {
+
+                if (node.childNodes && node.childNodes.length > 1 || (node && node.nodeName && (node.nodeName.toLowerCase() === "script" || node.nodeName.toLowerCase() === "style"))) {
                     packagedNode.hasChildNodes = true;
                 }
                 else if (withChildsNodes || node.childNodes.length == 1) {
@@ -280,7 +280,7 @@
                 this._overlay.style.position = "fixed";
                 this._overlay.style.backgroundColor = "rgba(255,255,0,0.4)";
                 this._overlay.style.pointerEvents = "none";
-                (<any>  this._overlay).__vorlon = { ignore: true };
+                (<any>this._overlay).__vorlon = { ignore: true };
                 document.body.appendChild(this._overlay);
             }
             this._overlay.style.display = "block";
@@ -329,9 +329,6 @@
                 var event = "mousedown";
                 if (overlay.onpointerdown !== undefined) {
                     event = "pointerdown";
-                }
-                else if ((<any>overlay).ontouchstart !== undefined) {
-                    event = "touchstart";
                 }
                 overlay.addEventListener(event, (arg) => {
                     var evt = <any>arg;
@@ -427,7 +424,7 @@
                 if (attributeName)
                     element.setAttribute(attributeName, attributeValue);
                 if (attributeName && attributeName.indexOf('on') === 0) {
-                    element[attributeName] = function () {
+                    element[attributeName] = function() {
                         try { eval(attributeValue); }
                         catch (e) { console.error(e); }
                     };
@@ -448,10 +445,10 @@
             var element = this._getElementByInternalId(internaID, document.documentElement);
             element.innerHTML = value;
         }
-        
-        public getNodeStyle(internalID: string){
+
+        public getNodeStyle(internalID: string) {
             var element = this._getElementByInternalId(internalID, document.documentElement);
-            if (element){
+            if (element) {
                 var styles = DOMExplorerClient.GetAppliedStyles(element);
                 this.sendCommandToDashboard('nodeStyle', { internalID: internalID, styles: styles });
             }
@@ -500,18 +497,18 @@
             plugin.setClientHighlightedElement(data.order);
             plugin.getNodeStyle(data.order);
         },
-        
+
         unselect(data: any) {
             var plugin = <DOMExplorerClient>this;
             plugin.unhighlightClientElement(data.order);
         },
-        
+
         highlight(data: any) {
             var plugin = <DOMExplorerClient>this;
             plugin.unhighlightClientElement();
-            plugin.setClientHighlightedElement(data.order);            
+            plugin.setClientHighlightedElement(data.order);
         },
-        
+
         unhighlight(data: any) {
             var plugin = <DOMExplorerClient>this;
             plugin.unhighlightClientElement(data.order);
@@ -521,7 +518,7 @@
             var plugin = <DOMExplorerClient>this;
             plugin.refreshbyId(data.order);
         },
-        
+
         getNodeStyles(data: any) {
             var plugin = <DOMExplorerClient>this;
             console.log("get node style");
