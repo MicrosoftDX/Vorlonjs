@@ -135,15 +135,25 @@
                 var config = { attributes: true, childList: true, subtree: true, characterData: true };
                 document.body.__vorlon._observerMutationObserver = new mutationObserver((mutations) => {
                     var sended = false;
+                    var cancelSend = false;
+                    var sendComandId = [];
                     mutations.forEach((mutation) => {
+                        if (cancelSend) {
+                            for (var i = 0; i < sendComandId.length; i++) {
+                                clearTimeout(sendComandId[i]);
+                            }
+                            cancelSend = false;
+                        }
                         if (mutation.target && mutation.target.__vorlon && mutation.target.__vorlon.ignore) {
+                            cancelSend = true;
                             return;
                         }
                         if (mutation.previousSibling && mutation.previousSibling.__vorlon && mutation.previousSibling.__vorlon.ignore) {
+                            cancelSend = true;
                             return;
                         }
                         if (mutation.target && !sended && mutation.target.__vorlon && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId) {
-                            setTimeout(() => {
+                            sendComandId.push(setTimeout(() => {
                                 var internalId = null;
                                 if (mutation && mutation.target && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId)
                                     internalId = mutation.target.parentNode.__vorlon.internalId;
@@ -152,7 +162,7 @@
                                     type: 'contentchanged',
                                     internalId: internalId
                                 }, Core._side, 'message');
-                            }, 300);
+                            }, 300));
                         }
                         sended = true;
                     });

@@ -326,8 +326,9 @@
                 this._overlayInspect.style.right = "0";
                 this._overlayInspect.style.top = "0";
                 this._overlayInspect.style.bottom = "0";
+                this._overlayInspect.style.zIndex = "5000000000000000";
                 this._overlayInspect.style.touchAction = "manipulation";
-                this._overlayInspect.style.backgroundColor = "rgba(255,0,0,0.2)";
+                this._overlayInspect.style.backgroundColor = "rgba(255,0,0,0.3)";
                 document.body.appendChild(this._overlayInspect);
                 var event = "mousedown";
                 if (this._overlayInspect.onpointerdown !== undefined) {
