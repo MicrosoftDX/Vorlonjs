@@ -23,7 +23,7 @@ module VORLON {
             super("webstandards");
             this._id = "WEBSTANDARDS";
             this._ready = true;
-            //this.debug = true;            
+            this.debug = true;            
         }
 
         public refresh(): void {
@@ -59,7 +59,6 @@ module VORLON {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
 
-
         public startNewAnalyze(data): void {
             var allHTML = document.documentElement.outerHTML;
             this.sendedHTML = allHTML;
@@ -94,8 +93,6 @@ module VORLON {
             this.sendCommandToDashboard("htmlContent", { html: allHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: data.id, stylesheetErrors: stylesheetErrors });
         }
 
-
-
         checkIfNoPrefix(rules: Array<any>, prefix: string) {
             var present = false;
             if (rules && rules.length)
@@ -111,6 +108,7 @@ module VORLON {
 
             return present;
         }
+        
         checkIfMsPrefix(rules: Array<any>, prefix: string) {
             var present = false;
             if (rules && rules.length)
@@ -123,9 +121,11 @@ module VORLON {
 
             return present;
         }
+        
         unprefixedPropertyName(property: string) {
             return property.replace("-webkit-", "").replace("-moz-", "").replace("-o-", "").replace("-ms-", "");
         }
+        
         checkPrefix(rules: Array<any>): Array<string> {
             var errorList = [];
             if (rules && rules.length)
@@ -148,6 +148,7 @@ module VORLON {
 
             return errorList;
         }
+        
         analyzeCssDocument(url, content, id, results) {
             var parser = new cssjs();
             var parsed = parser.parseCSS(content);
@@ -167,11 +168,12 @@ module VORLON {
                     }
                 }
             }
-
         }
 
         public fetchDocument(data: { id: string, url: string, type: string, analyzeCssFallback: boolean }, localFetch: boolean = false) {
             var xhr = null;
+            var completed = false;
+            var timeoutRef = null;
             if (!data || !data.url) {
                 this.trace("invalid fetch request");
                 return;
@@ -194,14 +196,15 @@ module VORLON {
             this.trace("fetching " + documentUrl);
 
             try {
-
                 xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState == 4) {
                         if (xhr.status == 200) {
+                            completed = true;
+                            clearTimeout(timeoutRef);
                             var encoding = xhr.getResponseHeader("X-VorlonProxyEncoding") || xhr.getResponseHeader("content-encoding");
                             var contentLength = xhr.getResponseHeader("content-length");
-                            this.trace("encoding for " + documentUrl + " is " + encoding);
+                            this.trace("encoding for " + data.url + " is " + encoding);
                             var stylesheetErrors = null;
                             if (data.type === "stylesheet" && data.analyzeCssFallback === true) {
                                 stylesheetErrors = {};
@@ -211,6 +214,8 @@ module VORLON {
                             this.sendCommandToDashboard("documentContent", { id: data.id, url: data.url, status: xhr.status, content: xhr.responseText, contentLength: contentLength, encoding: encoding, stylesheetErrors: stylesheetErrors });
                         }
                         else {
+                            completed = true;
+                            clearTimeout(timeoutRef);
                             this.sendCommandToDashboard("documentContent", { id: data.id, url: data.url, status: xhr.status, content: null, error: xhr.statusText });
                         }
                     }
@@ -218,8 +223,18 @@ module VORLON {
 
                 xhr.open("GET", documentUrl, true);
                 xhr.send(null);
+                timeoutRef = setTimeout(() => {
+                    if (!completed){
+                        completed = true;
+                        this.trace("fetch timeout for " + data.url);
+                        xhr.abort();
+                        this.sendCommandToDashboard("documentContent", { id: data.id, url: data.url, status: null, content: null, error: "timeout" });
+                    }
+                }, 20*1000);
             } catch (e) {
                 console.error(e);
+                completed = true;
+                clearTimeout(timeoutRef);
                 this.sendCommandToDashboard("documentContent", { id: data.id, url: data.url, status: 0, content: null, error: e.message });
             }
         }

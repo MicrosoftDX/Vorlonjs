@@ -238,7 +238,7 @@ module VORLON.WebStandards.Rules.JavaScript {
     export var librariesVersions = <IScriptRule>{
         id: "webstandards.javascript-libraries-versions",
         title: "update javascript libraries",
-        description: "The following libraries does not looks up to date.",
+        description: "Try being up to date with your JavaScript libraries like jQuery. Latest versions usually improves performances and browsers compatibility.",
 
 
 		prepare: function(rulecheck: any, analyzeSummary: any) {

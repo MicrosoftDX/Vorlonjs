@@ -67,6 +67,11 @@ module VORLON {
         }
 
         checkLoadingState() {
+            if (this._currentAnalyze && this._currentAnalyze.pendingLoad <= 0) {
+                console.log("resource load completed");
+                this._currentAnalyze.processing = false;
+            }
+                
             if (!this._currentAnalyze || this._currentAnalyze.ended || this._currentAnalyze.canceled) {
                 return;
             }
@@ -173,10 +178,7 @@ module VORLON {
                     item.loaded = false;
                 }
 
-                if (this._currentAnalyze.pendingLoad == 0) {
-                    console.log("resource load completed");
-                    this._currentAnalyze.processing = false;
-                }
+                
             }
 
             if (itemContainer === "stylesheets") {
