@@ -11,7 +11,7 @@ module VORLON.WebStandards.Rules.DOM {
         },
         
         check: function(node: HTMLElement, rulecheck: any, analyzeSummary: any, htmlString: string) {
-            console.log("check for plugins");
+            //console.log("check for plugins");
                         
             var source :string = null, data:string  = null, type:string  = null;
             
@@ -26,11 +26,11 @@ module VORLON.WebStandards.Rules.DOM {
                                      
             if (source.indexOf(".swf") > 0 || data.indexOf("swf") > 0){
                 rulecheck.failed = true;
-                rulecheck.items.push({ message: "think about using HTML5 instead of Flash", content : VORLON.Tools.htmlToString((<HTMLElement>node).outerHTML) })
+                rulecheck.items.push({ message: "consider using HTML5 instead of Flash", content : VORLON.Tools.htmlToString((<HTMLElement>node).outerHTML) })
             }
             else if (type.indexOf("silverlight") > 0){
                 rulecheck.failed = true;
-                rulecheck.items.push({ message: "think about using HTML5 instead of Silverlight", content : VORLON.Tools.htmlToString((<HTMLElement>node).outerHTML) })
+                rulecheck.items.push({ message: "consider using HTML5 instead of Silverlight", content : VORLON.Tools.htmlToString((<HTMLElement>node).outerHTML) })
             } else if (source.indexOf(".svg") > 0 || data.indexOf("svg") > 0) {
                 rulecheck.failed = true;
                 rulecheck.items.push({ message: "dont't use SVG with " + node.nodeType, content : VORLON.Tools.htmlToString((<HTMLElement>node).outerHTML) })

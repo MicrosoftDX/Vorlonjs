@@ -33,7 +33,7 @@ module VORLON.WebStandards.Rules.DOM {
             for (var n in detection) {
                 for (var b in detection) {
                     if (b != n && !comparisons[n + b]) {
-                        console.log("comparing content from " + n + " and " + b);
+                        //console.log("comparing content from " + n + " and " + b);
                         comparisons[b + n] = true;
                         if (detection[b].loaded && detection[n].loaded && detection[b].content != detection[n].content) {
                             rulecheck.failed = true;
@@ -63,7 +63,7 @@ module VORLON.WebStandards.Rules.DOM {
                         completed = true;
                         clearTimeout(timeoutRef);
                         analyzeSummary.pendingLoad--;
-                        console.log("received content for " + browser + "(" + xhr.status + ") " + analyzeSummary.pendingLoad);
+                        //console.log("received content for " + browser + "(" + xhr.status + ") " + analyzeSummary.pendingLoad);
                         if (xhr.status == 200) {
                             analyzeSummary.files.browserInterop[browser] = {
                                 loaded: true, url: analyzeSummary.location.href, userAgent: userAgent, status: xhr.status, content: xhr.responseText
@@ -80,7 +80,7 @@ module VORLON.WebStandards.Rules.DOM {
                 xhr.open("GET", documentUrl, true);
                 analyzeSummary.pendingLoad++;
                 xhr.send(null);
-                console.log("request file " + browser + " " + analyzeSummary.pendingLoad);
+                //console.log("request file " + browser + " " + analyzeSummary.pendingLoad);
                 timeoutRef = setTimeout(() => {
                     if (!completed) {
                         completed = true;

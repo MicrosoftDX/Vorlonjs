@@ -6,11 +6,12 @@ module VORLON.WebStandards.Rules.CSS {
         
         prepare: function(rulecheck: any, analyzeSummary: any) {
             rulecheck.items = rulecheck.items || [];   
+            rulecheck.type = "blockitems"; 
             if (rulecheck.cssnbqueries == undefined) rulecheck.cssnbqueries = 0;          
         },
         
         check: function (url, ast, rulecheck: any, analyzeSummary: any) {
-            console.log("check css prefixes");
+            //console.log("check css prefixes");
 
             this.checkNodes(url, rulecheck, ast);
         },
@@ -22,7 +23,7 @@ module VORLON.WebStandards.Rules.CSS {
             ast.forEach((node, i) => {
                 var nodeitem = <any>null;                
                     
-                //scan content of media queries
+                //scan content for media queries
                 if (node.type === "media") {
                     var media = node.selector;
                     if (media){
@@ -31,19 +32,11 @@ module VORLON.WebStandards.Rules.CSS {
                             rulecheck.cssnbqueries++;
                         }
                     }
-                    // rulecheck.cssnbqueries++;
-                    // console.log(node);
                 }
             });
         },
         
-        endcheck: function(rulecheck: any, analyzeSummary: any){
-            // if (rulecheck.cssnbqueries==0){
-            //     rulecheck.failed = true;
-            //     rulecheck.items.push({
-            //         title : 'your css files does not use any media queries';
-            //     });
-			// }
+        endcheck: function(rulecheck: any, analyzeSummary: any){            
         }
     }
 }
@@ -77,12 +70,12 @@ module VORLON.WebStandards.Rules.DOM {
         },
         
         endcheck : function(rulecheck, analyzeSummary, htmlstring : string){
-            console.log("media queries css:" + rulecheck.cssnbqueries + ", dom:" + rulecheck.domnbqueries);
+            //console.log("media queries css:" + rulecheck.cssnbqueries + ", dom:" + rulecheck.domnbqueries);
             if (rulecheck.cssnbqueries==0 && rulecheck.domnbqueries==0){
                 if (rulecheck.cssnbqueries==0){
                     rulecheck.failed = true;
                     rulecheck.items.push({
-                        title : 'your css files does not use any media queries'
+                        title : 'your css (either files or inline) does not use any media queries'
                     });
                 }
                 

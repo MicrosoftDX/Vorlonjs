@@ -23,7 +23,7 @@ module VORLON {
             super("webstandards");
             this._id = "WEBSTANDARDS";
             this._ready = true;
-            this.debug = true;            
+            //this.debug = true;            
         }
 
         public refresh(): void {

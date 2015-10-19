@@ -8,7 +8,7 @@ module VORLON.WebStandards.Rules.CSS {
         description: "Ensure css fallback.",
         check: function(url, ast, rulecheck: any, analyzeSummary: any) {},
         endcheck: function(rulecheck: any, analyzeSummary: any) {
-            console.log("check css css fallback");
+            //console.log("check css css fallback");
 
             var nodes: any = [];
 
