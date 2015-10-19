@@ -31,8 +31,8 @@ module VORLON {
             document.body.appendChild(script);
 
             this._insertHtmlContentAsync(div, (filledDiv) => {
-                this._ruleDetailPanel = new WebStandardsRuleDetailPanel(filledDiv.querySelector('#webstandards-ruledetailpanel'));
-                this._rulesPanel = new WebStandardsRulesPanel(filledDiv.querySelector('#webstandards-rulespanel'), this._ruleDetailPanel);
+                this._ruleDetailPanel = new WebStandardsRuleDetailPanel(this, filledDiv.querySelector('#webstandards-ruledetailpanel'));
+                this._rulesPanel = new WebStandardsRulesPanel(this, filledDiv.querySelector('#webstandards-rulespanel'), this._ruleDetailPanel);
 
                 this._startCheckButton = <HTMLButtonElement>filledDiv.querySelector('#startCheck');
                 this._cancelCheckButton = <HTMLButtonElement>filledDiv.querySelector('#cancelCheck');
@@ -67,6 +67,11 @@ module VORLON {
         }
 
         checkLoadingState() {
+            if (this._currentAnalyze && this._currentAnalyze.pendingLoad <= 0) {
+                this.trace("resource load completed");
+                this._currentAnalyze.processing = false;
+            }
+                
             if (!this._currentAnalyze || this._currentAnalyze.ended || this._currentAnalyze.canceled) {
                 return;
             }
@@ -116,7 +121,7 @@ module VORLON {
                         this._currentAnalyze.files.scripts[src.value] = { loaded: false, content: null };
                         this.sendCommandToClient('fetchDocument', { url: src.value, id: this._currentAnalyze.id, type: "script" });
                         this._currentAnalyze.pendingLoad++;
-                        console.log("request file " + src.value + " " + this._currentAnalyze.pendingLoad);
+                        this.trace("request file " + src.value + " " + this._currentAnalyze.pendingLoad);
                     }
                 }
             }
@@ -131,7 +136,7 @@ module VORLON {
                     this._currentAnalyze.files.stylesheets[href.value] = { loaded: false, content: null };
                     this.sendCommandToClient('fetchDocument', { url: href.value, id: this._currentAnalyze.id, type: "stylesheet", analyzeCssFallback: this.analyzeCssFallback });
                     this._currentAnalyze.pendingLoad++;
-                    console.log("request file " + href.value + " " + this._currentAnalyze.pendingLoad);
+                    this.trace("request file " + href.value + " " + this._currentAnalyze.pendingLoad);
                 }
             }
             if (!this._currentAnalyze.fallBackErrorList)
@@ -173,10 +178,7 @@ module VORLON {
                     item.loaded = false;
                 }
 
-                if (this._currentAnalyze.pendingLoad == 0) {
-                    console.log("resource load completed");
-                    this._currentAnalyze.processing = false;
-                }
+                
             }
 
             if (itemContainer === "stylesheets") {
@@ -196,7 +198,7 @@ module VORLON {
             if (itemContainer === "scripts") {
                 this.analyzeJsDocument(data.url, data.content, this._currentAnalyze);
             }
-            console.log("receive content " + data.url + " " + this._currentAnalyze.pendingLoad);
+            this.trace("receive content " + data.url + " " + this._currentAnalyze.pendingLoad);
         }
 
         analyzeDOM(document: HTMLDocument, htmlContent: string, analyze) {
@@ -311,7 +313,7 @@ module VORLON {
         analyzeCssDocument(url, content, analyze) {
             var parser = new cssjs();
             var parsed = parser.parseCSS(content);
-            console.log("processing css " + url);
+            this.trace("processing css " + url);
                         
             //we index rules based on target node types
             for (var n in VORLON.WebStandards.Rules.CSS) {
@@ -334,7 +336,7 @@ module VORLON {
         }
 
         analyzeJsDocument(url, content, analyze) {
-            console.log("processing script " + url);
+            this.trace("processing script " + url);
             for (var n in VORLON.WebStandards.Rules.JavaScript) {
                 var rule = <IScriptRule>VORLON.WebStandards.Rules.JavaScript[n];
                 if (rule) {
@@ -414,8 +416,10 @@ module VORLON {
         element: HTMLElement;
         detailpanel: WebStandardsRuleDetailPanel;
         selectedRuleElt: HTMLElement;
-
-        constructor(element: Element, detailpanel: WebStandardsRuleDetailPanel) {
+        plugin:  WebStandardsDashboard;
+        
+        constructor(plugin:  WebStandardsDashboard, element: Element, detailpanel: WebStandardsRuleDetailPanel) {
+            this.plugin = plugin;
             this.element = <HTMLElement>element;
             this.element.style.display = "none";
             this.detailpanel = detailpanel;
@@ -427,8 +431,8 @@ module VORLON {
         }
 
         setRules(analyze) {
-            console.log("RENDER ANALYZE");
-            console.log(analyze);
+            this.plugin.trace("RENDER ANALYZE");
+            this.plugin.trace(analyze);
             this.element.style.display = "";
             this.element.innerHTML = "";
             this.renderRules(analyze.results.rules, this.element, 1);
@@ -495,9 +499,11 @@ module VORLON {
 
     class WebStandardsRuleDetailPanel {
         element: HTMLElement;
-
-        constructor(element: Element) {
+        plugin:  WebStandardsDashboard;
+        
+        constructor(plugin:  WebStandardsDashboard, element: Element) {
             this.element = <HTMLElement>element;
+            this.plugin = plugin;
         }
 
         setRule(rule) {

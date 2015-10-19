@@ -3,7 +3,7 @@ module VORLON.WebStandards.Rules.DOM {
     export var avoidMetaRefresh = <IDOMRule>{
         id: "accessibility.avoid-meta-refresh",
         title: "avoid meta refresh",
-        description : "Reading a webpage with your fingers is a lot harder and slower. Avoid auto refreshing your page",
+        description : "Reading a webpage with your fingers is a lot harder and slower. Avoid auto refreshing your page to allow blind people to read your content.",
         nodeTypes: ["meta"],
                 
         check: function(node: HTMLElement, rulecheck: any, analyzeSummary: any, htmlString: string) {

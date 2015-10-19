@@ -11,8 +11,10 @@ module VORLON.WebStandards.Rules.Files {
             rulecheck.items = rulecheck.items || [];
             rulecheck.type = "blockitems";    
             var countStylesheets = 0;
-            for (var n in analyzeSummary.files.stylesheets){                
-                countStylesheets++;
+            for (var n in analyzeSummary.files.stylesheets){  
+                var isVorlonInjection = n.toLowerCase().indexOf("vorlon/plugins") >= 0;    
+                if (!isVorlonInjection)          
+                    countStylesheets++;
             }
             
             if (countStylesheets > cssFilesLimit){
@@ -24,7 +26,9 @@ module VORLON.WebStandards.Rules.Files {
             
             var countScripts = 0;
             for (var n in analyzeSummary.files.scripts){
-                countScripts++;
+                var isVorlonInjection = n.toLowerCase().indexOf("vorlon/plugins") >= 0;    
+                if (!isVorlonInjection)          
+                    countScripts++;
             }
             
             if (countScripts > scriptsFilesLimit){

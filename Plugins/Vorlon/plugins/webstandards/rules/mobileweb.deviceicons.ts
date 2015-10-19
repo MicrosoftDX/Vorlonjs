@@ -3,11 +3,12 @@ module VORLON.WebStandards.Rules.DOM {
     export var deviceIcons = <IDOMRule>{
         id: "mobileweb.deviceIcons",
         title: "define platform icons",
-        description: "Platform icons helps user pinning your website with an icon that fits well on the device",
+        description: "Platform icons helps user pinning your website with an icon that fits well on mobile device home.",
         nodeTypes: ["meta", "link"],
 
         prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
             rulecheck.items = rulecheck.items || [];
+            rulecheck.type = "blockitems"; 
             rulecheck.hasWindowsIcons = false;
             rulecheck.hasWindowsNotification = false;
             rulecheck.hasIOSIcons = false;

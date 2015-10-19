@@ -7,23 +7,29 @@ module VORLON.WebStandards.Rules.Files {
         check: function(rulecheck: any, analyzeSummary: any) {
             rulecheck.items = rulecheck.items || [];
             rulecheck.type = "blockitems";    
-            for (var n in analyzeSummary.files.stylesheets){                
-                var charPerLines = this.getAverageCharacterPerLine(analyzeSummary.files.stylesheets[n].content);                
-                if (charPerLines < 50){
-                    rulecheck.failed = true;
-                    rulecheck.items.push({
-                        title : "minify " + n
-                    });
+            for (var n in analyzeSummary.files.stylesheets){   
+                var isVorlonInjection = n.toLowerCase().indexOf("vorlon/plugins") >= 0;    
+                if (!isVorlonInjection){             
+                    var charPerLines = this.getAverageCharacterPerLine(analyzeSummary.files.stylesheets[n].content);                
+                    if (charPerLines < 50){
+                        rulecheck.failed = true;
+                        rulecheck.items.push({
+                            title : "minify " + n
+                        });
+                    }
                 }
             }
             
-            for (var n in analyzeSummary.files.scripts){                
-                var charPerLines = this.getAverageCharacterPerLine(analyzeSummary.files.scripts[n].content);                
-                if (charPerLines < 50){
-                    rulecheck.failed = true;
-                    rulecheck.items.push({
-                        title : "minify " + n
-                    });
+            for (var n in analyzeSummary.files.scripts){     
+                var isVorlonInjection = n.toLowerCase().indexOf("vorlon/plugins") >= 0;    
+                if (!isVorlonInjection){             
+                    var charPerLines = this.getAverageCharacterPerLine(analyzeSummary.files.scripts[n].content);                
+                    if (charPerLines < 50){
+                        rulecheck.failed = true;
+                        rulecheck.items.push({
+                            title : "minify " + n
+                        });
+                    }
                 }
             }
         },

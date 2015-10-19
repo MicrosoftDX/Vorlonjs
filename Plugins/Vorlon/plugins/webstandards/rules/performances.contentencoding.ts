@@ -7,8 +7,9 @@ module VORLON.WebStandards.Rules.Files {
         check: function(rulecheck: any, analyzeSummary: any) {
             rulecheck.items = rulecheck.items || [];
             rulecheck.type = "blockitems";    
-            for (var n in analyzeSummary.files.stylesheets){                
-                if (analyzeSummary.files.stylesheets[n].encoding && analyzeSummary.files.stylesheets[n].encoding == "none"){
+            for (var n in analyzeSummary.files.stylesheets){     
+                var isVorlonInjection = n.toLowerCase().indexOf("vorlon/plugins") >= 0;
+                if (!isVorlonInjection && analyzeSummary.files.stylesheets[n].encoding && analyzeSummary.files.stylesheets[n].encoding == "none"){
                     rulecheck.failed = true;
                     rulecheck.items.push({
                         title : "use content encoding for " + n
@@ -17,7 +18,8 @@ module VORLON.WebStandards.Rules.Files {
             }
             
             for (var n in analyzeSummary.files.scripts){                
-                if (analyzeSummary.files.scripts[n].encoding && analyzeSummary.files.scripts[n].encoding == "none"){
+                var isVorlonInjection = n.toLowerCase().indexOf("vorlon/plugins") >= 0;
+                if (!isVorlonInjection && analyzeSummary.files.scripts[n].encoding && analyzeSummary.files.scripts[n].encoding == "none"){
                     rulecheck.failed = true;
                     rulecheck.items.push({
                         title : "use content encoding for " + n
