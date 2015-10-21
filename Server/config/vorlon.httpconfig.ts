@@ -31,9 +31,15 @@ export module VORLON {
                 }
             }
             else {
-                this.useSSL = false;
-                this.protocol = "http";
-                this.httpModule = http;
+               this.useSSL = false;
+                if (catalog.useSSLAzure){
+                  this.protocol = "https";
+                  this.httpModule = http;
+                }
+                else{
+                  this.protocol = "http";
+                  this.httpModule = http;
+                }
             }
             this.proxyEnvPort=catalog.proxyEnvPort;
             if(catalog.proxyEnvPort)
