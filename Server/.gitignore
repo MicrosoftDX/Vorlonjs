@@ -13,3 +13,4 @@ public/stylesheets/**/*.css
 
 
 public/vorlon/*.d.ts
+public/stylesheets/style.css
