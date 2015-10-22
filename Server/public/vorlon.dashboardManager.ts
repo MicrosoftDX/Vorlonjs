@@ -1,6 +1,6 @@
 ﻿/// <reference path="../Scripts/typings/vorlon/vorlon.core.d.ts" /> 
 /// <reference path="../Scripts/typings/vorlon/vorlon.clientMessenger.d.ts" /> 
-/// <reference path="../Scripts/typings/vorlon/vorlon.plugin.d.ts" /> 
+/// <reference path="../Scripts/typings/vorlon/vorlon.clientPlugin.d.ts" /> 
 
 
 module VORLON {
