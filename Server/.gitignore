@@ -12,5 +12,5 @@ public/vorlon/**/*
 public/stylesheets/**/*.css
 
 
-public/vorlon/*.d.ts
+Scripts/typings/vorlon/**/*.d.ts
 public/stylesheets/style.css
