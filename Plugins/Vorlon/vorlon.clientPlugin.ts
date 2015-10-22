@@ -46,13 +46,13 @@
                 var first = document.getElementsByTagName('script')[0];
                 first.parentNode.insertBefore(scriptToLoad, first);
             }
-            if (!waitForDOMContentLoaded || this.domReady) {
+            if (!waitForDOMContentLoaded || document.body) {
                 loadScript();
             }
             else {
-                setTimeout(() => {
-                    this._loadNewScriptAsync(scriptName, callback, waitForDOMContentLoaded);
-                }, 100);
+                document.addEventListener("DOMContentLoaded", () => {
+                this._loadNewScriptAsync(scriptName, callback, waitForDOMContentLoaded);
+                });
             }
         }
     }

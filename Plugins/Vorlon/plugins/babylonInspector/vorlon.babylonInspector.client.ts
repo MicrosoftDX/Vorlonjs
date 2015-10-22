@@ -775,7 +775,7 @@ module VORLON {
         /**
          * Start the clientside code : initilization etc
          */
-        public whenDOMReady(): void {
+        public startClientSide(): void {
             if(!BABYLON.Engine.isSupported()) {
                 //error
             } else {

@@ -43,11 +43,6 @@
             this.sendCommandToDashboard("performanceItems", message);            
         }
 
-        public whenDOMReady(): void {
-            var that = this;
-            that.sendClientData();
-        }
-
         public refresh(): void {
             this.sendClientData();
         }
