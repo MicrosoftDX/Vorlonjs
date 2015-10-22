@@ -3,7 +3,6 @@
 
     export class ClientPlugin extends BasePlugin  {
         public ClientCommands: any;
-        public domReady : boolean;
         
         constructor(name: string) {
             super(name);
@@ -11,7 +10,6 @@
         }
 
         public startClientSide(): void { }
-        public whenDOMReady(): void { }
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void { }
 
         
@@ -51,7 +49,7 @@
             }
             else {
                 document.addEventListener("DOMContentLoaded", () => {
-                this._loadNewScriptAsync(scriptName, callback, waitForDOMContentLoaded);
+                    this._loadNewScriptAsync(scriptName, callback, waitForDOMContentLoaded);
                 });
             }
         }
