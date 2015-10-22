@@ -98,14 +98,6 @@
                 plugin.startClientSide();
             }
 
-            document.addEventListener("DOMContentLoaded", () => {
-                for (var index = 0; index < Core._clientPlugins.length; index++) {
-                    var plugin = Core._clientPlugins[index];
-                    plugin.domReady = true;
-                    plugin.whenDOMReady();
-                }
-            });
-
             // Handle client disconnect
             window.addEventListener("beforeunload", function() {
                 Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
