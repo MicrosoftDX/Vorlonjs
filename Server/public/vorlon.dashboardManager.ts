@@ -119,20 +119,20 @@ module VORLON {
             
             //remove ghosts ones
             for (var i = 0; i < clients.length - 1; i++) {
-                var currentClient = clients[i];
+                var currentClient = <HTMLElement>(clients[i]);
                 if(DashboardManager.ClientList[currentClient.id].displayid === client.displayid){
                     clientlist.removeChild(currentClient);  
                     break;
                 }
             }
             
-            if(clients.length === 0 || DashboardManager.ClientList[clients[clients.length - 1].id].displayid < client.displayid){
+            if(clients.length === 0 || DashboardManager.ClientList[(<HTMLElement>clients[clients.length - 1]).id].displayid < client.displayid){
                 clientlist.appendChild(pluginlistelement);
             }
             else{
                 for (var i = 0; i < clients.length - 1; i++) {
-                    var currentClient = clients[i];
-                    var nextClient = clients[i+1];
+                    var currentClient = <HTMLElement>(clients[i]);
+                    var nextClient = <HTMLElement>(clients[i+1]);
                     if(DashboardManager.ClientList[currentClient.id].displayid < client.displayid
                     &&  DashboardManager.ClientList[nextClient.id].displayid >= client.displayid){
                         clientlist.insertBefore(pluginlistelement, nextClient);
