@@ -163,6 +163,12 @@ a {
   color: #007ca7;
   text-decoration: none;
 }
+.loader {
+  transform: scale(1.5);
+}
+.loader.hidden {
+  display: none;
+}
 .cf:before,
 .cf:after {
   content: " ";

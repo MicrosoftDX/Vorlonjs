@@ -167,16 +167,17 @@ module VORLON {
         }
         
         static DisplayWaitingLogo(): void{
-            //Hide waiting page and let's bounce the logo !
+            //Hide waiting page and let's not bounce the logo !
             var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
             VORLON.Tools.RemoveClass(elt, 'hidden');
         }
         
         static DisplayBouncingLogo(): void{
-            //Hide waiting page and let's bounce the logo !
+            //Hide waiting page and let's not bounce the logo !
             var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
             VORLON.Tools.RemoveClass(elt, 'hidden');
-            VORLON.Tools.AddClass(elt, 'bounce');
+            elt = <HTMLElement>document.querySelector('.loader');
+            VORLON.Tools.RemoveClass(elt, 'hidden');
         }
 
         public static loadPlugins(): void {
