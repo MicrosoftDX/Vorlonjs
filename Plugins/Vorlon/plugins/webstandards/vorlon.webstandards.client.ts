@@ -86,7 +86,7 @@ module VORLON {
                 stylesheetErrors = {}
                 if (inlineStylesheets.length) {
                     for (var x = 0; x < inlineStylesheets.length; x++) {
-                        this.analyzeCssDocument("inline" + [x], (<HTMLElement>inlineStylesheets[x]).innerHTML, data.id, stylesheetErrors);
+                        this.analyzeCssDocument("inline " + [x], (<HTMLElement>inlineStylesheets[x]).innerHTML, data.id, stylesheetErrors);
                     }
                 }
             }
