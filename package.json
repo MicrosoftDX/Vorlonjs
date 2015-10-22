@@ -31,7 +31,6 @@
   },
   "devDependencies": {
     "gulp": "^3.8.11",
-    "gulp-cli": "^0.3.0",
     "gulp-concat": "^2.2.0",
     "gulp-filter": "^0.4.1",
     "gulp-less": "^3.0.3",
@@ -46,9 +45,11 @@
     "typescript": "^1.6.0-beta"
   },
   "scripts": {
+    "global-deploy-gulp": "npm install -g gulp",
+    "global-deploy-gulp-cli": "npm install -g gulp-cli",
     "build-server": "gulp --gulpfile=./Server/gulpfile.js --cwd=./Server",
     "build-client": "gulp --gulpfile=./Plugins/gulpfile.js --cwd=./Plugins",
-    "build": "node disclaimer.js && npm run build-server && npm run build-client",
+    "build": "node disclaimer.js && npm run global-deploy-gulp && npm run global-deploy-gulp-cli && npm run build-server && npm run build-client",
     "prepublish": "npm run build",
     "start": "node ./Server/server.js"
   },
