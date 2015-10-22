@@ -242,7 +242,11 @@
             }
 
             if (!this.item.contentFetched) {
-                elt.element.innerHTML = '<div class="loader"><span class="fa fa-spin fa-spinner"></span> loading content...</div>';
+                if (this.item.type === "notfound") {
+                    elt.element.innerHTML = '<div class="loader">Nothing found, please change your filter (or use <b>"window"</b>)...</div>';
+                } else {
+                    elt.element.innerHTML = '<div class="loader"><span class="fa fa-spin fa-spinner"></span> loading content...</div>';
+                }
                 return;
             }
 
