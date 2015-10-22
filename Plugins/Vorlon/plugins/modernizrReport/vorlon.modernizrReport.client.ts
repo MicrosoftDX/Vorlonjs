@@ -13,13 +13,9 @@
         }
 
         public startClientSide(): void {
-            
-        }
-        
-        public whenDOMReady():void{
             this.loadModernizrFeatures();
         }
-        
+                
         public loadModernizrFeatures(){
             this.trace("loading modernizr script");
             this._loadNewScriptAsync("modernizr.js", () => {

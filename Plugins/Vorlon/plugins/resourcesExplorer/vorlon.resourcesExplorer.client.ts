@@ -9,6 +9,10 @@
             this._ready = true;
             this._id = "RESOURCES";
             //this.debug = true;
+            
+            window.addEventListener("load", () => {
+                this.sendClientData();
+            });
         }
 
         public sendClientData(): void {
@@ -35,13 +39,6 @@
             message.sessionStorageList = this.sessionStorageList;
             message.cookiesList = this.cookiesList;
             this.sendCommandToDashboard("resourceitems", message);
-        }
-
-        public whenDOMReady(): void {
-            var that = this;
-            window.addEventListener("load", function(){
-                that.sendClientData();
-            });
         }
 
         public refresh(): void {
