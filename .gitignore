@@ -14,4 +14,4 @@ Plugins/Vorlon/plugins/remoteDebugging.zip
 .settings/launch.json
 *.dat
 Server/public/stylesheets/style.css
-/Server/Scripts/typings
+vorlon
