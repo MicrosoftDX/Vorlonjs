@@ -23,12 +23,10 @@
         { "id": "WEBSTANDARDS", "name": "Best practices", "panel": "top", "foldername": "webstandards", "enabled": true }
     ],
     "port": 1337,
-    
     "enableWebproxy" : true,
     "baseProxyURL": "",
     "proxyPort" : 5050,
     "proxyEnvPort": false,
     "vorlonServerURL": "",
     "vorlonProxyURL": ""
-    
 }
