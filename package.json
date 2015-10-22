@@ -14,7 +14,7 @@
     "favicon": "0.0.2",
     "jade": "^1.9.2",
     "json": "^9.0.3",
-	  "method-override" : "2.3.4",
+    "method-override": "2.3.4",
     "multer": "^0.1.8",
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "gulp": "^3.8.11",
+    "gulp-cli": "^0.3.0",
     "gulp-concat": "^2.2.0",
     "gulp-filter": "^0.4.1",
     "gulp-less": "^3.0.3",
@@ -44,7 +45,7 @@
     "through": "^2.3.4",
     "typescript": "^1.6.0-beta"
   },
-  "scripts": {    
+  "scripts": {
     "build-server": "gulp --gulpfile=./Server/gulpfile.js --cwd=./Server",
     "build-client": "gulp --gulpfile=./Plugins/gulpfile.js --cwd=./Plugins",
     "build": "node disclaimer.js && npm run build-server && npm run build-client",
