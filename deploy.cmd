@@ -2,7 +2,7 @@
 
 :: ----------------------
 :: KUDU Deployment Script
-:: Version: 0.1.13
+:: Version: 1.0.4
 :: ----------------------
 
 :: Prerequisites
@@ -110,7 +110,6 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 :: Post deployment stub
 IF DEFINED POST_DEPLOYMENT_ACTION call "%POST_DEPLOYMENT_ACTION%"
 IF !ERRORLEVEL! NEQ 0 goto error
-
 goto end
 
 :: Execute command routine that will echo out when error
