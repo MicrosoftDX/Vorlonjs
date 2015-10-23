@@ -149,6 +149,9 @@
         }
 
         private batchSend(items: any[]) {
+            if (this._pendingEntriesTimeout) {
+                clearTimeout(this._pendingEntriesTimeout);
+            }
             var batch = [];
             for (var i = 0, l = items.length; i < l; i++) {
                 if (batch.length < this._maxBatchSize) {
@@ -262,11 +265,10 @@
             }
         }
 
-        public refresh(): void {
-            this.sendCommandToDashboard("clear");
-
+        public refresh(): void {           
             //delay sending cache to dashboard to let other plugins load...
             setTimeout(() => {
+                this.sendCommandToDashboard("clear");
                 this.batchSend(this._cache);
             }, 300);
         }
