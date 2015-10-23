@@ -149,6 +149,9 @@
         }
 
         private batchSend(items: any[]) {
+            if (this._pendingEntriesTimeout) {
+                clearTimeout(this._pendingEntriesTimeout);
+            }
             var batch = [];
             for (var i = 0, l = items.length; i < l; i++) {
                 if (batch.length < this._maxBatchSize) {
