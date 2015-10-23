@@ -118,16 +118,20 @@ module VORLON {
             var clients = clientlist.children;
             
             //remove ghosts ones
-            for (var i = 0; i < clients.length - 1; i++) {
+            for (var i = 0; i < clients.length; i++) {
                 var currentClient = <HTMLElement>(clients[i]);
                 if(DashboardManager.ClientList[currentClient.id].displayid === client.displayid){
                     clientlist.removeChild(currentClient);  
-                    break;
+                    i--;
                 }
             }
             
             if(clients.length === 0 || DashboardManager.ClientList[(<HTMLElement>clients[clients.length - 1]).id].displayid < client.displayid){
                 clientlist.appendChild(pluginlistelement);
+            }
+            else if(clients.length === 1){
+                var firstClient = <HTMLElement>clients[clients.length - 1];
+                clientlist.insertBefore(pluginlistelement, firstClient);
             }
             else{
                 for (var i = 0; i < clients.length - 1; i++) {
@@ -355,6 +359,7 @@ module VORLON {
                         
                 if (DashboardManager.ClientCount() === 0) {
                     DashboardManager.ResetDashboard(false);
+                    DashboardManager.DisplayingClient = false;
                 }
             }
         }
