@@ -9,8 +9,10 @@
         private _computedsection: HTMLElement;
         private _dashboardDiv: HTMLDivElement;
         public refreshButton: Element;
+        public inspectButton: Element;
         public clikedNodeID = null;
         public _selectedNode: DomExplorerNode;
+        public _highlightedNode: string;
         public _rootNode: DomExplorerNode;
         private _autorefresh: boolean = false;
         public _innerHTMLView: HTMLTextAreaElement;
@@ -53,8 +55,12 @@
                 var domSettings = new DomSettings(this);
                 this.searchDOM();
                 this.refreshButton = this._containerDiv.querySelector('x-action[event="refresh"]');
+                this.inspectButton = this._containerDiv.querySelector('x-action[event="inspect"]');
                 this._stylesEditor = new DomExplorerPropertyEditor(this);
-                this._containerDiv.addEventListener('refresh',() => {
+                this._containerDiv.addEventListener('inspectFromClient',() => {
+                    this.sendCommandToClient('inspect');
+                });
+                this._containerDiv.addEventListener('refresh', () => {
                     this.sendCommandToClient('refresh');
                 });
                 this._containerDiv.addEventListener('gethtml',() => {
@@ -104,16 +110,17 @@
                     if (node.className.match('treeNodeHeader') || node.parentElement.className.match('treeNodeClosingText')) {
                         var hovered = this.treeDiv.querySelector('[data-hovered-tag]');
                         if (hovered) hovered.removeAttribute('data-hovered-tag');
-                        var id = $(node).data('internalid');
-                        if (id) {
-                            this.hoverNode(id, true);
-                        }
-                        else {
-                            var id = $(node.parentElement).data('internalid');
-                            if (id) {
-                                this.hoverNode(id, true);
-                            }
-                        }
+                        this.hoverNode(null, true);
+                        // var id = $(node).data('internalid');
+                        // if (id) {
+                        //     this.hoverNode(id, true);
+                        // }
+                        // else {
+                        //     var id = $(node.parentElement).data('internalid');
+                        //     if (id) {
+                        //         this.hoverNode(id, true);
+                        //     }
+                        // }
                     }
 
                 }, true);
@@ -283,7 +290,8 @@
             }
             if (this._rootNode)
                 this._rootNode.dispose();
-            this.treeDiv.parentElement.classList.add('active');
+            if (this.treeDiv.parentElement) 
+                this.treeDiv.parentElement.classList.add('active');
             this._rootNode = new DomExplorerNode(this, null, this.treeDiv, root);
         }
 
@@ -309,18 +317,23 @@
         }
 
         hoverNode(internalId: string, unselect: boolean = false) {
+            this._highlightedNode = internalId;
             if (!internalId) {
-                this.sendCommandToClient('unselect', {
+                this.sendCommandToClient('unhighlight', {
                     order: null
                 });
             }
             else if (unselect) {
-                this.sendCommandToClient('unselect', {
-                    order: internalId
-                });
+                setTimeout(()=>{         
+                    if (!this._highlightedNode){           
+                        this.sendCommandToClient('unhighlight', {
+                            order: internalId
+                        });    
+                    }
+                }, 5);                
             }
             else {
-                this.sendCommandToClient('select', {
+                this.sendCommandToClient('highlight', {
                     order: internalId
                 });
             }
@@ -348,9 +361,16 @@
                     order: this._selectedNode.node.internalId
                 });
                 this._stylesEditor.generateStyles(selected.node, selected.node.internalId);
+                //this._stylesEditor.generateStyles(selected.node, selected.node.internalId);
                 this._innerHTMLView.value = "";
             } else {
                 this._selectedNode = null;
+            }
+        }
+        
+        setNodeStyle(internalId: string, styles){
+            if (this._selectedNode && this._selectedNode.node.internalId == internalId){
+                this._stylesEditor.generateStyles(this._selectedNode.node, this._selectedNode.node.internalId, styles);
             }
         }
     }
@@ -387,6 +407,11 @@
         refreshNode(node: PackagedNode) {
             var plugin = <DOMExplorerDashboard>this;
             plugin.updateDashboard(node);
+        },
+        nodeStyle(data: any){
+            console.log("dashboard receive node style", data);
+            var plugin = <DOMExplorerDashboard>this;
+            plugin.setNodeStyle(data.internalID, data.styles);
         }
     }
 
@@ -552,7 +577,7 @@
         }
 
         renderDOMNodeContent() {
-            var root = FluentDOM.for(this.element);
+            var root = FluentDOM.forElement(this.element);
             root.append('BUTTON', 'treeNodeButton',(nodeButton) => {
                 nodeButton.element.id = "plusbtn" + this.node.internalId;
                 if (this.node.hasChildNodes && (!this.node.children || this.node.children.length === 0)) {
@@ -653,9 +678,10 @@
                             menu("#treeNodeClosingText" + this.node.internalId);
                         });
                     });
-                }
+                }   
                 else {
-                    (<HTMLElement>  this.header.querySelector('.closetag')).innerHTML = "/>";
+                   root.element.classList.add('notexpansible');                   
+                   (<HTMLElement>  this.header.querySelector('.closetag')).innerHTML = "/>";
                 }
             }
             // Main node
@@ -860,7 +886,7 @@
             return parentNode.appendChild(button);
         }
 
-        public generateStyles(node: PackagedNode, internalId: string): void {
+        public generateStyles(node: PackagedNode, internalId: string, styles?:any): void {
             this.node = node;
             this.internalId = internalId;
             this.styles = [];
@@ -868,17 +894,19 @@
                 this.plugin.styleView.removeChild(this.plugin.styleView.lastChild);
             }
 
-            // Current styles
-            for (var index = 0; index < node.styles.length; index++) {
-                var style = node.styles[index];
-                var splits = style.split(":");
-                this.styles.push(new DomExplorerPropertyEditorItem(this, splits[0], splits[1], this.internalId));
+            if (styles){
+                // Current styles
+                for (var index = 0; index < styles.length; index++) {
+                    var style = styles[index];
+                    var splits = style.split(":");
+                    this.styles.push(new DomExplorerPropertyEditorItem(this, splits[0], splits[1], this.internalId));
+                }
+                // Append add style button
+                this._generateButton(this.plugin.styleView, "+", "styleButton", null).addEventListener('click',(e) => {
+                    new DomExplorerPropertyEditorItem(this, "property", "value", this.internalId, true);
+                    this.plugin.styleView.appendChild(<HTMLElement>e.target);
+                });
             }
-            // Append add style button
-            this._generateButton(this.plugin.styleView, "+", "styleButton", null).addEventListener('click',(e) => {
-                new DomExplorerPropertyEditorItem(this, "property", "value", this.internalId, true);
-                this.plugin.styleView.appendChild(<HTMLElement>e.target);
-            });
         }
 
     }

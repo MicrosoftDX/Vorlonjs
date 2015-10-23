@@ -8,10 +8,11 @@
         private _globalloadactive = false;
         private _overlay: HTMLElement;
         private _observerMutationObserver;
-
+        private _overlayInspect: HTMLElement;
         constructor() {
             super("domExplorer");
             this._id = "DOM";
+            //this.debug = true;
             this._ready = false;
         }
 
@@ -78,6 +79,9 @@
         }
 
         private _packageNode(node: any): PackagedNode {
+            if (!node)
+                return;
+
             var packagedNode = {
                 id: node.id,
                 type: node.nodeType,
@@ -85,15 +89,16 @@
                 classes: node.className,
                 content: null,
                 hasChildNodes: false,
-                attributes: node.attributes ? Array.prototype.map.call(node.attributes,(attr) => {
+                attributes: node.attributes ? Array.prototype.map.call(node.attributes, (attr) => {
                     return [attr.name, attr.value];
                 }) : [],
-                styles: DOMExplorerClient.GetAppliedStyles(node),
+                //styles: DOMExplorerClient.GetAppliedStyles(node),
                 children: [],
                 isEmpty: false,
                 rootHTML: null,
                 internalId: VORLON.Tools.CreateGUID()
             };
+
             if (node.innerHTML === "") {
                 packagedNode.isEmpty = true;
             }
@@ -108,7 +113,7 @@
             }
             else {
                 if (!node.__vorlon) {
-                    node.__vorlon = <any> {};
+                    node.__vorlon = <any>{};
                 }
                 node.__vorlon.internalId = packagedNode.internalId;
             }
@@ -125,7 +130,8 @@
                 var node = <HTMLElement>root.childNodes[index];
                 var packagedNode = this._packageNode(node);
                 var b = false;
-                if (node.childNodes && node.childNodes.length > 1) {
+
+                if (node.childNodes && node.childNodes.length > 1 || (node && node.nodeName && (node.nodeName.toLowerCase() === "script" || node.nodeName.toLowerCase() === "style"))) {
                     packagedNode.hasChildNodes = true;
                 }
                 else if (withChildsNodes || node.childNodes.length == 1) {
@@ -136,7 +142,10 @@
                     this._packageDOM(node, packagedNode, withChildsNodes, highlightElementID);
                 }
 
-                if ((<any>node).__vorlon.ignore) { return; }
+                if ((<any>node).__vorlon && (<any>node).__vorlon.ignore) {
+                    return;
+                }
+
                 packagedObject.children.push(packagedNode);
                 if (highlightElementID === packagedNode.internalId) {
                     highlightElementID = "";
@@ -162,6 +171,10 @@
         }
 
         private _getElementByInternalId(internalId: string, node: HTMLElement): any {
+            if (!node) {
+                return null;
+            }
+
             if (node.__vorlon && node.__vorlon.internalId === internalId) {
                 return node;
             }
@@ -251,10 +264,11 @@
             var p = element.getBoundingClientRect();
             var w = element.offsetWidth;
             var h = element.offsetHeight;
-            return { x: p.top, y: p.left, width: w, height: h };
+            //console.log("check offset for highlight " + p.top + "," + p.left);
+            return { x: p.top - element.scrollTop, y: p.left - element.scrollLeft, width: w, height: h };
         }
 
-        public setClientSelectedElement(elementId: string) {
+        public setClientHighlightedElement(elementId: string) {
             var element = this._getElementByInternalId(elementId, document.documentElement);
 
             if (!element) {
@@ -263,10 +277,10 @@
             if (!this._overlay) {
                 this._overlay = document.createElement("div");
                 this._overlay.id = "vorlonOverlay";
-                this._overlay.style.position = "absolute";
+                this._overlay.style.position = "fixed";
                 this._overlay.style.backgroundColor = "rgba(255,255,0,0.4)";
                 this._overlay.style.pointerEvents = "none";
-                (<any>  this._overlay).__vorlon = { ignore: true };
+                (<any>this._overlay).__vorlon = { ignore: true };
                 document.body.appendChild(this._overlay);
             }
             this._overlay.style.display = "block";
@@ -277,7 +291,7 @@
             this._overlay.style.height = position.height + "px";
         }
 
-        public unselectClientElement(internalId?: string) {
+        public unhighlightClientElement(internalId?: string) {
             if (this._overlay)
                 this._overlay.style.display = "none";
         }
@@ -287,9 +301,65 @@
         }
 
         refresh(): void {
+            //sometimes refresh is called before document was loaded
+            if (!document.body) {
+                setTimeout(() => {
+                    this.refresh();
+                }, 200);
+                return;
+            }
+
             var packagedObject = this._packageNode(document.documentElement);
             this._packageDOM(document.documentElement, packagedObject, this._globalloadactive, null);
             this.sendCommandToDashboard('init', packagedObject);
+        }
+
+        inspect(): void {
+            if (document.elementFromPoint) {
+                if (this._overlayInspect)
+                    return;
+                this.trace("INSPECT");
+                this._overlayInspect = document.createElement("DIV");
+                this._overlayInspect.__vorlon = { ignore: true };
+                this._overlayInspect.style.position = "fixed";
+                this._overlayInspect.style.left = "0";
+                this._overlayInspect.style.right = "0";
+                this._overlayInspect.style.top = "0";
+                this._overlayInspect.style.bottom = "0";
+                this._overlayInspect.style.zIndex = "5000000000000000";
+                this._overlayInspect.style.touchAction = "manipulation";
+                this._overlayInspect.style.backgroundColor = "rgba(255,0,0,0.3)";
+                document.body.appendChild(this._overlayInspect);
+                var event = "mousedown";
+                if (this._overlayInspect.onpointerdown !== undefined) {
+                    event = "pointerdown";
+                }
+                this._overlayInspect.addEventListener(event, (arg) => {
+                    var evt = <any>arg;
+                    this.trace("tracking element at " + evt.clientX + "/" + evt.clientY);
+                    this._overlayInspect.parentElement.removeChild(this._overlayInspect);
+                    var el = <HTMLElement>document.elementFromPoint(evt.clientX, evt.clientY);
+                    if (el) {
+                        this.trace("element found");
+                        this.openElementInDashboard(el);
+                    } else {
+                        this.trace("element not found");
+                    }
+                    this._overlayInspect = null;
+                });
+            } else {
+                //TODO : send message back to dashboard and disable button
+                this.trace("VORLON, inspection not supported");
+            }
+        }
+
+        openElementInDashboard(element: Element) {
+            if (element) {
+                var parentId = this.getFirstParentWithInternalId(element);
+                if (parentId) {
+                    this.refreshbyId(parentId, this._packageNode(element).internalId);
+                }
+            }
         }
 
         setStyle(internaID: string, property: string, newValue: string): void {
@@ -325,21 +395,27 @@
 
         searchDOMBySelector(selector: string, position: number = 0) {
             var length = 0;
-            if (selector) {
-                var elements = document.querySelectorAll(selector);
-                length = elements.length;
-                if (elements.length) {
-                    if (!elements[position])
-                        position = 0;
-                    var parentId = this.getFirstParentWithInternalId(elements[position]);
-                    if (parentId) {
-                        this.refreshbyId(parentId, this._packageNode(elements[position]).internalId);
-                    }
-                    if (position < elements.length + 1) {
-                        position++;
+            try {
+                if (selector) {
+                    var elements = document.querySelectorAll(selector);
+                    length = elements.length;
+                    if (elements.length) {
+                        if (!elements[position])
+                            position = 0;
+                        var parentId = this.getFirstParentWithInternalId(elements[position]);
+                        if (parentId) {
+                            this.refreshbyId(parentId, this._packageNode(elements[position]).internalId);
+                        }
+                        if (position < elements.length + 1) {
+                            position++;
+                        }
                     }
                 }
             }
+            catch (e) {
+
+            }
+
             this.sendCommandToDashboard('searchDOMByResults', { length: length, selector: selector, position: position });
         }
 
@@ -353,7 +429,7 @@
                 if (attributeName)
                     element.setAttribute(attributeName, attributeValue);
                 if (attributeName && attributeName.indexOf('on') === 0) {
-                    element[attributeName] = function () {
+                    element[attributeName] = function() {
                         try { eval(attributeValue); }
                         catch (e) { console.error(e); }
                     };
@@ -374,14 +450,17 @@
             var element = this._getElementByInternalId(internaID, document.documentElement);
             element.innerHTML = value;
         }
+
+        public getNodeStyle(internalID: string) {
+            var element = this._getElementByInternalId(internalID, document.documentElement);
+            if (element) {
+                var styles = DOMExplorerClient.GetAppliedStyles(element);
+                this.sendCommandToDashboard('nodeStyle', { internalID: internalID, styles: styles });
+            }
+        }
     }
 
     DOMExplorerClient.prototype.ClientCommands = {
-        select(data: any) {
-            var plugin = <DOMExplorerClient>this;
-            plugin.unselectClientElement();
-            plugin.setClientSelectedElement(data.order);
-        },
         getMutationObeserverAvailability() {
             var plugin = <DOMExplorerClient>this;
             plugin.getMutationObeserverAvailability();
@@ -417,9 +496,27 @@
             plugin.setElementValue(data.order, data.value);
         },
 
+        select(data: any) {
+            var plugin = <DOMExplorerClient>this;
+            plugin.unhighlightClientElement();
+            plugin.setClientHighlightedElement(data.order);
+            plugin.getNodeStyle(data.order);
+        },
+
         unselect(data: any) {
             var plugin = <DOMExplorerClient>this;
-            plugin.unselectClientElement(data.order);
+            plugin.unhighlightClientElement(data.order);
+        },
+
+        highlight(data: any) {
+            var plugin = <DOMExplorerClient>this;
+            plugin.unhighlightClientElement();
+            plugin.setClientHighlightedElement(data.order);
+        },
+
+        unhighlight(data: any) {
+            var plugin = <DOMExplorerClient>this;
+            plugin.unhighlightClientElement(data.order);
         },
 
         refreshNode(data: any) {
@@ -427,9 +524,20 @@
             plugin.refreshbyId(data.order);
         },
 
+        getNodeStyles(data: any) {
+            var plugin = <DOMExplorerClient>this;
+            console.log("get node style");
+            //plugin.refreshbyId(data.order);
+        },
+
         refresh() {
             var plugin = <DOMExplorerClient>this;
             plugin.refresh();
+        },
+
+        inspect() {
+            var plugin = <DOMExplorerClient>this;
+            plugin.inspect();
         },
 
         getInnerHTML(data: any) {

@@ -20,7 +20,7 @@
         public get ClientPlugins(): Array<ClientPlugin> {
             return Core._clientPlugins;
         }
-        
+
         public get DashboardPlugins(): Array<DashboardPlugin> {
             return Core._dashboardPlugins;
         }
@@ -28,11 +28,18 @@
         public RegisterClientPlugin(plugin: ClientPlugin): void {
             Core._clientPlugins.push(plugin);
         }
-        
+
         public RegisterDashboardPlugin(plugin: DashboardPlugin): void {
             Core._dashboardPlugins.push(plugin);
         }
-        
+
+        public StopListening(): void {
+            if (Core._messenger) {
+                Core._messenger.stopListening();
+                delete Core._messenger;
+            }
+        }
+
         public StartClientSide(serverUrl = "'http://localhost:1337/'", sessionId = "", listenClientId = ""): void {
             Core._side = RuntimeSide.Client;
             Core._sessionID = sessionId;
@@ -44,7 +51,7 @@
                 if (this._socketIOWaitCount < 10) {
                     this._socketIOWaitCount++;
                     // Let's wait a bit just in case socket.io was loaded asynchronously
-                    setTimeout(function () {
+                    setTimeout(function() {
                         console.log("Vorlon.js: waiting for socket.io to load...");
                         Core.StartClientSide(serverUrl, sessionId, listenClientId);
                     }, 1000);
@@ -64,6 +71,10 @@
             }
 
             // Creating the messenger
+            if (Core._messenger) {
+                Core._messenger.stopListening();
+                delete Core._messenger;
+            }
             Core._messenger = new ClientMessenger(Core._side, serverUrl, sessionId, clientId, listenClientId);
 
             // Connect messenger to dispatcher
@@ -72,6 +83,7 @@
             Core.Messenger.onIdentifyReceived = Core._OnIdentifyReceived;
             Core.Messenger.onStopListenReceived = Core._OnStopListenReceived;
             Core.Messenger.onError = Core._OnError;
+            Core.Messenger.onReload = Core._OnReloadClient;
 
             // Say 'helo'
             var heloMessage = {
@@ -87,7 +99,7 @@
             }
 
             // Handle client disconnect
-            window.addEventListener("beforeunload", function () {
+            window.addEventListener("beforeunload", function() {
                 Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
             }, false);
 
@@ -99,6 +111,14 @@
         }
 
         public startClientDirtyCheck() {
+            //sometimes refresh is called before document was loaded
+            if (!document.body) {
+                setTimeout(() => {
+                    this.startClientDirtyCheck();
+                }, 200);
+                return;
+            }
+
             var mutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
             if (mutationObserver) {
                 if (!document.body.__vorlon)
@@ -107,13 +127,25 @@
                 var config = { attributes: true, childList: true, subtree: true, characterData: true };
                 document.body.__vorlon._observerMutationObserver = new mutationObserver((mutations) => {
                     var sended = false;
+                    var cancelSend = false;
+                    var sendComandId = [];
                     mutations.forEach((mutation) => {
+                        if (cancelSend) {
+                            for (var i = 0; i < sendComandId.length; i++) {
+                                clearTimeout(sendComandId[i]);
+                            }
+                            cancelSend = false;
+                        }
                         if (mutation.target && mutation.target.__vorlon && mutation.target.__vorlon.ignore) {
+                            cancelSend = true;
                             return;
                         }
-
+                        if (mutation.previousSibling && mutation.previousSibling.__vorlon && mutation.previousSibling.__vorlon.ignore) {
+                            cancelSend = true;
+                            return;
+                        }
                         if (mutation.target && !sended && mutation.target.__vorlon && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId) {
-                            setTimeout(() => {
+                            sendComandId.push(setTimeout(() => {
                                 var internalId = null;
                                 if (mutation && mutation.target && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId)
                                     internalId = mutation.target.parentNode.__vorlon.internalId;
@@ -122,7 +154,7 @@
                                     type: 'contentchanged',
                                     internalId: internalId
                                 }, Core._side, 'message');
-                            }, 300);
+                            }, 300));
                         }
                         sended = true;
                     });
@@ -170,7 +202,7 @@
                 if (this._socketIOWaitCount < 10) {
                     this._socketIOWaitCount++;
                     // Let's wait a bit just in case socket.io was loaded asynchronously
-                    setTimeout(function () {
+                    setTimeout(function() {
                         console.log("Vorlon.js: waiting for socket.io to load...");
                         Core.StartDashboardSide(serverUrl, sessionId, listenClientId, divMapper);
                     }, 1000);
@@ -191,6 +223,11 @@
             }
 
             // Creating the messenger
+            if (Core._messenger) {
+                Core._messenger.stopListening();
+                delete Core._messenger;
+            }
+
             Core._messenger = new ClientMessenger(Core._side, serverUrl, sessionId, clientId, listenClientId);
 
             // Connect messenger to dispatcher
@@ -226,6 +263,7 @@
             }
             else {
                 var div = document.createElement("div");
+                div.className = "vorlonIdentifyNumber";
                 div.style.position = "absolute";
                 div.style.left = "0";
                 div.style.top = "50%";
@@ -287,7 +325,6 @@
         }
 
         private _OnIdentificationReceived(id: string): void {
-            //console.log('helo received ' + id);
             Core._listenClientId = id;
 
             if (Core._side === RuntimeSide.Client) {
@@ -296,10 +333,18 @@
                     var plugin = Core._clientPlugins[index];
                     plugin.refresh();
                 }
-            } else {
-                var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
-                Tools.AddClass(elt, 'hidden');
             }
+            else {
+                //Stop bouncing and hide waiting page
+                var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+                VORLON.Tools.AddClass(elt, 'hidden');
+                VORLON.Tools.RemoveClass(elt, 'bounce');
+                document.getElementById('test').style.visibility = 'visible';
+            }
+        }
+
+        private _OnReloadClient(id: string): void {
+            document.location.reload();
         }
 
         private _RetrySendingRealtimeMessage(plugin: DashboardPlugin, message: VorlonMessage) {

@@ -14,7 +14,7 @@ module VORLON {
         content: string;
         isEmpty: boolean;
         attributes: Array<any>;
-        styles: any;
+        styles?: any;
         internalId: string;
         hasChildNodes: boolean;
         rootHTML: any;

@@ -121,6 +121,7 @@
         }
 
         public clearDashboard() {
+            this._logEntries.splice(0, this._logEntries.length);
             this._containerDiv.innerHTML = '';
         }
 
@@ -217,7 +218,7 @@
         }
 
         public renderContent() {
-            if (this.contentRendered)
+            if (!this.obj || this.contentRendered)
                 return;
 
             if (this.obj.proto) {
@@ -318,13 +319,14 @@
                 this.addMessage(entry.messages[i]);
             }
         }
+        
 
         private addMessage(msg: any) {
             if (typeof msg === 'string' || typeof msg === 'number') {
                 var elt = document.createElement('DIV');
                 elt.className = 'log-message text-message';
                 this.element.appendChild(elt);
-                elt.textContent = msg;
+                elt.textContent = msg + '';
             } else {
                 var obj = new InteractiveConsoleObject(this.element, <ObjectDescriptor>msg, true);
                 this.objects.push(obj);

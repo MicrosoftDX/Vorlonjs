@@ -1,0 +1,76 @@
+body {
+  background-color: #eee;
+  font-family: Roboto;
+}
+.home .top {
+  margin: calc(15% - 100px) auto auto;
+  text-align: center;
+}
+.home .top .logo {
+  max-width: 100%;
+  max-height: 120px;
+  margin-bottom: 1em;
+}
+.home .form {
+  margin: auto;
+  text-align: center;
+  width: 400px;
+}
+
+.home .form .input input {  
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.home .message {
+  color: #777;
+  text-align: center;
+  margin-bottom: 10px;
+  text-align: justify;
+}
+
+.home .message.error {
+  color: red;
+}
+
+.home .form .input input {
+  padding: 6px 12px;
+  border-color: #411748;  
+  width: 100%;
+}
+.home .form .button {   
+  margin: auto;
+}
+.spacebutton {
+  width: 100%;
+}
+.btn {
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 400;
+  margin: 10px 0 0 0;
+  padding: 8px 10px;
+  text-align: center;
+  width: 100%;
+  background-color: #411748 !important;
+  color: white !important;  
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.btn.left{
+  float: left;
+}
+.btn.right{
+  float: right;
+}
+.btn-default {
+  background: #ccc none repeat scroll 0 0;
+  color: #444;
+}
+
+.hide {
+  display: none;
+}

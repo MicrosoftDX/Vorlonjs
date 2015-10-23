@@ -1,39 +1,208 @@
 ﻿/// <reference path="../Scripts/typings/vorlon/vorlon.core.d.ts" /> 
 /// <reference path="../Scripts/typings/vorlon/vorlon.clientMessenger.d.ts" /> 
-/// <reference path="../Scripts/typings/vorlon/vorlon.plugin.d.ts" /> 
+/// <reference path="../Scripts/typings/vorlon/vorlon.clientPlugin.d.ts" /> 
+
+
 module VORLON {
     declare var $: any;
+    declare var vorlonBaseURL: string;
+    
     export class DashboardManager {
-        private _catalogUrl: string = "/config.json";
+        static CatalogUrl: string;
         static ListenClientid: string;
+        static DisplayingClient: boolean;
         static ListenClientDisplayid: string;
         static SessionId: string;
-        static ClientList: Array<any>;
+        static ClientList: any;
+        static PluginsLoaded: boolean;
+        
         constructor(sessionid: string, listenClientid: string) {
+            //Dashboard session id
             DashboardManager.SessionId = sessionid;
+            DashboardManager.PluginsLoaded = false;
+            DashboardManager.DisplayingClient = false;
+            //Client ID
             DashboardManager.ListenClientid = listenClientid;
-            DashboardManager.ClientList = new Array<any>();
-            DashboardManager.RefreshClients();
-            this.loadPlugins();
+            DashboardManager.ClientList = {};
+            DashboardManager.StartListeningServer()
+            DashboardManager.GetClients();
+            DashboardManager.CatalogUrl =  vorlonBaseURL + "/config.json";
         }
+        
+        public static StartListeningServer(clientid: string = ""): void{
+            var getUrl = window.location;
+            var baseUrl = getUrl.protocol + "//" + getUrl.host;
+            Core.StopListening(); 
+            Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, clientid, DashboardManager.divMapper);
+                if(!Core.Messenger.onAddClient && !Core.Messenger.onAddClient){
+                Core.Messenger.onAddClient = DashboardManager.addClient;
+                Core.Messenger.onRemoveClient = DashboardManager.removeClient;
+            }
+            
+            if(clientid !== ""){
+                DashboardManager.DisplayingClient = true;
+            }
+            else {
+                DashboardManager.DisplayingClient = false;
+            }
+        }
+        
+        public static GetClients(): void {
+            let xhr = new XMLHttpRequest();
 
-        static UpdateClientInfo() {
-            document.querySelector('[data-hook~=session-id]').textContent = DashboardManager.SessionId;
-            for (var i = 0; i < DashboardManager.ClientList.length; i++) {
-                if (DashboardManager.ClientList[i].clientid === DashboardManager.ListenClientid) {
-                    DashboardManager.ListenClientDisplayid = DashboardManager.ClientList[i].displayid;
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        //Init ClientList Object
+                        DashboardManager.ClientList = {};
+                        document.getElementById('test').style.visibility='hidden';
+
+                        //Loading client list 
+                        var clients = JSON.parse(xhr.responseText);
+
+                        //Test if the client to display is in the list
+                        var contains = false;
+                        if (clients && clients.length) {
+                            for (var j = 0; j < clients.length; j++) {
+                                if (clients[j].clientid === DashboardManager.ListenClientid) {
+                                    contains = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        //Get the client list placeholder
+                        var divClientsListPane = <HTMLDivElement> document.getElementById("clientsListPaneContent");
+                        
+                        //Create the new empty list
+                        var clientlist = document.createElement("ul");
+                        clientlist.setAttribute("id", "clientsListPaneContentList")
+                        divClientsListPane.appendChild(clientlist);
+                                               
+                        //Show waiting logo 
+                        if(!contains || clients.length === 0){
+                            var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+                            VORLON.Tools.RemoveClass(elt, 'hidden');
+                        }
+                        
+                        for (var i = 0; i < clients.length; i++) {
+                            var client = clients[i];
+                            DashboardManager.AddClientToList(client);
+                        }
+                        
+                        if (contains) {
+                             DashboardManager.loadPlugins();
+                        }
+                    }
                 }
             }
-            document.querySelector('[data-hook~=client-id]').textContent = DashboardManager.ListenClientDisplayid;
+            
+            xhr.open("GET", vorlonBaseURL + "/api/getclients/" + DashboardManager.SessionId);
+            xhr.send();
+        }
+        
+        public static AddClientToList(client: any){
+           var clientlist = <HTMLUListElement> document.getElementById("clientsListPaneContentList");
+            
+            if (DashboardManager.ListenClientid === "") {
+                DashboardManager.ListenClientid = client.clientid;
+            }
+
+            var pluginlistelement = document.createElement("li");
+            pluginlistelement.classList.add('client');
+            pluginlistelement.id = client.clientid;
+            if (client.clientid === DashboardManager.ListenClientid) {
+                pluginlistelement.classList.add('active');
+            }
+            
+            var clients = clientlist.children;
+            
+            //remove ghosts ones
+            for (var i = 0; i < clients.length; i++) {
+                var currentClient = <HTMLElement>(clients[i]);
+                if(DashboardManager.ClientList[currentClient.id].displayid === client.displayid){
+                    clientlist.removeChild(currentClient);  
+                    i--;
+                }
+            }
+            
+            if(clients.length === 0 || DashboardManager.ClientList[(<HTMLElement>clients[clients.length - 1]).id].displayid < client.displayid){
+                clientlist.appendChild(pluginlistelement);
+            }
+            else if(clients.length === 1){
+                var firstClient = <HTMLElement>clients[clients.length - 1];
+                clientlist.insertBefore(pluginlistelement, firstClient);
+            }
+            else{
+                for (var i = 0; i < clients.length - 1; i++) {
+                    var currentClient = <HTMLElement>(clients[i]);
+                    var nextClient = <HTMLElement>(clients[i+1]);
+                    if(DashboardManager.ClientList[currentClient.id].displayid < client.displayid
+                    &&  DashboardManager.ClientList[nextClient.id].displayid >= client.displayid){
+                        clientlist.insertBefore(pluginlistelement, nextClient);
+                        break;
+                    }
+                    else if(i === 0){
+                        clientlist.insertBefore(pluginlistelement, currentClient);
+                    }
+                }
+            }
+            
+            var pluginlistelementa = document.createElement("a");
+            pluginlistelementa.textContent = " " + client.name + " - " + client.displayid;
+            pluginlistelementa.setAttribute("href", vorlonBaseURL + "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
+            pluginlistelement.appendChild(pluginlistelementa);
+
+            DashboardManager.ClientList[client.clientid] = client;
+        } 
+        
+        static ClientCount(): number{
+            return Object.keys(DashboardManager.ClientList).length;
         }
 
-        public loadPlugins(): void {
-            var xhr = new XMLHttpRequest();
-            var divPluginsBottom = <HTMLDivElement> document.getElementById("pluginsPaneBottom");
-            var divPluginsTop = <HTMLDivElement> document.getElementById("pluginsPaneTop");
-            var divPluginBottomTabs = <HTMLDivElement> document.getElementById("pluginsListPaneBottom");
-            var divPluginTopTabs = <HTMLDivElement> document.getElementById("pluginsListPaneTop");
-            var coreLoaded = false;
+        static UpdateClientInfo(): void {
+            document.querySelector('[data-hook~=session-id]').textContent = DashboardManager.SessionId;
+            
+            if(DashboardManager.ClientList[DashboardManager.ListenClientid] != null){
+                DashboardManager.ListenClientDisplayid = DashboardManager.ClientList[DashboardManager.ListenClientid].displayid;
+            }
+            
+            document.querySelector('[data-hook~=client-id]').textContent = DashboardManager.ListenClientDisplayid;
+        }
+        
+        static DisplayWaitingLogo(): void{
+            //Hide waiting page and let's not bounce the logo !
+            var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+            VORLON.Tools.RemoveClass(elt, 'hidden');
+        }
+        
+        static DisplayBouncingLogo(): void{
+            //Hide waiting page and let's not bounce the logo !
+            var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+            VORLON.Tools.RemoveClass(elt, 'hidden');
+            elt = <HTMLElement>document.querySelector('.waitLoader');
+            VORLON.Tools.RemoveClass(elt, 'hidden');
+        }
+
+        public static loadPlugins(): void {
+            if(DashboardManager.ListenClientid === ""){
+                return;
+            }
+                
+            if(this.PluginsLoaded){
+                DashboardManager.StartListeningServer(DashboardManager.ListenClientid);
+                return;
+            }
+            
+            let xhr = new XMLHttpRequest();
+            let divPluginsBottom = <HTMLDivElement> document.getElementById("pluginsPaneBottom");
+            let divPluginsTop = <HTMLDivElement> document.getElementById("pluginsPaneTop");
+            let divPluginBottomTabs = <HTMLDivElement> document.getElementById("pluginsListPaneBottom");
+            let divPluginTopTabs = <HTMLDivElement> document.getElementById("pluginsListPaneTop");
+            let coreLoaded = false;
+              
+            //Hide waiting page and let's bounce the logo !
+            DashboardManager.DisplayBouncingLogo();
 
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
@@ -91,19 +260,14 @@ module VORLON {
                                 }
                             }
                             var pluginscript = document.createElement("script");
-                            pluginscript.setAttribute("src", "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".dashboard.min.js");
+                            pluginscript.setAttribute("src", vorlonBaseURL + "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".dashboard.min.js");
 
                             pluginscript.onload = (oError) => {
                                 pluginLoaded++;
                                 if (pluginLoaded >= pluginstoload) {
-                                    var getUrl = window.location;
-                                    var baseUrl = getUrl.protocol + "//" + getUrl.host;
-                                    Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, DashboardManager.ListenClientid, this.divMapper);
-                                    if (!coreLoaded && !Core.Messenger.onWaitingEventsReceived) {
-                                        Core.Messenger.onWaitingEventsReceived = this._onClientUpdateWaitingEvents;
-                                        Core.Messenger.onRefreshClients = this._onRefreshClients;
-                                        coreLoaded = true;
-                                    }
+                                    DashboardManager.StartListeningServer(DashboardManager.ListenClientid);
+                                    coreLoaded = true;
+                                    this.PluginsLoaded = true;
                                 }
                             };
                             document.body.appendChild(pluginscript);
@@ -134,86 +298,19 @@ module VORLON {
                             divPluginsTop.style.height = 'calc(100% - 58px)';
                             $('.hsplitter', divPluginsTop.parentElement).css('top', 'calc(100% - 58px)');
                         });
+                        
                         DashboardManager.UpdateClientInfo();
                     }
                 }
             }
 
-            xhr.open("GET", this._catalogUrl);
+            xhr.open("GET", DashboardManager.CatalogUrl);
             xhr.send();
         }
 
-        public divMapper(pluginId: string): HTMLDivElement {
-            var divId = pluginId + "div";
+        public static divMapper(pluginId: string): HTMLDivElement {
+            let divId = pluginId + "div";
             return <HTMLDivElement> (document.getElementById(divId) || document.querySelector(`[data-plugin=${pluginId}]`));
-        }
-
-        public static RefreshClients(): void {
-            var xhr = new XMLHttpRequest();
-
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        DashboardManager.ClientList = new Array<any>();
-
-                        var clients = JSON.parse(xhr.responseText);
-                        //console.log("dashboard clients ", clients);
-                        
-                        var divClientsListPane = <HTMLDivElement> document.getElementById("clientsListPaneContent");
-
-                        while (divClientsListPane.hasChildNodes()) {
-                            divClientsListPane.removeChild(divClientsListPane.lastChild);
-                        }
-
-                        var clientlist = document.createElement("ul");
-                        divClientsListPane.appendChild(clientlist);
-
-                        var contains = false;
-                        if (clients && clients.length) {
-                            for (var j = 0; j < clients.length; j++) {
-                                if (clients[j].clientid === DashboardManager.ListenClientid) {
-                                    contains = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (!contains || clients.length === 0) {
-                            var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
-                            VORLON.Tools.RemoveClass(elt, 'hidden');
-                        }
-
-                        if (clients.length === 0) {
-                            DashboardManager.ResetDashboard(false);
-                        }
-
-                        for (var i = 0; i < clients.length; i++) {
-                            var client = clients[i];
-                            if (DashboardManager.ListenClientid === "") {
-                                DashboardManager.ListenClientid = client.clientid;
-                            }
-
-                            var pluginlistelement = document.createElement("li");
-                            pluginlistelement.classList.add('client');
-                            if (client.clientid === DashboardManager.ListenClientid) {
-                                pluginlistelement.classList.add('active');
-                            }
-                            clientlist.appendChild(pluginlistelement);
-
-                            var pluginlistelementa = document.createElement("a");
-                            pluginlistelementa.textContent = " " + client.name + " - " + client.displayid;
-                            pluginlistelementa.setAttribute("href", "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
-                            pluginlistelementa.id = client.clientid;
-                            pluginlistelement.appendChild(pluginlistelementa);
-
-                            DashboardManager.ClientList.push(client);
-                            DashboardManager.UpdateClientWaitingInfo(client.clientid, client.waitingevents);
-                        }
-                    }
-                }
-            }
-
-            xhr.open("GET", "/api/getclients/" + DashboardManager.SessionId);
-            xhr.send();
         }
 
         public identify(): void {
@@ -221,8 +318,8 @@ module VORLON {
         }
 
         public static ResetDashboard(reload: boolean = true): void {
-            var sessionid = DashboardManager.SessionId;
-            var xhr = new XMLHttpRequest();
+            let sessionid = DashboardManager.SessionId;
+            let xhr = new XMLHttpRequest();
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
@@ -233,43 +330,60 @@ module VORLON {
                 }
             }
 
-            xhr.open("GET", "/api/reset/" + sessionid);
+            xhr.open("GET", vorlonBaseURL + "/api/reset/" + sessionid);
             xhr.send();
         }
 
-        private _onRefreshClients(): void {
-            DashboardManager.RefreshClients();
+        public static ReloadClient(): void {
+            Core.Messenger.sendRealtimeMessage("", DashboardManager.ListenClientid, VORLON.RuntimeSide.Dashboard, "reload");
         }
 
-        private _onClientUpdateWaitingEvents(message: VorlonMessage): void {
-            DashboardManager.UpdateClientWaitingInfo(message.metadata.clientId, message.metadata.waitingEvents);
+        public static addClient(client: any): void {
+            DashboardManager.AddClientToList(client);
+            if(!DashboardManager.DisplayingClient){
+                DashboardManager.loadPlugins();
+            }
         }
-
-        public static UpdateClientWaitingInfo(clientid: string, waitingevents: number): void {
-            var clientLink = document.getElementById(clientid);
-            for (var id in DashboardManager.ClientList) {
-                var client = DashboardManager.ClientList[id];
-                if (client.clientid === clientid) {
-                    clientLink.textContent = " " + client.name + " - " + client.displayid + " (" + waitingevents + ")";
+        
+        public static removeClient(client: any): void {
+            let clientInList = <HTMLLIElement> document.getElementById(client.clientid);
+            if(clientInList){
+                if(client.clientid === DashboardManager.ListenClientid){
+                    DashboardManager.ListenClientid = "";
+                    DashboardManager.StartListeningServer();
+                    DashboardManager.DisplayWaitingLogo();
                 }
+                
+                clientInList.parentElement.removeChild(clientInList);   
+                DashboardManager.removeInClientList(client);
+                        
+                if (DashboardManager.ClientCount() === 0) {
+                    DashboardManager.ResetDashboard(false);
+                    DashboardManager.DisplayingClient = false;
+                }
+            }
+        }
+        
+        public static removeInClientList(client: any): void{
+            if(DashboardManager.ClientList[client.clientid] != null){
+                delete DashboardManager.ClientList[client.clientid];
             }
         }
 
         public static getSessionId(): void {
-            var xhr = new XMLHttpRequest();
+            let xhr = new XMLHttpRequest();
 
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         var sessionId = xhr.responseText;
-                        window.location.assign("/dashboard/" + sessionId);
+                        window.location.assign(vorlonBaseURL + "/dashboard/" + sessionId);
                     }
                 }
             }
 
-            xhr.open("GET", "/api/createsession");
+            xhr.open("GET", vorlonBaseURL + "/api/createsession");
             xhr.send();
         }
     }
 }
-

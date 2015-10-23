@@ -11,3 +11,6 @@ section.sidebar
     h2 Client List
     #clientsListPaneContent.client-list
     a(onclick='VORLON.DashboardManager.ResetDashboard()').btn.btn-secondary.btn-small.btn-reset Reset Dashboard
+    if authenticated
+      a#logout(href='/logout').btn.btn-secondary.btn-small.btn-reset logout
+    a(onclick='VORLON.DashboardManager.ReloadClient()')#test.btn.btn-secondary1.btn-small.btn-reset Reload Client

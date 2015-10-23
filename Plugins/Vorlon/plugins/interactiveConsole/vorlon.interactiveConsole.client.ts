@@ -31,8 +31,9 @@
         }
 
         private inspect(obj: any, context: any, deepness: number): ObjectDescriptor {
-            if (!obj)
+            if (!obj || typeof obj != "object") {
                 return null;
+            }
 
             var objProperties = Object.getOwnPropertyNames(obj);
             var proto = Object.getPrototypeOf(obj);
@@ -102,15 +103,17 @@
 
         private getMessages(messages: IArguments): Array<any> {
             var resmessages = [];
-            for (var i = 0, l = messages.length; i < l; i++) {
-                var msg = messages[i];
-                if (typeof msg === 'string' || typeof msg === 'number') {
-                    resmessages.push(msg);
-                } else {
-                    if (msg == window || msg == document) {
-                        resmessages.push('VORLON : object cannot be inspected, too big...');
+            if (messages && messages.length > 0){
+                for (var i = 0, l = messages.length; i < l; i++) {
+                    var msg = messages[i];
+                    if (typeof msg === 'string' || typeof msg === 'number') {
+                        resmessages.push(msg);
                     } else {
-                        resmessages.push(this.inspect(msg, msg, 0));
+                        if (msg == window || msg == document) {
+                            resmessages.push('VORLON : object cannot be inspected, too big...');
+                        } else {
+                            resmessages.push(this.inspect(msg, msg, 0));
+                        }
                     }
                 }
             }
@@ -146,6 +149,10 @@
         }
 
         private batchSend(items: any[]) {
+            if (this._pendingEntriesTimeout) {
+                clearTimeout(this._pendingEntriesTimeout);
+                this._pendingEntriesTimeout = null;
+            }
             var batch = [];
             for (var i = 0, l = items.length; i < l; i++) {
                 if (batch.length < this._maxBatchSize) {
@@ -159,61 +166,62 @@
         }
 
         public startClientSide(): void {
+            this._cache = [];
+            this._pendingEntries = [];
+            
             // Overrides clear, log, error and warn
             this._hooks.clear = Tools.Hook(window.console, "clear",(): void => {
                 this.clearClientConsole();
             });
-
-            this._hooks.dir = Tools.Hook(window.console, "dir",(message: string): void => {
-                var messages = arguments;
+            
+            this._hooks.dir = Tools.Hook(window.console, "dir",(message: any): void => {
                 var data = {
-                    messages: this.getMessages(arguments[0]),
+                    messages: this.getMessages(message),
                     type: "dir"
                 };
 
                 this.addEntry(data);
             });
 
-            this._hooks.log = Tools.Hook(window.console, "log",(message: string): void => {
-                var messages = arguments;
+            this._hooks.log = Tools.Hook(window.console, "log", (message: any): void => {
                 var data = {
-                    messages: this.getMessages(arguments[0]),
+                    messages: this.getMessages(message),
                     type: "log"
                 };
 
                 this.addEntry(data);
             });
 
-            this._hooks.debug = Tools.Hook(window.console, "debug",(message: string): void => {
+            this._hooks.debug = Tools.Hook(window.console, "debug", (message: any): void => {
                 var data = {
-                    messages: this.getMessages(arguments[0]),
+                    messages: this.getMessages(message),
                     type: "debug"
                 };
 
                 this.addEntry(data);
             });
 
-            this._hooks.info = Tools.Hook(window.console, "info",(message: string): void => {
+            this._hooks.info = Tools.Hook(window.console, "info",(message: any): void => {
                 var data = {
-                    messages: this.getMessages(arguments[0]),
+                    messages: this.getMessages(message),
                     type: "info"
                 };
 
                 this.addEntry(data);
             });
 
-            this._hooks.warn = Tools.Hook(window.console, "warn",(message: string): void => {
+            this._hooks.warn = Tools.Hook(window.console, "warn",(message: any): void => {
                 var data = {
-                    messages: this.getMessages(arguments[0]),
+                    messages: this.getMessages(message),
                     type: "warn"
                 };
 
                 this.addEntry(data);
             });
 
-            this._hooks.error = Tools.Hook(window.console, "error",(message: string): void => {
+            this._hooks.error = Tools.Hook(window.console, "error",(message: any): void => {
                 var data = {
-                    messages: this.getMessages(arguments[0]),
+                    messages: this.getMessages(message),
                     type: "error"
                 };
 
@@ -223,11 +231,11 @@
             // Override Error constructor
             var previousError = Error;
 
-            Error = <any>((message: string) => {
+            Error = <any>((message: any) => {
                 var error = new previousError(message);
 
                 var data = {
-                    messages: [message],
+                    messages: this.getMessages(message),
                     type: "exception"
                 };
 
@@ -236,12 +244,11 @@
                 return error;
             });
 
-            window.addEventListener('error', () => {
-                var err = arguments[0];
+            window.addEventListener('error', (err) => {
                 
-                if (err.error) {
+                if (err && (<any>err).error) {
                     //this.addEntry({ messages: [err.error.message], type: "exception" });
-                    this.addEntry({ messages: [err.error.stack], type: "exception" });
+                    this.addEntry({ messages: [(<any>err).error.stack], type: "exception" });
                 }
             });
         }
@@ -259,11 +266,10 @@
             }
         }
 
-        public refresh(): void {
-            this.sendCommandToDashboard("clear");
-
+        public refresh(): void {           
             //delay sending cache to dashboard to let other plugins load...
             setTimeout(() => {
+                this.sendCommandToDashboard("clear");
                 this.batchSend(this._cache);
             }, 300);
         }

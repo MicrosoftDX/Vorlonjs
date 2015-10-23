@@ -4,6 +4,7 @@
 
         constructor() {
             super("networkMonitor");
+            //this.debug = true;
             this._ready = true;
         }
 
@@ -12,6 +13,7 @@
         }
 
         public sendClientData(): void {
+            this.trace("network monitor sending data ")
             var entries = window.performance.getEntries();
             //console.log(entries);
 
@@ -38,14 +40,7 @@
             //console.log(this.performanceItems);
             var message: any = {};
             message.entries = this.performanceItems;
-            Core.Messenger.sendRealtimeMessage(this.getID(), message, RuntimeSide.Client, "message");
-        }
-
-        public startClientSide(): void {
-            var that = this;
-            window.onload = (event) => {
-                that.sendClientData();
-            };
+            this.sendCommandToDashboard("performanceItems", message);            
         }
 
         public refresh(): void {
@@ -53,6 +48,12 @@
         }
     }
 
+    NetworkMonitorClient.prototype.ClientCommands = {
+        refresh: function (data: any) {
+            var plugin = <NetworkMonitorClient>this;
+            plugin.sendClientData();
+        }
+    };
     //Register the plugin with vorlon core 
     Core.RegisterClientPlugin(new NetworkMonitorClient());
 } 

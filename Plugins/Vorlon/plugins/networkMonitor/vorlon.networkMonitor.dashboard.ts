@@ -2,21 +2,28 @@
     export class NetworkMonitorDashboard extends DashboardPlugin {
         constructor() {
             super("networkMonitor", "control.html", "control.css");
-            this._ready = true;
-        }
-
-        public getID(): string {
-            return "NETWORK";
+            this._ready = false;
+            this._id = "NETWORK";
+            //this.debug = true;
         }
 
         private _containerDiv: HTMLElement;
+        
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div, (filledDiv) => {
                 this._containerDiv = Tools.QuerySelectorById(div, "networkLogList");
+                this._ready = true;
             })
         }
 
-        public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
+        public processEntries(receivedObject: any): void {       
+            if (!this._containerDiv){
+                console.error("NetworkMonitor dashboard receive client message but is not ready");
+                return;
+            }     
+            
+            this._containerDiv.innerHTML = "";
+            
             var barColors = {
                 background: "rgb(211,211,211)",
                 blocked: "rgb(204, 204, 204)",
@@ -30,6 +37,10 @@
                 response: "rgb(52, 150, 255)"
             }
             var maxTime = 0;
+            
+            if (!receivedObject || !receivedObject.entries)
+                return;
+                
             for (var n = 0; n < receivedObject.entries.length; n++) {
                 maxTime = Math.max(maxTime, receivedObject.entries[n].startTime + receivedObject.entries[n].duration);
             }
@@ -104,6 +115,13 @@
             return bar
         }
     }
+    
+    NetworkMonitorDashboard.prototype.DashboardCommands = {
+        performanceItems: function(data: any) {
+            var plugin = <NetworkMonitorDashboard>this;
+            plugin.processEntries(data);
+        }
+    };
 
     //Register the plugin with vorlon core 
     Core.RegisterDashboardPlugin(new NetworkMonitorDashboard());

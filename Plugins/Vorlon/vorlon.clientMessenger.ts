@@ -8,7 +8,6 @@
         sessionId : string;
         clientId: string;    
         listenClientId: string;
-        waitingEvents?: number;
     }
 
     export interface VorlonMessage {
@@ -18,21 +17,21 @@
     }
 
     export class ClientMessenger {
-        private _socket: Socket;
+        private _socket: any;
         private _isConnected = false;
         private _sessionId: string;
         private _clientId: string;
         private _listenClientId: string;
         private _serverUrl: string;
-        private _waitingEvents: number;
 
         public onRealtimeMessageReceived: (message: VorlonMessage) => void;
         public onHeloReceived: (id: string) => void;
         public onIdentifyReceived: (id: string) => void;
-        public onWaitingEventsReceived: (message: VorlonMessage) => void;
+        public onRemoveClient: (id: any) => void;
+        public onAddClient: (id: any) => void;
         public onStopListenReceived: () => void;
         public onRefreshClients: () => void;
-
+        public onReload: (id: string) => void;
         public onError: (err: Error) => void;
 
         public get isConnected(): boolean {
@@ -53,7 +52,6 @@
             this._clientId = clientId;
             Core._listenClientId = listenClientId;
             this._serverUrl = serverUrl;
-            this._waitingEvents = 0;
 
             switch (side) {
                 case RuntimeSide.Client:
@@ -103,42 +101,44 @@
                     }
                 });
 
-                this._socket.on('waitingevents', message => {
-                    //console.log('messenger waitingevents', message);
-                    if (this.onWaitingEventsReceived) {
-                        var receivedObject = <VorlonMessage>JSON.parse(message);
-                        this.onWaitingEventsReceived(receivedObject);
-                    }
-                });
-
                 this._socket.on('refreshclients',() => {
                     //console.log('messenger refreshclients');
                     if (this.onRefreshClients) {
                         this.onRefreshClients();
                     }
                 });
+                
+                this._socket.on('addclient', client => {
+                    //console.log('messenger refreshclients');
+                    if (this.onAddClient) {
+                        this.onAddClient(client);
+                    }
+                });
+
+                this._socket.on('removeclient', client => {
+                    //console.log('messenger refreshclients');
+                    if (this.onRemoveClient) {
+                        this.onRemoveClient(client);
+                    }
+                });
+
+                this._socket.on('reload', message => {
+                    //console.log('messenger reloadclient', message);
+                    Core._listenClientId = message;
+                    if (this.onReload) {
+                        this.onReload(message);
+                    }
+                });
+            }
+        }
+        
+        public stopListening(): void{
+            if(this._socket){
+                this._socket.removeAllListeners();
             }
         }
 
-        public sendWaitingEvents(pluginID: string, waitingevents: number): void {
-            var message: VorlonMessage = {
-                metadata: {
-                    pluginID: pluginID,
-                    side: RuntimeSide.Client,
-                    sessionId: this._sessionId,
-                    clientId: this._clientId,
-                    listenClientId: Core._listenClientId,
-                    waitingEvents: waitingevents
-                }
-            };                        
-
-            if (this.isConnected) {
-                var messagestr = JSON.stringify(message);
-                this._socket.emit("waitingevents", messagestr);
-            }
-        }
-
-        public sendRealtimeMessage(pluginID: string, objectToSend: any, side: RuntimeSide, messageType = "message", incrementVisualIndicator = false, command?:string): void {
+        public sendRealtimeMessage(pluginID: string, objectToSend: any, side: RuntimeSide, messageType = "message", command?:string): void {
             var message: VorlonMessage = {
                 metadata: {
                     pluginID: pluginID,
@@ -160,17 +160,9 @@
                 }
                 return;
             } else {
-                if (Core._listenClientId === "" && messageType === "message") {
-                    if (incrementVisualIndicator) {
-                        this._waitingEvents++;
-                        this.sendWaitingEvents(pluginID, this._waitingEvents);
-                    }
-                } else {
+                if (Core._listenClientId !== "" || messageType !== "message") {
                     var strmessage = JSON.stringify(message);
                     this._socket.emit(messageType, strmessage);
-
-                    this._waitingEvents = 0;
-                    this.sendWaitingEvents(pluginID, 0);
                 }
             }
         }

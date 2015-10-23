@@ -763,7 +763,13 @@ module VORLON {
         * as the user switches between clients on the dashboard.
         */
         public refresh(): void {
-            this._sendScenesData();
+            if (this.engine) {
+                this._sendScenesData();
+            } else {
+                this.engine = this._getBabylonEngine();
+                this.scenes = this.engine.scenes;
+                this._sendScenesData();
+            }
         }
 
         /**
@@ -775,13 +781,13 @@ module VORLON {
             } else {
             }
 
-            document.addEventListener("DOMContentLoaded", () => {
+            //document.addEventListener("DOMContentLoaded", () => {
                 this.engine = this._getBabylonEngine();
                 if (this.engine) {
                     this.scenes = this.engine.scenes;
                     this.refresh();
                 }
-            });
+            //});
         }
 
         /**

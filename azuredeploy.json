@@ -28,7 +28,7 @@
                 "Basic",
                 "Standard"
             ],
-            "defaultValue": "Free",
+            "defaultValue": "Basic",
             "metadata": {
                 "description": "The pricing tier for the hosting plan."
             }
@@ -85,26 +85,7 @@
         "serverFarmId":"[parameters('hostingPlanName')]"
       },
       "resources":[
-       { 
-           "apiVersion": "2014-04-01", 
-           "type": "config", 
-           "name": "web", 
-           "dependsOn": [ 
-             "[concat('Microsoft.Web/Sites/', parameters('siteName'))]" 
-           ], 
-           "properties": { 
-             "webSocketsEnabled": true,
-             "virtualApplications": [
-              {
-                "virtualPath": "/",
-                "physicalPath": "site\\wwwroot\\Server",
-                "preloadEnabled": false,
-                "virtualDirectories": null
-              }
-             ]
-           }
-       },
-       {
+        {
           "apiVersion":"2015-04-01",
           "name":"web",
           "type":"sourcecontrols",
@@ -116,9 +97,28 @@
             "branch": "[parameters('branch')]",
             "IsManualIntegration":true
           }
+        },
+        { 
+          "apiVersion": "2014-04-01", 
+          "type": "config", 
+          "name": "web", 
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
+            "[concat('Microsoft.Web/Sites/', parameters('siteName'), '/sourcecontrols/web')]"
+          ], 
+          "properties": { 
+            "webSocketsEnabled": true,
+            "virtualApplications": [
+              {
+                "virtualPath": "/",
+                "physicalPath": "site\\wwwroot\\Server",
+                "preloadEnabled": true,
+                "virtualDirectories": null
+              }
+            ]
+          }
         }
       ]
     }
   ]
 }
-

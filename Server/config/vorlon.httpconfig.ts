@@ -9,7 +9,13 @@ export module VORLON {
         public protocol: String;
         public httpModule;
         public options;
-
+        public port;
+        public proxyPort;
+        public enableWebproxy : boolean;
+        public vorlonServerURL : string;
+        public vorlonProxyURL : string;
+        public proxyEnvPort:boolean;
+        
         public constructor() {            
             var catalogdata: string = fs.readFileSync(path.join(__dirname, "../config.json"), "utf8");            
             var catalogstring = catalogdata.toString().replace(/^\uFEFF/, '');
@@ -25,10 +31,26 @@ export module VORLON {
                 }
             }
             else {
-                this.useSSL = false;
-                this.protocol = "http";
-                this.httpModule = http;
+               this.useSSL = false;
+                if (catalog.useSSLAzure){
+                  this.protocol = "https";
+                  this.httpModule = http;
+                }
+                else{
+                  this.protocol = "http";
+                  this.httpModule = http;
+                }
             }
+            this.proxyEnvPort=catalog.proxyEnvPort;
+            if(catalog.proxyEnvPort)
+                this.proxyPort = process.env.PORT;  
+            else
+                this.proxyPort = catalog.proxyPort || 5050;         
+            this.port = process.env.PORT || catalog.port || 1337;
+            this.proxyPort = catalog.proxyPort || 5050;
+            this.enableWebproxy = catalog.enableWebproxy || false;
+            this.vorlonServerURL = catalog.vorlonServerURL || "";
+            this.vorlonProxyURL = catalog.vorlonProxyURL || "";
         }
     }
 }

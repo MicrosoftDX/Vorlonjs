@@ -1,4 +1,6 @@
 ﻿module VORLON {
+    declare var vorlonBaseURL: string;
+
     export class DashboardPlugin extends BasePlugin {
         public htmlFragmentUrl;
         public cssStyleSheetUrl;
@@ -20,29 +22,29 @@
                 Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message");
         }
 
-        public sendCommandToClient(command: string, data: any = null, incrementVisualIndicator: boolean = false) {
+        public sendCommandToClient(command: string, data: any = null) {
             if (Core.Messenger) {
                 this.trace(this.getID() + ' send command to client ' + command);
-                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message", incrementVisualIndicator, command);
+                Core.Messenger.sendRealtimeMessage(this.getID(), data, RuntimeSide.Dashboard, "message", command);
             }
         }
 
-        public sendCommandToPluginClient(pluginId: string, command: string, data: any = null, incrementVisualIndicator: boolean = false) {
+        public sendCommandToPluginClient(pluginId: string, command: string, data: any = null) {
             if (Core.Messenger) {
                 this.trace(this.getID() + ' send command to plugin client ' + command);
-                Core.Messenger.sendRealtimeMessage(pluginId, data, RuntimeSide.Dashboard, "protocol", incrementVisualIndicator, command);
+                Core.Messenger.sendRealtimeMessage(pluginId, data, RuntimeSide.Dashboard, "protocol", command);
             }
         }              
         
-        public sendCommandToPluginDashboard(pluginId : string, command: string, data: any = null, incrementVisualIndicator: boolean = false) {
+        public sendCommandToPluginDashboard(pluginId : string, command: string, data: any = null) {
             if (Core.Messenger) {
                 this.trace(this.getID() + ' send command to plugin dashboard ' + command);
-                Core.Messenger.sendRealtimeMessage(pluginId, data, RuntimeSide.Client, "protocol", incrementVisualIndicator, command);
+                Core.Messenger.sendRealtimeMessage(pluginId, data, RuntimeSide.Client, "protocol", command);
             }
         }
 
         public _insertHtmlContentAsync(divContainer: HTMLDivElement, callback: (filledDiv: HTMLDivElement) => void): void {
-            var basedUrl = "/" + this.loadingDirectory + "/" + this.name + "/";
+            var basedUrl = vorlonBaseURL + "/" + this.loadingDirectory + "/" + this.name + "/";
             var alone = false;
             if (!divContainer) {
                 // Not emptyDiv provided, let's plug into the main DOM
