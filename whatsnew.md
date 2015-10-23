@@ -1,14 +1,18 @@
-## 0.0.16
+## 0.1.0
 
 - Plugins
 	- Object explorer was revamped for better integration
 	- New device plugin: Know your numbers!
 	- New (Q)Unit test plugin
 	- Wappalyzer plugin (3rd party)
-	- DOM Explorer: display all html nodes (head and body, instead of body only) in domExplorer, improve UI of search, update css 
+	- DOM Explorer: display all html nodes (head and body, instead of body only) in domExplorer, improve UI of search, update css
+	- Best practices: analyze your website to discover how you can improve your code
 - Core
 	- --version now return the current version
 	- Custom log path and log level
+	- Code revamping
+	- dashboard improvments (stability)
+- HTTP Proxy: inject vorlon.js javascript file without modifying the client you are testing
 - General
 	- Added server authentication
 	- Single click to deploy on Azure
