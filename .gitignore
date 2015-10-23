@@ -15,3 +15,4 @@ Plugins/Vorlon/plugins/remoteDebugging.zip
 *.dat
 Server/public/stylesheets/style.css
 vorlon
+/Server/public/stylesheets/style.css
