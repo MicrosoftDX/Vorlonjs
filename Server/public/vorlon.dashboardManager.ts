@@ -180,7 +180,7 @@ module VORLON {
             //Hide waiting page and let's not bounce the logo !
             var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
             VORLON.Tools.RemoveClass(elt, 'hidden');
-            elt = <HTMLElement>document.querySelector('.loader');
+            elt = <HTMLElement>document.querySelector('.waitLoader');
             VORLON.Tools.RemoveClass(elt, 'hidden');
         }
 

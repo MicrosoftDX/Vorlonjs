@@ -18,7 +18,7 @@
             this._loadNewScriptAsync("qunit.js",() => {
                 var self = this;
                 this._ready = true;
-                QUnit.testDone(function (details) {
+                QUnit.testDone((details) => {
                     //console.log("QUnit.testDone");
                     //console.log(details);
                     var message: any = {};
@@ -29,9 +29,9 @@
                     message.passed = details.passed;
                     message.total = details.total;
                     message.runtime = details.runtime;
-                    this.sendCommandToDashboard(message);
+                    this.sendToDashboard(message); 
                 });
-                QUnit.done(function (details) {
+                QUnit.done((details) => {
                     //console.log("QUnit.done");
                     //console.log(details);
                     var message: any = {};
@@ -40,7 +40,7 @@
                     message.passed = details.passed;
                     message.total = details.total;
                     message.runtime = details.runtime;
-                    this.sendCommandToDashboard("done", self.getID(), message);
+                    this.sendToDashboard(message);
                 });
             });
         }
@@ -48,17 +48,21 @@
         public refresh(): void {
             
         }
-
-        public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
-            //console.log("onRealtimeMessageReceivedFromDashboardSide");
-            //console.log(receivedObject);
-            switch (receivedObject.commandType) {
-                case "runTest":
-                    eval(receivedObject.testContent);
-                    break;
-            }
+        
+        public runTest(testContent: any): void {
+             eval(testContent);
         }
 
+        public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
+            
+        }
+    }
+            
+    UnitTestRunnerClient.prototype.ClientCommands = {
+        runTest: function (data) {
+            var plugin = <UnitTestRunnerClient>this;
+            plugin.runTest(data);
+        }
     }
 
     //Register the plugin with vorlon core 

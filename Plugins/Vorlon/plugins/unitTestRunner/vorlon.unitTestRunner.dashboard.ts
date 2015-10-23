@@ -58,13 +58,8 @@
                     self._dropPanel.classList.remove("droppable");
                 };
                 this._txtRunTest = <HTMLTextAreaElement>Tools.QuerySelectorById(div, "txtRunTest");
-                this._btnRunTest.addEventListener("run",() => {
-                    var message: any = {};
-                    message.commandType = "runTest";
-                    message.testContent = this._txtRunTest.value;
-                    //console.log("runTest");
-                    //console.log(message);
-                    this.sendCommandToClient(message);
+                this._btnRunTest.addEventListener("run", () => {
+                    this.sendCommandToClient("runTest", this._txtRunTest.value);
                 });
 
                 this._containerList = Tools.QuerySelectorById(div, "testResultsList");
