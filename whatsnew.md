@@ -5,13 +5,16 @@
 	- New device plugin: Know your numbers!
 	- New (Q)Unit test plugin
 	- Wappalyzer plugin (3rd party)
-	- DOM Explorer: display all html nodes (head and body, instead of body only) in domExplorer, improve UI of search, update css
+	- DOM Explorer: display all html nodes (head and body, instead of body only) in domExplorer, improve UI of search, update css, select DOM in client (target button)
 	- Best practices: analyze your website to discover how you can improve your code
 - Core
 	- --version now return the current version
 	- Custom log path and log level
 	- Code revamping
-	- dashboard improvments (stability)
+	- Performances improvements
+- Dashboard
+	- Stability improvements
+	- Reload button to refresh the client
 - HTTP Proxy: inject vorlon.js javascript file without modifying the client you are testing
 - General
 	- Added server authentication
