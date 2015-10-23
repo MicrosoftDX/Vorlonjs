@@ -262,11 +262,10 @@
             }
         }
 
-        public refresh(): void {
-            this.sendCommandToDashboard("clear");
-
+        public refresh(): void {           
             //delay sending cache to dashboard to let other plugins load...
             setTimeout(() => {
+                this.sendCommandToDashboard("clear");
                 this.batchSend(this._cache);
             }, 300);
         }
