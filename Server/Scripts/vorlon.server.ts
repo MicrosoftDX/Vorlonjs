@@ -366,7 +366,7 @@ export module VORLON {
                 //If dashboard already connected to this socket send "helo" else wait
                 if ((metadata.clientId != "") && (metadata.clientId == session.currentClientId)) {
                     this._log.info(formatLog("PLUGIN", "Send helo to client to open socket : " + metadata.clientId, receiveMessage));
-                    socket.emit("helo", metadata.clientId);
+                    //socket.emit("helo", metadata.clientId);
                 }
                 else {
                     this._log.info(formatLog("PLUGIN", "New client (" + client.displayId + ") wait...", receiveMessage));
@@ -452,7 +452,6 @@ export module VORLON {
                                 if (client.socket != null) {
                                     this._log.info(formatLog("DASHBOARD", "Send helo to socketid :" + client.socket.id, receiveMessage));
                                     client.socket.emit("helo", metadata.listenClientId);
-                                    
                                 }
                             }
                             else {
