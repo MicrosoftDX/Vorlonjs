@@ -13,7 +13,7 @@ import vorloncontext = require("../config/vorlon.servercontext");
 
 export module VORLON {
     export class Server implements iwsc.VORLON.IWebServerComponent {
-        public sessions = new Array<Session>();
+        private _sessions : vorloncontext.VORLON.SessionManager;
         public dashboards = new Array<SocketIO.Socket>();
 
         private _io: any;
@@ -28,6 +28,7 @@ export module VORLON {
             this.httpConfig = context.httpConfig;
             this.redisConfig = context.redisConfig;
             this._log = context.logger;
+            this._sessions = context.sessions;
                                   
             //Redis
             if (this.redisConfig.fackredis === true) {
@@ -47,19 +48,20 @@ export module VORLON {
             });
 
             app.get(this.baseURLConfig.baseURL + "/api/reset/:idSession",(req: any, res: any) => {
-                var session = this.sessions[req.params.idSession];
+                var session = this._sessions.get(req.params.idSession);
                 if (session && session.connectedClients) {
                     for (var client in session.connectedClients) {
                         delete session.connectedClients[client];
                     }
                 }
-                delete this.sessions[req.params.idSession];
+                this._sessions.remove(req.params.idSession);
+                
                 res.writeHead(200, {});
                 res.end();
             });
 
             app.get(this.baseURLConfig.baseURL + "/api/getclients/:idSession",(req: any, res: any) => {
-                var session = this.sessions[req.params.idSession];
+                var session = this._sessions.get(req.params.idSession);
                 var clients = new Array();
                 if (session != null) {
                     var nbClients = 0;
@@ -271,17 +273,17 @@ export module VORLON {
                 var receiveMessage = <VorlonMessage>JSON.parse(message);
                 var metadata = receiveMessage.metadata;
                 var data = receiveMessage.data;
-                var session = this.sessions[metadata.sessionId];
+                var session = this._sessions.get(metadata.sessionId);
 
                 if (session == null) {
-                    session = new Session();
-                    this.sessions[metadata.sessionId] = session;
+                    session = new vorloncontext.VORLON.Session();
+                    this._sessions.add(metadata.sessionId, session);
                 }
 
-                var client = <Client>session.connectedClients[metadata.clientId];
+                var client = <vorloncontext.VORLON.Client>session.connectedClients[metadata.clientId];
                 var dashboard = this.dashboards[metadata.sessionId];
                 if (client == undefined) {
-                    var client = new Client(metadata.clientId, data.ua, socket, ++session.nbClients);
+                    var client = new vorloncontext.VORLON.Client(metadata.clientId, data.ua, socket, ++session.nbClients);
                     session.connectedClients[metadata.clientId] = client;
                     this._log.debug(formatLog("PLUGIN", "Send Add Client to dashboard (" + client.displayId + ")[" + data.ua + "] socketid = " + socket.id, receiveMessage));
                     if (dashboard != undefined) {
@@ -316,7 +318,7 @@ export module VORLON {
                 var receiveMessage = <VorlonMessage>JSON.parse(message);
                 var dashboard = this.dashboards[receiveMessage.metadata.sessionId];
                 if (dashboard != null) {
-                    var session = this.sessions[receiveMessage.metadata.sessionId];
+                    var session = this._sessions.get(receiveMessage.metadata.sessionId);
                     if (receiveMessage.metadata.clientId === "") {
                         //No broadcast id _clientID ===""
                         //this.dashboards[receiveMessage._sessionId].emit("message", message);
@@ -342,20 +344,21 @@ export module VORLON {
             socket.on("clientclosed",(message: string) => {
                 //this._log.warn("CLIENT clientclosed " + message);
                 var receiveMessage = <VorlonMessage>JSON.parse(message);
-                for (var session in this.sessions) {
-                    for (var client in this.sessions[session].connectedClients) {
-                        if (receiveMessage.data.socketid === this.sessions[session].connectedClients[client].socket.id) {
-                            this.sessions[session].connectedClients[client].opened = false;
-                            if (this.dashboards[session]) {
+                this._sessions.all().forEach((session) => {
+                    for (var clientid in session.connectedClients) {
+                        var client = session.connectedClients[clientid];
+                        if (receiveMessage.data.socketid === client.socket.id) {
+                            client.opened = false;
+                            if (this.dashboards[session.sessionId]) {
                                 this._log.debug(formatLog("PLUGIN", "Send RemoveClient to Dashboard " + socket.id, receiveMessage));
-                                this.dashboards[session].emit("removeclient", this.sessions[session].connectedClients[client].data);
+                                this.dashboards[session.sessionId].emit("removeclient", client.data);
                             } else {
                                 this._log.debug(formatLog("PLUGIN", "NOT sending RefreshClients, no Dashboard " + socket.id, receiveMessage));
                             }
                             this._log.debug(formatLog("PLUGIN", "Client Close " + socket.id, receiveMessage));
                         }
                     }
-                }
+                });
             });
         }
 
@@ -379,7 +382,7 @@ export module VORLON {
                 //if client listen by dashboard send helo to selected client
                 if (metadata.listenClientId !== "") {
                     this._log.debug(formatLog("DASHBOARD", "Client selected for :" + metadata.listenClientId, receiveMessage));
-                    var session = this.sessions[metadata.sessionId];
+                    var session = this._sessions.get(metadata.sessionId);
                     if (session != undefined) {
                         this._log.debug(formatLog("DASHBOARD", "Change currentClient " + metadata.clientId, receiveMessage));
                         session.currentClientId = metadata.listenClientId;
@@ -415,7 +418,7 @@ export module VORLON {
                 //if client listen by dashboard send reload to selected client
                 if (metadata.listenClientId !== "") {
                     this._log.debug(formatLog("DASHBOARD", "Client selected for :" + metadata.listenClientId, receiveMessage));
-                    var session = this.sessions[metadata.sessionId];
+                    var session = this._sessions.get(metadata.sessionId);
                     if (session != undefined) {
                         this._log.debug(formatLog("DASHBOARD", "Change currentClient " + metadata.clientId, receiveMessage));
                         session.currentClientId = metadata.listenClientId;
@@ -459,7 +462,7 @@ export module VORLON {
                 var receiveMessage = <VorlonMessage>JSON.parse(message);
                 var metadata = receiveMessage.metadata;
                 this._log.debug(formatLog("DASHBOARD", "Identify clients", receiveMessage));
-                var session = this.sessions[metadata.sessionId];
+                var session = this._sessions.get(metadata.sessionId);
 
                 if (session != null) {
                     var nbClients = 0;
@@ -482,7 +485,7 @@ export module VORLON {
                 //this._log.warn("DASHBOARD message " + message);
                 var receiveMessage = <VorlonMessage>JSON.parse(message);
                 var metadata = receiveMessage.metadata;
-                var arrayClients = this.sessions[metadata.sessionId];
+                var arrayClients = this._sessions.get(metadata.sessionId);
 
                 if (arrayClients != null) {
                     for (var clientId in arrayClients.connectedClients) {
@@ -511,40 +514,14 @@ export module VORLON {
                 }
 
                 //Send disconnect to all client
-                for (var session in this.sessions) {
-                    for (var client in this.sessions[session].connectedClients) {
-                        this.sessions[session].connectedClients[client].socket.emit("stoplisten");
+                this._sessions.all().forEach((session) => {
+                    for (var client in session.connectedClients) {
+                        session.connectedClients[client].socket.emit("stoplisten");
                     }
-                }
+                });
             });
         }
-    }
-
-    export class Session {
-        public currentClientId = "";
-        public nbClients = -1;
-        public connectedClients = new Array<Client>();
-    }
-
-    export class Client {
-        public clientId: string;
-        public displayId: number;
-        public socket: SocketIO.Socket;
-        public opened: boolean;
-        public ua: string;
-        
-        public get data(): any {
-            return { "clientid": this.clientId, "displayid": this.displayId, "ua": this.ua, "name": tools.VORLON.Tools.GetOperatingSystem(this.ua) };
-        }
-
-        constructor(clientId: string, ua: string, socket: SocketIO.Socket, displayId: number, opened: boolean = true) {
-            this.clientId = clientId;
-            this.ua = ua;
-            this.socket = socket;
-            this.displayId = displayId;
-            this.opened = opened;
-        }
-    }
+    }   
 
     export interface VorlonMessageMetadata {
         pluginID: string;
