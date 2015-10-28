@@ -6,17 +6,16 @@ import path = require("path");
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
-import ws = require("./vorlon.webServer");
 import vauth = require("./vorlon.authentication");
-import baseURLConfig = require("../config/vorlon.baseurlconfig"); 
+import vorloncontext = require("../config/vorlon.servercontext"); 
 
 export module VORLON {
     export class Dashboard implements iwsc.VORLON.IWebServerComponent {
         
-        private baseURLConfig: baseURLConfig.VORLON.BaseURLConfig;
+        private baseURLConfig: vorloncontext.VORLON.IBaseURLConfig;
         
-        constructor() {
-            this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();           
+        constructor(context : vorloncontext.VORLON.IVorlonServerContext) {
+            this.baseURLConfig = context.baseURLConfig;           
         }
 
         public addRoutes(app: express.Express, passport: any): void {
@@ -67,7 +66,6 @@ export module VORLON {
             }
         }
 
-
         private dashboardWithClient() {
             return (req: express.Request, res: express.Response) => {
                 res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: req.params.clientid });
@@ -79,7 +77,6 @@ export module VORLON {
         }
         
         private login(req: express.Request, res: express.Response) {
-             this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();       
             res.render('login', {  baseURL: this.baseURLConfig.baseURL, message: 'Please login' });
         }
         
