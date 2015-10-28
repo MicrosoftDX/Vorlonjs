@@ -13,9 +13,11 @@ export module VORLON {
     export class Dashboard implements iwsc.VORLON.IWebServerComponent {
         
         private baseURLConfig: vorloncontext.VORLON.IBaseURLConfig;
+        private _log: vorloncontext.VORLON.ILogger;
         
         constructor(context : vorloncontext.VORLON.IVorlonServerContext) {
-            this.baseURLConfig = context.baseURLConfig;           
+            this.baseURLConfig = context.baseURLConfig;       
+            this._log = context.logger;    
         }
 
         public addRoutes(app: express.Express, passport: any): void {
@@ -61,7 +63,7 @@ export module VORLON {
                     authent = catalog.activateAuth;
                 }
                 
-                console.log(authent);
+                this._log.debug("authenticated " + authent);
                 res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: "", authenticated: authent });
             }
         }
