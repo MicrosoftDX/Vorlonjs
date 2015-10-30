@@ -2,7 +2,6 @@
 /// <reference path="../Scripts/typings/vorlon/vorlon.clientMessenger.d.ts" /> 
 /// <reference path="../Scripts/typings/vorlon/vorlon.clientPlugin.d.ts" /> 
 
-
 module VORLON {
     declare var $: any;
     declare var vorlonBaseURL: string;
