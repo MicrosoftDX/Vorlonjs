@@ -15,11 +15,12 @@ export module VORLON {
             
             var sessionConfig = <ctx.VORLON.ISessionPlugins>configuration.sessions[sessionid];
             
-            if (!sessionConfig)
-                sessionConfig =  {
-                    includeSocketIO : configuration.includeSocketIO,
-                    plugins : <ctx.VORLON.IPluginConfig[]>configuration.plugins
+            if (!sessionConfig || !sessionConfig.plugins || !sessionConfig.plugins.length) {
+                sessionConfig = {
+                    includeSocketIO: configuration.includeSocketIO,
+                    plugins: <ctx.VORLON.IPluginConfig[]>configuration.plugins
                 };
+            }
                 
             if (callback)
                 callback(null, sessionConfig);
