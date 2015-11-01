@@ -1,6 +1,7 @@
 import httpConfig = require("./vorlon.httpconfig");
 import baseUrlConfig = require("./vorlon.baseurlconfig");
 import logConfig = require("./vorlon.logconfig");
+import pluginsConfig = require("./vorlon.pluginsconfig");
 import redisConfig = require("./vorlon.redisconfig");
 import tools = require("../Scripts/vorlon.tools");
 
@@ -44,12 +45,31 @@ export module VORLON {
         _redisPassword : string;
 	}
 	
+	export interface IPluginConfig {
+		id: string;
+		name: string;
+		panel: string;
+		foldername:string;
+		enabled: boolean;
+	}
+	
+	export interface ISessionPlugins {
+		includeSocketIO : boolean;
+		plugins : IPluginConfig[];
+	}
+	
+	export interface IPluginsProvider{
+		
+		getPluginsFor(sessionid:string, callback:(error, plugins:ISessionPlugins) => void);
+	}
+	
 	export interface IVorlonServerContext {		
 		baseURLConfig: IBaseURLConfig;
 		httpConfig: IHttpConfig;
 		logConfig: ILogConfig;
 		redisConfig: IRedisConfig;
 		logger : ILogger;
+		plugins : IPluginsProvider;
 		sessions : SessionManager;
         
 	}
@@ -109,9 +129,7 @@ export module VORLON {
         public currentClientId = "";
         public nbClients = -1;
         public connectedClients = new Array<Client>();
-    }
-	
-	
+    }	
 
     export class Client {
         public clientId: string;
@@ -145,12 +163,14 @@ export module VORLON {
 		public redisConfig: IRedisConfig;
 		public logger : ILogger;
 		public sessions : SessionManager;
+		public plugins : IPluginsProvider;
 		
 		constructor(){
 			this.httpConfig = new httpConfig.VORLON.HttpConfig();
 			this.baseURLConfig = new baseUrlConfig.VORLON.BaseURLConfig();
 			this.logConfig = new logConfig.VORLON.LogConfig();
 			this.redisConfig = new redisConfig.VORLON.RedisConfig();
+			this.plugins = new pluginsConfig.VORLON.PluginsConfig();
 			
 			this.sessions = new SessionManager();
 		}

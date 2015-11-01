@@ -20,6 +20,7 @@ export module VORLON {
         private _redisApi: any;
         private _log: vorloncontext.VORLON.ILogger;
         private httpConfig: vorloncontext.VORLON.IHttpConfig;
+        private pluginsConfig: vorloncontext.VORLON.IPluginsProvider;
         private baseURLConfig: vorloncontext.VORLON.IBaseURLConfig;
         private redisConfig: vorloncontext.VORLON.IRedisConfig;
 
@@ -27,6 +28,7 @@ export module VORLON {
             this.baseURLConfig = context.baseURLConfig;
             this.httpConfig = context.httpConfig;
             this.redisConfig = context.redisConfig;
+            this.pluginsConfig = context.plugins;
             this._log = context.logger;
             this._sessions = context.sessions;
                                   
@@ -129,33 +131,25 @@ export module VORLON {
                 this._sendVorlonJSFile(true, req, res, false);
             });
             
-            app.get(this.baseURLConfig.baseURL + "/config.json",(req: any, res: any) => {
+            app.get(this.baseURLConfig.baseURL + "/getplugins/:idsession",(req: any, res: any) => {
                 this._sendConfigJson(req, res);
-            });           
+            });          
         }
         
         private _sendConfigJson(req: any, res: any) {
            
-            fs.readFile(path.join(__dirname, "../config.json"), "utf8",(err, catalogdata) => {
+            // fs.readFile(path.join(__dirname, "../config.json"), "utf8",(err, catalogdata) => {
+            var sessionid = req.params.idsession || "default";
+            this.pluginsConfig.getPluginsFor(sessionid, (err, catalog) =>{
                 if (err) {
                     this._log.error("ROUTE : Error reading config.json file");
                     return;
                 }
                 
-                var catalog = JSON.parse(catalogdata.replace(/^\uFEFF/, ''));
+                //var catalog = JSON.parse(catalogdata.replace(/^\uFEFF/, ''));
+               
                 
-                //remove auth data to not send username and password outside ;)
-                if(catalog.activateAuth){
-                    delete catalog.activateAuth;
-                }
-                if(catalog.username){
-                    delete catalog.username;
-                }
-                if(catalog.password){
-                    delete catalog.password;
-                }
-                
-                catalogdata = JSON.stringify(catalog);
+                var catalogdata = JSON.stringify(catalog);
                 res.header('Content-Type', 'application/json');
                 res.send(catalogdata);
             });
@@ -164,16 +158,15 @@ export module VORLON {
         private _sendVorlonJSFile(ismin: boolean, req: any, res: any, autostart: boolean = true) {
             //Read Socket.io file
             var javascriptFile: string;
-
-            fs.readFile(path.join(__dirname, "../config.json"), "utf8",(err, catalogdata) => {
+            var sessionid = req.params.idsession || "default";
+            this.pluginsConfig.getPluginsFor(sessionid, (err, catalog) =>{
+//             fs.readFile(path.join(__dirname, "../config.json"), "utf8",(err, catalogdata) => {
                 if (err) {
-                    this._log.error("ROUTE : Error reading config.json");
+                    this._log.error("ROUTE : Error getting plugins");
                     return;
                 }
 
-                var configstring = catalogdata.toString().replace(/^\uFEFF/, '');
                 var baseUrl = this.baseURLConfig.baseURL;
-                var catalog = JSON.parse(configstring);
                 var vorlonpluginfiles: string = "";
                 var javascriptFile: string = "";
                                 
