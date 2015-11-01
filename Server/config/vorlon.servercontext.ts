@@ -96,6 +96,7 @@ export module VORLON {
         private sessions : Session[] = [];
 		public onsessionadded : (session) => void;
 		public onsessionremoved : (session) => void;
+		public onsessionupdated : (session) => void;
 		
 		add(sessionId : string, session : Session){
 			session.sessionId = sessionId;
@@ -113,6 +114,13 @@ export module VORLON {
 			delete this.sessions[sessionId];
 			if (this.onsessionremoved)
 				this.onsessionremoved(session);
+		}
+		
+		update(sessionId : string, session: Session){
+			this.sessions[sessionId] = session;
+						
+			if (this.onsessionupdated)
+				this.onsessionupdated(session);
 		}
 		
 		all() : Session[]{

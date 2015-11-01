@@ -138,15 +138,12 @@ export module VORLON {
         
         private _sendConfigJson(req: any, res: any) {
            
-            // fs.readFile(path.join(__dirname, "../config.json"), "utf8",(err, catalogdata) => {
             var sessionid = req.params.idsession || "default";
             this.pluginsConfig.getPluginsFor(sessionid, (err, catalog) =>{
                 if (err) {
                     this._log.error("ROUTE : Error reading config.json file");
                     return;
                 }
-                
-                //var catalog = JSON.parse(catalogdata.replace(/^\uFEFF/, ''));
                
                 
                 var catalogdata = JSON.stringify(catalog);
@@ -160,7 +157,6 @@ export module VORLON {
             var javascriptFile: string;
             var sessionid = req.params.idsession || "default";
             this.pluginsConfig.getPluginsFor(sessionid, (err, catalog) =>{
-//             fs.readFile(path.join(__dirname, "../config.json"), "utf8",(err, catalogdata) => {
                 if (err) {
                     this._log.error("ROUTE : Error getting plugins");
                     return;
@@ -293,7 +289,8 @@ export module VORLON {
                     }
                     this._log.debug(formatLog("PLUGIN", "Client Reconnect (" + client.displayId + ")[" + data.ua + "] socketid=" + socket.id, receiveMessage));
                 }
-
+                this._sessions.update(metadata.sessionId, session);
+                        
                 this._log.debug(formatLog("PLUGIN", "Number clients in session : " + (session.nbClients + 1), receiveMessage));
                 
                 //If dashboard already connected to this socket send "helo" else wait
