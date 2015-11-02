@@ -349,6 +349,7 @@ export module VORLON {
                             this._log.debug(formatLog("PLUGIN", "Client Close " + socket.id, receiveMessage));
                         }
                     }
+                    this._sessions.update(session.sessionId, session);
                 });
             });
         }
@@ -398,6 +399,9 @@ export module VORLON {
                 }
                 else {
                     this._log.debug(formatLog("DASHBOARD", "No client selected for this dashboard"));
+                    if (session != undefined) {
+                        this._sessions.update(metadata.sessionId, session);
+                    }
                 }
             });
 
@@ -431,6 +435,9 @@ export module VORLON {
                 }
                 else {
                     this._log.debug(formatLog("DASHBOARD", "No client selected for this dashboard"));
+                    if (session != undefined) {
+                        this._sessions.update(metadata.sessionId, session);
+                    }
                 }
             });
 
@@ -469,6 +476,9 @@ export module VORLON {
                 }
                 else {
                     this._log.error(formatLog("DASHBOARD", " No client to identify...", receiveMessage));
+                    if (session != undefined) {
+                        this._sessions.update(metadata.sessionId, session);
+                    }
                 }
             });
 
@@ -491,6 +501,10 @@ export module VORLON {
                 }
                 else {
                     this._log.error(formatLog("DASHBOARD", "No client for message", receiveMessage));
+                    var session = this._sessions.get(metadata.sessionId);
+                    if (session != undefined) {
+                        this._sessions.update(metadata.sessionId, session);
+                    }
                 }
             });
 
@@ -536,7 +550,7 @@ export module VORLON {
                 buffer.push(" ");
             }
         }
-        
+
         buffer.push(" : ");
 
         if (vmessage) {

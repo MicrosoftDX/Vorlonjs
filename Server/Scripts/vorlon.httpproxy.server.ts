@@ -77,6 +77,7 @@ export module VORLON {
                 this._server.set('port', process.env.PORT);            
             else
                 this._server.set('port', this.httpConfig.proxyPort);
+            
             this._server.use(cookieParser());
             this._server.use(this.baseURLConfig.baseProxyURL + "/vorlonproxy/root.html", this.proxyForTarget());
             this._server.use(this.baseURLConfig.baseProxyURL + "/vorlonproxy/*", this.proxyForRelativePath());
@@ -96,7 +97,7 @@ export module VORLON {
                 });
             }
 
-            this._proxy.on("error", this.proxyError);
+            this._proxy.on("error", this.proxyError.bind(this));
             this._proxy.on("proxyRes", this.proxyResult.bind(this));
             this._proxy.on("proxyReq", this.proxyRequest.bind(this));
             this._fetchproxy.on("proxyReq", this.proxyFetchRequest.bind(this));
