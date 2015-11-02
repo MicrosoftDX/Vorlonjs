@@ -129,6 +129,15 @@ export module VORLON {
 			if (this.logger)
 				this.logger.debug("session " + sessionId + " update");
 
+			var nbopened = 0;
+			session.connectedClients.forEach((client) => {
+				if (client.opened) {
+					nbopened++;
+				}
+			});
+
+			session.nbClients = nbopened;
+			
 			if (this.onsessionupdated)
 				this.onsessionupdated(session);
 		}
