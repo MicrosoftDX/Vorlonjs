@@ -270,6 +270,19 @@ module VORLON {
                                 }
                             };
                             document.body.appendChild(pluginscript);
+                            
+                            pluginscript = document.createElement("script");
+                            pluginscript.setAttribute("src", vorlonBaseURL + "/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".interfaces.min.js");
+                            
+                            pluginscript.onload = (oError) => {
+                                pluginLoaded++;
+                                if (pluginLoaded >= pluginstoload) {
+                                    DashboardManager.StartListeningServer(DashboardManager.ListenClientid);
+                                    coreLoaded = true;
+                                    this.PluginsLoaded = true;
+                                }
+                            };
+                            document.body.appendChild(pluginscript);
                         }
                         
                         var addPluginBtn = document.createElement('div');
