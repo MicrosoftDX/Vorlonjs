@@ -17,7 +17,7 @@ npm start
 
 # Making a release
 
-**Note:** There are various icon and bitmap files in `resources` directory. Those are used in installers and are intended to be replaced by your own graphics.
+**Note:** There are various icon and bitmap files in `resources` directory. Those are used in installers.
 
 To make ready for distribution installer use command:
 ```
