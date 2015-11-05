@@ -1,12 +1,12 @@
 Vorlon.js desktop
 ==============
-This repository is an experiment for running [Vorlon.js](http://www.vorlonjs.com) within [Electron runtime](http://electron.atom.io). 
+This repository is for the desktop version of Vorlon.js. Set up could take a little time so packages for desktop app are not loaded when you initialize Vorlon repository.
 The project has been initiated from [Electron boilerplate](https://github.com/szwacz/electron-boilerplate).
 
 # Quick start
 To run this from source, you will need Node.js, so just make sure you have it installed.
 
-Grab the sources and then open a command prompt for
+install all required packages by running
 ```
 npm install
 ```
@@ -15,26 +15,18 @@ When everything is in place, run the following command :
 npm start
 ```
 
-# License
+# Making a release
 
-The MIT License (MIT)
+**Note:** There are various icon and bitmap files in `resources` directory. Those are used in installers and are intended to be replaced by your own graphics.
 
-Copyright (c) 2015
+To make ready for distribution installer use command:
+```
+npm run release
+```
+It will start the packaging process for operating system you are running this command on. Ready for distribution file will be outputted to `releases` directory.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+You can create Windows installer only when running on Windows, the same is true for Linux and OSX. So to generate all three installers you need all three operating systems.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+## Special precautions for Windows
+As installer [NSIS](http://nsis.sourceforge.net/Main_Page) is used. You have to install it (version 3.0), and add NSIS folder to PATH in Environment Variables, so it is reachable to scripts in this project (path should look something like `C:/Program Files (x86)/NSIS`).

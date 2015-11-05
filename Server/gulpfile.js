@@ -10,6 +10,7 @@ gulp.task('typescript-to-js', function() {
 });
 
 gulp.task('build', ['typescript-to-js'], function() {
+	//copy server files to desktop app
   return gulp.src([
   		'./config.json',
   		'cert/**',
