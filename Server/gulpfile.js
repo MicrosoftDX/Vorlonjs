@@ -9,8 +9,20 @@ gulp.task('typescript-to-js', function() {
             .pipe(gulp.dest('.'));
 });
 
+gulp.task('build', ['typescript-to-js'], function() {
+  return gulp.src([
+  		'./config.json',
+  		'cert/**',
+  		'config/**',
+  		'public/**',
+  		'Scripts/**',
+  		'views/**',
+  	], { base: './' })
+  	.pipe(gulp.dest('../desktop/app/vorlon'));
+});
+
 gulp.task('default', function() {
-  gulp.start('typescript-to-js');
+  gulp.start('build');
 });
 
 /**

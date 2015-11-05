@@ -1,0 +1,86 @@
+<header class="site-header">
+    <div class="container">
+        <div class="logo">Vorlon.JS
+            <div class="spaceship">
+                <div class="exhaust"></div>
+            </div>
+            <div class="legend">
+                DESKTOP
+            </div>
+        </div>
+        <div class="tube tube-left">
+            <div class="data"></div>
+        </div>
+        <div class="tube tube-top">
+            <div class="data"></div>
+        </div>
+        <div class="tube tube-right">
+            <div class="data"></div>
+        </div>
+        <div class="planets"></div>
+    </div>
+    <div class="satellite"></div>
+</header>
+<section>
+    <div id="sessionspanel" class="sessionspanel">
+        <div class="sessionspanelcontent">
+            <div class="panel" id="sessionslistpanel">
+                <div class="vorlonstatus toolbar">
+                    <div id="vorlonServerStatus" class="stretch">
+                        server is not running
+                    </div>
+                    <div class="actions">
+                        <button id="btnStartServer" style="display:none"><i class="dripicon dripicon-media-play"></i></button>
+                        <button id="btnStopServer" style="display:none"><i class="dripicon dripicon-media-stop"></i></button>
+                    </div>
+                </div>
+                <div class="addsession toolbar">
+                    <input type="text" placeholder="add a new session config" id="txtnewsession" class="stretch" />
+                    <div class="actions">
+                        <button id="btnAddSession"><i class="dripicon dripicon-plus"></i></button>
+                    </div>
+                </div>
+                <div class="sessionslist stretch" id="sessionslist">
+
+                </div>
+            </div>
+            <div class="panel away" id="sessionconfigpanel">
+                <div class="toolbar">
+                    <div class="stretch">
+                        configure <span class="sessionname"></span>
+                    </div>
+                    <div class="actions">
+                        <button id="btnSaveConfig"><i class="dripicon dripicon-checkmark"></i></button>
+                        <button id="btnCloseConfig"><i class="dripicon dripicon-cross"></i></button>
+                        <button id="btnRemoveConfig"><i class="dripicon dripicon-trash"></i></button>
+                    </div>
+                </div>
+                <div class="sessionsplugins stretch">
+                    <div class="configcommons">
+                        <input type="checkbox" id="includeSocketIO" /><label for="includeSocketIO">include socket.io</label>
+                    </div>
+                    <div id="sessionsplugins">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="content">
+        <div class="contentbloc">
+            <h3>Open dashboard for a specific session</h3>
+            <p>
+                <input type="text" id="vorlonsessionid" placeholder="enter vorlon session id here">
+                <button id="btnopendashboard">Open dashboard session</button>
+            </p>
+        </div>
+
+        <div class="contentbloc">
+            <h3>Inspect existing website with Vorlon proxy</h3>
+            <p>
+                <input type="text" id="vorlonproxytarget" placeholder="enter the target url here">
+                <button id="btnopenproxy">Open website and dashboard</button>
+            </p>
+        </div>
+    </div>
+</section>
