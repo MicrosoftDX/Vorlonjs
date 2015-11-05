@@ -18,7 +18,6 @@ var destDir = projectDir.cwd('./build');
 var paths = {
     copyFromAppDir: [
         './node_modules/**',
-        './vendor/**',
         './assets/**',
         './fonts/**',        
         './vorlon/**',
@@ -99,6 +98,14 @@ gulp.task('bundle', ['clean'], bundleTask);
 gulp.task('bundle-watch', bundleTask);
 
 gulp.task('typescript-to-js', function() {
+  var tsResult = gulp.src(['./**/*.ts', '!./node_modules', '!./node_modules/**'], { cwd: './app' })
+                      .pipe(typescript({ noExternalResolve: true, target: 'ES5', module: 'commonjs' }));
+
+  return tsResult.js
+            .pipe(gulp.dest('build'));
+});
+
+gulp.task('dev-typescript-to-js', function() {
   var tsResult = gulp.src(['./app/**/*.ts', '!./node_modules', '!./node_modules/**'], { base: './' })
                       .pipe(typescript({ noExternalResolve: true, target: 'ES5', module: 'commonjs' }));
 
@@ -151,11 +158,11 @@ gulp.task('watch', function () {
 gulp.task('dev-watch', function () {
     //gulp.watch('app/**/*.js', ['bundle-watch']);
     //gulp.watch(paths.copyFromAppDir, { cwd: 'app' }, ['copy-watch']);
-    gulp.watch(['./app/**/*.ts', '!./node_modules', '!./node_modules/**'], ['typescript-to-js']);
+    gulp.watch(['./app/**/*.ts', '!./node_modules', '!./node_modules/**'], ['dev-typescript-to-js']);
     gulp.watch('app/**/*.less', ['dev-less']);
 });
 
 
-gulp.task('build', ['bundle', 'less', 'copy', 'finalize']);
+gulp.task('build', ['bundle', 'less', 'copy', 'finalize','typescript-to-js']);
 
-gulp.task('devbuild', ['dev-less','typescript-to-js']);
+gulp.task('devbuild', ['dev-less','dev-typescript-to-js']);
