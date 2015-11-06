@@ -8,9 +8,9 @@ var SessionsManager = require("./app.home.sessionsmgr").SessionsManager;
 var userDataPath = app.getPath('userData');
 
 export class HomePanel {
-    statusText:HTMLElement;
-    btnStart:HTMLElement;
-    btnStop:HTMLElement;
+    statusText: HTMLElement;
+    btnStart: HTMLElement;
+    btnStop: HTMLElement;
     
     constructor(element) {
         var panel = this;
@@ -82,6 +82,7 @@ export class HomePanel {
         this.btnStop.onclick = function() {
             ipc.send("stopVorlon");
         }
+        
 
         ipc.on("vorlonStatus", function(args) {
             var cfg = config.getConfig(userDataPath);

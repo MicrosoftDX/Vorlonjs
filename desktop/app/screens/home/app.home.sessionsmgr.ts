@@ -11,6 +11,7 @@ export class SessionsManager {
 	sessions: any;
 	txtAddSession: HTMLInputElement;
 	btnAddSession: HTMLElement;
+	btnRefreshSessions: HTMLElement;
 	sessionsList: HTMLElement;
 	sessionconfigpanel: HTMLElement;
 	btnSaveConfig: HTMLElement;
@@ -90,6 +91,11 @@ export class SessionsManager {
 		this.btnRemoveConfig.onclick = function() {
 			mgr.removeConfig();
 		}
+		
+		this.btnRefreshSessions = <HTMLElement>element.querySelector('#btnRefreshSessions');
+        this.btnRefreshSessions.onclick = function() {
+            mgr.refresh();
+        }
 
 		this.btnAddSession.onclick = function() {
 			var sessionid = mgr.txtAddSession.value;
@@ -112,6 +118,7 @@ export class SessionsManager {
 	}
 
 	refresh() {
+		this.sessionsList.innerHTML = "";
 		ipc.send("getVorlonSessions");
 	}
 
@@ -245,5 +252,3 @@ export class SessionsManager {
 		}
 	}
 }
-
-module.exports.SessionsManager = SessionsManager;
