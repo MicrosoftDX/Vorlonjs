@@ -42,17 +42,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }).then(function(){
         ipc.send('getVorlonStatus');
-    }).then(function(){    
-        var panelConfig = document.getElementById("panelConfig");
-        return loadPanelContent("./screens/settings/app.settings.html", panelConfig, function(){
-            console.log("panel console loaded");
-            settingspanel = new SettingsPanel(panelConfig);
-        });
     }).then(function(){
         var panelInfo = document.getElementById("panelInfo");
         loadPanelContent("./screens/info/app.info.html", panelInfo, function(){
             console.log("panel console loaded");
             infopanel = new InfoPanel(panelInfo);
+        });
+    }).then(function(){    
+        var panelConfig = document.getElementById("panelConfig");
+        return loadPanelContent("./screens/settings/app.settings.html", panelConfig, function(){
+            console.log("panel console loaded");
+            settingspanel = new SettingsPanel(panelConfig);
         });
     });
     

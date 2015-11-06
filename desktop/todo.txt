@@ -1,15 +1,13 @@
-move sources to typescript
 user-select
 
 improve console screen
-	make a buffer with max size
 	add filtering
 
 improve sessions
 	add reload btn
-	merge configured by checking available plugins
 info screen
 home
 	responsive
-	
+
+dashboard load => spinner centered	
 dashboard load error => dedicated page

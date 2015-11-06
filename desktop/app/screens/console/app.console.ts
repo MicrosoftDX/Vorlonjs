@@ -62,6 +62,13 @@ export class ConsolePanel {
 		e.appendChild(text);
 
 		this.messagescontainer.insertBefore(e, this.messagescontainer.firstChild);
+		
+		var maxentries = 500;
+		if (this.messagescontainer.children.length > maxentries){
+			for (var i=this.messagescontainer.children.length-1 ; i>maxentries; i--){
+				this.messagescontainer.removeChild(this.messagescontainer.children[i]);
+			}
+		}
 	}
 }
 

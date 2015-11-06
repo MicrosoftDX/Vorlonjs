@@ -57,9 +57,24 @@ export function getSessionConfig(configpath : string, sessionid : string) : ISes
     if (!config || !config[sessionid])
         return defaultConfig
     
-    var sessionConfig = config[sessionid];
-    //todo merge default & stored config to ensure plugins availability
-      
+    var sessionConfig = <ISessionConfig>config[sessionid];
+    
+    var retainedplugins = [];
+    //merge default & stored config to ensure plugins availability
+    var refplugins:vorlonConfig.VORLON.IPluginConfig[] = vorlonOriginalConfig.plugins;
+    refplugins.forEach(function(plugin){
+        var configured = sessionConfig.plugins.filter((p) =>{
+            return p.id == plugin.id;
+        })[0];
+        
+        if (!configured){
+            retainedplugins.push(plugin);
+        }else{
+            retainedplugins.push(configured);
+        }
+    });
+    sessionConfig.plugins=retainedplugins;
+          
     return sessionConfig;
 }
 
