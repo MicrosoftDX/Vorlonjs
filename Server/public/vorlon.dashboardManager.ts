@@ -25,7 +25,7 @@ module VORLON {
             DashboardManager.ClientList = {};
             DashboardManager.StartListeningServer()
             DashboardManager.GetClients();
-            DashboardManager.CatalogUrl =  vorlonBaseURL + "/config.json";
+            DashboardManager.CatalogUrl =  vorlonBaseURL + "/getplugins/" + sessionid;
         }
         
         public static StartListeningServer(clientid: string = ""): void{

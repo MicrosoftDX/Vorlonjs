@@ -1,0 +1,595 @@
+@import "../../stylesheets/theme.less";
+
+#panelHome{
+	overflow: hidden;
+	
+			.content{            
+                
+            }
+			
+	.site-header {
+		height: 400px;		
+		position: relative;
+		overflow: hidden;
+		background: #1f1c28;
+		background-image: url(../assets/header-stars.png),
+							url(../assets/header-stars-distant.png);
+		background-repeat: repeat;
+		background-position: center center;
+		background-size: auto 400px;
+		color: white;
+		
+		.container{
+			height: 100%;
+			background-image:     url(../assets/header-planet-large.png),
+								url(../assets/header-planet-medium.png),
+								url(../assets/header-planet-small.png);
+			background-repeat:    no-repeat;
+			background-size:      180px auto, // planet-large
+								90px auto,  // planet-medium
+								66px auto;   // planet-small
+			background-position:  right 120%, // planet-large
+								80% 10%,    // planet-medium
+								20% 30%;     // planet-small
+		}
+		
+		.tube{
+			position: absolute;
+			top: 0;
+			background-repeat: no-repeat;
+			z-index: 4;
+		
+			.data{
+			width: 20px;
+			height: 20px;
+			background: url(../assets/header-tube-data.png);
+			background-size: contain;
+			border-radius: 50%;
+			position: absolute;
+			top: -20px;
+			opacity: .5;
+			}
+		}
+		.tube-left{
+			width: 150px;
+			height: 400px;
+			left: 10%;
+			background-image: url(../assets/header-tube-3.png);
+			background-size: auto 400px;
+		
+			.data{
+			animation: data1 8s 2s linear infinite;
+			}
+		}
+		
+		.tube-top{
+			width: 280px;
+			height: 200px;
+			left: 26%;
+			background-image: url(../assets/header-tube-2.png);
+			background-size: 280px auto;
+			background-position: left -8%;
+		
+			.data{
+			animation: data2 8s 6s linear infinite;
+			}	
+		}
+		
+		.tube-right{
+			width: 400px;
+			height: 400px;
+			right: 5%;
+			background-image: url(../assets/header-tube-1.png);
+			background-size: auto 400px;
+			background-position: right center;
+		
+			.data {
+			animation: data3 8s 4s linear infinite;
+			}
+		}
+		
+		.satellite {
+			width: 92px;
+			height: 92px;
+			position: absolute;
+			left: 10%;
+			bottom: 10%;
+			background: url(../assets/header-satellite.png) no-repeat center center;
+			background-size: contain;
+			z-index: 3;
+		}
+		
+		.logo {
+			width: 395px;
+			height: 110px;
+			margin: 0 auto;
+			position: absolute;
+			top: 37%;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 10;
+			background: url(../assets/header-pixel-logo-text.svg) no-repeat center center;
+			background-size: contain;
+			text-indent: -9999em;
+		
+			.legend{
+			color: rgba(255,255,255,0.6);  
+			text-indent: 0;
+			text-align: center;
+			margin-top : 100px;
+			background-color: @purpleDrk;
+			font-size : 24pt;
+			}
+			
+			.spaceship,
+			.exhaust {
+			position: absolute;
+			background-repeat: no-repeat;
+			background-size: contain;
+			background-position: center center;
+			}
+			
+			.spaceship {
+			width: 86px;
+			height: 46px;
+			left: 67%;
+			top: -55px;
+			background-image: url(../assets/header-pixel-logo-spaceship.svg);
+			animation: spaceship 4s ease-out;
+			}
+			
+			.exhaust{
+			width: 64px;
+			height: 34px;
+			right: 64px;
+			top: 6px;
+			background-image: url(../assets/header-pixel-logo-exhaust.svg);
+			animation: exhaust 4s ease;
+			}
+		}
+	}
+	
+	>section {
+		position: relative;
+		height: ~"calc(100% - 400px)";
+		
+		.sessionspanel{
+			position: absolute;
+			left: 0;
+			width : 400px;
+			top:0;
+			right:0;
+			bottom:0;
+			
+			
+			.sessionspanelcontent{
+				position : relative;
+				width:100%;
+				height: 100%;
+				overflow: hidden;
+				
+				.panel{
+					position : absolute;
+					left:0;
+					top:0;
+					width:100%;
+					height: 100%;
+					display: flex;
+					flex-flow: column nowrap;
+					background-color : white;
+					
+					transition: transform 200ms ease-out;
+					
+					&.away{
+						transform: translate(-100%, 0);
+					}
+					
+					.stretch{
+						flex:1;
+						padding : 8px;
+						box-sizing: border-box;
+						overflow-x : hidden;
+						overflow-y: auto;
+						
+						.session-item {
+							padding : 4px 8px;
+							background-color: #EEE;
+							margin-bottom : 4px;
+							display: flex;
+							
+							.status {
+								width:16px;
+								height:16px;
+								border-radius: 50%;
+								border : 1px solid #AAA;
+								
+								&.status-up{
+									background-color: seagreen;
+								}
+							}
+							.title{
+								flex:1;
+								margin-left: 4px;
+							}
+							
+							.dripicon{
+								margin-left: 10px;
+								color: #AAA;
+								font-size: 14pt;
+								cursor : pointer;
+							}
+						}	
+					}
+					
+					.toolbar{
+						display: flex;
+						align-items: center;
+						background-color : #AAA;
+						padding : 4px 8px;
+						box-sizing: border-box;
+						width:100%;
+						color: white;
+						
+						.stretch{
+							flex:1;
+						}
+						
+						&.addsession{
+							background-color : transparent;
+							// border-bottom : 1px solid #DDD;
+						}
+					}
+					
+					.actions{
+						margin-left:10px;
+						button{
+							width : 32px;
+							height: 32px;
+							line-height: 29px;
+							border-radius: 50%;
+							padding : 2px;
+							text-align: center;
+							font-size: 12pt;
+							background-color: #777;
+						}
+					}
+					
+					.configcommons{
+						padding-bottom : 8px;
+						margin-bottom: 8px;
+						border-bottom: 1px solid #CCC;
+					}
+				}
+			}
+		}
+		
+		.content{
+			overflow-x: hidden;
+			overflow-y: auto;
+			position: absolute;
+			left: 400px;
+			top:0;
+			right:0;
+			bottom:0;
+			
+			padding : 20px;
+			box-sizing: border-box;
+			display: flex;
+			flex-flow : row wrap;
+			align-items: center;
+			justify-content: center;
+					
+			.contentbloc{
+				margin : 10px;
+				padding : 20px;
+				box-sizing: border-box;
+				background-color: white;
+				border : 1px solid @blocBorderColor;
+				width : 100%;
+				height : 180px;
+						
+				input, button {
+					display: block;
+					width: 100%;
+					box-sizing: border-box;
+				}
+						
+				button{
+					margin-top : 10px;
+				}
+			}
+					
+			.fullsize-bloc{
+				width: 100%;
+			}
+		}
+	}
+	
+	@media screen and (min-width: 1400px){
+		>section{
+			.content{
+				padding : 40px;
+				.contentbloc{
+					width : 400px;
+				}
+			}
+		}
+	}
+	
+	@media screen and (max-width: @mediumwidth){
+	
+		.site-header{
+			height: 350px;
+		
+			.tube-left{
+			left: 5%;
+			}
+			.tube-top{
+			top: -5%;
+			left: 15%;
+			}
+			.tube-right{
+			right: -75px;
+			}
+			.satellite{
+			display: none;
+			}
+			.logo{
+			height: 140px;
+			top: 28%;
+			background-image: url(../assets/vorlon-pixel-logo-large.svg);
+			.spaceship{
+				display: none;
+			}
+			
+			.legend{
+				margin-top : 130px;
+			}
+			}
+		}
+		
+		>section {
+			height: ~"calc(100% - 350px)";
+			.content{
+				padding : 20px;
+			}
+		}
+	}
+	
+	@media screen and (max-width: @smallwidth){
+	
+		.site-header{
+			height: 250px;
+		
+			.container{
+			background-position:  120% 140%, // planet-large
+									85% -10px, // planet-medium
+									10% 10%;    // planet-small
+			}
+			.tube{
+			top: -35%;
+			}
+			.tube-left{
+			left: 2%;
+			}
+			.tube-top{
+			display: none;
+			}
+			.logo{
+			height: 120px;
+			top: 16%;
+			
+			.legend{
+				margin-top : 110px;
+				font-size : 18pt;
+			}
+			}
+		}
+		>section {
+			height: ~"calc(100% - 250px)";
+			.content{
+				padding: 5px;
+			} 
+		}
+	}
+	
+	@media screen and (max-width: 480px){
+	
+		.site-header{
+			height: 200px;
+		
+			.container{
+			background-position:  120% 400%, // planet-large
+									85% -50px, // planet-medium
+									-5% 5%;     // planet-small
+			}
+			.tube{
+			display: none;
+			}
+			.logo{
+			height: 100px;
+			.legend{
+				margin-top : 90px;
+				font-size : 18pt;
+			}
+			}
+		}
+		
+		>section {
+			height: ~"calc(100% - 200px)";
+		}
+	}
+	
+	// Animations
+	
+	// Spaceship in logo moving across text
+	@keyframes spaceship {
+	0%{
+		left: 5%;
+		top: -55px;
+	}
+	20%{
+		top: -50px;
+	}
+	40%{
+		top: -55px;
+	}
+	60%{
+		top: -47px;
+	}
+	80%{
+		top: -51px;
+	}
+	100%{
+		left: 67%;
+		top: -55px;
+	}
+	}
+	// Exhaust from spaceship
+	@keyframes exhaust {
+	0%{
+		opacity: 0;
+	}
+	5%{
+		opacity: 0;
+	}
+	20%{
+		opacity: 1;
+		margin-right: 0;
+		margin-top: 0;
+	}
+	27%{
+		opacity: 1;
+	}
+	65%{
+		opacity: 0;
+		margin-right: 20px;
+		margin-top: 5px;
+	}
+	75%{
+		opacity: 0;
+		margin-right: 0;
+		margin-top: 0;
+	}
+	100%{
+		opacity: 1;
+	}
+	}
+	
+	// Data moving through tube-left
+	@keyframes data1{
+	0%{
+		top: -20px;
+		left: 8px;
+	}
+	15%{
+		top: 120px;
+		left: 8px;
+	}
+	30%{
+		top: 265px;
+		left: 75px;
+	}
+	45%{
+		top: 400px;    
+		left: 75px;
+	}
+	100%{
+		top: 400px;
+		left: 10px;
+	}
+	}
+	
+	// Data moving through tube-top
+	@keyframes data2{
+	0%{
+		top: -28px;
+		left: 8px
+	}
+	3.0578118439665722%{
+		top: -8px;
+		left: 8px;
+	}
+	6.1156236879331445%{
+		top: 12px;
+		left: 8px;
+	}
+	8.86765434750306%{
+		top: 30px;
+		left: 8px;
+	}
+	11.723886320011895%{
+		top: 48px;
+		left: 13px;
+	}
+	14.057659923338075%{
+		top: 61px;
+		left: 21px;
+	}
+	16.43607936284551%{
+		top: 72px;
+		left: 32px;
+	}
+	19.587999666830232%{
+		top: 77px;
+		left: 52px;
+	}
+	21.90165415677704%{
+		top: 80px;
+		left: 67px;
+	}
+	42.08379144967832%{
+		top: 80px;
+		left: 199px;
+	}
+	46.01459638426888%{
+		top: 74px;
+		left: 224px;
+	}
+	48.61822935052951%{
+		top: 63px;
+		left: 237px;
+	}
+	50.66947189418348%{
+		top: 51px;
+		left: 243px;
+	}
+	53.062588195113115%{
+		top: 37px;
+		left: 250px;
+	}
+	55.35594707808804%{
+		top: 22px;
+		left: 250px;
+	}
+	59.94266484403791%{
+		top: -8px;
+		left: 250px;
+	}
+	63.00047668800448%{
+		top: -28px;
+		left: 250px;
+	}
+	100%{
+		top: -28px;
+		left: 8px;
+	}
+	}
+	
+	// Data moving through tube-right
+	@keyframes data3{
+	0%{
+		top: -20px;
+		right: 10px;
+	}
+	50%{
+		top: 400px;
+		right: 10px;
+	}
+	100%{
+		top: 400px;
+		right: 10px;
+	}
+	}
+
+}

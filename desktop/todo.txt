@@ -1,0 +1,13 @@
+user-select
+
+improve console screen
+	add filtering
+
+improve sessions
+	add reload btn
+info screen
+home
+	responsive
+
+dashboard load => spinner centered	
+dashboard load error => dedicated page

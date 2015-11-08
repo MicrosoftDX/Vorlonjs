@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Vorlon.js desktop</title>
+
+    <link href="./fonts/roboto/roboto.css" rel="stylesheet" type="text/css">
+    <link href="./fonts/oswald/oswald.css" rel="stylesheet" type="text/css">
+    <link href="./stylesheets/app.css" rel="stylesheet" type="text/css">
+    <link href="./fonts/dripicons/webfont.css" rel="stylesheet" type="text/css">
+    
+    <script src="scripts/env_config.js"></script>
+    <script src="scripts/context_menu.js"></script>
+    <script src="scripts/external_links.js"></script>
+
+    <script src="mainpage.js"></script>
+</head>
+
+<body class="mainpage">
+    <div id="menubar" class="toolbar">
+        <div class="icon selected" targetpanel="panelHome">
+            <i class="dripicon-home"></i>
+        </div>
+        <div class="icon" targetpanel="panelConsole">
+            <i class="dripicon-message"></i>
+        </div>
+        <div class="icon" targetpanel="panelConfig">
+            <i class="dripicon-gear"></i>
+        </div>
+        <div class="icon" targetpanel="panelInfo">
+            <i class="dripicon-information"></i>
+        </div>
+    </div>
+    <div class="pagecontainer">
+        <div class="pagecontainer-panels">
+            <div class="panel selected" id="panelHome">
+                
+            </div>
+            <div class="panel with-header" id="panelConsole">
+                
+            </div>
+            <div class="panel with-header" id="panelConfig">
+                config under construction...
+            </div>
+            <div class="panel with-header" id="panelInfo">
+                info under construction...
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
