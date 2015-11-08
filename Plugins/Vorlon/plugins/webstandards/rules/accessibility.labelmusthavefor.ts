@@ -2,7 +2,7 @@ module VORLON.WebStandards.Rules.DOM {
     
     export var labelMustHaveFor = <IDOMRule>{
         id: "accessibility.label-must-have-for",
-        title: "label tag must have a \"for\" attribute",
+        title: "label tag must have a \"for\" attribute unless it has the input it is associated with as a child element",
         description : "label tag is intended to be used with input field. Label tags help people with disabilities to identify input fields.",
         nodeTypes: ["label"],
                 
