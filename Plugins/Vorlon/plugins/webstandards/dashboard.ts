@@ -3,10 +3,10 @@ declare var cssjs: any;
 module VORLON {
     var _webstandardsRefreshLoop;
     var rulesLabels = {
-        "webstandards": "Web standards",
-        "accessibility": "Accessibility",
-        "performances": "Performances",
-        "mobileweb": "Mobile web",
+        "webstandards": "1. Web standards",
+        "accessibility": "2. Accessibility",
+        "performances": "3. Performances",
+        "mobileweb": "4. Mobile web",
     }
 
     export class WebStandardsDashboard extends DashboardPlugin {
@@ -489,7 +489,12 @@ module VORLON {
 
             if (rule.rules) {
                 ruleitem.addClass("collapsible");
-                ruleitem.addClass("collapsed");
+                if(rule.id == "webstandards") {
+                    ruleitem.addClass("expanded");
+                }
+                else {
+                    ruleitem.addClass("collapsed");
+                }
                 ruleitem.append('DIV', 'childs', (childs) => {
                     this.renderRules(rule.rules, childs.element, level + 1);
                 });
