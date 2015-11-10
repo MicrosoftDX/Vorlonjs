@@ -11,4 +11,4 @@ It will open Vorlon's sample page with this url : [http://localhost:3000](http:/
 
 You can access browser-sync dashboard on this url : [http://localhost:3001](http://localhost:3001)
 
-If you want to fine tune your browser-sync instance, please refer to [their documentation](http://www.browsersync.io/docs)
+If you want to fine tune your browser-sync instance, or use browser-sync on a running website, please refer to [their documentation](http://www.browsersync.io/docs)
