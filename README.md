@@ -131,13 +131,31 @@ Vorlon is written in typescript, which is compiled with gulp. There are two main
 
 ### Compiling from source
 
-There is a `gulpfile.js` in each of the `Plugin` and `Server` directories, which compiles gulp to typescript. In addition, [/Plugins/gulpfile.js](./Plugins/gulpfile.js) ensures that the compiled plugin code is copied in to the right place in the `Server` directory.
+There is a `gulpfile.js` in the root folder of the repository. It contains gulp tasks to compile typescript to javascript for the plugins and the server. In addition it ensures that the compiled plugin code is copied in to the right place in the `Server` directory.
 
-#### Compiling
+To compile everything (plugins, then server) run this:
+
+```
+gulp
+```
+
+To compile only plugins run this :
+
+```
+gulp default-plugins
+```
+
+To compile only server run this :
+
+```
+gulp default-server
+```
+
+### Compiling
 
 The simplest way to run Vorlon.JS is to run `npm start` from the root directory. This will run both gulpfiles to compile typescript and start the server.
 
-#### `gulp watch`
+### gulp watch
 
 You can also run the gulp commands individually. This is useful if you wish to work on plugins in particular, as `gulp watch` will compile typescript for you automatically.
 
@@ -147,7 +165,7 @@ If you want to run `gulp` commands from command line, you will need to first ins
 $ npm install -g gulp
 ```
 
-You can now run `gulp watch` from the `Server` or `Plugin` directories to have gulp compile typescript to javascript automatically.
+You can now run `gulp watch` in the root directory to have gulp compile typescript to javascript automatically You can also run `gulp watch-plugins` or `gulp watch-server` to only watch and compile the plugins or the server.
 
 #### Plugin test page
 
@@ -156,7 +174,12 @@ There is a demo webpage that includes the vorlon code that you can open to test 
 ### Visual Studio users
 
 For Visual Studio users, we provide an integrated solution through VorlonJS.sln. In order to interact with Node.js, you just need to install the NodeJS Tool for Visual Studio [plugin](https://nodejstools.codeplex.com/).
-Once the plugin is installed, just open the solution and you'll be ready to develop for Vorlon.js.
+Once the plugin is installed, just open the solution and you'll be ready to develop for Vorlon.js
+
+### Visual Studio Code users
+
+Visual Studio **Code** is a completly new code editor which is cross-platforms, free and light as hell ! You can do node.js debugging, there is intelliSense and so on (more about this on [Code Website](http://code.visualstudio.com)).
+There also is a task workflow integration and we prepared you a [file in the repo](https://github.com/MicrosoftDX/Vorlonjs/blob/dev/.vscode/tasks.json) which contains all for you to be able to hit the Ctrl+Shift+B to run the default task in the gulp file.
 
 ### Committing & Pull Requests
 
