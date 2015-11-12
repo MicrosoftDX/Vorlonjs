@@ -11,6 +11,8 @@ export class InfoPanel {
 	
 	constructor(element) {		
 		this.versions = jetpack.cwd(__dirname).read('../../versions.json', 'json');
+		var electronversion = app.getVersion();
+		console.log(electronversion);
 		if (this.versions){
 			$('.appversion',element).text(this.versions.app);
 			$('.vorlonversion',element).text(this.versions.vorlon);

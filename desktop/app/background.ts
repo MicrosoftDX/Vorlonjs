@@ -1,15 +1,18 @@
+/// <reference path="../typings/github-electron/github-electron-main.d.ts" /> 
+/// <reference path="vorlon/Scripts/typings/node/node.d.ts" /> 
+
 // This is main process of Electron, started as first thing when the Electron
 // app starts, and running through entire life of your application.
 
-var app = require('app');
-var ipc = require('ipc');
+import app = require('app');
+var ipc = <NodeJS.EventEmitter>require('ipc');
 
-var childProcess = require('child_process');
+import childProcess = require('child_process');
 var kill = require('tree-kill');
-var path = require('path');
-var http = require('http');
+import path = require('path');
+import http = require('http');
 
-var BrowserWindow = require('browser-window');
+import BrowserWindow = require('browser-window');
 var env = require('./scripts/env_config');
 var devHelper = require('./scripts/dev_helper');
 var windowStateKeeper = require('./scripts/window_state');
@@ -21,7 +24,7 @@ import vorlonWebserver = require("./vorlon/Scripts/vorlon.webServer");
 import vorlonHttpProxy = require("./vorlon/Scripts/vorlon.httpproxy.server");
 import config = require("./vorlon.config");
 
-var mainWindow;
+var mainWindow : GitHubElectron.BrowserWindow;
 var vorlonServerProcess = null;
 var dashboardWindows = {};
 var errors = [];
@@ -65,6 +68,15 @@ app.on('ready', function () {
     });
 
     startVorlonProcess();
+    
+    //test browser features
+    // var testWindow = new BrowserWindow({
+    //     x: mainWindowState.x,
+    //     y: mainWindowState.y,
+    //     width: mainWindowState.width,
+    //     height: mainWindowState.height
+    // });
+    // testWindow.loadUrl('http://html5test.com/');
 });
 
 app.on('window-all-closed', function () {
@@ -128,6 +140,7 @@ function sendVorlonStatus(event?, arg?){
 
 function sendLog(logs, sender?){
     var msg = {logs : logs};
+    
     if (sender){
         sender.send('vorlonlog', msg);
     }else if (mainWindow) {

@@ -7,3 +7,6 @@ improve sessions
 	add reload btn
 home
 	better responsive
+
+tray icon
+integration browser-sync
