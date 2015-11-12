@@ -17,6 +17,7 @@ var env = require('./scripts/env_config');
 var devHelper = require('./scripts/dev_helper');
 var windowStateKeeper = require('./scripts/window_state');
 
+
 import vorlonhttpConfig = require("./vorlon/config/vorlon.httpconfig");
 import vorlonServer = require("./vorlon/Scripts/vorlon.server");
 import vorlonDashboard = require("./vorlon/Scripts/vorlon.dashboard");
@@ -25,7 +26,7 @@ import vorlonHttpProxy = require("./vorlon/Scripts/vorlon.httpproxy.server");
 import config = require("./vorlon.config");
 
 var mainWindow : GitHubElectron.BrowserWindow;
-var vorlonServerProcess = null;
+var vorlonServerProcess : childProcess.ChildProcess = null;
 var dashboardWindows = {};
 var errors = [];
 var messages = [];
@@ -110,7 +111,7 @@ ipc.on("getVorlonStatus", function (event, arg) {
 
 ipc.on("getVorlonSessions", function (event, arg) {
     if (vorlonServerProcess){
-        vorlonServerProcess.send({ message: "getsessions" });
+        vorlonServerProcess.send({ message: "getsessions" }, null);
     }
 });
 
