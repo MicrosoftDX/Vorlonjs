@@ -776,18 +776,17 @@ module VORLON {
          * Start the clientside code : initilization etc
          */
         public startClientSide(): void {
-            if(!BABYLON.Engine.isSupported()) {
+            if(typeof BABYLON !== 'undefined' && !BABYLON.Engine.isSupported()) {
                 //error
             } else {
+                //document.addEventListener("DOMContentLoaded", () => {
+                    this.engine = this._getBabylonEngine();
+                    if (this.engine) {
+                        this.scenes = this.engine.scenes;
+                        this.refresh();
+                    }
+                //});
             }
-
-            //document.addEventListener("DOMContentLoaded", () => {
-                this.engine = this._getBabylonEngine();
-                if (this.engine) {
-                    this.scenes = this.engine.scenes;
-                    this.refresh();
-                }
-            //});
         }
 
         /**
@@ -864,7 +863,7 @@ module VORLON {
          */
         private _getBabylonEngine() {
             for (var member in window) {
-                if (window[member] instanceof BABYLON.Engine) {
+                if (typeof BABYLON !== 'undefined' && window[member] instanceof BABYLON.Engine) {
                     return window[member];
                 }
             }
