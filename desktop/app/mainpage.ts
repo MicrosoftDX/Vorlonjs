@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     
     var cfg = config.getConfig(userDataPath);
+    
     $(".vorlonscriptsample").text("http://" + os.hostname() + ":" + cfg.port + "/vorlon.js");
 });
 
