@@ -33,7 +33,7 @@
         &lt;/script&gt;
       </pre>
 
-        By default, nothing will happen. You have to active Vorlon to have all Vorlon goodness activated. By default, activation state will get persisted in session storage. It means that Vorlon activation will occur for the lifetime of the running browser. If you want state to persist, just add an extra boolean to indicate you wish to store state in localStorage.<br/>
+        By default, nothing will happen. You have to activate Vorlon to have all Vorlon goodness activated. By default, activation state will get persisted in session storage. It means that Vorlon activation will occur for the lifetime of the running browser. If you want state to persist, just add an extra boolean to indicate you wish to store state in localStorage. In that case, Vorlon will keep activating until you explicitely deactivate it.<br/>
       <pre>
         &lt;script type="text/javascript"&gt;
           if (VORLON && VORLON.Production){
