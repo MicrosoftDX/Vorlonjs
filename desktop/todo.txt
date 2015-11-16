@@ -1,13 +1,12 @@
-user-select
+disable user-select on almost all elements
 
 improve console screen
 	add filtering
 
 improve sessions
 	add reload btn
-info screen
 home
-	responsive
+	better responsive
 
-dashboard load => spinner centered	
-dashboard load error => dedicated page
+tray icon
+integration browser-sync

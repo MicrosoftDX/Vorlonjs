@@ -1,20 +1,21 @@
+/// <reference path="../typings/github-electron/github-electron-main.d.ts" /> 
+/// <reference path="vorlon/Scripts/typings/node/node.d.ts" /> 
+
 // This is main process of Electron, started as first thing when the Electron
 // app starts, and running through entire life of your application.
-// It doesn't have any windows which you can see on screen, but we can open
-// window from here.
 
-var app = require('app');
-var ipc = require('ipc');
+import app = require('app');
+var ipc = <NodeJS.EventEmitter>require('ipc');
 
-var childProcess = require('child_process');
+import childProcess = require('child_process');
 var kill = require('tree-kill');
-var path = require('path');
+import path = require('path');
+import http = require('http');
 
-var BrowserWindow = require('browser-window');
+import BrowserWindow = require('browser-window');
 var env = require('./scripts/env_config');
 var devHelper = require('./scripts/dev_helper');
 var windowStateKeeper = require('./scripts/window_state');
-
 
 
 import vorlonhttpConfig = require("./vorlon/config/vorlon.httpconfig");
@@ -24,8 +25,8 @@ import vorlonWebserver = require("./vorlon/Scripts/vorlon.webServer");
 import vorlonHttpProxy = require("./vorlon/Scripts/vorlon.httpproxy.server");
 import config = require("./vorlon.config");
 
-var mainWindow;
-var vorlonServerProcess = null;
+var mainWindow : GitHubElectron.BrowserWindow;
+var vorlonServerProcess : childProcess.ChildProcess = null;
 var dashboardWindows = {};
 var errors = [];
 var messages = [];
@@ -68,6 +69,15 @@ app.on('ready', function () {
     });
 
     startVorlonProcess();
+    
+    //test browser features
+    // var testWindow = new BrowserWindow({
+    //     x: mainWindowState.x,
+    //     y: mainWindowState.y,
+    //     width: mainWindowState.width,
+    //     height: mainWindowState.height
+    // });
+    // testWindow.loadUrl('http://html5test.com/');
 });
 
 app.on('window-all-closed', function () {
@@ -101,7 +111,7 @@ ipc.on("getVorlonStatus", function (event, arg) {
 
 ipc.on("getVorlonSessions", function (event, arg) {
     if (vorlonServerProcess){
-        vorlonServerProcess.send({ message: "getsessions" });
+        vorlonServerProcess.send({ message: "getsessions" }, null);
     }
 });
 
@@ -131,6 +141,7 @@ function sendVorlonStatus(event?, arg?){
 
 function sendLog(logs, sender?){
     var msg = {logs : logs};
+    
     if (sender){
         sender.send('vorlonlog', msg);
     }else if (mainWindow) {
@@ -157,15 +168,12 @@ function openDashboardWindow(sessionid) {
         "node-integration": false
     });
     
-    
+    //dashboardwdw.openDevTools();
     console.log("create dashboard window for " + sessionid);
     //load empty page first to prevent bad window title
     dashboardwdw.loadUrl('file://' + __dirname + '/emptypage.html');
     setTimeout(function () {
-        dashboardwdw.loadUrl('http://localhost:' + cfg.port + '/dashboard/' + sessionid);
-        setTimeout(function () {
-        dashboardwdw.setTitle("Vorlon.js - " + sessionid);
-        },400);
+        dashboardwdw.loadUrl('http://localhost:' + cfg.port + '/dashboard/' + sessionid);        
     }, 100);
 
     dashboardWindows[sessionid] = dashboardwdw;
@@ -175,8 +183,7 @@ function openDashboardWindow(sessionid) {
     
     dashboardwdw.webContents.on('did-fail-load', function(event, errorCode,  errorDescription, validateUrl){
         console.log("dashboard page error " + validateUrl + " " + errorCode + " " + errorDescription);
-        dashboardwdw.loadUrl('file://' + __dirname + '/emptypage.html');
-        
+        dashboardwdw.loadUrl('file://' + __dirname + '/dasboardloaderrorpage.html');        
     });
 }
 
@@ -211,9 +218,11 @@ function startVorlonProcess() {
             stopVorlonProcess();
         });
         
-        
-        
         sendVorlonStatus();
+        
+        setTimeout(function() {           
+           callVorlonServer(config.getConfig(userDataPath));               
+        }, 1000);
     }
 }
 
@@ -224,4 +233,35 @@ function stopVorlonProcess() {
             sendVorlonStatus();
         });
     }
+}
+
+function callVorlonServer(cfg){
+    //when application is packaged to an exe, first call to style.css sometimes hang on Windows
+    console.log("calling vorlon server on " + cfg.port);
+    var options = {
+        host: 'localhost',
+        port: cfg.port,
+        path: '/stylesheets/style.css',
+        method: 'GET'
+    };
+    
+    var req = http.request(options, function(res) {
+        // console.log('STATUS: ' + res.statusCode);
+        // console.log('HEADERS: ' + JSON.stringify(res.headers));
+        // res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+            console.log('server call ok');
+        });
+        
+        res.on('error', function (err) {
+            console.error('server call error');
+        });
+    });
+    
+    req.setTimeout(2000, function(){
+       req.abort(); 
+       callVorlonServer(cfg); 
+    });
+    
+    req.end();
 }
