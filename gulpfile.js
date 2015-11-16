@@ -177,8 +177,8 @@ gulp.task('scripts-plugins', ['concat-webstandards-rules-plugins'], function () 
 gulp.task('copy-plugins', function () {
 
     gulp.src([
-            '/Pluginsrelease/vorlon-noplugin.max.js',
-            '/Pluginsrelease/vorlon-noplugin.js'
+            'Plugins/release/vorlon-noplugin.max.js',
+            'Plugins/release/vorlon-noplugin.js'
         ])
         .pipe(gulp.dest('./Server/public/vorlon'));
 
@@ -249,7 +249,7 @@ gulp.task('webserver', function() {
 // *** 
 
 gulp.task('typescript-to-js-server', function() {
-  var tsResult = gulp.src(['.Server//**/*.ts', '!./Server/node_modules', '!./Server/node_modules/**'], { base: './' })
+  var tsResult = gulp.src(['./Server/**/*.ts', '!./Server/node_modules', '!./Server/node_modules/**'], { base: './' })
                       .pipe(typescript({ noExternalResolve: true, target: 'ES5', module: 'commonjs' }));
 
   return tsResult.js
@@ -266,7 +266,7 @@ gulp.task('build-server', ['typescript-to-js-server'], function() {
   		'Scripts/**',
   		'views/**',
   	], { base: './Plugins' })
-  	.pipe(gulp.dest('../desktop/app/vorlon'));
+  	.pipe(gulp.dest('./desktop/app/vorlon'));
 });
 
 gulp.task('default-server', function() {
