@@ -763,12 +763,14 @@ module VORLON {
         * as the user switches between clients on the dashboard.
         */
         public refresh(): void {
-            if (this.engine) {
-                this._sendScenesData();
-            } else {
-                this.engine = this._getBabylonEngine();
-                this.scenes = this.engine.scenes;
-                this._sendScenesData();
+            if(typeof BABYLON !== 'undefined'){
+                if (this.engine) {
+                    this._sendScenesData();
+                } else {
+                    this.engine = this._getBabylonEngine();
+                    this.scenes = this.engine.scenes;
+                    this._sendScenesData();
+                }
             }
         }
 
@@ -836,10 +838,13 @@ module VORLON {
          * @private
          */
         private _findMesh(meshName : string, sceneID : string) {
-            var id : number = +sceneID;
-            var scene = this.engine.scenes[id];
-            var mesh = scene.getMeshByName(meshName);
-            return mesh;
+            if(typeof BABYLON !== 'undefined'){
+                var id : number = +sceneID;
+                var scene = this.engine.scenes[id];
+                var mesh = scene.getMeshByName(meshName);
+                return mesh;
+            }
+            return null;
         }
 
         /**
@@ -847,7 +852,7 @@ module VORLON {
          * @private
          */
         private _sendScenesData() {
-            if (this.scenes) {
+            if (typeof BABYLON !== 'undefined' && this.scenes) {
                 var scenesData = this._dataGenerator.generateScenesData(this.scenes);
                 this.sendToDashboard({
                     messageType: 'SCENES_DATA',
