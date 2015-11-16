@@ -156,9 +156,11 @@ gulp.task('scripts-plugins', ['concat-webstandards-rules-plugins'], function () 
             './Plugins/**/unitTestRunner/vorlon.unitTestRunner.dashboard.js',
             './Plugins/**/sample/vorlon.sample.client.js',
             './Plugins/**/sample/vorlon.sample.dashboard.js',
+            './Plugins/**/device/vorlon.device.interfaces.js',
             './Plugins/**/device/vorlon.device.client.js',
             './Plugins/**/device/vorlon.device.dashboard.js',
             './Plugins/**/webstandards/vorlon.webstandards.client.js',
+            './Plugins/**/webstandards/vorlon.webstandards.interfaces.js',
             './Plugins/**/webstandards/vorlon.webstandards.dashboard.js'
         ])
         .pipe(rename(function (path) {
