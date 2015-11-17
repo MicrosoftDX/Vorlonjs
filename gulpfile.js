@@ -6,6 +6,7 @@ var gulp = require('gulp'),
     merge = require('merge2'),
     webserver = require('gulp-webserver'),
     less = require('gulp-less'),
+    gulputil = require('gulp-util'),
     gulpFilter = require('gulp-filter');
 
 /// ********
@@ -13,15 +14,15 @@ var gulp = require('gulp'),
 /// GLOBAL 
 
 gulp.task('default', function(){
-  gulp.start('default-server-all');
+  return gulp.start('default-server-all');
 });
 
-gulp.task('default-server-all', ['default-plugins'], function(){
-  gulp.start('default-server');
+gulp.task('default-server-all', ['default-plugins', 'copyDTS-plugins'], function(){
+  return gulp.start('default-server');
 });
 
 gulp.task('watch', function() {
-  gulp.watch([
+  return gulp.watch([
     './Plugins/Vorlon/**/*.ts',
     './Plugins/Vorlon/**/*.less',
     './Plugins/Vorlon/**/*.html',
@@ -109,7 +110,7 @@ gulp.task('scripts-specific-plugins-plugins', function() {
         .pipe(concat('vorlon.babylonInspector.client.min.js'))
         .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
 
-    gulp.src([
+    return gulp.src([
         'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
         'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.dashboard.js'
     ])
@@ -176,7 +177,7 @@ gulp.task('scripts-plugins', ['concat-webstandards-rules-plugins'], function () 
  */
 gulp.task('copy-plugins', function () {
 
-    gulp.src([
+    return gulp.src([
             'Plugins/release/vorlon-noplugin.max.js',
             'Plugins/release/vorlon-noplugin.js'
         ])
@@ -186,7 +187,7 @@ gulp.task('copy-plugins', function () {
 
 gulp.task('copyPlugins-plugins', function () {
 
-    gulp.src([
+   return  gulp.src([
           'Plugins/Vorlon/plugins/**/*.js',
           'Plugins/Vorlon/plugins/**/*.css',
           'Plugins/Vorlon/plugins/**/*.html',
@@ -199,15 +200,16 @@ gulp.task('copyPlugins-plugins', function () {
 
 gulp.task('copyDTS-plugins', function () {
 
-    gulp.src(['Plugins/release/*.d.ts']).pipe(gulp.dest('./Server/Scripts/typings/Vorlon'));
-
+    return  gulp.src(['Plugins/release/*.d.ts'])
+      .pipe(gulp.dest('./Server/Scripts/typings/Vorlon'));
+      
 });
 
 /**
  * The default task, call the tasks: scripts, scripts-noplugin, copy, copyPlugins
  */
 gulp.task('default-plugins', ['scripts-plugins', 'scripts-noplugin-plugins', 'less-to-css-plugins'], function() {
-    gulp.start('copy-plugins', 'copyPlugins-plugins', 'copyDTS-plugins');
+    return gulp.start('copy-plugins', 'copyPlugins-plugins', 'copyDTS-plugins');
 });
 
 /**
@@ -221,7 +223,7 @@ gulp.task('default-plugins', ['scripts-plugins', 'scripts-noplugin-plugins', 'le
  * Watch typescript task, will call the default typescript task if a typescript file is updated.
  */
 gulp.task('watch-plugins', function() {
-  gulp.watch([
+  return gulp.watch([
     'Plugins/Vorlon/**/*.ts',
     'Plugins/Vorlon/**/*.less',
     'Plugins/Vorlon/**/*.html'
@@ -233,7 +235,7 @@ gulp.task('watch-plugins', function() {
  * Web server task to serve a local test page
  */
 gulp.task('webserver', function() {
-  gulp.src('Plugins/samples')
+  return gulp.src('Plugins/samples')
     .pipe(webserver({
       livereload: false,
       open: 'http://localhost:1338/index.html',
@@ -269,8 +271,7 @@ gulp.task('build-server', ['typescript-to-js-server'], function() {
   	.pipe(gulp.dest('./desktop/app/vorlon'));
 });
 
-gulp.task('default-server', function() {
-  gulp.start('build-server');
+gulp.task('default-server', ['build-server'], function() {
 });
 
 /**
