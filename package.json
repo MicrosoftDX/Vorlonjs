@@ -48,7 +48,7 @@
     "global-deploy-gulp": "npm install -g gulp",
     "global-deploy-gulp-cli": "npm install -g gulp-cli",
     "build-all": "gulp --gulpfile=./gulpfile.js",
-    "build": "node disclaimer.js && npm run global-deploy-gulp && npm run global-deploy-gulp-cli && npm run build-all",
+    "build": "node disclaimer.js && npm run build-all",
     "prepublish": "npm run build",
     "start": "node ./Server/server.js"
   },
