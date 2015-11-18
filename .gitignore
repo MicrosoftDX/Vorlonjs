@@ -1,6 +1,5 @@
 npm-debug.log
 *.log
-/plugins/vorlon/**/*.css
 tsconfig.json
 /Plugins/obj
 **/node_modules
@@ -14,5 +13,4 @@ Plugins/Vorlon/plugins/remoteDebugging.zip
 .settings/launch.json
 *.dat
 Server/public/stylesheets/style.css
-vorlon
 /Server/public/stylesheets/style.css
