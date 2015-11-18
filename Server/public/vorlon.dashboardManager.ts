@@ -31,11 +31,11 @@ module VORLON {
         public static StartListeningServer(clientid: string = ""): void{
             var getUrl = window.location;
             var baseUrl = getUrl.protocol + "//" + getUrl.host;
-            Core.StopListening(); 
-            Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, clientid, DashboardManager.divMapper);
-                if(!Core.Messenger.onAddClient && !Core.Messenger.onAddClient){
-                Core.Messenger.onAddClient = DashboardManager.addClient;
-                Core.Messenger.onRemoveClient = DashboardManager.removeClient;
+            VORLON.Core.StopListening(); 
+            VORLON.Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, clientid, DashboardManager.divMapper);
+                if(!VORLON.Core.Messenger.onAddClient && !VORLON.Core.Messenger.onAddClient){
+                VORLON.Core.Messenger.onAddClient = DashboardManager.addClient;
+                VORLON.Core.Messenger.onRemoveClient = DashboardManager.removeClient;
             }
             
             if(clientid !== ""){

@@ -763,12 +763,14 @@ module VORLON {
         * as the user switches between clients on the dashboard.
         */
         public refresh(): void {
-            if (this.engine) {
-                this._sendScenesData();
-            } else {
-                this.engine = this._getBabylonEngine();
-                this.scenes = this.engine.scenes;
-                this._sendScenesData();
+            if(typeof BABYLON !== 'undefined'){
+                if (this.engine) {
+                    this._sendScenesData();
+                } else {
+                    this.engine = this._getBabylonEngine();
+                    this.scenes = this.engine.scenes;
+                    this._sendScenesData();
+                }
             }
         }
 
@@ -776,18 +778,17 @@ module VORLON {
          * Start the clientside code : initilization etc
          */
         public startClientSide(): void {
-            if(!BABYLON.Engine.isSupported()) {
+            if(typeof BABYLON !== 'undefined' && !BABYLON.Engine.isSupported()) {
                 //error
             } else {
+                //document.addEventListener("DOMContentLoaded", () => {
+                    this.engine = this._getBabylonEngine();
+                    if (this.engine) {
+                        this.scenes = this.engine.scenes;
+                        this.refresh();
+                    }
+                //});
             }
-
-            //document.addEventListener("DOMContentLoaded", () => {
-                this.engine = this._getBabylonEngine();
-                if (this.engine) {
-                    this.scenes = this.engine.scenes;
-                    this.refresh();
-                }
-            //});
         }
 
         /**
@@ -837,10 +838,13 @@ module VORLON {
          * @private
          */
         private _findMesh(meshName : string, sceneID : string) {
-            var id : number = +sceneID;
-            var scene = this.engine.scenes[id];
-            var mesh = scene.getMeshByName(meshName);
-            return mesh;
+            if(typeof BABYLON !== 'undefined'){
+                var id : number = +sceneID;
+                var scene = this.engine.scenes[id];
+                var mesh = scene.getMeshByName(meshName);
+                return mesh;
+            }
+            return null;
         }
 
         /**
@@ -848,7 +852,7 @@ module VORLON {
          * @private
          */
         private _sendScenesData() {
-            if (this.scenes) {
+            if (typeof BABYLON !== 'undefined' && this.scenes) {
                 var scenesData = this._dataGenerator.generateScenesData(this.scenes);
                 this.sendToDashboard({
                     messageType: 'SCENES_DATA',
@@ -864,7 +868,7 @@ module VORLON {
          */
         private _getBabylonEngine() {
             for (var member in window) {
-                if (window[member] instanceof BABYLON.Engine) {
+                if (typeof BABYLON !== 'undefined' && window[member] instanceof BABYLON.Engine) {
                     return window[member];
                 }
             }
