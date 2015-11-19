@@ -164,12 +164,14 @@ export module VORLON {
         public socket: SocketIO.Socket;
         public opened: boolean;
         public ua: string;
+		public identity: string;
 
         public get data(): any {
             return {
 				"clientid": this.clientId,
 				"displayid": this.displayId,
 				"ua": this.ua,
+				"identity" : this.identity,
 				"name": tools.VORLON.Tools.GetOperatingSystem(this.ua)
 			};
         }

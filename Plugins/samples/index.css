@@ -50,6 +50,11 @@ body {
         transform : scale(1);
         transition : opacity 200ms ease-out;
       }
+      
+      input#clientidentity{
+        width : 300px;
+        max-width: 100%;
+      }
 
 @media screen and (min-width :1280px){
     body {

@@ -22,6 +22,18 @@ var VORLON;
             scriptElt.src = this.vorlonServerUrl + "vorlon.js" + (this.vorlonSessionId ? "/" + this.vorlonSessionId : "");
             document.head.insertBefore(scriptElt, document.head.firstChild);
         };
+        Production.prototype.setIdentity = function (identity) {
+            var storage = this.useLocalStorage ? localStorage : sessionStorage;
+            storage["vorlonClientIdentity"] = identity;
+            var v = VORLON;
+            if (v && v.Core) {
+                v.Core.sendHelo();
+            }
+        };
+        Production.prototype.getIdentity = function () {
+            var storage = this.useLocalStorage ? localStorage : sessionStorage;
+            return storage["vorlonClientIdentity"];
+        };
         Production.prototype.activate = function (reload) {
             if (this.isActivated)
                 return;

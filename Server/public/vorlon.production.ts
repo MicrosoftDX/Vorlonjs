@@ -25,6 +25,20 @@ module VORLON {
 			document.head.insertBefore(scriptElt, document.head.firstChild);
 		}
 		
+		setIdentity(identity){
+			var storage = this.useLocalStorage ? localStorage : sessionStorage;
+			storage["vorlonClientIdentity"] = identity;
+			var v = <any>VORLON;
+			if (v && v.Core){
+				v.Core.sendHelo();
+			}
+		}
+		
+		getIdentity(){
+			var storage = this.useLocalStorage ? localStorage : sessionStorage;
+			return storage["vorlonClientIdentity"];
+		}
+		
 		activate(reload : boolean){
 			if (this.isActivated)
 				return;

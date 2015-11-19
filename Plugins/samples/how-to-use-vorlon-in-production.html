@@ -14,6 +14,11 @@
   <body>
     <h1 id="mainTitle">How to use Vorlon.JS in production</h1>
     <p>
+      <label for="clientidentity"></label>
+      <input type="text" id="clientidentity" name="clientidentity" placeholder="enter client identity like user name" />
+      <button id="setVorlonClientIdentity">Set client identity</button>
+    </p>
+    <p>
         <button id="activateVorlon">Activate VORLON</button>
         <button id="deactivateVorlon">Deactivate VORLON</button>
         <span id="vorlonStatus"></span>    
@@ -55,6 +60,8 @@
     $(function(){
         var btnActivate = document.getElementById("activateVorlon");
         var btnDeactivate = document.getElementById("deactivateVorlon");
+        var txtIdentity = document.getElementById("clientidentity");
+        var btnSetIdentity = document.getElementById("setVorlonClientIdentity");
         var vorlonStatus = document.getElementById("vorlonStatus");
 
         btnActivate.onclick = function(){
@@ -67,8 +74,15 @@
           //boolean indicate that we want a page reload after vorlon get activated
           vorlonProd.deactivate(true);
         }
+        
+        btnSetIdentity.onclick = function(){
+          //boolean indicate that we want a page reload after vorlon get activated
+          vorlonProd.setIdentity(txtIdentity.value);
+        }
 
         function checkVorlonState(){
+          txtIdentity.value = vorlonProd.getIdentity() || "";
+          
           if (vorlonProd.isActivated){
             btnActivate.disabled = true;
             btnDeactivate.disabled = false;
