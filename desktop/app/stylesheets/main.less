@@ -9,8 +9,33 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: "Roboto";
+ -webkit-user-select: none;
+-khtml-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
 }
-
+*{
+-webkit-touch-callout: none;
+-moz-touch-callout: none;
+-ms-touch-callout: none;
+touch-callout: none;
+-webkit-user-drag: none;
+-moz-user-drag: none;
+-ms-user-drag: none;
+user-drag: none;
+}
+button, input{
+outline: none;
+}
+ input
+{
+-webkit-user-select: auto !important;
+-khtml-user-select: auto !important;
+-moz-user-select: auto !important;
+-ms-user-select: auto !important;
+user-select: auto !important;
+}
 body {
     
 }
@@ -45,6 +70,10 @@ button{
     color: white;
     cursor : pointer;
     text-transform: uppercase;
+    
+    &:hover{
+      background-color:lighten(@purple,20%);
+        }
 }
 
 .mainpage {
