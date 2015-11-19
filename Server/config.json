@@ -47,7 +47,7 @@
                 { "id": "DEVICE", "name": "My Device", "panel": "top", "foldername": "device", "enabled": true },
                 { "id": "UNITTEST", "name": "Unit Test", "panel": "top", "foldername": "unitTestRunner", "enabled": true },
                 { "id": "BABYLONINSPECTOR", "name": "Babylon Inspector", "panel": "top", "foldername": "babylonInspector", "enabled": true },
-                { "id": "WEBSTANDARDS", "name": "Best practices", "panel": "top", "foldername": "webstandards", "enabled": false }
+                { "id": "WEBSTANDARDS", "name": "Best practices", "panel": "top", "foldername": "webstandards", "enabled": true }
             ]
         }
     }
