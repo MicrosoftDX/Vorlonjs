@@ -89,7 +89,7 @@ module VORLON {
             }
         }
 
-        receiveHtmlContent(data: { id: string, html: string, doctype: any, url: any, browserDetection: any, stylesheetErrors: any }) {
+        receiveHtmlContent(data: { id: string, html: string, doctype: any, url: any, browserDetection: any, stylesheetErrors: any, a11yCheck: any }) {
             if (!this._currentAnalyze) {
                 this._currentAnalyze = { processing: true };
             }
@@ -148,6 +148,41 @@ module VORLON {
             this.prepareAnalyze(this._currentAnalyze)
             this.analyzeDOM(fragment, data.html, this._currentAnalyze);
 
+            // Accessibility checks
+            var accessibilityChecks = {
+                id: "accessibility",
+                rules:{} 
+            };
+            
+            for (var index = 0; index < data.a11yCheck.length; index++) {
+                var check = data.a11yCheck[index];
+                
+                accessibilityChecks.rules[check.id] = {
+                    description: check.description,
+                    failed: true,
+                    id: check.id, 
+                    title: check.help,
+                    type: "blockitems",
+                    items: []                    
+                }
+                
+                for (var nodeIndex = 0; nodeIndex < check.nodes.length; nodeIndex++) {
+                    var node = check.nodes[nodeIndex];
+                    var nodeEntry = {
+                        title: node.html,
+                        items: []
+                    };
+                    
+                    accessibilityChecks.rules[check.id].items.push(nodeEntry);
+                    
+                    for (var anyIndex = 0; anyIndex < node.any.length; anyIndex++) {
+                        nodeEntry.items.push({ title: node.any[anyIndex].message});
+                    }
+                }
+            }
+            
+            this._currentAnalyze.results.rules["accessibility"] = accessibilityChecks;
+            
         }
 
         receiveDocumentContent(data: { id: string, url: string, content: string, error?: string, encoding?: string, contentLength?: string, status: number, stylesheetErrors: any }) {
@@ -155,7 +190,6 @@ module VORLON {
             var itemContainer = null;
 
             this._currentAnalyze.lastActivity = new Date();
-
 
             for (var n in this._currentAnalyze.files) {
                 var container = this._currentAnalyze.files[n];
@@ -176,9 +210,7 @@ module VORLON {
 
                 if (data.error) {
                     item.loaded = false;
-                }
-
-                
+                }                
             }
 
             if (itemContainer === "stylesheets") {
@@ -548,13 +580,13 @@ module VORLON {
                     itemelt.addClass(item.type);
                 }
                 if (item.title && item.alert) {
-                    itemelt.createChild("SPAN", "state fa " + (item.failed ? "fa-close" : "fa-check")).html(item.title);
+                    itemelt.createChild("SPAN", "state fa " + (item.failed ? "fa-close" : "fa-check")).text(item.title);
                 }
                 else if (item.title) {
-                    itemelt.createChild("DIV", "title").html(item.title);
+                    itemelt.createChild("DIV", "title").text(item.title);
                 }
                 if (item.message) {
-                    itemelt.createChild("DIV", "message").html(item.message);
+                    itemelt.createChild("DIV", "message").text(item.message);
                 }
                 if (item.content) {
                     itemelt.createChild("DIV", "content").html(item.content);
