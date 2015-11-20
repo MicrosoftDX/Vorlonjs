@@ -1,4 +1,5 @@
 declare var cssjs: any;
+declare var axe: any;
 
 module VORLON {
     export class WebStandardsClient extends ClientPlugin {
@@ -38,6 +39,18 @@ module VORLON {
             this.hook(window.navigator, "appName");
             this.hook(window.navigator, "product");
             this.hook(window.navigator, "vendor");
+            
+            this._loadNewScriptAsync("axe.min.js", () => {
+                this.trace("axe script loaded");
+                                            
+                // Using aXe
+                axe.a11yCheck(document, function (results) {
+                    if (results.violations.length === 0) {
+                        // Good
+                    }
+                });
+                
+            }, true);
         }
 
         public hook(root, prop) {
@@ -136,7 +149,7 @@ module VORLON {
                         if (!good) {
                             var divTest = document.createElement('div');
                             divTest.style['webkit' + this.capitalizeFirstLetter(_unprefixedPropertyName)] = rules[i].value;
-                            if (divTest.style[_unprefixedPropertyName] == divTest.style['webkit' + this.capitalizeFirstLetter(_unprefixedPropertyName)]) {
+                            if (divTest.style['webkit' + this.capitalizeFirstLetter(_unprefixedPropertyName)] !== undefined) {
                                 good = true;
                             }
                         }

@@ -229,7 +229,7 @@ module VORLON {
                                 if (!rules.domRulesIndex[n])
                                     rules.domRulesIndex[n] = [];
 
-                                rules.domRulesIndex[n].push(rule);
+                                rules.domRulesIndex[n].push(rule); 
                             });
                         } else {
                             rules.domRulesForAllNodes.push(rule);

@@ -27,9 +27,11 @@
     "winston-azure": "0.0.4",
     "winston-logs-display": "~0.1.1",
     "xmlhttprequest": "~1.7.0",
-    "http-proxy": "~1.11.2"
+    "http-proxy": "~1.11.2",
+    "axe-core": "*"
   },
   "devDependencies": {
+    "axe-core": "^1.1.1",
     "gulp": "~3.8.11",
     "gulp-concat": "~2.2.0",
     "gulp-filter": "~0.4.1",
