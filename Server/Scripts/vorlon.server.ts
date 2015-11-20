@@ -280,6 +280,7 @@ export module VORLON {
                 var dashboard = this.dashboards[metadata.sessionId];
                 if (client == undefined) {
                     var client = new vorloncontext.VORLON.Client(metadata.clientId, data.ua, socket, ++session.nbClients);
+                    client.identity = data.identity;
                     session.connectedClients[metadata.clientId] = client;
                     this._log.debug(formatLog("PLUGIN", "Send Add Client to dashboard (" + client.displayId + ")[" + data.ua + "] socketid = " + socket.id, receiveMessage));
                     if (dashboard != undefined) {
@@ -291,6 +292,7 @@ export module VORLON {
                 else {
                     client.socket = socket;
                     client.opened = true;
+                    client.identity = data.identity;
                     if (dashboard != undefined) {
                         dashboard.emit("addclient", client.data);
                     }

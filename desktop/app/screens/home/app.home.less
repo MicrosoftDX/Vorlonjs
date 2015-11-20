@@ -152,16 +152,10 @@
 	>section {
 		position: relative;
 		height: ~"calc(100% - 400px)";
-		
+		display: flex;
 		.sessionspanel{
-			position: absolute;
-			left: 0;
-			width : 400px;
-			top:0;
-			right:0;
-			bottom:0;
-			
-			
+			height: 100%;
+			min-width: 400px;
 			.sessionspanelcontent{
 				position : relative;
 				width:100%;
@@ -251,7 +245,13 @@
 							text-align: center;
 							font-size: 12pt;
 							background-color: #777;
-						}
+							&:active{
+								transform: scale(0.95);
+								}
+						   &:hover{
+							   background-color:lighten(#777,5%);
+						   }
+					}
 					}
 					
 					.configcommons{
@@ -266,12 +266,7 @@
 		.content{
 			overflow-x: hidden;
 			overflow-y: auto;
-			position: absolute;
-			left: 400px;
-			top:0;
-			right:0;
-			bottom:0;
-			
+			flex:1;
 			padding : 20px;
 			box-sizing: border-box;
 			display: flex;
@@ -296,6 +291,9 @@
 						
 				button{
 					margin-top : 10px;
+							&:active{
+								transform: scale(0.98);
+								}
 				}
 			}
 					
@@ -310,7 +308,7 @@
 			.content{
 				padding : 40px;
 				.contentbloc{
-					width : 400px;
+					flex:1;
 				}
 			}
 		}
@@ -350,6 +348,22 @@
 		
 		>section {
 			height: ~"calc(100% - 350px)";
+			display:block;
+			overflow:auto;
+			#sessionspanel{
+				height: :300px;
+				display:flex;
+				box-sizing: border-box;
+				padding:20px;
+				padding-bottom:0px;
+				.sessionspanelcontent{
+					margin:10px;
+					
+				border:1px solid #AAA;
+				padding:20px;
+				box-sizing:border-box;
+				}
+			}
 			.content{
 				padding : 20px;
 			}
@@ -387,6 +401,11 @@
 		}
 		>section {
 			height: ~"calc(100% - 250px)";
+			#sessionspanel{
+				min-width:auto;
+				padding:5px;
+				padding-bottom: 15px;
+			}
 			.content{
 				padding: 5px;
 			} 
@@ -591,5 +610,4 @@
 		right: 10px;
 	}
 	}
-
 }

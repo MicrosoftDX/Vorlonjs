@@ -29,6 +29,7 @@ gulp.task('watch', function() {
     './Server/Scripts/*.ts',
     './Server/views/**/*.*',
     './Server/public/vorlon.dashboardManager.ts',
+    './Server/public/vorlon.production.ts',
     './Server/config/*.ts'
   ], ['default']);
 });

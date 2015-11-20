@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Vorlon.js - How to use in production</title>
+    <script src="http://localhost:1337/vorlon.production.js"></script>
+    <script type="text/javascript">
+      if (VORLON && VORLON.Production){
+        var vorlonProd = new VORLON.Production("http://localhost:1337", "default");
+      }
+    </script>
+    <script src="http://code.jquery.com/jquery-1.2.js"></script>
+    <link rel="stylesheet" href="index.css" />    
+  </head>
+  <body>
+    <h1 id="mainTitle">How to use Vorlon.JS in production</h1>
+    <p>
+      <label for="clientidentity"></label>
+      <input type="text" id="clientidentity" name="clientidentity" placeholder="enter client identity like user name" />
+      <button id="setVorlonClientIdentity">Set client identity</button>
+    </p>
+    <p>
+        <button id="activateVorlon">Activate VORLON</button>
+        <button id="deactivateVorlon">Deactivate VORLON</button>
+        <span id="vorlonStatus"></span>    
+    </p>   
+    <p>
+      For your production environment, you may not want to have Vorlon activated for all clients. It's often best to have a silent Vorlon that you could activate when necessary. This sample page shows how you could activate a Vorlon session on demand.<br/>
+      Instead of referencing directly the client script, reference "vorlon.production.js" like this:<br/>
+      <pre>
+        &lt;script src="http://localhost:1337/vorlon.production.js"&gt;&lt;/script&gt;
+      </pre>
+      This script is very small, and you can easily add it to your project's script bundles. Now you must create an instance of Vorlon production client.
+      <pre>
+        &lt;script type="text/javascript"&gt;
+          if (VORLON && VORLON.Production){
+            var vorlonProd = new VORLON.Production("http://localhost:1337", "mysessionid");
+          }
+        &lt;/script&gt;
+      </pre>
+
+        By default, nothing will happen. You have to activate Vorlon to have all Vorlon goodness activated. By default, activation state will get persisted in session storage. It means that Vorlon activation will occur for the lifetime of the running browser. If you want state to persist, just add an extra boolean to indicate you wish to store state in localStorage. In that case, Vorlon will keep activating until you explicitely deactivate it.<br/>
+      <pre>
+        &lt;script type="text/javascript"&gt;
+          if (VORLON && VORLON.Production){
+            var vorlonProd = new VORLON.Production("http://localhost:1337", "mysessionid", true);
+          }
+        &lt;/script&gt;
+      </pre>
+    </p>
+    <p>
+      Now you just have to call "vorlonProd.activate()" or "vorlonProd.deactivate()" to turn Vorlon on or off. You can call those methods with a boolean that indicate if you want to trigger a page reload.<br />
+      Try it for yourself by clicking the buttons above !
+    </p>
+     
+
+    <div id="footer">
+      Learn more about <a href="http://vorlonjs.com">Vorlon.JS</a> or find the source at <a href="http://github.com/MicrosoftDX/Vorlonjs">GitHub</a>.
+    </div>
+    <script type="text/javascript">
+    $(function(){
+        var btnActivate = document.getElementById("activateVorlon");
+        var btnDeactivate = document.getElementById("deactivateVorlon");
+        var txtIdentity = document.getElementById("clientidentity");
+        var btnSetIdentity = document.getElementById("setVorlonClientIdentity");
+        var vorlonStatus = document.getElementById("vorlonStatus");
+
+        btnActivate.onclick = function(){
+          //boolean indicate that we want a page reload after vorlon get activated
+          vorlonProd.activate(true);
+          checkVorlonState();
+        }
+
+        btnDeactivate.onclick = function(){
+          //boolean indicate that we want a page reload after vorlon get activated
+          vorlonProd.deactivate(true);
+        }
+        
+        btnSetIdentity.onclick = function(){
+          //boolean indicate that we want a page reload after vorlon get activated
+          vorlonProd.setIdentity(txtIdentity.value);
+        }
+
+        function checkVorlonState(){
+          txtIdentity.value = vorlonProd.getIdentity() || "";
+          
+          if (vorlonProd.isActivated){
+            btnActivate.disabled = true;
+            btnDeactivate.disabled = false;
+            vorlonStatus.innerText = "Vorlon is activated";
+          }else{
+            btnActivate.disabled = false;
+            btnDeactivate.disabled = true;
+            vorlonStatus.innerText = "Vorlon is NOT activated";
+          }
+        }
+
+        checkVorlonState();
+    });
+    </script>
+  </body>
+</html>
