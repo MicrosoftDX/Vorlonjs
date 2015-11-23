@@ -148,7 +148,7 @@ module VORLON {
             }
             
             var pluginlistelementa = document.createElement("a");
-            pluginlistelementa.textContent = " " + client.name + " - " + client.displayid;
+            pluginlistelementa.textContent = " " + (client.identity ? client.identity : client.name) + " - " + client.displayid;
             pluginlistelementa.setAttribute("href", vorlonBaseURL + "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
             pluginlistelement.appendChild(pluginlistelementa);
 
