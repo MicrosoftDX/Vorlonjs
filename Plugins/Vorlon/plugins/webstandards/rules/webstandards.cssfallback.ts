@@ -32,7 +32,11 @@ module VORLON.WebStandards.Rules.CSS {
             }    
         },
         
-        checkPrefix(rules: Array<any>): Array<string> {
+        capitalizeFirstLetter : function (string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        },
+        
+        checkPrefix: function(rules: Array<any>): Array<string> {
             var errorList = [];
             if (rules && rules.length)
                 for (var i = 0; i < rules.length; i++) {
