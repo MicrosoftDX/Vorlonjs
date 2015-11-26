@@ -69,9 +69,9 @@ module VORLON.WebStandards.Rules.DOM {
                     if (xhr.readyState == 4) {
                         completed = true;
                         clearTimeout(timeoutRef);
-                        analyzeSummary.pendingLoad--;
+                        analyzeSummary.pendingLoad--;                        
                         //console.log("received content for " + browser + "(" + xhr.status + ") " + analyzeSummary.pendingLoad);
-                        if (xhr.status == 200) {
+                        if (xhr.status == 200) {                            
                             analyzeSummary.files.browserInterop[browser] = {
                                 loaded: true, url: analyzeSummary.location.href, userAgent: userAgent, status: xhr.status, content: xhr.responseText
                             }

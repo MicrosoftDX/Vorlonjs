@@ -6,6 +6,7 @@ module VORLON {
         public sendedHTML: string;
         private _doctype: any;
         private _currentAnalyze: any = {};
+        private _refreshLoop : any;
 
         public browserDetectionHook = {
             userAgent: [],
@@ -30,14 +31,11 @@ module VORLON {
                 this._loadNewScriptAsync("axe.min.js", () => {
                     this._ready = true;
                 }, true);
-            }, true);
-            //this.debug = true;            
+            }, true); 
         }
 
 
         public refresh(): void {
-            //override this method with cleanup work that needs to happen
-            //as the user switches between clients on the dashboard
         }
 
         // Start the clientside code
@@ -139,7 +137,10 @@ module VORLON {
                 }
             }
 
-            this.analyzeDOM(document, this._currentAnalyze.html, this._currentAnalyze);                                                
+            this.analyzeDOM(document, this._currentAnalyze.html, this._currentAnalyze);      
+            this._refreshLoop = <any>setInterval(()=>{
+                this.checkLoadingState();
+            }, 1000);                                          
             //             // Using aXe
             //             axe.a11yCheck(document, (results) => {            
             //                 this.sendCommandToDashboard("htmlContent", { html: allHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: data.id, stylesheetErrors: stylesheetErrors, a11yCheck: results.violations });
@@ -213,6 +214,7 @@ module VORLON {
         }
 
         endAnalyze(analyze) {
+            clearInterval(this._refreshLoop);
             for (var n in VORLON.WebStandards.Rules.DOM) {
                 var rule = <IDOMRule>VORLON.WebStandards.Rules.DOM[n];
                 if (rule && !rule.generalRule && rule.endcheck) {
@@ -245,6 +247,7 @@ module VORLON {
         }
         
         cancelAnalyse(id : string){            
+            clearInterval(this._refreshLoop);
             this.trace("canceling analyze " + id);
             if (this._currentAnalyze && this._currentAnalyze.id == id){
                 this.trace("analyze " + id + " canceled");
