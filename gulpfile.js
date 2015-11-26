@@ -21,18 +21,6 @@ gulp.task('default-server-all', ['default-plugins', 'copyDTS-plugins'], function
   return gulp.start('default-server');
 });
 
-gulp.task('watch', function() {
-  return gulp.watch([
-    './Plugins/Vorlon/**/*.ts',
-    './Plugins/Vorlon/**/*.less',
-    './Plugins/Vorlon/**/*.html',
-    './Server/Scripts/*.ts',
-    './Server/views/**/*.*',
-    './Server/public/vorlon.dashboardManager.ts',
-    './Server/public/vorlon.production.ts',
-    './Server/config/*.ts'
-  ], ['default']);
-});
 
 //// *****
 
@@ -89,12 +77,11 @@ gulp.task('scripts-noplugin-plugins', ['typescript-to-js-plugins'], function() {
         .pipe(rename('vorlon-noplugin.js'))
         .pipe(uglify())
         .pipe(gulp.dest('Plugins/release/'));
-
 });
 
 gulp.task('concat-webstandards-rules-plugins', ['typescript-to-js-plugins'], function () {
-	return gulp.src(['./Plugins/release/**/webstandards/rules/*.js', './Plugins/release/**/webstandards/dashboard.js'])
-		.pipe(concat('vorlon.webstandards.dashboard.js'))
+	return gulp.src(['./Plugins/release/**/webstandards/rules/*.js', './Plugins/release/**/webstandards/client.js'])
+		.pipe(concat('vorlon.webstandards.client.js'))
 		.pipe(gulp.dest('Plugins/release/plugins/webstandards/'));
 });
 
@@ -282,4 +269,11 @@ gulp.task('watch-server', function() {
   gulp.watch([
     './Server/**/*.ts',
   ], ['default-server']);
+});
+
+
+gulp.task('watch', function() {
+  gulp.run("watch-server");
+  gulp.run("watch-plugins");
+  gulp.run("webserver");
 });

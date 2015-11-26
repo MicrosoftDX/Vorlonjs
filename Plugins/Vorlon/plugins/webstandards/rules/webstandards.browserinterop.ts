@@ -17,8 +17,17 @@ module VORLON.WebStandards.Rules.DOM {
             rulecheck.type = "blockitems";
             analyzeSummary.files.browserInterop = {};
 
+            var serverurl = (<any>VORLON.Core)._messenger._serverUrl;
+            if (!serverurl){
+                console.warn('no Vorlon server url for browser interop', (<any>VORLON.Core)._messenger);
+                return;
+            }
+            
+            if (serverurl[serverurl.length - 1] !== '/')
+                serverurl = serverurl + "/";
+                
             for (var n in this.userAgents) {
-                this.fetchHTMLDocument(n, this.userAgents[n], analyzeSummary);
+                this.fetchHTMLDocument(serverurl, n, this.userAgents[n], analyzeSummary);
             }
         },
 
@@ -46,14 +55,12 @@ module VORLON.WebStandards.Rules.DOM {
             }
         },
 
-        fetchHTMLDocument: function(browser, userAgent, analyzeSummary) {
+        fetchHTMLDocument: function(serverurl, browser, userAgent, analyzeSummary) {
             var xhr = null;
             var timeoutRef = null;
             var completed = false;
-            var serverurl = (<any>VORLON.Core._messenger)._serverUrl;
-            if (serverurl[serverurl.length - 1] !== '/')
-                serverurl = serverurl + "/";
-            var documentUrl = serverurl + "httpproxy/fetch?fetchurl=" + encodeURIComponent(analyzeSummary.location.href) + "&fetchuseragent=" + encodeURIComponent(userAgent);
+            
+            var documentUrl = serverurl + "httpproxy/fetch?fetchurl=" + encodeURIComponent(analyzeSummary.location) + "&fetchuseragent=" + encodeURIComponent(userAgent);
             console.log("getting HTML reference for " + browser + " " + documentUrl);
 
             try {
