@@ -25,6 +25,7 @@ module VORLON {
 		check: (rulecheck: any, analyzeSummary: any) => void;
 		description?: string;
 	}
+	
 	export interface IScriptRule {
 		id: string;
 		title: string;

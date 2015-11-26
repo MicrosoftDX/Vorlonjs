@@ -98,6 +98,7 @@ module VORLON.WebStandards.Rules.CSS {
 
             rulecheck.items = [];
             var failed = false;
+            
             if (!this.fallBackErrorList) {
                 rulecheck.title = "(disabled !) incorrect use of css fallback";
                 failed = true;
