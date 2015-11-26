@@ -206,7 +206,7 @@ module VORLON {
             this.plugin = plugin;
         }
 
-        setRule(rule) {
+        setRule(rule : IRuleCheck) {
             this.element.innerHTML = "";
 
             var fluent = FluentDOM.forElement(this.element);
@@ -237,7 +237,7 @@ module VORLON {
             });
         }
 
-        renderItem(item, parent: FluentDOM) {
+        renderItem(item : IRuleCheck, parent: FluentDOM) {
             parent.append("DIV", "item", (itemelt) => {
                 if (item.type) {
                     itemelt.addClass(item.type);

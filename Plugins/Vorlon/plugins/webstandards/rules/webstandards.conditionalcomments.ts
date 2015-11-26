@@ -5,7 +5,7 @@ module VORLON.WebStandards.Rules.DOM {
         description: "Conditional comments are not the best way to adapt your website to target browser, and support is dropped for IE > 9.",
         nodeTypes: ["#comment"],
 
-        prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
+        prepare: function(rulecheck, analyzeSummary) {
             rulecheck.items = rulecheck.items || [];   
             rulecheck.type = "blockitems";          
         },

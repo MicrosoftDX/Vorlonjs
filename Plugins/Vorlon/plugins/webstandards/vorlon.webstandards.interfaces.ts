@@ -1,37 +1,41 @@
 module VORLON {
-    export interface IDOMRule {
-		id: string;
-		title: string;
-		nodeTypes: string[];
-		prepare?: (rulecheck, analyze, htmlcontent) => void;
-		check: (node, rulecheck, analyze, htmlcontent) => void;
-		endcheck?: (rulecheck, analyze, htmlcontent) => void;
-		generalRule?: boolean;
+	export interface IRuleCheck {
+		items? : IRuleCheck[];
+		title?: string;
 		description?: string;
+		alert?: string;
+		message?: string;
+		content?: string;
+		type?: string;
+		failed?:boolean;
+		data?:any;
 	}
-
-	export interface ICSSRule {
+		
+	export interface IRule{
 		id: string;
 		title: string;
-		prepare?: (rulecheck, analyzeSummary) => void;
-		check: (url: string, ast, rulecheck, analyzeSummary) => void;
-		endcheck?: (rulecheck, analyzeSummary) => void;
+		disabled?:boolean;
 		description?: string;
-	}
-
-	export interface IFileRule {
-		id: string;
-		title: string;
-		check: (rulecheck: any, analyzeSummary: any) => void;
-		description?: string;
+		
+		prepare?: (rulecheck : IRuleCheck, analyzeSummary) => void;
+		endcheck?: (rulecheck : IRuleCheck, analyzeSummary) => void;
 	}
 	
-	export interface IScriptRule {
-		id: string;
-		title: string;
-		prepare?: (rulecheck: any, analyzeSummary: any) => void;
+    export interface IDOMRule extends IRule {		
+		nodeTypes: string[];
+		check: (node, rulecheck: IRuleCheck, analyze, htmlcontent) => void;
+		generalRule?: boolean;
+	}
+
+	export interface ICSSRule extends IRule {		
+		check: (url: string, ast, rulecheck, analyzeSummary) => void;
+	}
+
+	export interface IFileRule extends IRule {
+		check: (rulecheck: any, analyzeSummary: any) => void;
+	}
+	
+	export interface IScriptRule extends IRule {
 		check: (url: string, javascriptContent: string, rulecheck: any, analyzeSummary: any) => void;
-		endcheck?: (rulecheck: any, analyzeSummary: any) => void;
-		description?: string;
 	}
 }

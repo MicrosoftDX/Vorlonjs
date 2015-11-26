@@ -25,7 +25,7 @@ module VORLON {
         constructor() {
             super("webstandards");
             this._id = "WEBSTANDARDS";
-            this.debug = true;
+            //this.debug = true;
             this._loadNewScriptAsync("/javascripts/css.js", () => {
                 this._loadNewScriptAsync("axe.min.js", () => {
                     this._ready = true;
@@ -65,7 +65,6 @@ module VORLON {
         }        
 
         public startNewAnalyze(data): void {            
-            // Accessibility            
             this.trace("start webstandards analyze " + data.id);
 
             this._currentAnalyze = {
@@ -218,7 +217,7 @@ module VORLON {
                 var rule = <IDOMRule>VORLON.WebStandards.Rules.DOM[n];
                 if (rule && !rule.generalRule && rule.endcheck) {
                     var current = this.initialiseRuleSummary(rule, analyze);
-                    rule.endcheck(current, analyze, this._currentAnalyze.html);
+                    rule.endcheck(current, analyze);
                 }
             }
 
@@ -270,7 +269,7 @@ module VORLON {
                 if (rule) {
                     var rulecheck = this.initialiseRuleSummary(rule, analyze);
                     if (rule.prepare) {
-                        rule.prepare(rulecheck, analyze, htmlContent);
+                        rule.prepare(rulecheck, analyze);
                     }
 
                     if (rule.generalRule) {

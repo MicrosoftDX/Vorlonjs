@@ -12,7 +12,7 @@ module VORLON.WebStandards.Rules.DOM {
             "Firefox": 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0'
         },
 
-        prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
+        prepare: function(rulecheck: IRuleCheck, analyzeSummary) {
             rulecheck.items = rulecheck.items || [];
             rulecheck.type = "blockitems";
             analyzeSummary.files.browserInterop = {};
@@ -31,11 +31,11 @@ module VORLON.WebStandards.Rules.DOM {
             }
         },
 
-        check: function(node: Node, rulecheck: any, analyzeSummary: any, htmlString: string) {
+        check: function(node: Node, rulecheck: IRuleCheck, analyzeSummary: any, htmlString: string) {
 
         },
 
-        endcheck: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
+        endcheck: function(rulecheck: IRuleCheck, analyzeSummary: any) {
             var detection = analyzeSummary.files.browserInterop;
             var comparisons = {};
 
@@ -61,7 +61,7 @@ module VORLON.WebStandards.Rules.DOM {
             var completed = false;
             
             var documentUrl = serverurl + "httpproxy/fetch?fetchurl=" + encodeURIComponent(analyzeSummary.location) + "&fetchuseragent=" + encodeURIComponent(userAgent);
-            console.log("getting HTML reference for " + browser + " " + documentUrl);
+            //console.log("getting HTML reference for " + browser + " " + documentUrl);
 
             try {
                 xhr = new XMLHttpRequest();
