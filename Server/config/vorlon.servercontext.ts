@@ -59,7 +59,6 @@ export module VORLON {
 	}
 
 	export interface IPluginsProvider {
-
 		getPluginsFor(sessionid: string, callback: (error, plugins: ISessionPlugins) => void);
 	}
 
@@ -71,7 +70,6 @@ export module VORLON {
 		logger: ILogger;
 		plugins: IPluginsProvider;
 		sessions: SessionManager;
-
 	}
 
 	export class SimpleConsoleLogger implements ILogger {
