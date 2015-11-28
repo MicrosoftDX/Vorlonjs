@@ -89,21 +89,64 @@ gulp.task('concat-webstandards-rules-plugins', ['typescript-to-js-plugins'], fun
  * Specific task that need to be handled for specific plugins.
  * Do not hesitate to update it if you need to add your own files
  */
-gulp.task('scripts-specific-plugins-plugins', function() {
+gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
     // Babylon Inspector
     gulp.src([
         'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
         'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.client.js'
     ])
-        .pipe(concat('vorlon.babylonInspector.client.min.js'))
+        .pipe(concat('vorlon.babylonInspector.client.js'))
         .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
 
-    return gulp.src([
+    gulp.src([
         'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
         'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.dashboard.js'
     ])
+        .pipe(concat('vorlon.babylonInspector.dashboard.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
+        
+    gulp.src([
+        'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.min.js',
+        'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.client.min.js'
+    ])
+        .pipe(concat('vorlon.babylonInspector.client.min.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
+
+    gulp.src([
+        'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.min.js',
+        'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.dashboard.min.js'
+    ])
         .pipe(concat('vorlon.babylonInspector.dashboard.min.js'))
         .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
+        
+    // NG Inspector
+    gulp.src([
+        'Plugins/release/plugins/ngInspector/vorlon.ngInspector.interfaces.js',
+        'Plugins/release/plugins/ngInspector/vorlon.ngInspector.client.js'
+    ])
+        .pipe(concat('vorlon.ngInspector.client.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/ngInspector/'));
+
+    return gulp.src([
+        'Plugins/release/plugins/ngInspector/vorlon.ngInspector.interfaces.js',
+        'Plugins/release/plugins/ngInspector/vorlon.ngInspector.dashboard.js'
+    ])
+        .pipe(concat('vorlon.ngInspector.dashboard.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/ngInspector/'));
+        
+    gulp.src([
+        'Plugins/release/plugins/ngInspector/vorlon.ngInspector.interfaces.min.js',
+        'Plugins/release/plugins/ngInspector/vorlon.ngInspector.client.min.js'
+    ])
+        .pipe(concat('vorlon.ngInspector.client.min.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/ngInspector/'));
+
+    return gulp.src([
+        'Plugins/release/plugins/ngInspector/vorlon.ngInspector.interfaces.min.js',
+        'Plugins/release/plugins/ngInspector/vorlon.ngInspector.dashboard.min.js'
+    ])
+        .pipe(concat('vorlon.ngInspector.dashboard.min.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/ngInspector/'));
 
 });
 
@@ -113,8 +156,6 @@ gulp.task('scripts-specific-plugins-plugins', function() {
  */
 gulp.task('scripts-plugins', ['concat-webstandards-rules-plugins'], function () {
 
-    gulp.start('scripts-specific-plugins-plugins');
-    
     return gulp.src([
             './Plugins/**/vorlon.interactiveConsole.interfaces.js',
             './Plugins/**/vorlon.interactiveConsole.client.js',
@@ -150,13 +191,16 @@ gulp.task('scripts-plugins', ['concat-webstandards-rules-plugins'], function () 
             './Plugins/**/device/vorlon.device.dashboard.js',
             './Plugins/**/webstandards/vorlon.webstandards.client.js',
             './Plugins/**/webstandards/vorlon.webstandards.interfaces.js',
-            './Plugins/**/webstandards/vorlon.webstandards.dashboard.js'
+            './Plugins/**/webstandards/vorlon.webstandards.dashboard.js',
+            './Plugins/**/babylonInspector/vorlon.babylonInspector.client.js',
+            './Plugins/**/babylonInspector/vorlon.babylonInspector.interfaces.js',
+            './Plugins/**/babylonInspector/vorlon.babylonInspector.dashboard.js'
         ])
         .pipe(rename(function (path) {
                 path.extname = ".min.js";
               })
             )
-/*   .pipe(uglify())*/
+        .pipe(uglify())
         .pipe(gulp.dest('./Plugins'));
 });
 
@@ -196,7 +240,7 @@ gulp.task('copyDTS-plugins', function () {
 /**
  * The default task, call the tasks: scripts, scripts-noplugin, copy, copyPlugins
  */
-gulp.task('default-plugins', ['scripts-plugins', 'scripts-noplugin-plugins', 'less-to-css-plugins'], function() {
+gulp.task('default-plugins', ['scripts-plugins', 'scripts-noplugin-plugins', 'less-to-css-plugins', 'scripts-specific-plugins-plugins'], function() {
     return gulp.start('copy-plugins', 'copyPlugins-plugins', 'copyDTS-plugins');
 });
 
