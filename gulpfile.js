@@ -127,7 +127,7 @@ gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
         .pipe(concat('vorlon.ngInspector.client.js'))
         .pipe(gulp.dest('Plugins/release/plugins/ngInspector/'));
 
-    return gulp.src([
+    gulp.src([
         'Plugins/release/plugins/ngInspector/vorlon.ngInspector.interfaces.js',
         'Plugins/release/plugins/ngInspector/vorlon.ngInspector.dashboard.js'
     ])
