@@ -8,7 +8,7 @@ sync.bat
 *.suo
 /.vs/
 bin/
-GLE id�es.txt
+**/control.css
 sync.bat
 Plugins/Vorlon/plugins/remoteDebugging.zip
 .settings/launch.json
