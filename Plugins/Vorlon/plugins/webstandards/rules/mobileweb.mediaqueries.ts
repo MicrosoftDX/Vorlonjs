@@ -4,19 +4,24 @@ module VORLON.WebStandards.Rules.CSS {
         title: "use responsive approaches",
         description: "Even if your website target only certain devices, you may have users with unexpected devices or screen ratio.",
         
-        prepare: function(rulecheck: any, analyzeSummary: any) {
+        prepare: function(rulecheck: IRuleCheck, analyzeSummary) {
             rulecheck.items = rulecheck.items || [];   
             rulecheck.type = "blockitems"; 
-            if (rulecheck.cssnbqueries == undefined) rulecheck.cssnbqueries = 0;          
+            if (!rulecheck.data){  
+                rulecheck.data = {
+                    cssnbqueries : 0,
+                    domnbqueries : 0
+                };
+            }         
         },
         
-        check: function (url, ast, rulecheck: any, analyzeSummary: any) {
+        check: function (url, ast, rulecheck: IRuleCheck, analyzeSummary: any) {
             //console.log("check css prefixes");
 
             this.checkNodes(url, rulecheck, ast);
         },
 
-        checkNodes: function (url, rulecheck, ast) {
+        checkNodes: function (url, rulecheck: IRuleCheck, ast) {
             if (!ast)
                 return;
 
@@ -29,14 +34,14 @@ module VORLON.WebStandards.Rules.CSS {
                     if (media){
                         media = media.toLowerCase();
                         if (media.indexOf("width") >= 0 || media.indexOf("height") >= 0){
-                            rulecheck.cssnbqueries++;
+                            rulecheck.data.cssnbqueries++;
                         }
                     }
                 }
             });
         },
         
-        endcheck: function(rulecheck: any, analyzeSummary: any){            
+        endcheck: function(rulecheck: IRuleCheck, analyzeSummary: any){            
         }
     }
 }
@@ -48,12 +53,17 @@ module VORLON.WebStandards.Rules.DOM {
         description: "Even if your website target only certain devices, you may have users with unexpected devices or screen ratio.",        
         nodeTypes: ["link"],
 		
-		prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
-            rulecheck.items = rulecheck.items || [];   
-            if (rulecheck.domnbqueries == undefined) rulecheck.domnbqueries = 0;       
+		prepare: function(rulecheck: IRuleCheck, analyzeSummary) {
+            rulecheck.items = rulecheck.items || []; 
+            if (!rulecheck.data){  
+                rulecheck.data = {
+                    cssnbqueries : 0,
+                    domnbqueries : 0
+                };
+            }       
         },
         
-        check: function(node: HTMLElement, rulecheck: any, analyzeSummary: any, htmlstring : string) {
+        check: function(node: HTMLElement, rulecheck: IRuleCheck, analyzeSummary: any, htmlstring : string) {
 			if (!node.getAttribute) //not an HTML element
 				return;
                           
@@ -63,23 +73,23 @@ module VORLON.WebStandards.Rules.DOM {
                 if (media){
                     media = media.toLowerCase();
                     if (media.indexOf("width") >= 0 || media.indexOf("height") >= 0){
-                        rulecheck.domnbqueries++;
+                        rulecheck.data.domnbqueries++;
                     }
                 }
             }        
         },
         
-        endcheck : function(rulecheck, analyzeSummary, htmlstring : string){
+        endcheck : function(rulecheck: IRuleCheck, analyzeSummary){
             //console.log("media queries css:" + rulecheck.cssnbqueries + ", dom:" + rulecheck.domnbqueries);
-            if (rulecheck.cssnbqueries==0 && rulecheck.domnbqueries==0){
-                if (rulecheck.cssnbqueries==0){
+            if (rulecheck.data.cssnbqueries==0 && rulecheck.data.domnbqueries==0){
+                if (rulecheck.data.cssnbqueries==0){
                     rulecheck.failed = true;
                     rulecheck.items.push({
                         title : 'your css (either files or inline) does not use any media queries'
                     });
                 }
                 
-                if (rulecheck.domnbqueries==0){
+                if (rulecheck.data.domnbqueries==0){
                     rulecheck.failed = true;
                     rulecheck.items.push({
                         title : 'your link tags does not use any media queries'

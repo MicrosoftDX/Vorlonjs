@@ -1,0 +1,38 @@
+@import "../../stylesheets/theme.less";
+
+#panelConsole{
+	.console-items{
+		.log{
+			padding : 5px 10px;
+			background-color: white;
+			border : 1px solid #CCC;
+			margin-bottom : 2px;
+			
+			.dripicon{
+				margin-right : 10px;
+			}
+			
+			&.log-debug{
+				
+			}
+			
+			&.log-info{
+				.dripicon{
+					color : dodgerblue;
+				}
+			}
+			
+			&.log-warn{
+				.dripicon{
+					color : darkgoldenrod;
+				}
+			}
+			
+			&.log-error{
+				.dripicon{
+					color : darkred;
+				}
+			}
+		}
+	}
+}

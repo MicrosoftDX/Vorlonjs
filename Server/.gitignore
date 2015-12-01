@@ -5,12 +5,11 @@ Scripts/**/*.js.map
 config/**/*.js
 config/**/*.js.map
 server.js
-
 public/vorlon.dashboardManager.js
 public/vorlon.dashboardManager.js.map
+public/vorlon.production.js
+public/vorlon.production.js.map
 public/vorlon/**/*
 public/stylesheets/**/*.css
-
-
 Scripts/typings/vorlon/**/*.d.ts
 public/stylesheets/style.css

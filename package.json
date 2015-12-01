@@ -27,9 +27,11 @@
     "winston-azure": "0.0.4",
     "winston-logs-display": "~0.1.1",
     "xmlhttprequest": "~1.7.0",
-    "http-proxy": "~1.11.2"
+    "http-proxy": "~1.11.2",
+    "axe-core": "*"
   },
   "devDependencies": {
+    "axe-core": "^1.1.1",
     "gulp": "~3.8.11",
     "gulp-concat": "~2.2.0",
     "gulp-filter": "~0.4.1",
@@ -47,9 +49,8 @@
   "scripts": {
     "global-deploy-gulp": "npm install -g gulp",
     "global-deploy-gulp-cli": "npm install -g gulp-cli",
-    "build-server": "gulp --gulpfile=./Server/gulpfile.js --cwd=./Server",
-    "build-client": "gulp --gulpfile=./Plugins/gulpfile.js --cwd=./Plugins",
-    "build": "node disclaimer.js && npm run global-deploy-gulp && npm run global-deploy-gulp-cli && npm run build-client && npm run build-server",
+    "build-all": "gulp --gulpfile=./gulpfile.js",
+    "build": "node disclaimer.js && npm run build-all",
     "prepublish": "npm run build",
     "start": "node ./Server/server.js"
   },

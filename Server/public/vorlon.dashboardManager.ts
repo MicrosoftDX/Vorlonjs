@@ -2,7 +2,6 @@
 /// <reference path="../Scripts/typings/vorlon/vorlon.clientMessenger.d.ts" /> 
 /// <reference path="../Scripts/typings/vorlon/vorlon.clientPlugin.d.ts" /> 
 
-
 module VORLON {
     declare var $: any;
     declare var vorlonBaseURL: string;
@@ -26,17 +25,17 @@ module VORLON {
             DashboardManager.ClientList = {};
             DashboardManager.StartListeningServer()
             DashboardManager.GetClients();
-            DashboardManager.CatalogUrl =  vorlonBaseURL + "/config.json";
+            DashboardManager.CatalogUrl =  vorlonBaseURL + "/getplugins/" + sessionid;
         }
         
         public static StartListeningServer(clientid: string = ""): void{
             var getUrl = window.location;
             var baseUrl = getUrl.protocol + "//" + getUrl.host;
-            Core.StopListening(); 
-            Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, clientid, DashboardManager.divMapper);
-                if(!Core.Messenger.onAddClient && !Core.Messenger.onAddClient){
-                Core.Messenger.onAddClient = DashboardManager.addClient;
-                Core.Messenger.onRemoveClient = DashboardManager.removeClient;
+            VORLON.Core.StopListening(); 
+            VORLON.Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, clientid, DashboardManager.divMapper);
+                if(!VORLON.Core.Messenger.onAddClient && !VORLON.Core.Messenger.onAddClient){
+                VORLON.Core.Messenger.onAddClient = DashboardManager.addClient;
+                VORLON.Core.Messenger.onRemoveClient = DashboardManager.removeClient;
             }
             
             if(clientid !== ""){
@@ -149,7 +148,7 @@ module VORLON {
             }
             
             var pluginlistelementa = document.createElement("a");
-            pluginlistelementa.textContent = " " + client.name + " - " + client.displayid;
+            pluginlistelementa.textContent = " " + (client.identity ? client.identity : client.name) + " - " + client.displayid;
             pluginlistelementa.setAttribute("href", vorlonBaseURL + "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
             pluginlistelement.appendChild(pluginlistelementa);
 

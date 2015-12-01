@@ -2,12 +2,11 @@
 import path = require("path");
 import stylus = require("stylus");
 import fs = require("fs");
-
+import http = require("http");
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
 import vauth = require("./vorlon.authentication");
-import httpConfig = require("../config/vorlon.httpconfig"); 
-import baseURLConfig = require("../config/vorlon.baseurlconfig"); 
+import vorloncontext = require("../config/vorlon.servercontext"); 
 
 export module VORLON {
     export class WebServer {
@@ -23,15 +22,18 @@ export module VORLON {
        // private _flash = require('connect-flash');
 
         private _components: Array<iwsc.VORLON.IWebServerComponent>;
-        private http: httpConfig.VORLON.HttpConfig;
         private _app: express.Express;
-        private baseURLConfig: baseURLConfig.VORLON.BaseURLConfig;
+        private _log: vorloncontext.VORLON.ILogger;
+        private _httpServer : http.Server;
+        private httpConfig: vorloncontext.VORLON.IHttpConfig;
+        private baseURLConfig: vorloncontext.VORLON.IBaseURLConfig;
 
-        constructor() {
+        constructor(context : vorloncontext.VORLON.IVorlonServerContext) {
             this._app = express();
             this._components = new Array<iwsc.VORLON.IWebServerComponent>();
-            this.http = new httpConfig.VORLON.HttpConfig();
-            this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();  
+            this.httpConfig = context.httpConfig;
+            this.baseURLConfig = context.baseURLConfig;  
+            this._log = context.logger;
         }
 
         public init(): void {
@@ -64,7 +66,7 @@ export module VORLON {
                             }
                             
                             var _package = JSON.parse(packageData.replace(/^\uFEFF/, ''));
-                            console.log('Vorlon.js v' + _package.version);
+                            this._log.info('Vorlon.js v' + _package.version);
                         });
                         stopExecution = true;
                         break;
@@ -76,7 +78,7 @@ export module VORLON {
             }
 
             //Sets
-            app.set('port', this.http.port);
+            app.set('port', this.httpConfig.port);
             app.set('views', path.join(__dirname, '../views'));
             app.set('view engine', 'jade');
 
@@ -127,24 +129,24 @@ export module VORLON {
                 next();
             });
 
-            if (this.http.useSSL) {
-                this.http.httpModule = this.http.httpModule.createServer(this.http.options, app).listen(app.get('port'), () => {
-                    console.log('Vorlon.js SERVER with SSL listening on port ' + app.get('port'));
+            if (this.httpConfig.useSSL) {
+                this._httpServer = this.httpConfig.httpModule.createServer(this.httpConfig.options, app).listen(app.get('port'), () => {
+                    this._log.info('Vorlon.js SERVER with SSL listening on port ' + app.get('port'));
                 });
             } else {
-                this.http.httpModule = this.http.httpModule.createServer(app).listen(app.get('port'), () => {
-                    console.log('Vorlon.js SERVER listening on port ' + app.get('port'));
+                this._httpServer = this.httpConfig.httpModule.createServer(app).listen(app.get('port'), () => {
+                    this._log.info('Vorlon.js SERVER listening on port ' + app.get('port'));
                 });
             }
 
             for (var id in this._components) {
                 var component = this._components[id];
-                component.start(this.http.httpModule);
+                component.start(this._httpServer);
             }
         }
 
         public get httpServer(){
-            return this.http.httpModule;
+            return this._httpServer;
         }
     }
 }
