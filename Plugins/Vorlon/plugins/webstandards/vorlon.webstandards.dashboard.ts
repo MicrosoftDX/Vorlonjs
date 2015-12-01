@@ -137,7 +137,13 @@ module VORLON {
             var items = [];
             for (var n in rules) {
                 var rule = rules[n];
-                //if (rule.rules || rule.failed){
+                
+                if (rule.skipRootLevel) {
+                    for (var index = 0; index < rule.items.length; index++) {
+                        items.push(rule.items[index]);  
+                    }
+                    continue;
+                }
                 if (!rule.title) {
                     rule.title = rulesLabels[rule.id];
                 }
@@ -145,7 +151,6 @@ module VORLON {
                     rule.title = n;
                 }
                 items.push(rule);              
-                //}  
             }
 
             items.sort(function(a, b) {
@@ -243,16 +248,16 @@ module VORLON {
                     itemelt.addClass(item.type);
                 }
                 if (item.title && item.alert) {
-                    itemelt.createChild("SPAN", "state fa " + (item.failed ? "fa-close" : "fa-check")).html(item.title);
+                    itemelt.createChild("SPAN", "state fa " + (item.failed ? "fa-close" : "fa-check")).text(item.title);
                 }
                 else if (item.title) {
-                    itemelt.createChild("DIV", "title").html(item.title);
+                    itemelt.createChild("DIV", "title").text(item.title);
                 }
                 if (item.message) {
-                    itemelt.createChild("DIV", "message").html(item.message);
+                    itemelt.createChild("DIV", "message").text(item.message);
                 }
                 if (item.content) {
-                    itemelt.createChild("DIV", "content").html(item.content);
+                    itemelt.createChild("DIV", "content").text(item.content);
                 }
 
                 if (item.items && item.items.length) {

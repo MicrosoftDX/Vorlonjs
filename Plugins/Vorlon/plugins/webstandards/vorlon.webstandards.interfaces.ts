@@ -9,6 +9,7 @@ module VORLON {
 		type?: string;
 		failed?:boolean;
 		data?:any;
+		skipRootLevel?: boolean;
 	}
 		
 	export interface IRule{

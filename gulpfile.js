@@ -80,7 +80,7 @@ gulp.task('scripts-noplugin-plugins', ['typescript-to-js-plugins'], function() {
 });
 
 gulp.task('concat-webstandards-rules-plugins', ['typescript-to-js-plugins'], function () {
-	return gulp.src(['./Plugins/release/**/webstandards/rules/*.js', './Plugins/release/**/webstandards/client.js'])
+	return gulp.src(['./Plugins/release/**/webstandards/rules/*.js', './Plugins/release/**/webstandards/vorlon.webstandards.client.js'])
 		.pipe(concat('vorlon.webstandards.client.js'))
 		.pipe(gulp.dest('Plugins/release/plugins/webstandards/'));
 });

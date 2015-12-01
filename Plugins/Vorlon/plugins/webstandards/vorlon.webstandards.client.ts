@@ -1,5 +1,4 @@
 declare var cssjs: any;
-declare var axe: any;
 
 module VORLON {
     export class WebStandardsClient extends ClientPlugin {
@@ -27,7 +26,7 @@ module VORLON {
             super("webstandards");
             this._id = "WEBSTANDARDS";
             //this.debug = true;
-            this._loadNewScriptAsync("/javascripts/css.js", () => {
+            this._loadNewScriptAsync("css.js", () => {
                 this._loadNewScriptAsync("axe.min.js", () => {
                     this._ready = true;
                 }, true);
@@ -140,12 +139,7 @@ module VORLON {
             this.analyzeDOM(document, this._currentAnalyze.html, this._currentAnalyze);      
             this._refreshLoop = <any>setInterval(()=>{
                 this.checkLoadingState();
-            }, 1000);                                          
-            //             // Using aXe
-            //             axe.a11yCheck(document, (results) => {            
-            //                 this.sendCommandToDashboard("htmlContent", { html: allHTML, doctype: this._doctype, url: window.location, browserDetection: this.browserDetectionHook, id: data.id, stylesheetErrors: stylesheetErrors, a11yCheck: results.violations });
-            //             });
-
+            }, 1000);
         }
 
         checkLoadingState() {
@@ -211,6 +205,15 @@ module VORLON {
                         scriptrule.prepare(current, analyze);
                 }
             }
+            
+            for (var n in VORLON.WebStandards.Rules.Accessibility) {
+                var accessibilityRule = <IRule>VORLON.WebStandards.Rules.Accessibility[n];
+                if (accessibilityRule) {
+                    var current = this.initialiseRuleSummary(accessibilityRule, analyze);
+                    if (accessibilityRule.prepare)
+                        accessibilityRule.prepare(current, analyze);
+                }
+            }
         }
 
         endAnalyze(analyze) {
@@ -239,7 +242,7 @@ module VORLON {
                     if (scriptrule.endcheck)
                         scriptrule.endcheck(current, analyze);
                 }
-            }
+            }           
 
             this.analyzeFiles(this._currentAnalyze);
             this.trace("sending result to dashboard");
