@@ -1,6 +1,5 @@
 npm-debug.log
 *.log
-/plugins/vorlon/**/*.css
 tsconfig.json
 /Plugins/obj
 **/node_modules
@@ -10,7 +9,6 @@ sync.bat
 bin/
 **/control.css
 sync.bat
-Plugins/Vorlon/plugins/remoteDebugging.zip
 .settings/launch.json
 *.dat
 Server/public/stylesheets/style.css
