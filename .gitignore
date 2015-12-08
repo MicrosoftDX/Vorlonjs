@@ -7,7 +7,7 @@ sync.bat
 *.suo
 /.vs/
 bin/
-GLE id�es.txt
+**/control.css
 sync.bat
 .settings/launch.json
 *.dat

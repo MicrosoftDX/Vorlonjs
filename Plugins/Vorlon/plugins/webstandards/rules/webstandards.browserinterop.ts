@@ -12,21 +12,30 @@ module VORLON.WebStandards.Rules.DOM {
             "Firefox": 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0'
         },
 
-        prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
+        prepare: function(rulecheck: IRuleCheck, analyzeSummary) {
             rulecheck.items = rulecheck.items || [];
             rulecheck.type = "blockitems";
             analyzeSummary.files.browserInterop = {};
 
+            var serverurl = (<any>VORLON.Core)._messenger._serverUrl;
+            if (!serverurl){
+                console.warn('no Vorlon server url for browser interop', (<any>VORLON.Core)._messenger);
+                return;
+            }
+            
+            if (serverurl[serverurl.length - 1] !== '/')
+                serverurl = serverurl + "/";
+                
             for (var n in this.userAgents) {
-                this.fetchHTMLDocument(n, this.userAgents[n], analyzeSummary);
+                this.fetchHTMLDocument(serverurl, n, this.userAgents[n], analyzeSummary);
             }
         },
 
-        check: function(node: Node, rulecheck: any, analyzeSummary: any, htmlString: string) {
+        check: function(node: Node, rulecheck: IRuleCheck, analyzeSummary: any, htmlString: string) {
 
         },
 
-        endcheck: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
+        endcheck: function(rulecheck: IRuleCheck, analyzeSummary: any) {
             var detection = analyzeSummary.files.browserInterop;
             var comparisons = {};
 
@@ -46,15 +55,13 @@ module VORLON.WebStandards.Rules.DOM {
             }
         },
 
-        fetchHTMLDocument: function(browser, userAgent, analyzeSummary) {
+        fetchHTMLDocument: function(serverurl, browser, userAgent, analyzeSummary) {
             var xhr = null;
             var timeoutRef = null;
             var completed = false;
-            var serverurl = (<any>VORLON.Core._messenger)._serverUrl;
-            if (serverurl[serverurl.length - 1] !== '/')
-                serverurl = serverurl + "/";
-            var documentUrl = serverurl + "httpproxy/fetch?fetchurl=" + encodeURIComponent(analyzeSummary.location.href) + "&fetchuseragent=" + encodeURIComponent(userAgent);
-            console.log("getting HTML reference for " + browser + " " + documentUrl);
+            
+            var documentUrl = serverurl + "httpproxy/fetch?fetchurl=" + encodeURIComponent(analyzeSummary.location) + "&fetchuseragent=" + encodeURIComponent(userAgent);
+            //console.log("getting HTML reference for " + browser + " " + documentUrl);
 
             try {
                 xhr = new XMLHttpRequest();
@@ -62,9 +69,9 @@ module VORLON.WebStandards.Rules.DOM {
                     if (xhr.readyState == 4) {
                         completed = true;
                         clearTimeout(timeoutRef);
-                        analyzeSummary.pendingLoad--;
+                        analyzeSummary.pendingLoad--;                        
                         //console.log("received content for " + browser + "(" + xhr.status + ") " + analyzeSummary.pendingLoad);
-                        if (xhr.status == 200) {
+                        if (xhr.status == 200) {                            
                             analyzeSummary.files.browserInterop[browser] = {
                                 loaded: true, url: analyzeSummary.location.href, userAgent: userAgent, status: xhr.status, content: xhr.responseText
                             }
