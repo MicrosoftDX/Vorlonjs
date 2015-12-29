@@ -9,7 +9,8 @@ var gulp = require('gulp'),
     gulputil = require('gulp-util'),
     gulpFilter = require('gulp-filter'),
     path = require('path'),
-    sourcemaps = require('gulp-sourcemaps');
+    sourcemaps = require('gulp-sourcemaps'),
+    zip = require('gulp-zip');
 
 /// ********
 
@@ -331,4 +332,14 @@ gulp.task('watch', function() {
   gulp.run("watch-server");
   gulp.run("watch-plugins");
   gulp.run("webserver");
+});
+
+/**
+ * Zip task used within the build to create an archive that will be deployed using VSTS Release Management
+ */
+
+gulp.task('zip', function() {
+    gulp.src(['./**/*', '!./DeploymentTools/**', '!./desktop/**', '!./plugins library/**', '!./Plugins/**', '!./Tests/**', '!./desktop', '!./plugins library', '!./DeploymentTools', '!./Plugins', '!./Tests'])
+        .pipe(zip('deployment-package.zip'))
+        .pipe(gulp.dest('DeploymentTools'));
 });

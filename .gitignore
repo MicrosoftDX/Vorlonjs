@@ -13,3 +13,5 @@ sync.bat
 *.dat
 Server/public/stylesheets/style.css
 /Server/public/stylesheets/style.css
+/DeploymentTools/deployment-package.zip
+DeploymentTools/deployment-package.zip
