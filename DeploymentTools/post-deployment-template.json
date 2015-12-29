@@ -1,0 +1,65 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "hostingPlanName": {
+            "type": "string",
+            "minLength": 1
+        },
+        "siteName": {
+            "type": "string",
+            "minLength": 1
+        },
+        "sku": {
+            "type": "string",
+            "allowedValues": [
+                "Free",
+                "Shared",
+                "Basic",
+                "Standard",
+                "Premium"
+            ],
+            "defaultValue": "Free"
+        },
+        "workerSize": {
+            "type": "string",
+            "allowedValues": [
+                "0",
+                "1",
+                "2"
+            ],
+            "defaultValue": "0"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2014-06-01",
+            "name": "[parameters('siteName')]",
+            "type": "Microsoft.Web/sites",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[parameters('siteName')]"
+            },
+            "resources": [
+                { 
+                    "apiVersion": "2014-06-01", 
+                    "type": "config", 
+                    "name": "web", 
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
+                    ], 
+                    "properties": { 
+                        "webSocketsEnabled": true,
+                        "virtualApplications": [
+                        {
+                            "virtualPath": "/",
+                            "physicalPath": "site\\wwwroot\\Server",
+                            "preloadEnabled": true,
+                            "virtualDirectories": null
+                        }]
+                    }
+                }
+            ]
+        }
+    ]
+}
