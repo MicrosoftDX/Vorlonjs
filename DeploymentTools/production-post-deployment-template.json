@@ -10,6 +10,10 @@
             "type": "string",
             "minLength": 1
         },
+        "slotName": {
+            "type": "string",
+            "minLength": 1
+        },
         "sku": {
             "type": "string",
             "allowedValues": [
@@ -68,7 +72,7 @@
                     "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
                 ],
                 "properties": {
-                    "name":"vorlonjs-production(staging)"
+                    "name":"[concat(parameters('siteName'), '(', parameters('slotName'), ')')]"
                 },
                 "resources": [
                     { 
