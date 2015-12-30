@@ -62,7 +62,7 @@
             {
                 "apiVersion": "2014-06-01",
                 "type": "slots",
-                "name" : "staging",
+                "name" : "[parameters('slotName')]",
                 "location": "[resourceGroup().location]", 
                 "dependsOn": [
                     "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
@@ -76,7 +76,7 @@
                         "type": "config", 
                         "name": "web", 
                         "dependsOn": [
-                            "[resourceId('Microsoft.Web/Sites/slots', parameters('siteName'), 'staging')]"
+                            "[resourceId('Microsoft.Web/Sites/slots', parameters('siteName'), parameters('slotName'))]"
                         ], 
                         "properties": { 
                             "webSocketsEnabled": true,

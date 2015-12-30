@@ -8,6 +8,9 @@
         "hostingPlanName": {
             "value": "vorlonjs-production-hp"
         },
+        "slotName":{
+          "value": "staging"  
+        },
         "sku" :{
             "value" : "Standard"
         },
