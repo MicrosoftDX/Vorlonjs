@@ -10,6 +10,10 @@
             "type": "string",
             "minLength": 1
         },
+        "slotName": {
+            "type": "string",
+            "minLength": 1
+        },
         "sku": {
             "type": "string",
             "allowedValues": [
