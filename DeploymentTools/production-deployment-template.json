@@ -77,7 +77,7 @@
                     "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
                 ],
                 "properties": {
-                    "name":"[concat(parameters('siteName'),'(',parameters('slotName'),')']"
+                    "name":"[concat(parameters('siteName'), '(', parameters('slotName'), ')')]"
                 },
                 "resources": [
                     { 
