@@ -413,14 +413,6 @@ module VORLON {
             }
 
             documentUrl = this.getAbsolutePath(documentUrl);
-            if (documentUrl.indexOf("http") === 0) {
-                //external resources may not have Access Control headers, we make a proxied request to prevent CORS issues
-                var serverurl = (<any>VORLON.Core._messenger)._serverUrl;
-                if (serverurl[serverurl.length - 1] !== '/')
-                    serverurl = serverurl + "/";
-                var target = this.getAbsolutePath(data.url);
-                documentUrl = serverurl + "httpproxy/fetch?fetchurl=" + encodeURIComponent(target);
-            }
             this.trace("fetching " + documentUrl);
 
             try {
