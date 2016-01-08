@@ -294,7 +294,7 @@ module VORLON {
                             rules.domRulesForAllNodes.push(rule);
                         }
                     }
-                }
+                } 
             }
 
             this.analyzeDOMNode(document, rules, analyze, htmlContent);

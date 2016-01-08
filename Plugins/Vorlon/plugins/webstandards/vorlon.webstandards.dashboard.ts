@@ -26,12 +26,8 @@ module VORLON {
 
         private _rulesPanel: WebStandardsRulesPanel = null;
         private _ruleDetailPanel: WebStandardsRuleDetailPanel = null;
-        public analyzeCssFallback: boolean = true;
 
         public startDashboardSide(div: HTMLDivElement = null): void {
-            var script = <HTMLScriptElement>document.createElement("SCRIPT");
-            script.src = "/javascripts/css.js";
-            document.body.appendChild(script);
 
             this._insertHtmlContentAsync(div, (filledDiv) => {
                 this._ruleDetailPanel = new WebStandardsRuleDetailPanel(this, filledDiv.querySelector('#webstandards-ruledetailpanel'));
@@ -51,7 +47,7 @@ module VORLON {
                     this._currentAnalyseId = VORLON.Tools.CreateGUID();
                     this._analysePending = true;
                     this._analyseResult = null;
-                    this.sendCommandToClient('startNewAnalyze', { id: this._currentAnalyseId, analyzeCssFallback: this.analyzeCssFallback });
+                    this.sendCommandToClient('startNewAnalyze', { id: this._currentAnalyseId });
                 });
 
                 this._cancelCheckButton.addEventListener("click", (evt) => {
