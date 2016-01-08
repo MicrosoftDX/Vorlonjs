@@ -38,7 +38,7 @@ module VORLON.WebStandards.Rules.DOM {
             if (!rulecheck.data.hasIOSIcons) {
                 rulecheck.failed = true;
                 rulecheck.items.push({
-                    title: VORLON.Tools.htmlToString('add Apple - iOS icons by adding link tags like <link rel="apple-touch-icon-precomposed" href="youricon" sizes="57x57" />')
+                    title: VORLON.Tools.htmlToString('add Apple - iOS icons by adding link tags like <link rel="apple-touch-icon" href="youricon" sizes="57x57"" />')
                 });
             }
 
