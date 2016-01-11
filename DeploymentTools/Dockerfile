@@ -4,6 +4,7 @@ FROM node:argon
 # Set the Vorlon.JS Docker Image maintainer
 MAINTAINER Julien Corioland (Microsoft, DX)
 
+# update apt get and install unzip
 RUN apt-get -qq update && apt-get -qqy install unzip
 
 # Create the application directory
