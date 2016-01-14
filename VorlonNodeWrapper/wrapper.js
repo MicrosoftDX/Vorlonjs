@@ -17,6 +17,7 @@ var urljoin = require("url-join");
                 callback(true, "n/a");            
             }
             catch(e){
+                console.log("Wrapper Vorlon.js error : " + e.message);
                 callback(false, e.message);            
             }
         };
