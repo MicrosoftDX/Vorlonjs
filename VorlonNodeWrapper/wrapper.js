@@ -8,19 +8,20 @@ var urljoin = require("url-join");
         
         var XMLHttpRequest = require("xhr2");
         var xhr = new XMLHttpRequest();
+        var vorlonNodeUrl = urljoin(vorlonjsURL, "vorlon.node.js/" + dashboardId);
         
         xhr.onload = function (){
             try {
                 eval(xhr.responseText);
                 VORLON.Core.StartClientSide(vorlonjsURL, dashboardId);
-                callback(true, xhr.status);            
+                callback(true, "n/a");            
             }
             catch(e){
-                callback(false, xhr.status);            
+                callback(false, e.message);            
             }
         };
         
-        xhr.open("get", urljoin(vorlonjsURL, "vorlon.node.js"), true);
+        xhr.open("get", vorlonNodeUrl, true);
         xhr.send();
     }
 })();
