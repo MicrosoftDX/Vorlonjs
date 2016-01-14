@@ -1,4 +1,6 @@
 var urljoin = require("url-join");
+var LocalStorage = require('node-localstorage').LocalStorage,
+localStorage = new LocalStorage('./vorlon-storage');
 
 (function(){
     exports.start = function(vorlonjsURL, dashboardId, callback){
@@ -8,7 +10,7 @@ var urljoin = require("url-join");
         
         var XMLHttpRequest = require("xhr2");
         var xhr = new XMLHttpRequest();
-        var vorlonNodeUrl = urljoin(vorlonjsURL, "vorlon.node.js/" + dashboardId);
+        var vorlonNodeUrl = urljoin(vorlonjsURL, "vorlon.node.max.js/" + dashboardId);
         
         xhr.onload = function (){
             try {

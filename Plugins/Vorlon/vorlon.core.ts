@@ -63,11 +63,16 @@
             }
 
             // Cookie
-            var clientId = Tools.ReadCookie("vorlonJS_clientId");
-            if (!clientId) {
-                clientId = Tools.CreateGUID();
+            if(Tools.IsWindowAvailable){
+                var clientId = Tools.ReadCookie("vorlonJS_clientId");
+                if (!clientId) {
+                    clientId = Tools.CreateGUID();
 
-                Tools.CreateCookie("vorlonJS_clientId", clientId, 1);
+                    Tools.CreateCookie("vorlonJS_clientId", clientId, 1);
+                }
+            }
+            else {
+                clientId = Tools.CreateGUID();
             }
 
             // Creating the messenger
@@ -108,12 +113,21 @@
         }
         
         public sendHelo(){
-            
+           
             // Say 'helo'
-            var heloMessage = {
-                ua: navigator.userAgent,
-                identity : sessionStorage["vorlonClientIdentity"] || localStorage["vorlonClientIdentity"]                
-            };
+           var heloMessage = {};
+            if(Tools.IsWindowAvailable){
+                heloMessage = {
+                    ua: navigator.userAgent,
+                    identity : sessionStorage["vorlonClientIdentity"] || localStorage["vorlonClientIdentity"]               
+                };
+            }
+            else {
+                heloMessage = {
+                    ua: "Node.js",
+                    identity : localStorage["vorlonClientIdentity"]               
+                };
+            }
 
             Core.Messenger.sendRealtimeMessage("", heloMessage, Core._side, "helo");
         }

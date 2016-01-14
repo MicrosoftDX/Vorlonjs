@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "node-localstorage": "^1.1.2",
     "socket.io-client": "^1.4.4",
     "url-join": "0.0.1",
     "xhr2": "^0.1.3"
