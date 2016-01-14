@@ -1,5 +1,9 @@
 ﻿module VORLON {
     export class Tools {
+        
+        public static get IsWindowAvailable(): boolean {
+            return typeof window != 'undefined';
+        }
 
         public static QuerySelectorById(root: HTMLElement, id: string): HTMLElement {
             if (root.querySelector) {

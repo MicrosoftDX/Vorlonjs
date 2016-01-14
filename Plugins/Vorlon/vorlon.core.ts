@@ -46,7 +46,7 @@
             Core._listenClientId = listenClientId;
            
             // Checking socket.io
-            if ((<any>window).io === undefined) {
+            if (Tools.IsWindowAvailable && (<any>window).io === undefined) {
 
                 if (this._socketIOWaitCount < 10) {
                     this._socketIOWaitCount++;
@@ -94,9 +94,11 @@
             }
 
             // Handle client disconnect
-            window.addEventListener("beforeunload", function() {
-                Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
-            }, false);
+            if (Tools.IsWindowAvailable) {
+                window.addEventListener("beforeunload", function() {
+                    Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
+                }, false);
+            }
 
             // Start global dirty check, at this point document is not ready,
             // little timeout to defer starting dirtycheck
@@ -125,7 +127,7 @@
                 return;
             }
 
-            var mutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
+            var mutationObserver = Tools.IsWindowAvailable && ((<any>window).MutationObserver || (<any>window).WebKitMutationObserver);
             if (mutationObserver) {
                 if (!document.body.__vorlon)
                     document.body.__vorlon = {};
@@ -203,7 +205,7 @@
             document.body.appendChild(Core._messageNotifier);
             
             // Checking socket.io
-            if ((<any>window).io === undefined) {
+            if (Tools.IsWindowAvailable && (<any>window).io === undefined) {
 
                 if (this._socketIOWaitCount < 10) {
                     this._socketIOWaitCount++;
