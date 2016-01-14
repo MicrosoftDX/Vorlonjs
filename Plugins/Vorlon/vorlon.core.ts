@@ -120,7 +120,7 @@
 
         public startClientDirtyCheck() {
             //sometimes refresh is called before document was loaded
-            if (!document.body) {
+            if (Tools.IsWindowAvailable && !document.body) {
                 setTimeout(() => {
                     this.startClientDirtyCheck();
                 }, 200);
@@ -168,7 +168,7 @@
                     });
                 });
                 document.body.__vorlon._observerMutationObserver.observe(document.body, config);
-            } else {
+            } else if (Tools.IsWindowAvailable) {
                 console.log("dirty check using html string");
                 var content;
                 if (document.body)
@@ -269,7 +269,7 @@
                 Core._messageNotifier.innerHTML = message;
                 Core._messageNotifier.show();
             }
-            else {
+            else if (Tools.IsWindowAvailable) {
                 var div = document.createElement("div");
                 div.className = "vorlonIdentifyNumber";
                 div.style.position = "absolute";
@@ -301,7 +301,7 @@
                 Core._errorNotifier.setAttribute('duration', timeout);
                 Core._errorNotifier.show();
             }
-            else {
+            else if (Tools.IsWindowAvailable) {
                 var divError = document.createElement("div");
                 divError.style.position = "absolute";
                 divError.style.top = "0";
@@ -342,7 +342,7 @@
                     plugin.refresh();
                 }
             }
-            else {
+            else if (Tools.IsWindowAvailable) {
                 //Stop bouncing and hide waiting page
                 var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
                 VORLON.Tools.AddClass(elt, 'hidden');
@@ -351,8 +351,10 @@
             }
         }
 
-        private _OnReloadClient(id: string): void {
-            document.location.reload();
+        private _OnReloadClient(id: string): void { 
+            if (Tools.IsWindowAvailable) { 
+                document.location.reload();
+            }
         }
 
         private _RetrySendingRealtimeMessage(plugin: DashboardPlugin, message: VorlonMessage) {
