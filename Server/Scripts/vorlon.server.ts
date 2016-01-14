@@ -135,6 +135,22 @@ export module VORLON {
             app.get(this.baseURLConfig.baseURL + "/getplugins/:idsession", (req: any, res: any) => {
                 this._sendConfigJson(req, res);
             });
+            
+            app.get(this.baseURLConfig.baseURL + "/vorlon.node.max.js/", (req: any, res: any) => {
+                res.redirect("/vorlon.node.max.js/default");
+            });
+            
+            app.get(this.baseURLConfig.baseURL + "/vorlon.node.max.js/:idsession", (req: any, res: any) => {
+                this._sendVorlonJSFile(false, req, res, false, true);
+            });
+            
+            app.get(this.baseURLConfig.baseURL + "/vorlon.node.js/", (req: any, res: any) => {
+                res.redirect("/vorlon.node.js/default");
+            });
+
+            app.get(this.baseURLConfig.baseURL + "/vorlon.node.js/:idsession", (req: any, res: any) => {
+                this._sendVorlonJSFile(true, req, res, false, true);
+            });
         }
 
         private _sendConfigJson(req: any, res: any) {
@@ -153,8 +169,7 @@ export module VORLON {
             });
         }
 
-        private _sendVorlonJSFile(ismin: boolean, req: any, res: any, autostart: boolean = true) {
-            //Read Socket.io file
+        private _sendVorlonJSFile(ismin: boolean, req: any, res: any, autostart: boolean = true, nodeOnly = false) {
             var javascriptFile: string;
             var sessionid = req.params.idsession || "default";
             this.pluginsConfig.getPluginsFor(sessionid, (err, catalog) => {
@@ -170,7 +185,9 @@ export module VORLON {
                 javascriptFile += 'var vorlonBaseURL="' + baseUrl + '";\n';
 
                 //read the socket.io file if needed
-                if (catalog.includeSocketIO) {
+                if (nodeOnly) {
+                    javascriptFile += "var io = require('socket.io-client');\n"
+                } else if (catalog.includeSocketIO) {
                     javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.3.6.js"));
                 }
 
@@ -184,6 +201,9 @@ export module VORLON {
                 for (var pluginid = 0; pluginid < catalog.plugins.length; pluginid++) {
                     var plugin = catalog.plugins[pluginid];
                     if (plugin && plugin.enabled) {
+                        if (nodeOnly && !plugin.nodeCompliant) {
+                            continue;
+                        }
                         //Read Vorlon.js file
                         if (ismin) {
                             vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".client.min.js"));
@@ -197,7 +217,10 @@ export module VORLON {
                 vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + this.httpConfig.protocol + '://' + req.headers.host + baseUrl + '/vorlon/plugins"');
                 javascriptFile += "\r" + vorlonpluginfiles;
 
-                if (autostart) {
+                if (nodeOnly) {
+                    javascriptFile += "if (((typeof window != 'undefined' && window.module) || (typeof module != 'undefined')) && typeof module.exports != 'undefined') {\r\n";
+                    javascriptFile += "module.exports = VORLON;};"; 
+                } else if (autostart) {
                     javascriptFile += "\r (function() { VORLON.Core.StartClientSide('" + this.httpConfig.protocol + "://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
                 }
 

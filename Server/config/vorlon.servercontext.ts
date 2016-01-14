@@ -51,6 +51,7 @@ export module VORLON {
 		panel: string;
 		foldername: string;
 		enabled: boolean;
+        nodeCompliant: boolean;
 	}
 
 	export interface ISessionPlugins {
