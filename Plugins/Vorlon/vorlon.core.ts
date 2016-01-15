@@ -109,6 +109,7 @@
                 function exitHandler(options, err) {
                     Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
                     console.log('Node.js process closed');
+                    process.exit(0);
                 }
 
                 //do something when app is closing
