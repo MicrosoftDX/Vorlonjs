@@ -54,8 +54,7 @@ module VORLON {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         //Init ClientList Object
-                        DashboardManager.ClientList = {};
-                        document.getElementById('test').style.visibility='hidden';
+                        DashboardManager.ClientList = {};                        
 
                         //Loading client list 
                         var clients = JSON.parse(xhr.responseText);
@@ -85,8 +84,7 @@ module VORLON {
                                                
                         //Show waiting logo 
                         if(!contains || clients.length === 0){
-                            var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
-                            VORLON.Tools.RemoveClass(elt, 'hidden');
+                            DashboardManager.DisplayWaitingLogo(false);
                         }
                         
                         for (var i = 0; i < clients.length; i++) {
@@ -175,18 +173,28 @@ module VORLON {
             document.querySelector('[data-hook~=client-id]').textContent = DashboardManager.ListenClientDisplayid;
         }
         
-        static DisplayWaitingLogo(): void{
-            //Hide waiting page and let's not bounce the logo !
+        static HideWaitingLogo(): void {
+            //Stop bouncing and hide waiting page
             var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
+            VORLON.Tools.AddClass(elt, 'hidden');
+            
+            elt = <HTMLElement>document.querySelector('.waitLoader');
+            VORLON.Tools.AddClass(elt, 'hidden');
+            
+            elt = document.getElementById('reload');
             VORLON.Tools.RemoveClass(elt, 'hidden');
         }
-        
-        static DisplayBouncingLogo(): void{
+
+        static DisplayWaitingLogo(displayWaiter: boolean): void{
             //Hide waiting page and let's not bounce the logo !
             var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
             VORLON.Tools.RemoveClass(elt, 'hidden');
-            elt = <HTMLElement>document.querySelector('.waitLoader');
-            VORLON.Tools.RemoveClass(elt, 'hidden');
+            if (displayWaiter) {
+                elt = <HTMLElement>document.querySelector('.waitLoader');
+                VORLON.Tools.RemoveClass(elt, 'hidden');
+            }
+            elt = document.getElementById('reload');
+            VORLON.Tools.AddClass(elt, 'hidden');
         }
 
         public static loadPlugins(): void {
@@ -207,7 +215,7 @@ module VORLON {
             let coreLoaded = false;
               
             //Hide waiting page and let's bounce the logo !
-            DashboardManager.DisplayBouncingLogo();
+            DashboardManager.DisplayWaitingLogo(true);
 
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
@@ -288,6 +296,7 @@ module VORLON {
                                     DashboardManager.StartListeningServer(DashboardManager.ListenClientid);
                                     coreLoaded = true;
                                     this.PluginsLoaded = true;
+                                    DashboardManager.HideWaitingLogo();
                                 }
                             };
                             document.body.appendChild(pluginscript);
@@ -369,7 +378,7 @@ module VORLON {
                 if(client.clientid === DashboardManager.ListenClientid){
                     DashboardManager.ListenClientid = "";
                     DashboardManager.StartListeningServer();
-                    DashboardManager.DisplayWaitingLogo();
+                    DashboardManager.DisplayWaitingLogo(false);
                 }
                 
                 clientInList.parentElement.removeChild(clientInList);   
