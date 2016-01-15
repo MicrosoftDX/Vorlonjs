@@ -12,7 +12,7 @@
 
             return document.getElementById(id);
         }
-
+ 
         public static SetImmediate(func: () => void): void {
             if (window.setImmediate) {
                 setImmediate(func);

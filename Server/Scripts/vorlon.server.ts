@@ -43,6 +43,13 @@ export module VORLON {
                 });
             }
         }
+        
+        public noCache(res:any){
+            //Add header no-cache
+            res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+            res.header('Expires', '-1');
+            res.header('Pragma', 'no-cache');
+        }
 
         public addRoutes(app: express.Express, passport: any): void {
             app.get(this.baseURLConfig.baseURL + "/api/createsession", (req: any, res: any) => {
@@ -57,9 +64,10 @@ export module VORLON {
                     }
                 }
                 this._sessions.remove(req.params.idSession);
-
+                
+                this.noCache(res);
                 res.writeHead(200, {});
-                res.end();
+                res.end(); 
             });
 
             app.get(this.baseURLConfig.baseURL + "/api/getclients/:idSession", (req: any, res: any) => {
@@ -80,10 +88,8 @@ export module VORLON {
                 else {
                     this._log.warn("API : No client in session " + req.params.idSession, { type: "API", session: req.params.idSession });
                 }
-                //Add header no-cache
-                res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-                res.header('Expires', '-1');
-                res.header('Pragma', 'no-cache');
+               
+                this.noCache(res);
                 this.json(res, clients);
             });
 
