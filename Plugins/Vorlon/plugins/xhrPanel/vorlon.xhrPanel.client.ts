@@ -69,6 +69,7 @@ module VORLON {
             //see https://msdn.microsoft.com/en-us/library/hh772834(v=vs.85).aspx
             
             xhrSource.prototype.open = function() {
+                data.id = VORLON.Tools.CreateGUID();
                 data.method = arguments[0];
                 data.url = arguments[1];
                 that.trace('request for ' + data.url);
@@ -92,7 +93,7 @@ module VORLON {
                     that.sendCommandToDashboard('xhr', data);
                 });
                 
-                return this._previousOpen.apply(this, arguments);
+                return that._previousOpen.apply(this, arguments);
             }
             
             xhrSource.prototype.setRequestHeader = function() {
