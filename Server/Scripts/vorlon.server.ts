@@ -70,7 +70,6 @@ export module VORLON {
                     for (var client in session.connectedClients) {
                         var currentclient = session.connectedClients[client];
                         if (currentclient.opened) {
-                            var name = tools.VORLON.Tools.GetOperatingSystem(currentclient.ua);
                             clients.push(currentclient.data);
                             nbClients++;
                         }
@@ -296,7 +295,7 @@ export module VORLON {
                 var client = <vorloncontext.VORLON.Client>session.connectedClients[metadata.clientId];
                 var dashboard = this.dashboards[metadata.sessionId];
                 if (client == undefined) {
-                    var client = new vorloncontext.VORLON.Client(metadata.clientId, data.ua, socket, ++session.nbClients);
+                    var client = new vorloncontext.VORLON.Client(metadata.clientId, data.ua, data.noWindow, socket, ++session.nbClients);
                     client.identity = data.identity;
                     session.connectedClients[metadata.clientId] = client;
                     this._log.debug(formatLog("PLUGIN", "Send Add Client to dashboard (" + client.displayId + ")[" + data.ua + "] socketid = " + socket.id, receiveMessage));

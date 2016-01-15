@@ -27,10 +27,10 @@
                 { "id": "WEBSTANDARDS", "name": "Best practices", "panel": "top", "foldername": "webstandards", "enabled": true },
                 { "id": "XHRPANEL", "name": "XHR", "panel": "top", "foldername": "xhrPanel", "enabled": true, "nodeCompliant": true },
                 { "id": "NGINSPECTOR", "name": "Ng. Inspector", "panel": "top", "foldername": "ngInspector", "enabled": false },
-                { "id": "NETWORK", "name": "Network Monitor", "panel": "top", "foldername": "networkMonitor", "enabled": true, "nodeCompliant": true },
+                { "id": "NETWORK", "name": "Network Monitor", "panel": "top", "foldername": "networkMonitor", "enabled": true },
                 { "id": "RESOURCES", "name": "Resources Explorer", "panel": "top", "foldername": "resourcesExplorer", "enabled": true },
                 { "id": "DEVICE", "name": "My Device", "panel": "top", "foldername": "device", "enabled": true },
-                { "id": "UNITTEST", "name": "Unit Test", "panel": "top", "foldername": "unitTestRunner", "enabled": true, "nodeCompliant": true },
+                { "id": "UNITTEST", "name": "Unit Test", "panel": "top", "foldername": "unitTestRunner", "enabled": true},
                 { "id": "BABYLONINSPECTOR", "name": "Babylon Inspector", "panel": "top", "foldername": "babylonInspector", "enabled": false }
             ]
         }

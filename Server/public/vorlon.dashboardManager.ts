@@ -14,6 +14,7 @@ module VORLON {
         static SessionId: string;
         static ClientList: any;
         static PluginsLoaded: boolean;
+        static NoWindowMode: boolean;
         
         constructor(sessionid: string, listenClientid: string) {
             //Dashboard session id
@@ -70,6 +71,10 @@ module VORLON {
                             }
                         }
                         
+                        if (!contains) {
+                            DashboardManager.ListenClientid = "";
+                        }
+                        
                         //Get the client list placeholder
                         var divClientsListPane = <HTMLDivElement> document.getElementById("clientsListPaneContent");
                         
@@ -103,7 +108,7 @@ module VORLON {
         public static AddClientToList(client: any){
            var clientlist = <HTMLUListElement> document.getElementById("clientsListPaneContentList");
             
-            if (DashboardManager.ListenClientid === "") {
+            if (!DashboardManager.ListenClientid) {
                 DashboardManager.ListenClientid = client.clientid;
             }
 
@@ -164,6 +169,7 @@ module VORLON {
             
             if(DashboardManager.ClientList[DashboardManager.ListenClientid] != null){
                 DashboardManager.ListenClientDisplayid = DashboardManager.ClientList[DashboardManager.ListenClientid].displayid;
+                DashboardManager.NoWindowMode = DashboardManager.ClientList[DashboardManager.ListenClientid].noWindow;
             }
             
             document.querySelector('[data-hook~=client-id]').textContent = DashboardManager.ListenClientDisplayid;
@@ -212,22 +218,37 @@ module VORLON {
                         } catch (ex) {
                             throw new Error("The catalog JSON is not well-formed");
                         }
+                        
+                        DashboardManager.UpdateClientInfo();
 
                         var pluginLoaded = 0;
                         var pluginstoload = 0;
                         
                         //Cleaning unwanted plugins
                         for(var i = 0; i < catalog.plugins.length; i++){
-                            if(catalog.plugins[i].enabled){
+                            var plugin = catalog.plugins[i]; 
+                            
+                            if(plugin.enabled){
+                                if (DashboardManager.NoWindowMode) {
+                                    if (!plugin.nodeCompliant) {
+                                        continue;
+                                    }
+                                }
                                 pluginstoload ++;
                             }
                         }
 
                         for (var i = 0; i < catalog.plugins.length; i++) {
-                            var plugin = catalog.plugins[i];
+                            var plugin = catalog.plugins[i]; 
                             
-                            if(!plugin.enabled){
+                            if (!plugin.enabled){
                                 continue;
+                            }
+                            
+                            if (DashboardManager.NoWindowMode) {
+                                if (!plugin.nodeCompliant) {
+                                    continue;
+                                }
                             }
                             
                             var existingLocation = document.querySelector('[data-plugin=' + plugin.id + ']');
@@ -297,8 +318,6 @@ module VORLON {
                             divPluginsTop.style.height = 'calc(100% - 58px)';
                             $('.hsplitter', divPluginsTop.parentElement).css('top', 'calc(100% - 58px)');
                         });
-                        
-                        DashboardManager.UpdateClientInfo();
                     }
                 }
             }
