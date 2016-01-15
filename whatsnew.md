@@ -1,3 +1,21 @@
+## 0.1.1
+
+- Plugins
+	- XhrPanel : changing hook to go over prototype for node.js implementation
+    - Best practices : integration with aXe rules for accessibility : http://www.deque.com/products/aXe/
+    - Various bug fixes and improvements
+- Core
+	- Added node.js process debug management
+- Dashboard
+	- Stability improvements
+- Vorlon Desktop   
+    - First release of this new way to deploy vorlon without having to use NPM command line
+    - Read mode here : http://vorlonjs.io/#vorlon-desktop
+- General
+	- Fixed Azure deploy
+    - Generation of source maps file to allow debugging using TypeScript files
+    - Adding stuff around DevOps : http://blogs.technet.com/b/devops/archive/2016/01/12/vorlonjs-a-journey-to-devops-introducing-the-blog-post-series.aspx
+
 ## 0.1.0
 
 - Plugins
