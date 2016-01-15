@@ -106,9 +106,13 @@
             }
             else {
                 process.stdin.resume();//so the program will not close instantly
+                var exitMessageWritten = false;
                 function exitHandler(options, err) {
-                    Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
-                    console.log('Node.js process closed');
+                    if(!exitMessageWritten){
+                        Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
+                        console.log('Disconnected from Vorlon.js instance');
+                        exitMessageWritten = true;
+                    }
                     process.exit(0);
                 }
 
@@ -118,9 +122,6 @@
                 //catches ctrl+c event
                 process.on('SIGINT', exitHandler.bind(null, {exit:true}));
                 
-                //catches ctrl+c event
-                process.on('SIGTERM', exitHandler.bind(null, {exit:true}));
-
                 //catches uncaught exceptions
                 process.on('uncaughtException', exitHandler.bind(null, {exit:true}));        
             }

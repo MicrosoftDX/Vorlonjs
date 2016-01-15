@@ -1,6 +1,8 @@
 var vorlonWrapper = require("../../../VorlonNodeWrapper");
+var serverUrl = "http://localhost:1337";
+var dashboardSession = "default";
 
-vorlonWrapper.start("http://localhost:1337", "default", function(success, status){
+vorlonWrapper.start(serverUrl, dashboardSession, function(success, status){
     if(success){
         var a = 2;
         var first = function(){
@@ -39,6 +41,9 @@ vorlonWrapper.start("http://localhost:1337", "default", function(success, status
         }
 
         first();
+    }
+    else {
+        console.log("Vorlon.js server not found (" + serverUrl + "/" + dashboardSession);
     }
 });
 
