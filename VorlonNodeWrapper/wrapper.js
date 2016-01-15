@@ -15,10 +15,7 @@ localStorage = new LocalStorage('./vorlon-storage');
         xhr.onload = function (){
             try {
                 eval(xhr.responseText);
-                VORLON.Core.StartClientSide(vorlonjsURL, dashboardId);
-                
-                
-                
+                VORLON.Core.StartClientSide(vorlonjsURL, dashboardId);                
                 callback(true, "n/a");            
             }
             catch(e){
