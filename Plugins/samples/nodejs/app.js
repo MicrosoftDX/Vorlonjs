@@ -18,6 +18,21 @@ vorlonWrapper.start("http://localhost:1337", "default", function(success, status
                 function(){
                     console.log(a++);
                     first();
+                    
+                    if (a > 10) {
+                        var XMLHttpRequest = require("xhr2");
+                        var xhr = new XMLHttpRequest();
+                        xhr.onreadystatechange = function(){
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200) {
+                                    console.log("xhr OK");
+                                }
+                            }
+                        }
+
+                        xhr.open("GET", "http://www.google.fr");
+                        xhr.send();
+                    }
                 },
                 1000
             );

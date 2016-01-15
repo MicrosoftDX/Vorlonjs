@@ -3,6 +3,8 @@ module VORLON {
     export class XHRPanelClient extends ClientPlugin {
         public hooked: boolean = false;
         public cache: Array<NetworkEntry> = [];
+        private _previousOpen;
+        private _previousSetRequestHeader;
 
         constructor() {
             super("xhrPanel");
@@ -40,49 +42,40 @@ module VORLON {
 
         public setupXMLHttpRequestHook(){
             var that = this;
-            var w = <any>window;
-            w.___XMLHttpRequest = w.XMLHttpRequest;
-            var XmlHttpRequestProxy = function() {
-                var xhr = new w.___XMLHttpRequest();
-                var data = {
-                    id: VORLON.Tools.CreateGUID(),
-                    url: null,
-                    status : null,
-                    statusText : null,
-                    method: null,
-                    responseType: null,
-                    responseHeaders : null,
-                    requestHeaders : [],
-                    readyState: 0,
-                }
-                that.cache.push(data);
-                xhr.__open = xhr.open;
-                xhr.__send = xhr.send;
-                xhr.__setRequestHeader = xhr.setRequestHeader;
-                
-                //todo catch send to get posted data
-                //see https://msdn.microsoft.com/en-us/library/hh772834(v=vs.85).aspx
-                
-                xhr.open = function() {
-                    data.method = arguments[0];
-                    data.url = arguments[1];
-                    that.trace('request for ' + data.url);
-                    that.sendCommandToDashboard('xhr', data);
-                    
-                    xhr.__open.apply(xhr, arguments);
-                    return xhr.__open.apply(xhr, arguments);
-                }
-                
-                xhr.setRequestHeader = function() {
-                    var header = {
-                        name : arguments[0],
-                        value : arguments[1]
-                    }
-                    data.requestHeaders.push(header);
-                    return xhr.__setRequestHeader.apply(xhr, arguments);
-                }
+            var xhrSource;
+            
+            if (!Tools.IsWindowAvailable) {
+                xhrSource = require("xhr2");
+            } else {
+                xhrSource = XMLHttpRequest;
+            }
 
-                xhr.addEventListener('readystatechange', () => {
+            var data = {
+                id: VORLON.Tools.CreateGUID(),
+                url: null,
+                status : null,
+                statusText : null,
+                method: null,
+                responseType: null,
+                responseHeaders : null,
+                requestHeaders : [],
+                readyState: 0,
+            }
+            this.cache.push(data);
+            this._previousOpen = xhrSource.prototype.open;
+            this._previousSetRequestHeader = xhrSource.prototype.setRequestHeader;
+            
+            //todo catch send to get posted data
+            //see https://msdn.microsoft.com/en-us/library/hh772834(v=vs.85).aspx
+            
+            xhrSource.prototype.open = function() {
+                data.method = arguments[0];
+                data.url = arguments[1];
+                that.trace('request for ' + data.url);
+                that.sendCommandToDashboard('xhr', data);
+                
+                this.addEventListener('readystatechange', function() {
+                    var xhr = this;
                     data.readyState = xhr.readyState;
                     that.trace('STATE CHANGED ' + data.readyState);
 
@@ -91,17 +84,26 @@ module VORLON {
                         data.status = xhr.status;    
                         data.statusText = xhr.statusText;
                         
-                        if (xhr.getAllResponseHeaders)    
+                        if (xhr.getAllResponseHeaders)     
                             data.responseHeaders = xhr.getAllResponseHeaders();
                         
                         that.trace('LOADED !!!');
                     }
                     that.sendCommandToDashboard('xhr', data);
                 });
-
-                return xhr;
+                
+                return this._previousOpen.apply(this, arguments);
             }
-            w.XMLHttpRequest = XmlHttpRequestProxy;
+            
+            xhrSource.prototype.setRequestHeader = function() {
+                var header = {
+                    name : arguments[0],
+                    value : arguments[1]
+                }
+                data.requestHeaders.push(header);
+                return this._previousSetRequestHeader.apply(this, arguments);
+            }
+
             this.hooked = true;
             this.sendStateToDashboard();
         }
@@ -109,8 +111,18 @@ module VORLON {
         public removeXMLHttpRequestHook() {
             if (this.hooked) {
                 this.trace('xhrPanel remove hook');
-                var w = <any>window;
-                w.XMLHttpRequest = w.___XMLHttpRequest;
+                
+                var xhrSource;
+            
+                if (!Tools.IsWindowAvailable) {
+                    xhrSource = require("xhr2");
+                } else {
+                    xhrSource = XMLHttpRequest;
+                }
+                
+                xhrSource.prototype.open = this._previousOpen;
+                xhrSource.prototype.setRequestHeader = this._previousSetRequestHeader;
+                
                 this.hooked = false;
                 this.sendStateToDashboard();
             }
