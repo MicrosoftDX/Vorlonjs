@@ -104,6 +104,25 @@
                     Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
                 }, false);
             }
+            else {
+                process.stdin.resume();//so the program will not close instantly
+                function exitHandler(options, err) {
+                    Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
+                    console.log('Node.js process closed');
+                }
+
+                //do something when app is closing
+                process.on('exit', exitHandler.bind(null,{cleanup:true}));
+
+                //catches ctrl+c event
+                process.on('SIGINT', exitHandler.bind(null, {exit:true}));
+                
+                //catches ctrl+c event
+                process.on('SIGTERM', exitHandler.bind(null, {exit:true}));
+
+                //catches uncaught exceptions
+                process.on('uncaughtException', exitHandler.bind(null, {exit:true}));        
+            }
 
             // Start global dirty check, at this point document is not ready,
             // little timeout to defer starting dirtycheck
