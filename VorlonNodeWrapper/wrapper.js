@@ -7,7 +7,7 @@ localStorage = new LocalStorage('./vorlon-storage');
         if(dashboardId == undefined){
             dashboardId = "default";
         }
-        
+                       
         var XMLHttpRequest = require("xhr2");
         var xhr = new XMLHttpRequest();
         var vorlonNodeUrl = urljoin(vorlonjsURL, "vorlon.node.max.js/" + dashboardId);

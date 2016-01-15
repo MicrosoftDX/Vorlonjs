@@ -5,6 +5,7 @@ module VORLON {
         public cache: Array<NetworkEntry> = [];
         private _previousOpen;
         private _previousSetRequestHeader;
+        private _hookAlreadyDone;
 
         constructor() {
             super("xhrPanel");
@@ -40,16 +41,7 @@ module VORLON {
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {            
         }
 
-        public setupXMLHttpRequestHook(){
-            var that = this;
-            var xhrSource;
-            
-            if (!Tools.IsWindowAvailable) {
-                xhrSource = require("xhr2");
-            } else {
-                xhrSource = XMLHttpRequest;
-            }
-
+        private _hookPrototype(that, xhrSource) {
             var data = {
                 id: VORLON.Tools.CreateGUID(),
                 url: null,
@@ -62,6 +54,7 @@ module VORLON {
                 readyState: 0,
             }
             this.cache.push(data);
+            
             this._previousOpen = xhrSource.prototype.open;
             this._previousSetRequestHeader = xhrSource.prototype.setRequestHeader;
             
@@ -69,6 +62,7 @@ module VORLON {
             //see https://msdn.microsoft.com/en-us/library/hh772834(v=vs.85).aspx
             
             xhrSource.prototype.open = function() {
+                data.id = VORLON.Tools.CreateGUID();
                 data.method = arguments[0];
                 data.url = arguments[1];
                 that.trace('request for ' + data.url);
@@ -92,7 +86,7 @@ module VORLON {
                     that.sendCommandToDashboard('xhr', data);
                 });
                 
-                return this._previousOpen.apply(this, arguments);
+                return that._previousOpen.apply(this, arguments);
             }
             
             xhrSource.prototype.setRequestHeader = function() {
@@ -104,6 +98,29 @@ module VORLON {
                 return this._previousSetRequestHeader.apply(this, arguments);
             }
 
+        }
+
+        public setupXMLHttpRequestHook(){
+            var that = this;
+            var xhrSource;
+            
+            if (!Tools.IsWindowAvailable) {
+                if (!this._hookAlreadyDone) {
+                    this._hookAlreadyDone = true;
+                    var path = require("path");
+                    var requireHook = require("require-hook");
+                    requireHook.attach(path.resolve());
+                    requireHook.setEvent(function(result, e){
+                        if (that.hooked) {
+                            that._hookPrototype(that, result);
+                        }
+                        return result;                        
+                    });                    
+                }
+            } else {
+                this._hookPrototype(this, XMLHttpRequest);
+            }          
+      
             this.hooked = true;
             this.sendStateToDashboard();
         }
@@ -112,17 +129,13 @@ module VORLON {
             if (this.hooked) {
                 this.trace('xhrPanel remove hook');
                 
-                var xhrSource;
             
-                if (!Tools.IsWindowAvailable) {
-                    xhrSource = require("xhr2");
-                } else {
-                    xhrSource = XMLHttpRequest;
+                if (Tools.IsWindowAvailable) {
+                    var xhrSource = XMLHttpRequest;
+                    xhrSource.prototype.open = this._previousOpen;
+                    xhrSource.prototype.setRequestHeader = this._previousSetRequestHeader;
                 }
-                
-                xhrSource.prototype.open = this._previousOpen;
-                xhrSource.prototype.setRequestHeader = this._previousSetRequestHeader;
-                
+                                
                 this.hooked = false;
                 this.sendStateToDashboard();
             }

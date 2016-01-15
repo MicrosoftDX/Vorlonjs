@@ -21,7 +21,8 @@ vorlonWrapper.start(serverUrl, dashboardSession, function(success, status){
                     console.log(a++);
                     first();
                     
-                    if (a > 10) {
+                    if (a > 2) {
+                        
                         var XMLHttpRequest = require("xhr2");
                         var xhr = new XMLHttpRequest();
                         xhr.onreadystatechange = function(){
