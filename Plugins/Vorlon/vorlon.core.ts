@@ -125,7 +125,8 @@
             else {
                 heloMessage = {
                     ua: "Node.js",
-                    identity : localStorage["vorlonClientIdentity"]               
+                    identity : localStorage["vorlonClientIdentity"],
+                    noWindow: true               
                 };
             }
 

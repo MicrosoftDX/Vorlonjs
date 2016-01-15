@@ -168,13 +168,14 @@
         public startClientSide(): void {
             this._cache = [];
             this._pendingEntries = [];
+            var console = Tools.IsWindowAvailable ? window.console : global.console;
             
             // Overrides clear, log, error and warn
-            this._hooks.clear = Tools.Hook(window.console, "clear",(): void => {
+            this._hooks.clear = Tools.Hook(console, "clear",(): void => {
                 this.clearClientConsole();
             });
             
-            this._hooks.dir = Tools.Hook(window.console, "dir",(message: any): void => {
+            this._hooks.dir = Tools.Hook(console, "dir",(message: any): void => {
                 var data = {
                     messages: this.getMessages(message),
                     type: "dir"
@@ -183,7 +184,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.log = Tools.Hook(window.console, "log", (message: any): void => {
+            this._hooks.log = Tools.Hook(console, "log", (message: any): void => {
                 var data = {
                     messages: this.getMessages(message),
                     type: "log"
@@ -192,7 +193,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.debug = Tools.Hook(window.console, "debug", (message: any): void => {
+            this._hooks.debug = Tools.Hook(console, "debug", (message: any): void => {
                 var data = {
                     messages: this.getMessages(message),
                     type: "debug"
@@ -201,7 +202,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.info = Tools.Hook(window.console, "info",(message: any): void => {
+            this._hooks.info = Tools.Hook(console, "info",(message: any): void => {
                 var data = {
                     messages: this.getMessages(message),
                     type: "info"
@@ -210,7 +211,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.warn = Tools.Hook(window.console, "warn",(message: any): void => {
+            this._hooks.warn = Tools.Hook(console, "warn",(message: any): void => {
                 var data = {
                     messages: this.getMessages(message),
                     type: "warn"
@@ -219,7 +220,7 @@
                 this.addEntry(data);
             });
 
-            this._hooks.error = Tools.Hook(window.console, "error",(message: any): void => {
+            this._hooks.error = Tools.Hook(console, "error",(message: any): void => {
                 var data = {
                     messages: this.getMessages(message),
                     type: "error"
@@ -244,13 +245,15 @@
                 return error;
             });
 
-            window.addEventListener('error', (err) => {
-                
-                if (err && (<any>err).error) {
-                    //this.addEntry({ messages: [err.error.message], type: "exception" });
-                    this.addEntry({ messages: [(<any>err).error.stack], type: "exception" });
-                }
-            });
+            if (Tools.IsWindowAvailable) {
+                window.addEventListener('error', (err) => {
+                    
+                    if (err && (<any>err).error) {
+                        //this.addEntry({ messages: [err.error.message], type: "exception" });
+                        this.addEntry({ messages: [(<any>err).error.stack], type: "exception" });
+                    }
+                });
+            }
         }
 
         public clearClientConsole() {

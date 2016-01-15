@@ -65,6 +65,11 @@
             if (currentLowerUA.indexOf("firefox") >= 0) {
                 return "Firefox OS"; // Web is the plaform
             }
+            
+            // Node.js
+            if (currentLowerUA.indexOf("node.js") >= 0) {
+                return "Node.js"; 
+            }
     
             return "Unknown operating system";
         }

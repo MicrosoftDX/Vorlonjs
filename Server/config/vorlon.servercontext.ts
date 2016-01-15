@@ -164,6 +164,7 @@ export module VORLON {
         public opened: boolean;
         public ua: string;
 		public identity: string;
+        public noWindow: boolean;
 
         public get data(): any {
             return {
@@ -171,16 +172,18 @@ export module VORLON {
 				"displayid": this.displayId,
 				"ua": this.ua,
 				"identity" : this.identity,
-				"name": tools.VORLON.Tools.GetOperatingSystem(this.ua)
+				"name": tools.VORLON.Tools.GetOperatingSystem(this.ua),
+                "noWindow": this.noWindow
 			};
         }
 
-        constructor(clientId: string, ua: string, socket: SocketIO.Socket, displayId: number, opened: boolean = true) {
+        constructor(clientId: string, ua: string, noWindow: boolean, socket: SocketIO.Socket, displayId: number, opened: boolean = true) {
             this.clientId = clientId;
             this.ua = ua;
             this.socket = socket;
             this.displayId = displayId;
             this.opened = opened;
+            this.noWindow = noWindow;
         }
     }
 
