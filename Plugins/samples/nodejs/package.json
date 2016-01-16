@@ -1,0 +1,16 @@
+{
+  "name": "testvorlonjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "vorlon-allplugins.max.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^1.3.7",
+    "socket.io-client": "^1.3.7",
+    "xhr2": "^0.1.3"
+  }
+}

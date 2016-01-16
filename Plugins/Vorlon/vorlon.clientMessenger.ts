@@ -64,12 +64,12 @@
                     break;
             }
 
-            if (this.isConnected) {
+            if (this.isConnected) { 
                 var manager = io.Manager(serverUrl);
                 manager.on('connect_error',(err) => {
                     if (this.onError) {
                         this.onError(err);
-                    }
+                    } 
                 });
 
                 this._socket.on('message', message => {

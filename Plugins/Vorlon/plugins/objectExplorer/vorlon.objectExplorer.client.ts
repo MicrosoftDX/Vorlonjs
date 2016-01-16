@@ -14,7 +14,7 @@
 
         private STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
         private ARGUMENT_NAMES = /([^\s,]+)/g;
-        private rootProperty = 'window';
+        private rootProperty = Tools.IsWindowAvailable ? 'window' : "global";
 
         private getFunctionArgumentNames(func) {
             var result = [];
@@ -154,7 +154,7 @@
         }
 
         private _getProperty(propertyPath: string): ObjExplorerObjDescriptor {
-            var selectedObj = window;
+            var selectedObj = Tools.IsWindowAvailable ? window : global;
             var tokens = [this.rootProperty];
 
             this.trace("getting obj at " + propertyPath);

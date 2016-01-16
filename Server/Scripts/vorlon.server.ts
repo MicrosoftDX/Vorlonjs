@@ -43,6 +43,13 @@ export module VORLON {
                 });
             }
         }
+        
+        public noCache(res:any){
+            //Add header no-cache
+            res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+            res.header('Expires', '-1');
+            res.header('Pragma', 'no-cache');
+        }
 
         public addRoutes(app: express.Express, passport: any): void {
             app.get(this.baseURLConfig.baseURL + "/api/createsession", (req: any, res: any) => {
@@ -57,9 +64,10 @@ export module VORLON {
                     }
                 }
                 this._sessions.remove(req.params.idSession);
-
+                
+                this.noCache(res);
                 res.writeHead(200, {});
-                res.end();
+                res.end(); 
             });
 
             app.get(this.baseURLConfig.baseURL + "/api/getclients/:idSession", (req: any, res: any) => {
@@ -70,7 +78,6 @@ export module VORLON {
                     for (var client in session.connectedClients) {
                         var currentclient = session.connectedClients[client];
                         if (currentclient.opened) {
-                            var name = tools.VORLON.Tools.GetOperatingSystem(currentclient.ua);
                             clients.push(currentclient.data);
                             nbClients++;
                         }
@@ -81,10 +88,8 @@ export module VORLON {
                 else {
                     this._log.warn("API : No client in session " + req.params.idSession, { type: "API", session: req.params.idSession });
                 }
-                //Add header no-cache
-                res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-                res.header('Expires', '-1');
-                res.header('Pragma', 'no-cache');
+               
+                this.noCache(res);
                 this.json(res, clients);
             });
 
@@ -135,6 +140,22 @@ export module VORLON {
             app.get(this.baseURLConfig.baseURL + "/getplugins/:idsession", (req: any, res: any) => {
                 this._sendConfigJson(req, res);
             });
+            
+            app.get(this.baseURLConfig.baseURL + "/vorlon.node.max.js/", (req: any, res: any) => {
+                res.redirect("/vorlon.node.max.js/default");
+            });
+            
+            app.get(this.baseURLConfig.baseURL + "/vorlon.node.max.js/:idsession", (req: any, res: any) => {
+                this._sendVorlonJSFile(false, req, res, false, true);
+            });
+            
+            app.get(this.baseURLConfig.baseURL + "/vorlon.node.js/", (req: any, res: any) => {
+                res.redirect("/vorlon.node.js/default");
+            });
+
+            app.get(this.baseURLConfig.baseURL + "/vorlon.node.js/:idsession", (req: any, res: any) => {
+                this._sendVorlonJSFile(true, req, res, false, true);
+            });
         }
 
         private _sendConfigJson(req: any, res: any) {
@@ -153,8 +174,7 @@ export module VORLON {
             });
         }
 
-        private _sendVorlonJSFile(ismin: boolean, req: any, res: any, autostart: boolean = true) {
-            //Read Socket.io file
+        private _sendVorlonJSFile(ismin: boolean, req: any, res: any, autostart: boolean = true, nodeOnly = false) {
             var javascriptFile: string;
             var sessionid = req.params.idsession || "default";
             this.pluginsConfig.getPluginsFor(sessionid, (err, catalog) => {
@@ -170,7 +190,9 @@ export module VORLON {
                 javascriptFile += 'var vorlonBaseURL="' + baseUrl + '";\n';
 
                 //read the socket.io file if needed
-                if (catalog.includeSocketIO) {
+                if (nodeOnly) {
+                    javascriptFile += "var io = require('socket.io-client');\n"
+                } else if (catalog.includeSocketIO) {
                     javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.3.6.js"));
                 }
 
@@ -184,6 +206,9 @@ export module VORLON {
                 for (var pluginid = 0; pluginid < catalog.plugins.length; pluginid++) {
                     var plugin = catalog.plugins[pluginid];
                     if (plugin && plugin.enabled) {
+                        if (nodeOnly && !plugin.nodeCompliant) {
+                            continue;
+                        }
                         //Read Vorlon.js file
                         if (ismin) {
                             vorlonpluginfiles += fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + plugin.foldername + "/vorlon." + plugin.foldername + ".client.min.js"));
@@ -197,7 +222,10 @@ export module VORLON {
                 vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + this.httpConfig.protocol + '://' + req.headers.host + baseUrl + '/vorlon/plugins"');
                 javascriptFile += "\r" + vorlonpluginfiles;
 
-                if (autostart) {
+                if (nodeOnly) {
+                    javascriptFile += "if (((typeof window != 'undefined' && window.module) || (typeof module != 'undefined')) && typeof module.exports != 'undefined') {\r\n";
+                    javascriptFile += "module.exports = VORLON;};"; 
+                } else if (autostart) {
                     javascriptFile += "\r (function() { VORLON.Core.StartClientSide('" + this.httpConfig.protocol + "://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
                 }
 
@@ -273,7 +301,7 @@ export module VORLON {
                 var client = <vorloncontext.VORLON.Client>session.connectedClients[metadata.clientId];
                 var dashboard = this.dashboards[metadata.sessionId];
                 if (client == undefined) {
-                    var client = new vorloncontext.VORLON.Client(metadata.clientId, data.ua, socket, ++session.nbClients);
+                    var client = new vorloncontext.VORLON.Client(metadata.clientId, data.ua, data.noWindow, socket, ++session.nbClients);
                     client.identity = data.identity;
                     session.connectedClients[metadata.clientId] = client;
                     this._log.debug(formatLog("PLUGIN", "Send Add Client to dashboard (" + client.displayId + ")[" + data.ua + "] socketid = " + socket.id, receiveMessage));

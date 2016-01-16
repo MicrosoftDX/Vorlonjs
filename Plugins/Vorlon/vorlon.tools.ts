@@ -1,5 +1,9 @@
 ﻿module VORLON {
     export class Tools {
+        
+        public static get IsWindowAvailable(): boolean {
+            return typeof window != 'undefined';
+        }
 
         public static QuerySelectorById(root: HTMLElement, id: string): HTMLElement {
             if (root.querySelector) {
@@ -8,7 +12,7 @@
 
             return document.getElementById(id);
         }
-
+ 
         public static SetImmediate(func: () => void): void {
             if (window.setImmediate) {
                 setImmediate(func);

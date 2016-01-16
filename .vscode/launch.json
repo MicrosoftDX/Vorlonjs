@@ -51,6 +51,19 @@
 			"runtimeExecutable": "desktop/node_modules/electron-prebuilt/dist/electron.exe",
 			"env": {}
 		},
+        {
+			// not working since latest vs code and electron versions :-(
+			"name": "Launch node.js sample",
+			"type": "node",
+			"program": "Plugins/samples/nodejs/app.js",
+			"stopOnEntry": false,
+			"args": [
+				"--nolazy"
+			],
+			"cwd": ".",
+			"runtimeExecutable": null,
+			"env": {}
+		},
 		{
 			// Name of configuration; appears in the launch configuration drop down menu.
 			"name": "Launch w/TypeScript",
