@@ -4,6 +4,7 @@ IF "%1"=="" GOTO :usage
 IF "%2"=="" GOTO :usage
 IF "%3"=="" GOTO :usage
 IF "%4"=="" GOTO :usage
+IF "%5"=="" GOTO :usage
 
 @ECHO "SET DOCKER_HOST TO %1"
 SET DOCKER_HOST=%1
@@ -12,7 +13,7 @@ SET DOCKER_HOST=%1
 docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" build -t jcorioland/vorlonjs:0.1 .
 
 @ECHO "LOG INTO DOCKER HUB"
-docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" login --username="%3" --password="%4"
+docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" login -u "%3" -p "%4" -e "%5"
 
 @ECHO "PUSH IMAGE INTO DOCKER HUB"
 docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" push jcorioland/vorlonjs:0.1
