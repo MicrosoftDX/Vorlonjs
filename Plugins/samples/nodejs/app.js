@@ -4,6 +4,11 @@ var dashboardSession = "default";
 
 vorlonWrapper.start(serverUrl, dashboardSession, function(success, status){
     if(success){
+        console.log({
+            "ok": "oui",
+            "non": "si"
+        });
+        
         var a = 2;
         var first = function(){
             setTimeout(
