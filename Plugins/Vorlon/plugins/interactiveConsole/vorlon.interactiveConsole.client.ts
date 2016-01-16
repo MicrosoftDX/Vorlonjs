@@ -107,9 +107,12 @@
                 for (var i = 0, l = messages.length; i < l; i++) {
                     var msg = messages[i];
                     if (typeof msg === 'string' || typeof msg === 'number') {
-                        resmessages.push(msg);
+                        resmessages.push(msg);  
                     } else {
-                        if (msg == window || msg == document) {
+                        if (!Tools.IsWindowAvailable){
+                            resmessages.push(this.inspect(msg, msg, 0));
+                        }
+                        else if(msg == window || msg == document) {
                             resmessages.push('VORLON : object cannot be inspected, too big...');
                         } else {
                             resmessages.push(this.inspect(msg, msg, 0));
