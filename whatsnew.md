@@ -9,7 +9,7 @@
     	- Various bug fixes and improvements
     		- Removed redis dependency
     		- Moved to socket.io 1.4+
-    		- TOns of small fixes all around the place
+    		- Tons of small fixes all around the place
 - Core
 	- Added node.js remote debug support. Now plugins can be flagged with nodeCompliant = true
 - Dashboard
