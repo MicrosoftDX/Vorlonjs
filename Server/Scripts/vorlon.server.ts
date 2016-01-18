@@ -222,10 +222,10 @@ export module VORLON {
                 vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + this.httpConfig.protocol + '://' + req.headers.host + baseUrl + '/vorlon/plugins"');
                 javascriptFile += "\r" + vorlonpluginfiles;
 
-                if (nodeOnly) {
-                    javascriptFile += "if (((typeof window != 'undefined' && window.module) || (typeof module != 'undefined')) && typeof module.exports != 'undefined') {\r\n";
-                    javascriptFile += "module.exports = VORLON;};"; 
-                } else if (autostart) {
+                javascriptFile += "if (((typeof window != 'undefined' && window.module) || (typeof module != 'undefined')) && typeof module.exports != 'undefined') {\r\n";
+                javascriptFile += "module.exports = VORLON;};\r\n"; 
+                
+                if (autostart) {
                     javascriptFile += "\r (function() { VORLON.Core.StartClientSide('" + this.httpConfig.protocol + "://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
                 }
 
