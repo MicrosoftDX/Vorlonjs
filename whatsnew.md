@@ -2,27 +2,27 @@
 
 - Plugins
 	- XhrPanel: changing hook to go over prototype for node.js implementation
-    	- Best practices: 
-    		- integration with aXe rules for accessibility : http://www.deque.com/products/aXe/
-    		- Moved all code to client side
-    	- Updated Modernizr plugin to support modernizr 3.0
-    	- Various bug fixes and improvements
-    		- Removed redis dependency
-    		- Moved to socket.io 1.4+
-    		- Tons of small fixes all around the place
+	- Best practices: 
+		- integration with aXe rules for accessibility : http://www.deque.com/products/aXe/
+		- Moved all code to client side
+	- Updated Modernizr plugin to support modernizr 3.0
+	- Various bug fixes and improvements
+		- Removed redis dependency
+		- Moved to socket.io 1.4+
+		- Tons of small fixes all around the place
 - Core
 	- Added node.js remote debug support. Now plugins can be flagged with nodeCompliant = true
 - Dashboard
 	- Stability improvements
 - Vorlon Desktop   
-    	- First release of this new way to deploy vorlon without having to use NPM command line
-    	- Read mode here: http://vorlonjs.io/#vorlon-desktop
+	- First release of this new way to deploy vorlon without having to use NPM command line
+	- Read mode here: http://vorlonjs.io/#vorlon-desktop
 - General
 	- Fixed Azure deploy
-    	- Generation of source maps file to allow debugging using TypeScript files
-    	- Adding features around DevOps: http://blogs.technet.com/b/devops/archive/2016/01/12/vorlonjs-a-journey-to-devops-introducing-the-blog-post-series.aspx
-    	- One gulp to rule them all: You now only have to run gulp watch from the root folder to track and compile any change
-    	- Moved samples to /client samples. Added sample for node.js remote debugging
+	- Generation of source maps file to allow debugging using TypeScript files
+	- Adding features around DevOps: http://blogs.technet.com/b/devops/archive/2016/01/12/vorlonjs-a-journey-to-devops-introducing-the-blog-post-series.aspx
+	- One gulp to rule them all: You now only have to run gulp watch from the root folder to track and compile any change
+	- Moved samples to /client samples. Added sample for node.js remote debugging
 
 ## 0.1.0
 
