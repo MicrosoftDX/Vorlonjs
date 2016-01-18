@@ -270,7 +270,7 @@ gulp.task('watch-plugins', function() {
  * Web server task to serve a local test page
  */
 gulp.task('webserver', function() {
-  return gulp.src('Plugins/samples')
+  return gulp.src('client samples')
     .pipe(webserver({
       livereload: false,
       open: 'http://localhost:1338/index.html',
