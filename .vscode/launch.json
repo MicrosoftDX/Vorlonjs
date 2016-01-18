@@ -55,7 +55,7 @@
 			// not working since latest vs code and electron versions :-(
 			"name": "Launch node.js sample",
 			"type": "node",
-			"program": "Plugins/samples/nodejs/app.js",
+			"program": "client samples/nodejs/app.js",
 			"stopOnEntry": false,
 			"args": [
 				"--nolazy"
