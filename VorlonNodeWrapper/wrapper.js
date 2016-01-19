@@ -1,6 +1,4 @@
 var urljoin = require("url-join");
-var LocalStorage = require('node-localstorage').LocalStorage,
-localStorage = new LocalStorage('./vorlon-storage');
 
 (function(){
     exports.start = function(vorlonjsURL, dashboardId, async, callback){
