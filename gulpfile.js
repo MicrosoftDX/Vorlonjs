@@ -328,10 +328,7 @@ gulp.task('watch-server', function() {
 });
 
 
-gulp.task('watch', function() {
-  gulp.run("watch-server");
-  gulp.run("watch-plugins");
-  gulp.run("webserver");
+gulp.task('watch', ["watch-server", "watch-plugins", "webserver"], function() {
 });
 
 /**
