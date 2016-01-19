@@ -1,9 +1,14 @@
-var vorlonWrapper = require("../../../VorlonNodeWrapper");
+var vorlonWrapper = require("../../VorlonNodeWrapper");
 var serverUrl = "http://localhost:1337";
 var dashboardSession = "default";
 
 vorlonWrapper.start(serverUrl, dashboardSession, function(success, status){
     if(success){
+        console.log({
+            "ok": "oui",
+            "non": "si"
+        });
+        
         var a = 2;
         var first = function(){
             setTimeout(

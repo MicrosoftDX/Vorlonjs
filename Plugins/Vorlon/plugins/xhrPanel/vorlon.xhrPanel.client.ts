@@ -5,6 +5,7 @@ module VORLON {
         public cache: Array<NetworkEntry> = [];
         private _previousOpen;
         private _previousSetRequestHeader;
+        private _xhrSource;
         private _hookAlreadyDone;
 
         constructor() {
@@ -55,8 +56,10 @@ module VORLON {
             }
             this.cache.push(data);
             
-            this._previousOpen = xhrSource.prototype.open;
-            this._previousSetRequestHeader = xhrSource.prototype.setRequestHeader;
+            if(!this._previousOpen){ 
+                this._previousOpen = xhrSource.prototype.open;
+                this._previousSetRequestHeader = xhrSource.prototype.setRequestHeader;
+            } 
             
             //todo catch send to get posted data
             //see https://msdn.microsoft.com/en-us/library/hh772834(v=vs.85).aspx
@@ -70,6 +73,7 @@ module VORLON {
                 
                 this.addEventListener('readystatechange', function() {
                     var xhr = this;
+                    
                     data.readyState = xhr.readyState;
                     that.trace('STATE CHANGED ' + data.readyState);
 
@@ -101,7 +105,6 @@ module VORLON {
         }
 
         public setupXMLHttpRequestHook(){
-            var that = this;
             var xhrSource;
             
             if (!Tools.IsWindowAvailable) {
@@ -109,15 +112,18 @@ module VORLON {
                     this._hookAlreadyDone = true;
                     var path = require("path");
                     var requireHook = require("require-hook");
-                    requireHook.attach(path.resolve());
+                    requireHook.attach(path.resolve())
+                    var that = this;
                     requireHook.setEvent(function(result, e){
-                        if (that.hooked) {
+                        if (that.hooked && e.require === "xhr2") {
+                            that._xhrSource = result;
                             that._hookPrototype(that, result);
                         }
                         return result;                        
                     });                    
                 }
             } else {
+                this._xhrSource = XMLHttpRequest;
                 this._hookPrototype(this, XMLHttpRequest);
             }          
       
@@ -129,13 +135,10 @@ module VORLON {
             if (this.hooked) {
                 this.trace('xhrPanel remove hook');
                 
-            
-                if (Tools.IsWindowAvailable) {
-                    var xhrSource = XMLHttpRequest;
-                    xhrSource.prototype.open = this._previousOpen;
-                    xhrSource.prototype.setRequestHeader = this._previousSetRequestHeader;
-                }
-                                
+                var xhrSource = this._xhrSource;
+                xhrSource.prototype.open = this._previousOpen;
+                xhrSource.prototype.setRequestHeader = this._previousSetRequestHeader;
+                
                 this.hooked = false;
                 this.sendStateToDashboard();
             }

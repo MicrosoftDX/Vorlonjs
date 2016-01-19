@@ -4,7 +4,6 @@ import http = require("http");
 import socketio = require("socket.io");
 import fs = require("fs");
 import path = require("path");
-var fakeredis = require("fakeredis");
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
@@ -22,26 +21,13 @@ export module VORLON {
         private httpConfig: vorloncontext.VORLON.IHttpConfig;
         private pluginsConfig: vorloncontext.VORLON.IPluginsProvider;
         private baseURLConfig: vorloncontext.VORLON.IBaseURLConfig;
-        private redisConfig: vorloncontext.VORLON.IRedisConfig;
 
         constructor(context: vorloncontext.VORLON.IVorlonServerContext) {
             this.baseURLConfig = context.baseURLConfig;
             this.httpConfig = context.httpConfig;
-            this.redisConfig = context.redisConfig;
             this.pluginsConfig = context.plugins;
             this._log = context.logger;
             this._sessions = context.sessions;
-                                  
-            //Redis
-            if (this.redisConfig.fackredis === true) {
-                this._redisApi = fakeredis.createClient();
-            }
-            else {
-                this._redisApi = redis.createClient(this.redisConfig._redisPort, this.redisConfig._redisMachine);
-                this._redisApi.auth(this.redisConfig._redisPassword, (err) => {
-                    if (err) { throw err; }
-                });
-            }
         }
         
         public noCache(res:any){
@@ -91,26 +77,6 @@ export module VORLON {
                
                 this.noCache(res);
                 this.json(res, clients);
-            });
-
-            app.get(this.baseURLConfig.baseURL + "/api/range/:idsession/:idplugin/:from/:to", (req: any, res: any) => {
-                this._redisApi.lrange(req.params.idsession + req.params.idplugin, req.params.from, req.params.to, (err: any, reply: any) => {
-                    this._log.debug("API : Get Range data from : " + req.params.from + " to " + req.params.to + " = " + reply, { type: "API", session: req.params.idsession });
-                    this.json(res, reply);
-                });
-            });
-
-            app.post(this.baseURLConfig.baseURL + "/api/push", (req: any, res: any) => {
-                var receiveMessage = req.body;
-                this._log.debug("API : Receve data to log : " + JSON.stringify(req.body), { type: "API", session: receiveMessage._idsession });
-                this._redisApi.rpush([receiveMessage._idsession + receiveMessage.id, receiveMessage.message], err => {
-                    if (err) {
-                        this._log.error("API : Error data log : " + err, { type: "API", session: receiveMessage._idsession });
-                    } else {
-                        this._log.debug("API : Push data ok", { type: "API", session: receiveMessage._idsession });
-                    }
-                });
-                this.json(res, {});
             });
 
             app.get(this.baseURLConfig.baseURL + "/vorlon.max.js/", (req: any, res: any) => {
@@ -222,10 +188,10 @@ export module VORLON {
                 vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + this.httpConfig.protocol + '://' + req.headers.host + baseUrl + '/vorlon/plugins"');
                 javascriptFile += "\r" + vorlonpluginfiles;
 
-                if (nodeOnly) {
-                    javascriptFile += "if (((typeof window != 'undefined' && window.module) || (typeof module != 'undefined')) && typeof module.exports != 'undefined') {\r\n";
-                    javascriptFile += "module.exports = VORLON;};"; 
-                } else if (autostart) {
+                javascriptFile += "if (((typeof window != 'undefined' && window.module) || (typeof module != 'undefined')) && typeof module.exports != 'undefined') {\r\n";
+                javascriptFile += "module.exports = VORLON;};\r\n"; 
+                
+                if (autostart) {
                     javascriptFile += "\r (function() { VORLON.Core.StartClientSide('" + this.httpConfig.protocol + "://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
                 }
 
@@ -239,15 +205,6 @@ export module VORLON {
             var io = socketio(httpServer);
             this._io = io;
 
-            //Redis
-            if (this.redisConfig.fackredis === false) {
-                var pub = redis.createClient(this.redisConfig._redisPort, this.redisConfig._redisMachine);
-                pub.auth(this.redisConfig._redisPassword);
-                var sub = redis.createClient(this.redisConfig._redisPort, this.redisConfig._redisMachine);
-                sub.auth(this.redisConfig._redisPassword);
-                var socketredis = require("socket.io-redis");
-                io.adapter(socketredis({ pubClient: pub, subClient: sub }));
-            }
             //Listen on /
             io.on("connection", socket => {
                 this.addClient(socket);
