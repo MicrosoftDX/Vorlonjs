@@ -11,6 +11,6 @@
   "dependencies": {
     "socket.io": "^1.3.7",
     "socket.io-client": "^1.3.7",
-    "xhr2": "^0.1.3"
+    "xmlhttprequest": "^1.8.0"
   }
 }
