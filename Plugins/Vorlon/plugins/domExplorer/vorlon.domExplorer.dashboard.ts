@@ -949,14 +949,21 @@
                 this._generateStyle(name, value, internalId, editableLabel);
         }
         private _generateStyle(property: string, value: string, internalId: string, editableLabel = false): void {
+            console.debug(property + value);
             var wrap = document.createElement("div");
             wrap.className = 'styleWrap';
             var label = document.createElement("div");
             label.innerHTML = property;
             label.className = "styleLabel";
-            label.contentEditable = "false";
+            label.contentEditable = "false";        
             var valueElement = this._generateClickableValue(label, value, internalId);
-            wrap.appendChild(label);
+            wrap.appendChild(label); 
+            if(property.indexOf("color") != -1){ 
+                var square = document.createElement("span");
+                square.className = "colored-square"; 
+                square.style.backgroundColor = value; 
+                wrap.appendChild(square);
+            } 
             wrap.appendChild(valueElement);
             this.parent.plugin.styleView.appendChild(wrap);
 
