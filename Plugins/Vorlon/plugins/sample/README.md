@@ -15,16 +15,16 @@ To enable the sample plugin:
 {
     "includeSocketIO": true,
     "plugins": [
-        { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername" :  "interactiveConsole"},
-        { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername" : "domExplorer" },
-        { "id": "MODERNIZR", "name": "Modernizr","panel": "bottom", "foldername" : "modernizrReport" },
-        { "id" : "OBJEXPLORER", "name" : "Obj. Explorer","panel": "top", "foldername" :  "objectExplorer" },
-        { "id" : "SAMPLE", "name" : "Sample","panel": "top", "foldername" : "sample" }
+        { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername" :  "interactiveConsole", "enabled": true},
+        { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername" : "domExplorer", "enabled": true },
+        { "id": "MODERNIZR", "name": "Modernizr","panel": "bottom", "foldername" : "modernizrReport", "enabled": true },
+        { "id": "OBJEXPLORER", "name" : "Obj. Explorer","panel": "top", "foldername" :  "objectExplorer", "enabled": true },
+        { "id": "SAMPLE", "name" : "Sample","panel": "top", "foldername" : "sample", "enabled": true }
     ]
 }
 ```
 
-3. From the root directory of the repository, install dependencies with `npm install`, and start the server with `npm start` (make sure you kill any existing vorlon servers running on your machine. You can now navigate to the vorlon dashboard as normal, and you'll see an additional tab in the list.
+3. From the root directory of the repository, install dependencies with `npm install`, build vorlon with `npm run build` and start the server with `npm start` (make sure you kill any existing vorlon servers running on your machine. You can now navigate to the vorlon dashboard as normal, and you'll see an additional tab in the list.
 
 ## Modifying the plugin
 
