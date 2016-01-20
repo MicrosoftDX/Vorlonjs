@@ -20,7 +20,6 @@
 	- First release of this new way to deploy vorlon without having to use NPM command line
 	- Read mode here: http://vorlonjs.io/#vorlon-desktop
 - General
-	- Fixed Azure deploy
 	- Generation of source maps file to allow debugging using TypeScript files
 	- Adding features around DevOps: http://blogs.technet.com/b/devops/archive/2016/01/12/vorlonjs-a-journey-to-devops-introducing-the-blog-post-series.aspx
 	- One gulp to rule them all: You now only have to run gulp watch from the root folder to track and compile any change
