@@ -820,13 +820,15 @@
                 $('.b-m-mpanel').remove();
                 $("#" + parentElementId).contextmenu(option);
             }
+             
             nodeValue.addEventListener("contextmenu",() => {
                 if (nodeValue.contentEditable != "true" && nodeName.contentEditable != "true")
                     menu.bind(this)("value");
             });
-            nodeValue.addEventListener("click",() => {
-                this.parent.plugin.makeEditable(nodeValue);
-            });
+            nodeValue.addEventListener("click",(e) => {
+                if(!this.uriCheck("click", nodeValue, e))
+                    this.parent.plugin.makeEditable(nodeValue);
+            });   
             nodeName.addEventListener("click",() => {
                 this.parent.plugin.makeEditable(nodeName);
             });
@@ -834,8 +836,8 @@
                 if (nodeValue.contentEditable != "true" && nodeName.contentEditable != "true")
                     menu.bind(this)("name");
             });
-            nodeValue.addEventListener("blur",() => {
-                sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
+            nodeValue.addEventListener("blur",() => { 
+                    sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue); 
             });
             nodeName.addEventListener("blur",() => {
                 sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeName);
@@ -851,8 +853,32 @@
                     evt.preventDefault();
                     sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
                 }
+            }); 
+            nodeValue.addEventListener("mousemove",(e) => { 
+                this.uriCheck("mousemove", nodeValue, e);
             });
+            nodeValue.addEventListener("mouseout",(e) => {
+                 $(nodeValue).removeClass("link-hovered"); 
+            });  
         }
+        
+        uriCheck(triggerType: string, node, e) {
+            if (e != null && e.ctrlKey) { 
+                var urlPattern = /(\w+):\/*([^\/]+)([a-z0-9\-@\^=%&;\/~\+]*)[\?]?([^ \#]*)#?([^ \#]*)/i;
+                if (urlPattern.test(node.innerText)) { 
+                    switch(triggerType){
+                        case "click": open(node.innerText); 
+                        case "mousemove": $(node).addClass("link-hovered");
+                        default: return true;
+                    }  
+                    return true;
+                } 
+            }
+            else{ 
+                $(node).removeClass("link-hovered"); 
+            }   
+            return false;
+        }   
 
         render() {
             var node = new FluentDOM("SPAN", "nodeAttribute", this.parent.headerAttributes);
@@ -1000,7 +1026,6 @@
             });
             return valueElement;
         }
-
     }
 
     export interface LayoutStyle {
