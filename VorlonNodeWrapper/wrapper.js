@@ -32,19 +32,19 @@ var urljoin = require("url-join");
         xhr.send();
         
         if (!async) {
-                            try {
-                    eval(xhr.responseText);
-                    VORLON.Core.StartClientSide(vorlonjsURL, dashboardId);                
-                    if (callback) {
-                        callback(true, "n/a");
-                    }            
-                }
-                catch(e){
-                    console.log("Wrapper Vorlon.js error : " + e.message);
-                    if (callback) {
-                        callback(false, e.message);
-                    }            
-                }
+            try {
+                eval(xhr.responseText);
+                VORLON.Core.StartClientSide(vorlonjsURL, dashboardId);                
+                if (callback) {
+                    callback(true, "n/a");
+                }            
+            }
+            catch(e){
+                console.log("Wrapper Vorlon.js error : " + e.message);
+                if (callback) {
+                    callback(false, e.message);
+                }            
+            }
         }
     }
 })();
