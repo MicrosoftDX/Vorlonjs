@@ -10,6 +10,8 @@
 		- Removed redis dependency
 		- Moved to socket.io 1.4+
 		- Tons of small fixes all around the place
+    - DOM Explorer
+        - Click on an absolute uri by holding the ctrl key will display its content into another tab. Hover is effective too.
 - Core
 	- Added node.js remote debug support. Now plugins can be flagged with nodeCompliant = true
 - Dashboard
