@@ -116,7 +116,7 @@
                 });
 
                 this._socket.on('removeclient', client => {
-                    //console.log('messenger refreshclients');
+                    console.log('messenger refreshclients');
                     if (this.onRemoveClient) {
                         this.onRemoveClient(client);
                     }

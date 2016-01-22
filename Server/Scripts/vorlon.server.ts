@@ -159,7 +159,7 @@ export module VORLON {
                 if (nodeOnly) {
                     javascriptFile += "var io = require('socket.io-client');\n"
                 } else if (catalog.includeSocketIO) {
-                    javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.3.6.js"));
+                    javascriptFile += fs.readFileSync(path.join(__dirname, "../public/javascripts/socket.io-1.4.3.js"));
                 }
 
                 if (ismin) {
@@ -320,12 +320,12 @@ export module VORLON {
             });
 
             socket.on("clientclosed", (message: string) => {
-                //this._log.warn("CLIENT clientclosed " + message);
+                this._log.warn("CLIENT clientclosed " + message);
                 var receiveMessage = <VorlonMessage>JSON.parse(message);
                 this._sessions.all().forEach((session) => {
                     for (var clientid in session.connectedClients) {
                         var client = session.connectedClients[clientid];
-                        if (receiveMessage.data.socketid === client.socket.id) {
+                        if ("/#" + receiveMessage.data.socketid === client.socket.id) {
                             client.opened = false;
                             if (this.dashboards[session.sessionId]) {
                                 this._log.debug(formatLog("PLUGIN", "Send RemoveClient to Dashboard " + socket.id, receiveMessage));

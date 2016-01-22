@@ -63,8 +63,9 @@
             }
 
             // Cookie
+            var clientId;
             if(Tools.IsWindowAvailable){
-                var clientId = Tools.ReadCookie("vorlonJS_clientId");
+                clientId = Tools.ReadCookie("vorlonJS_clientId");
                 if (!clientId) {
                     clientId = Tools.CreateGUID();
 
