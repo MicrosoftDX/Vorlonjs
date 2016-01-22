@@ -17,6 +17,8 @@ As Node.js is using JavaScript as its core language, we made it possible to use 
 You can remotely debug any of your node.js apps using plugins such as Object Explorer, XHR Panel and Interactive Console.
 Note : Breakpoints and step by step debugging is not available yet
 
+Full documentation available here : http://vorlonjs.io/documentation/#debugging-nodejs-applications
+
 ## How to use it 
 
 First install it : 
