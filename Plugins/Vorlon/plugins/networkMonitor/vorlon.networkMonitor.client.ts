@@ -14,30 +14,31 @@
 
         public sendClientData(): void {
             this.trace("network monitor sending data ")
-            var entries = window.performance.getEntries();
-            //console.log(entries);
-
             this.performanceItems = [];
-            for (var i = 0; i < entries.length; i++) {
-                this.performanceItems.push({
-                    name: entries[i].name,
-                    type: entries[i].initiatorType,
-                    startTime: entries[i].startTime,
-                    duration: entries[i].duration,
-                    redirectStart: entries[i].redirectStart,
-                    redirectDuration: entries[i].redirectEnd - entries[i].redirectStart,
-                    dnsStart: entries[i].domainLookupStart,
-                    dnsDuration: entries[i].domainLookupEnd - entries[i].domainLookupStart,
-                    tcpStart: entries[i].connectStart,
-                    tcpDuration: entries[i].connectEnd - entries[i].connectStart, 	// TODO
-                    requestStart: entries[i].requestStart,
-                    requestDuration: entries[i].responseStart - entries[i].requestStart,
-                    responseStart: entries[i].responseStart,
-                    responseDuration: (entries[i].responseStart == 0 ? 0 : entries[i].responseEnd - entries[i].responseStart)
-                });
+
+            if (window.performance) {
+                var entries = window.performance.getEntries();
+
+                for (var i = 0; i < entries.length; i++) {
+                    this.performanceItems.push({
+                        name: entries[i].name,
+                        type: entries[i].initiatorType,
+                        startTime: entries[i].startTime,
+                        duration: entries[i].duration,
+                        redirectStart: entries[i].redirectStart,
+                        redirectDuration: entries[i].redirectEnd - entries[i].redirectStart,
+                        dnsStart: entries[i].domainLookupStart,
+                        dnsDuration: entries[i].domainLookupEnd - entries[i].domainLookupStart,
+                        tcpStart: entries[i].connectStart,
+                        tcpDuration: entries[i].connectEnd - entries[i].connectStart, 	// TODO
+                        requestStart: entries[i].requestStart,
+                        requestDuration: entries[i].responseStart - entries[i].requestStart,
+                        responseStart: entries[i].responseStart,
+                        responseDuration: (entries[i].responseStart == 0 ? 0 : entries[i].responseEnd - entries[i].responseStart)
+                    });
+                }
             }
 
-            //console.log(this.performanceItems);
             var message: any = {};
             message.entries = this.performanceItems;
             this.sendCommandToDashboard("performanceItems", message);            
