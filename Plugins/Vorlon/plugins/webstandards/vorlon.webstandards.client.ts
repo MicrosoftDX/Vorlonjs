@@ -436,7 +436,7 @@ module VORLON {
                 };
 
                 xhr.open("GET", documentUrl, true);
-                xhr.send(null);
+                xhr.send();
                 timeoutRef = setTimeout(() => {
                     if (!completed) {
                         completed = true;
