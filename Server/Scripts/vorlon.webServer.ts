@@ -76,11 +76,20 @@ export module VORLON {
             if (stopExecution) {
                 return;
             }
+            var cors = require("cors");
 
             //Sets
             app.set('port', this.httpConfig.port);
             app.set('views', path.join(__dirname, '../views'));
             app.set('view engine', 'jade');
+            
+            // Cors
+            var corsOptions = {
+                allowedHeaders: "*",
+                exposedHeaders: ["X-VorlonProxyEncoding", "Content-Encoding", "Content-Length"]
+            }; 
+            app.use(cors(corsOptions));
+            app.options('*', cors(corsOptions));
 
             //Uses
             this._passport.use(new this._localStrategy(function(username, password, done) { 
@@ -122,12 +131,13 @@ export module VORLON {
             vauth.VORLON.Authentication.loadAuthConfig();
           
             this.init();
-            
-            app.use((req, res, next) => {
-                res.header("Access-Control-Allow-Origin", "*");
-                res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-                next();
-            });
+             
+            // app.use((req, res, next) => {
+            //     res.header("Access-Control-Allow-Origin", "*");
+            //     res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,HEAD,DELETE,OPTIONS');
+            //     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, X-VorlonProxyEncoding, content-encoding, content-length");
+            //     next();
+            // });
 
             if (this.httpConfig.useSSL) {
                 this._httpServer = this.httpConfig.httpModule.createServer(this.httpConfig.options, app).listen(app.get('port'), () => {

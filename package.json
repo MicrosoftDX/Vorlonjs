@@ -27,6 +27,7 @@
     "http-proxy": "~1.11.2"
   },
   "devDependencies": {
+    "cors": "^2.7.1",
     "gulp": "~3.8.11",
     "gulp-concat": "~2.2.0",
     "gulp-filter": "~0.4.1",
@@ -38,7 +39,7 @@
     "gulp-uglify": "~0.3.0",
     "gulp-util": "~2.2.14",
     "gulp-webserver": "~0.9.0",
-    "gulp-zip":"~3.0.2",
+    "gulp-zip": "~3.0.2",
     "merge2": "~0.3.5",
     "through": "~2.3.4",
     "typescript": "~1.6.0-beta"

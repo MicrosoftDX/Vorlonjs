@@ -16,7 +16,6 @@ export module VORLON {
         public dashboards = new Array<SocketIO.Socket>();
 
         private _io: any;
-        private _redisApi: any;
         private _log: vorloncontext.VORLON.ILogger;
         private httpConfig: vorloncontext.VORLON.IHttpConfig;
         private pluginsConfig: vorloncontext.VORLON.IPluginsProvider;
