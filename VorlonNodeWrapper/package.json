@@ -1,6 +1,6 @@
 {
   "name": "vorlon-node-wrapper",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Wrapper for getting Vorlon.js plugin file inside a node.js application",
   "main": "wrapper.js",
   "author": "Vorlon Team",
