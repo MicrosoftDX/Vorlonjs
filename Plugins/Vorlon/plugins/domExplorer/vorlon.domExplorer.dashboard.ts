@@ -410,7 +410,7 @@
         },
         nodeStyle(data: any){
             console.log("dashboard receive node style", data);
-            var plugin = <DOMExplorerDashboard>this;
+            var plugin = <DOMExplorerDashboard>this; 
             plugin.setNodeStyle(data.internalID, data.styles);
         }
     }
@@ -862,7 +862,7 @@
             });  
         }
         
-        uriCheck(triggerType: string, node, e) {
+            uriCheck(triggerType: string, node, e) {
             if (e != null && e.ctrlKey) { 
                 var urlPattern = /(\w+):\/*([^\/]+)([a-z0-9\-@\^=%&;\/~\+]*)[\?]?([^ \#]*)#?([^ \#]*)/i;
                 if (urlPattern.test(node.innerText)) { 
@@ -925,6 +925,9 @@
                 for (var index = 0; index < styles.length; index++) {
                     var style = styles[index];
                     var splits = style.split(":");
+                    // ensure that urls are not malformed after the split.
+                    if(splits[2] !== undefined && splits[2].indexOf('//') > -1)
+                       splits[1] += ":" + splits[2]; 
                     this.styles.push(new DomExplorerPropertyEditorItem(this, splits[0], splits[1], this.internalId));
                 }
                 // Append add style button
@@ -933,8 +936,7 @@
                     this.plugin.styleView.appendChild(<HTMLElement>e.target);
                 });
             }
-        }
-
+        } 
     }
 
     export class DomExplorerPropertyEditorItem {
@@ -946,17 +948,24 @@
             this.name = name;
             this.value = value;
             if (generate)
-                this._generateStyle(name, value, internalId, editableLabel);
+                this._generateStyle(name, value, internalId, editableLabel); 
         }
         private _generateStyle(property: string, value: string, internalId: string, editableLabel = false): void {
+            console.debug(property + value);
             var wrap = document.createElement("div");
             wrap.className = 'styleWrap';
             var label = document.createElement("div");
             label.innerHTML = property;
             label.className = "styleLabel";
-            label.contentEditable = "false";
+            label.contentEditable = "false";        
             var valueElement = this._generateClickableValue(label, value, internalId);
-            wrap.appendChild(label);
+            wrap.appendChild(label); 
+            if(property.indexOf("color") != -1){ 
+                var square = document.createElement("span");
+                square.className = "colored-square"; 
+                square.style.backgroundColor = value; 
+                wrap.appendChild(square);
+            } 
             wrap.appendChild(valueElement);
             this.parent.plugin.styleView.appendChild(wrap);
 
