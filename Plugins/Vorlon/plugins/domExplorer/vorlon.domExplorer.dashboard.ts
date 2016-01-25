@@ -134,20 +134,22 @@
                     $('.visible', elt.target.parentElement).removeClass('visible');
                     $('#' + elt.target.className, elt.target.parentElement).addClass('visible');
                     elt.target.classList.add('visible');
-                    if (elt.target.className.indexOf("htmlsection") !== -1) {
-                        this.sendCommandToClient('getInnerHTML', {
-                            order: this._selectedNode.node.internalId
-                        });
-                    }
-                    else if (elt.target.className.indexOf("layoutsection") !== -1) {
-                        this.sendCommandToClient('getStyle', {
-                            order: this._selectedNode.node.internalId
-                        });
-                    }
-                    else if (elt.target.className.indexOf("computedsection") !== -1) {
-                        this.sendCommandToClient('getComputedStyleById', {
-                            order: this._selectedNode.node.internalId
-                        });
+                    if(this._selectedNode){
+                        if (elt.target.className.indexOf("htmlsection") !== -1) {
+                            this.sendCommandToClient('getInnerHTML', {
+                                order: this._selectedNode.node.internalId
+                            });
+                        }
+                        else if (elt.target.className.indexOf("layoutsection") !== -1) {
+                            this.sendCommandToClient('getStyle', {
+                                order: this._selectedNode.node.internalId
+                            });
+                        }
+                        else if (elt.target.className.indexOf("computedsection") !== -1) {
+                            this.sendCommandToClient('getComputedStyleById', {
+                                order: this._selectedNode.node.internalId
+                            });
+                        }
                     }
                 });
                 this._ready = true;
