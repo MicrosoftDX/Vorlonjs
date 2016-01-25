@@ -57,8 +57,26 @@
                     }
                     .title{
                         padding : 0.3em 1em;
+                        font-size: 12px;
                         font-size: 0.9em;
                         cursor : pointer;
+                        
+                         .rulescount-succeed{
+                            padding-left: 5px;
+                            &::before{
+                                content: "(";
+                            }
+                            &::after{
+                                content: " ✓ |";
+                            }
+                        }
+                            
+                        .rulescount-failed{
+                            padding-left: 3px;
+                            &::after{
+                                content: " x)";
+                            }
+                        } 
                     }
                     
                     &.collapsible {
