@@ -61,22 +61,25 @@
                         font-size: 0.9em;
                         cursor : pointer;
                         
-                         .rulescount-succeed{
-                            padding-left: 5px;
-                            &::before{
-                                content: "(";
-                            }
-                            &::after{
-                                content: " ✓ |";
-                            }
-                        }
+                         .ruleSummary-container{
+                             float: right;
+                                .ruleSummary-succeed{
+                                    padding-left: 5px;
+                                    &::before{
+                                        content: "(";
+                                    }
+                                    &::after{
+                                        content: " ✓ |";
+                                    }
+                                }
                             
-                        .rulescount-failed{
-                            padding-left: 3px;
-                            &::after{
-                                content: " x)";
-                            }
-                        } 
+                                .ruleSummary-failed{ 
+                                    padding-left: 3px;
+                                    &::after{
+                                        content: " x)";
+                                    }
+                                } 
+                         }
                     }
                     
                     &.collapsible {
