@@ -27,7 +27,7 @@ export module VORLON {
                 this.vorlonLogFile = path.join(__dirname, "../vorlonjs.log");
                 this.exceptionsLogFile = path.join(__dirname, "../exceptions.log");
                 this.enableConsole = true;
-                this.level = "debug";
+                this.level = "info";
             }
         }
     }
