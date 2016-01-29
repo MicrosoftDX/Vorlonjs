@@ -17,12 +17,21 @@
     "vorlonProxyURL": "",
        
     "plugins": [
+<<<<<<< e3119f3b9877747a5ff03e43ee8cc0c5a6b10ef9
         { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername": "interactiveConsole", "enabled": true, "nodeCompliant": true },
         { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername": "domExplorer", "enabled": true },
         { "id": "MODERNIZR", "name": "Modernizr", "panel": "bottom", "foldername": "modernizrReport", "enabled": true },
         { "id": "OBJEXPLORER", "name": "Obj. Explorer", "panel": "top", "foldername": "objectExplorer", "enabled": true, "nodeCompliant": true },
         { "id": "WEBSTANDARDS", "name": "Best practices", "panel": "top", "foldername": "webstandards", "enabled": true },
         { "id": "XHRPANEL", "name": "XHR", "panel": "top", "foldername": "xhrPanel", "enabled": true, "nodeCompliant": true },
+=======
+        { "id": "CONSOLE", "name": "Interactive Console", "panel": "bottom", "foldername": "interactiveConsole", "enabled": true },
+        { "id": "DOM", "name": "Dom Explorer", "panel": "top", "foldername": "domExplorer", "enabled": true },
+        { "id": "MODERNIZR", "name": "Modernizr", "panel": "bottom", "foldername": "modernizrReport", "enabled": true },
+        { "id": "OBJEXPLORER", "name": "Obj. Explorer", "panel": "top", "foldername": "objectExplorer", "enabled": true },
+        { "id": "WEBSTANDARDS", "name": "Best practices", "panel": "top", "foldername": "webstandards", "enabled": true },
+        { "id": "XHRPANEL", "name": "XHR", "panel": "top", "foldername": "xhrPanel", "enabled": true },
+>>>>>>> fixing http proxy
         { "id": "NGINSPECTOR", "name": "Ng. Inspector", "panel": "top", "foldername": "ngInspector", "enabled": false },
         { "id": "NETWORK", "name": "Network Monitor", "panel": "top", "foldername": "networkMonitor", "enabled": true },
         { "id": "RESOURCES", "name": "Resources Explorer", "panel": "top", "foldername": "resourcesExplorer", "enabled": true },
