@@ -13,13 +13,16 @@ export module VORLON {
             var configurationString = configurationFile.toString().replace(/^\uFEFF/, '');
             var configuration = JSON.parse(configurationString);
             
-            var sessionConfig = <ctx.VORLON.ISessionPlugins>configuration.sessions[sessionid];
-            
-            if (!sessionConfig || !sessionConfig.plugins || !sessionConfig.plugins.length) {
-                sessionConfig = {
-                    includeSocketIO: configuration.includeSocketIO,
-                    plugins: <ctx.VORLON.IPluginConfig[]>configuration.plugins
-                };
+            try{
+                var sessionConfig = <ctx.VORLON.ISessionPlugins>configuration.sessions[sessionid];
+            }
+            catch(e){
+                if (!sessionConfig || !sessionConfig.plugins || !sessionConfig.plugins.length) {
+                    sessionConfig = {
+                        includeSocketIO: configuration.includeSocketIO || true,
+                        plugins: <ctx.VORLON.IPluginConfig[]>configuration.plugins
+                    };
+                }
             }
                 
             if (callback)

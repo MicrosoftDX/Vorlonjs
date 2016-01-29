@@ -142,6 +142,7 @@ export module VORLON {
         private _sendVorlonJSFile(ismin: boolean, req: any, res: any, autostart: boolean = true, nodeOnly = false) {
             var javascriptFile: string;
             var sessionid = req.params.idsession || "default";
+            
             this.pluginsConfig.getPluginsFor(sessionid, (err, catalog) => {
                 if (err) {
                     this._log.error("ROUTE : Error getting plugins");
