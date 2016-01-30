@@ -216,6 +216,9 @@ module VORLON {
             var failedRules = 0; 
             var arrayWidth = 0;
             
+            if(rulesArray.aXeCheck !== undefined){
+                rulesArray = rulesArray.aXeCheck.items;
+            } 
             Object.keys(rulesArray).forEach(function(key) {
                 if(rulesArray[key].failed !== undefined && rulesArray[key].failed)
                     failedRules++;
