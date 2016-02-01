@@ -10,13 +10,21 @@ IF "%5"=="" GOTO :usage
 SET DOCKER_HOST=%1
 
 @ECHO "BUILD DOCKER IMAGE"
+<<<<<<< 992816301884e11deb56b1f1704453798c451657
 docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" build -t jcorioland/vorlonjs:0.2.1
+=======
+docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" build -t jcorioland/vorlonjs:0.2 .
+>>>>>>> Fixing for 0.2
 
 @ECHO "LOG INTO DOCKER HUB"
 docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" login --username="%3" --password="%4" --email="%5" https://index.docker.io/v1/
 
 @ECHO "PUSH IMAGE INTO DOCKER HUB"
+<<<<<<< 992816301884e11deb56b1f1704453798c451657
 docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" push jcorioland/vorlonjs:0.2.1
+=======
+docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" push jcorioland/vorlonjs:0.2
+>>>>>>> Fixing for 0.2
 
 @ECHO "LOG OUT FROM DOCKER HUB."
 docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" logout
