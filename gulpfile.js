@@ -305,13 +305,8 @@ gulp.task('typescript-to-js-server', function() {
 gulp.task('build-server', ['typescript-to-js-server'], function() {
 	//copy server files to desktop app
   return gulp.src([
-  		'./config.json',
-  		'cert/**',
-  		'config/**',
-  		'public/**',
-  		'Scripts/**',
-  		'views/**',
-  	], { base: './Plugins' })
+  		'./server/**/*.*'
+  	])
   	.pipe(gulp.dest('./desktop/app/vorlon'));
 });
 
