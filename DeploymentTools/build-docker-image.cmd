@@ -11,7 +11,7 @@ SET DOCKER_HOST=%1
 
 @ECHO "BUILD DOCKER IMAGE"
 docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" build -t jcorioland/vorlonjs:0.2.1
-docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" tag jcorioland/vorlonjs:latest jcorioland/vorlonjs:0.2.1
+docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" tag jcorioland/vorlonjs:0.2.1 jcorioland/vorlonjs:latest
 
 @ECHO "LOG INTO DOCKER HUB"
 docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" login --username="%3" --password="%4" --email="%5" https://index.docker.io/v1/
