@@ -20,9 +20,7 @@
         height: 100%;
         overflow: hidden !important;
     }
-
-
-
+ 
     .panel-left,
     .panel-right {
         height: 100%;
@@ -532,15 +530,26 @@
 
     .nodeAttribute {
         padding-left: 0.5em;
-        color: @quotesColor;
-
+        color: @quotesColor; 
+        
         span.attr-name {
             color: @attributeNameColor;
         }
-
-        span.attr-value {
-            color: @attributeValueColor;
+        
+        span.link-hovered{
+            text-decoration: underline; 
         }
+        
+        span.attr-value {
+            color: @attributeValueColor; 
+        }
+    }
+    
+    .colored-square{
+        display: inline-flex;
+        height: 10px;
+        width: 10px;
+        border: 1px #000 solid; 
     }
 
     .styleLabel, .attributeName {
@@ -614,13 +623,14 @@ body .b-m-mpanel {
         cursor: pointer;
         border: none;
     }
+    
     /*.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
         background: #CCC;
     }
-
-
+ 
     .ui-menu-item {
         padding: 10px;
         font-size: 10pt;
     }*/
 }
+    

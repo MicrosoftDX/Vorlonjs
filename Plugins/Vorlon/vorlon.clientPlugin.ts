@@ -31,12 +31,21 @@
         
         public _loadNewScriptAsync(scriptName: string, callback: () => void, waitForDOMContentLoaded?: boolean) {
             var basedUrl = "";
-            if(this.loadingDirectory.indexOf('http') === 0){
-                basedUrl = this.loadingDirectory + "/" + this.name + "/";
+            if(this.loadingDirectory.indexOf('http') === 0){    
+                if (scriptName[0] == "/"){
+                    basedUrl = "";
+                } else {         
+                    basedUrl = this.loadingDirectory + "/" + this.name + "/";
+                }
             }
             else{
-                basedUrl = vorlonBaseURL + "/" + this.loadingDirectory + "/" + this.name + "/";
+                if (scriptName[0] == "/"){
+                    basedUrl = vorlonBaseURL;
+                } else {
+                    basedUrl = vorlonBaseURL + "/" + this.loadingDirectory + "/" + this.name + "/";
+                }
             }
+            
             function loadScript() {
                 var scriptToLoad = document.createElement("script");
                 scriptToLoad.setAttribute("src", basedUrl + scriptName);

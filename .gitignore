@@ -1,6 +1,5 @@
 npm-debug.log
 *.log
-/plugins/vorlon/**/*.css
 tsconfig.json
 /Plugins/obj
 **/node_modules
@@ -8,11 +7,11 @@ sync.bat
 *.suo
 /.vs/
 bin/
-GLE id�es.txt
+**/control.css
 sync.bat
-Plugins/Vorlon/plugins/remoteDebugging.zip
 .settings/launch.json
 *.dat
 Server/public/stylesheets/style.css
-vorlon
 /Server/public/stylesheets/style.css
+/DeploymentTools/deployment-package.zip
+DeploymentTools/deployment-package.zip

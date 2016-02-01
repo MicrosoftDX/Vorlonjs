@@ -1,0 +1,13 @@
+{
+  "name": "vorlon-node-wrapper",
+  "version": "0.0.2",
+  "description": "Wrapper for getting Vorlon.js plugin file inside a node.js application",
+  "main": "wrapper.js",
+  "author": "Vorlon Team",
+  "dependencies": {
+    "require-hook": "^0.1.2",
+    "socket.io-client": "^1.4.4",
+    "url-join": "0.0.1",
+    "xmlhttprequest": "^1.8.0"
+  }
+}

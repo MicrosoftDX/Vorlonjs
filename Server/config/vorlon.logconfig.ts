@@ -21,13 +21,13 @@ export module VORLON {
                 this.vorlonLogFile = path.join(filePath, vorlonjsFile);
                 this.exceptionsLogFile = path.join(filePath, exceptionFile);
                 this.enableConsole = logConfig.enableConsole;
-                this.level = logConfig.level ? logConfig.level : "warn";
+                this.level = logConfig.level ? logConfig.level : "info";
             }
             else {
                 this.vorlonLogFile = path.join(__dirname, "../vorlonjs.log");
                 this.exceptionsLogFile = path.join(__dirname, "../exceptions.log");
                 this.enableConsole = true;
-                this.level = "warn";
+                this.level = "info";
             }
         }
     }

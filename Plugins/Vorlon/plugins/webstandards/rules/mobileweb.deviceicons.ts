@@ -6,45 +6,47 @@ module VORLON.WebStandards.Rules.DOM {
         description: "Platform icons helps user pinning your website with an icon that fits well on mobile device home.",
         nodeTypes: ["meta", "link"],
 
-        prepare: function(rulecheck: any, analyzeSummary: any, htmlString: string) {
+        prepare: function(rulecheck: IRuleCheck, analyzeSummary) {
             rulecheck.items = rulecheck.items || [];
             rulecheck.type = "blockitems"; 
-            rulecheck.hasWindowsIcons = false;
-            rulecheck.hasWindowsNotification = false;
-            rulecheck.hasIOSIcons = false;
+            rulecheck.data = {
+                hasWindowsIcons : false,
+                hasWindowsNotification : false,
+                hasIOSIcons : false
+            }
         },
 
-        check: function(node: HTMLElement, rulecheck: any, analyzeSummary: any, htmlString: string) {
+        check: function(node: HTMLElement, rulecheck: IRuleCheck, analyzeSummary: any, htmlString: string) {
             if (node.nodeName == "LINK") {
                 var rel = node.getAttribute("rel");
                 if (rel && rel == "apple-touch-icon-precomposed") {
-                    rulecheck.hasIOSIcons = true;
+                    rulecheck.data.hasIOSIcons = true;
                 }
             } else if (node.nodeName == "META") {
                 var name = node.getAttribute("name");
                 if (name) {
                     if (name.toLowerCase() == "msapplication-notification") {
-                        rulecheck.hasWindowsNotification = true;
+                        rulecheck.data.hasWindowsNotification = true;
                     } else if (name.toLowerCase().indexOf("msapplication-") == 0) {
-                        rulecheck.hasWindowsIcons = true;
+                        rulecheck.data.hasWindowsIcons = true;
                     }
                 }
             }
         },
 
-        endcheck: function(rulecheck, analyzeSummary, htmlstring: string) {
-            if (!rulecheck.hasIOSIcons) {
+        endcheck: function(rulecheck: IRuleCheck, analyzeSummary) {
+            if (!rulecheck.data.hasIOSIcons) {
                 rulecheck.failed = true;
                 rulecheck.items.push({
-                    title: VORLON.Tools.htmlToString('add Apple - iOS icons by adding link tags like <link rel="apple-touch-icon-precomposed" href="youricon" sizes="57x57" />')
+                    title: 'add Apple - iOS icons by adding link tags like <link rel="apple-touch-icon" href="youricon" sizes="57x57"" />'
                 });
             }
 
-            if (!rulecheck.hasWindowsIcons) {
+            if (!rulecheck.data.hasWindowsIcons) {
                 rulecheck.failed = true;
                 //https://msdn.microsoft.com/en-us/library/dn255024(v=vs.85).aspx
                 rulecheck.items.push({
-                    title: VORLON.Tools.htmlToString('add Microsoft - Windows tiles by adding meta tags like <link name="msapplication-square150x150logo" content="yourimage" />')
+                    title: 'add Microsoft - Windows tiles by adding meta tags like <link name="msapplication-square150x150logo" content="yourimage" />'
                 });
             }
 

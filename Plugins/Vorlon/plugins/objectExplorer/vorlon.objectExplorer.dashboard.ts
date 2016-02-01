@@ -177,7 +177,7 @@
             var elt = new FluentDOM('DIV', 'objdescriptor', parent);
             this.element = elt.element;
             this.isRoot = isRoot;
-            this.element.__vorlon = this;
+            (<any>this.element).__vorlon = this;
             this.item = item;
             this.plugin = plugin;
             this.childs = [];
@@ -198,7 +198,7 @@
 
         public dispose() {
             this.clear();
-            this.element.__vorlon = null;
+            (<any>this.element).__vorlon = null;
             this.plugin = null;
             this.element = null;
             this.item = null;
@@ -380,7 +380,7 @@
                     btn.text("-");
                     var elt = this.element.element.querySelector(".expand-content > .objdescriptor");
                     if (elt) {
-                        var ctrl = <ObjDescriptorControl>elt.__vorlon;
+                        var ctrl = (<any>elt).__vorlon;
                         if (ctrl) {
                             setTimeout(() => {
                                 ctrl.getContent();

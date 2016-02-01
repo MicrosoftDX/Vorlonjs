@@ -221,8 +221,10 @@ module VORLON {
         private _createColorSample(colorHex) {
             var colorSample = document.createElement('div');
             colorSample.className = "tree-node-color-sample";
-            colorSample.style.backgroundColor = colorHex;
-            colorSample.style.borderColor = this._isClearColor(colorHex) ? '#000000' : '#ffffff';
+            if (colorHex) {
+                colorSample.style.backgroundColor = colorHex;
+                colorSample.style.borderColor = this._isClearColor(colorHex) ? '#000000' : '#ffffff';
+            }
             return colorSample;
         }
 

@@ -410,7 +410,7 @@
         },
         nodeStyle(data: any){
             console.log("dashboard receive node style", data);
-            var plugin = <DOMExplorerDashboard>this;
+            var plugin = <DOMExplorerDashboard>this; 
             plugin.setNodeStyle(data.internalID, data.styles);
         }
     }
@@ -820,13 +820,15 @@
                 $('.b-m-mpanel').remove();
                 $("#" + parentElementId).contextmenu(option);
             }
+             
             nodeValue.addEventListener("contextmenu",() => {
                 if (nodeValue.contentEditable != "true" && nodeName.contentEditable != "true")
                     menu.bind(this)("value");
             });
-            nodeValue.addEventListener("click",() => {
-                this.parent.plugin.makeEditable(nodeValue);
-            });
+            nodeValue.addEventListener("click",(e) => {
+                if(!this.uriCheck("click", nodeValue, e))
+                    this.parent.plugin.makeEditable(nodeValue);
+            });   
             nodeName.addEventListener("click",() => {
                 this.parent.plugin.makeEditable(nodeName);
             });
@@ -834,8 +836,8 @@
                 if (nodeValue.contentEditable != "true" && nodeName.contentEditable != "true")
                     menu.bind(this)("name");
             });
-            nodeValue.addEventListener("blur",() => {
-                sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
+            nodeValue.addEventListener("blur",() => { 
+                    sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue); 
             });
             nodeName.addEventListener("blur",() => {
                 sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeName);
@@ -851,8 +853,32 @@
                     evt.preventDefault();
                     sendTextToClient.bind(this)(nodeName.innerHTML, nodeValue.innerHTML, nodeValue);
                 }
+            }); 
+            nodeValue.addEventListener("mousemove",(e) => { 
+                this.uriCheck("mousemove", nodeValue, e);
             });
+            nodeValue.addEventListener("mouseout",(e) => {
+                 $(nodeValue).removeClass("link-hovered"); 
+            });  
         }
+        
+            uriCheck(triggerType: string, node, e) {
+            if (e != null && e.ctrlKey) { 
+                var urlPattern = /(\w+):\/*([^\/]+)([a-z0-9\-@\^=%&;\/~\+]*)[\?]?([^ \#]*)#?([^ \#]*)/i;
+                if (urlPattern.test(node.innerText)) { 
+                    switch(triggerType){
+                        case "click": open(node.innerText); 
+                        case "mousemove": $(node).addClass("link-hovered");
+                        default: return true;
+                    }  
+                    return true;
+                } 
+            }
+            else{ 
+                $(node).removeClass("link-hovered"); 
+            }   
+            return false;
+        }   
 
         render() {
             var node = new FluentDOM("SPAN", "nodeAttribute", this.parent.headerAttributes);
@@ -899,6 +925,9 @@
                 for (var index = 0; index < styles.length; index++) {
                     var style = styles[index];
                     var splits = style.split(":");
+                    // ensure that urls are not malformed after the split.
+                    if(splits[2] !== undefined && splits[2].indexOf('//') > -1)
+                       splits[1] += ":" + splits[2]; 
                     this.styles.push(new DomExplorerPropertyEditorItem(this, splits[0], splits[1], this.internalId));
                 }
                 // Append add style button
@@ -907,8 +936,7 @@
                     this.plugin.styleView.appendChild(<HTMLElement>e.target);
                 });
             }
-        }
-
+        } 
     }
 
     export class DomExplorerPropertyEditorItem {
@@ -920,17 +948,24 @@
             this.name = name;
             this.value = value;
             if (generate)
-                this._generateStyle(name, value, internalId, editableLabel);
+                this._generateStyle(name, value, internalId, editableLabel); 
         }
         private _generateStyle(property: string, value: string, internalId: string, editableLabel = false): void {
+            console.debug(property + value);
             var wrap = document.createElement("div");
             wrap.className = 'styleWrap';
             var label = document.createElement("div");
             label.innerHTML = property;
             label.className = "styleLabel";
-            label.contentEditable = "false";
+            label.contentEditable = "false";        
             var valueElement = this._generateClickableValue(label, value, internalId);
-            wrap.appendChild(label);
+            wrap.appendChild(label); 
+            if(property.indexOf("color") != -1){ 
+                var square = document.createElement("span");
+                square.className = "colored-square"; 
+                square.style.backgroundColor = value; 
+                wrap.appendChild(square);
+            } 
             wrap.appendChild(valueElement);
             this.parent.plugin.styleView.appendChild(wrap);
 
@@ -1000,7 +1035,6 @@
             });
             return valueElement;
         }
-
     }
 
     export interface LayoutStyle {
