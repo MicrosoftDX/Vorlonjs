@@ -43,7 +43,7 @@ module VORLON {
                     this._cancelCheckButton.disabled = false;
 
                     this._rootDiv.classList.add("loading");
-                    this._rulesPanel.clear("analyze in progress...");
+                    this._rulesPanel.clear("analysis in progress...");
                     this._currentAnalyseId = VORLON.Tools.CreateGUID();
                     this._analysePending = true;
                     this._analyseResult = null;
