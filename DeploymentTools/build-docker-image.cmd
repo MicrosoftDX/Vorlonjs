@@ -18,7 +18,7 @@ docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pe
 @ECHO "PUSH IMAGE INTO DOCKER HUB"
 docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" push jcorioland/vorlonjs:0.2.1
 
-@ECHO "LOG OUT FROM DOCKER HUB"
+@ECHO "LOG OUT FROM DOCKER HUB."
 docker --tls --tlscacert="%2\ca.pem" --tlscert="%2\cert.pem" --tlskey="%2\key.pem" logout
 
 GOTO :eof
