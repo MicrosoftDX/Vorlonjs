@@ -10,7 +10,8 @@ module VORLON.WebStandards.Rules.DOM {
             "prototype",
             "protoaculous",
             "google-analytics.com",
-            "partner.googleadservices.com"
+            "partner.googleadservices.com",
+            "vorlon"
         ],
         title: "avoid browser detection",
         description: "Nowadays, browser have very similar user agent, and browser feature moves very fast. Browser detection leads to britle code. Consider using feature detection instead.",
