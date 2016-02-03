@@ -164,7 +164,7 @@ module VORLON {
                 if (rule.failed !== undefined) {
                     title.createChild("SPAN", "state fa " + (rule.failed ? "fa-close" : "fa-check"));
                 }
-                title.createChild("SPAN").html(rule.title);
+                title.createChild("SPAN").text(rule.title);
                 if (rule.rules) {
                     title.click(() => {
                         ruleitem.toggleClass("collapsed");
@@ -218,12 +218,12 @@ module VORLON {
 
                     item.append("H1", "title", (title) => {
                         title.createChild("SPAN", "state fa " + (rule.failed ? "fa-close" : "fa-check"));
-                        title.createChild("SPAN", "text").html(rule.title);
+                        title.createChild("SPAN", "text").text(rule.title);
                     });
 
                     if (rule.description) {
                         item.append("DIV", "description", (desc) => {
-                            desc.html(rule.description);
+                            desc.text(rule.description);
                         });
                     }
 
