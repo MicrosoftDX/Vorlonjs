@@ -18,11 +18,14 @@ export interface ISessionConfig {
 }
 
 export function getConfig(configpath : string) {
+    console.log("reading config from " + configpath);  
+    
     var userDataDir = jetpack.cwd(configpath);
     var config = userDataDir.read(vorlonConfigFile, 'json');
     if (!config)
         config = JSON.parse(JSON.stringify(vorlonOriginalConfig));
       
+    console.log(config);  
     return config;
 }
 
@@ -49,7 +52,8 @@ export function getSessions(configpath : string) : ISessionsConfig{
 
 
 export function getSessionConfig(configpath : string, sessionid : string) : ISessionConfig {
-    var defaultConfig = JSON.parse(JSON.stringify({ includeSocketIO : vorlonOriginalConfig.includeSocketIO, plugins : vorlonOriginalConfig.plugins }));
+    var defaultSocketIO = (vorlonOriginalConfig.includeSocketIO != undefined) ? vorlonOriginalConfig.includeSocketIO : true;
+    var defaultConfig = JSON.parse(JSON.stringify({ includeSocketIO : defaultSocketIO, plugins : vorlonOriginalConfig.plugins }));
     
     var userDataDir = jetpack.cwd(configpath);
     var config = userDataDir.read(sessionConfigsStoreFile, 'json');

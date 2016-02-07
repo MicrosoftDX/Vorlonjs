@@ -68,8 +68,9 @@ app.on('ready', function () {
         app.quit();
     });
 
-    startVorlonProcess();
-    
+    setTimeout(function(){
+        startVorlonProcess();
+    }, 1000);
     //test browser features
     // var testWindow = new BrowserWindow({
     //     x: mainWindowState.x,
@@ -151,12 +152,13 @@ function sendLog(logs, sender?){
 
 function openDashboardWindow(sessionid) {
     sessionid = sessionid || 'default';
-    
     var cfg = config.getConfig(userDataPath);
+    var dashboardTarget = 'http://localhost:' + cfg.port + '/dashboard/' + sessionid;
     var existing = dashboardWindows[sessionid];
     if (existing){
+        console.log("dashboard already exists, awakening it at " + dashboardTarget);
         existing.show();    
-        existing.loadUrl('http://localhost:' + cfg.port + '/dashboard/' + sessionid);
+        existing.loadUrl(dashboardTarget);
         return ;
     }
     
@@ -169,22 +171,24 @@ function openDashboardWindow(sessionid) {
     });
     
     //dashboardwdw.openDevTools();
-    console.log("create dashboard window for " + sessionid);
+    console.log("create new dashboard window for " + dashboardTarget);
     //load empty page first to prevent bad window title
     dashboardwdw.loadUrl('file://' + __dirname + '/emptypage.html');
     setTimeout(function () {
-        dashboardwdw.loadUrl('http://localhost:' + cfg.port + '/dashboard/' + sessionid);        
-    }, 100);
+        dashboardwdw.webContents.on('did-fail-load', function(event, errorCode,  errorDescription, validateUrl){
+            console.log("dashboard page error " + validateUrl + " " + errorCode + " " + errorDescription);
+            dashboardwdw.loadUrl('file://' + __dirname + '/dasboardloaderrorpage.html');        
+        });  
+        
+        dashboardwdw.loadUrl(dashboardTarget); 
+    }, 1000);
 
     dashboardWindows[sessionid] = dashboardwdw;
     dashboardwdw.on('close', function () {
         dashboardWindows[sessionid] = null;
     });
     
-    dashboardwdw.webContents.on('did-fail-load', function(event, errorCode,  errorDescription, validateUrl){
-        console.log("dashboard page error " + validateUrl + " " + errorCode + " " + errorDescription);
-        dashboardwdw.loadUrl('file://' + __dirname + '/dasboardloaderrorpage.html');        
-    });
+    
 }
 
 function startVorlonProcess() {
