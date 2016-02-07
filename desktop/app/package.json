@@ -3,7 +3,7 @@
   "productName": "Vorlon desktop",
   "identifier": "com.vorlonjs.desktop",
   "description": "VorlonJS desktop application.",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "author": "",
   "main": "background.js",
   "config": {
@@ -34,6 +34,7 @@
     "winston": "^1.0.1",
     "winston-azure": "0.0.4",
     "winston-logs-display": "^0.1.1",
-    "xmlhttprequest": "^1.7.0"
+    "xmlhttprequest": "^1.7.0",
+    "cors": "^2.7.1"
   }
 }

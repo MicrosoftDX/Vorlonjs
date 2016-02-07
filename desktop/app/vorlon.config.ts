@@ -18,14 +18,11 @@ export interface ISessionConfig {
 }
 
 export function getConfig(configpath : string) {
-    console.log("reading config from " + configpath);  
-    
     var userDataDir = jetpack.cwd(configpath);
     var config = userDataDir.read(vorlonConfigFile, 'json');
     if (!config)
         config = JSON.parse(JSON.stringify(vorlonOriginalConfig));
       
-    console.log(config);  
     return config;
 }
 
