@@ -3,7 +3,7 @@
   "productName": "Vorlon desktop",
   "identifier": "com.vorlonjs.desktop",
   "description": "VorlonJS desktop application.",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "author": "",
   "main": "background.js",
   "config": {
@@ -28,14 +28,13 @@
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.3",
-    "redis": "^0.12.1",
-    "socket.io": "1.3.6",
-    "socket.io-redis": "^0.1.4",
+    "socket.io": "1.4.4",
     "stylus": "^0.50.0",
     "tree-kill": "^1.0.0",
     "winston": "^1.0.1",
     "winston-azure": "0.0.4",
     "winston-logs-display": "^0.1.1",
-    "xmlhttprequest": "^1.7.0"
+    "xmlhttprequest": "^1.7.0",
+    "cors": "^2.7.1"
   }
 }
