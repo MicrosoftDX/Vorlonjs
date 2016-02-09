@@ -41,6 +41,7 @@
     "gulp-webserver": "~0.9.0",
     "gulp-zip": "~3.0.2",
     "merge2": "~0.3.5",
+    "mocha-junit-reporter": "^1.9.1",
     "through": "~2.3.4",
     "typescript": "~1.6.0-beta"
   },
