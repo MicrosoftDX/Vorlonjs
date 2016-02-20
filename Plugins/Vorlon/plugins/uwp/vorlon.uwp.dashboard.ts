@@ -1,3 +1,6 @@
+declare var SmoothieChart : any;
+declare var TimeSeries : any;
+
 module VORLON {
     export class UWPDashboard extends DashboardPlugin {
 
@@ -135,6 +138,12 @@ module VORLON {
                 this._memoryMonitor = new MemoryMonitorControl(this._memorypanel);
             if (!this._cpuMonitor)
                 this._cpuMonitor = new CpuMonitorControl(this._cpupanel);
+            if (!this._diskMonitor)
+                this._diskMonitor = new DiskMonitorControl(this._diskpanel);
+            if (!this._networkMonitor)
+                this._networkMonitor = new NetworkMonitorControl(this._networkpanel);
+            if (!this._powerMonitor)
+                this._powerMonitor = new PowerMonitorControl(this._powerpanel);
         }
 
         public renderStatus(status: IUWPStatus) {
@@ -145,10 +154,14 @@ module VORLON {
                 this.hideNoWinRT();
             }
 
+            var date = new Date(<any>status.statusDate);
             this.checkBtnState(status.isRunning);
             this.initControls();
-            this._memoryMonitor.setData(status.memory, status.phone ? status.phone.memory : null);
-            this._cpuMonitor.setData(status.cpu);
+            this._memoryMonitor.setData(date, status.memory, status.phone ? status.phone.memory : null);
+            this._cpuMonitor.setData(date, status.cpu);
+            this._diskMonitor.setData(date, status.disk);
+            this._networkMonitor.setData(date, status.network);
+            this._powerMonitor.setData(date, status.power);
         }
     }
 
@@ -164,6 +177,42 @@ module VORLON {
     }
 
     Core.RegisterDashboardPlugin(new UWPDashboard());
+
+    function formatTime(time : number){
+        if (time < 1000)
+            return (time << 0) + " ms";
+        
+        time = time / 1000;
+        if (time < 60){
+            return (time << 0) + ' s';
+        }
+        var min = (time / 60);
+        var sec = time % 60;
+        
+        if (min < 60)
+            return (min << 0) + 'min';
+            
+        var hours = min / 60; 
+        return (hours << 0) + 'h' + (min - hours*60) + 'min';
+    }
+    
+    function formatBytes(bytes : number){
+        var current = bytes;
+        
+        if (current < 1024)
+            return current + ' bytes';
+            
+        current = current / 1024;
+        if (current < 1024)
+            return (current << 0) + ' ko';
+        
+        current = current / 1024;
+        if (current < 1024)
+            return (current << 0) + ' Mo';
+            
+        current = current / 1024;
+        return (current << 0) + ' Go';
+    }
 
     export class MetadataDisplayControl {
         element: HTMLElement;
@@ -224,10 +273,15 @@ module VORLON {
         }
     }
 
+    
     export class MemoryMonitorControl {
         element: HTMLElement;
         workingSet: HTMLElement;
-
+        canvas : HTMLCanvasElement;
+        smoothie : any;
+        lineWorkset : any;
+        linePeakWorkset : any;
+        
         constructor(element: HTMLElement) {
             this.element = element;
             this.render();
@@ -241,27 +295,43 @@ module VORLON {
             this.element.innerHTML =
                 `<h1>Memory</h1>
                 ${entry("workingSet", "workingSet")}                
-                `;
+                <canvas id="memoryrealtime" width="360" height="100"></canvas>`;
 
             this.workingSet = <HTMLElement>this.element.querySelector(".workingSet");
+            this.canvas = <HTMLCanvasElement>this.element.querySelector("#memoryrealtime");
+            this.smoothie = new SmoothieChart({ millisPerPixel : 200 });
+            this.smoothie.streamTo(this.canvas);
+            this.lineWorkset = new TimeSeries();
+            //this.linePeakWorkset = new TimeSeries();
+            this.smoothie.addTimeSeries(this.lineWorkset);
+            //this.smoothie.addTimeSeries(this.linePeakWorkset);
         }
 
-        setData(memory: IUWPMemoryStatus, phone: IUWPPhoneMemoryStatus) {
+        setData(date : Date, memory: IUWPMemoryStatus, phone: IUWPPhoneMemoryStatus) {
             if (!memory) {
                 this.element.style.display = "none";
                 return;
             } else {
                 this.element.style.display = "";
             }
-
-            this.workingSet.textContent = ((memory.workingSet / (1024 * 1024)) << 0) + " Mo";
+            var workset = ((memory.workingSet / (1024 * 1024)) << 0);
+            //var peakworkset = ((memory.peakWorkingSet / (1024 * 1024)) << 0);
+            this.workingSet.textContent =  formatBytes(memory.workingSet);
+            this.lineWorkset.append(date, workset);
+            //this.linePeakWorkset.append(date, peakworkset);
         }
     }
 
     export class CpuMonitorControl {
+        lastDate : Date;
+        lastUserTime : number;
         element: HTMLElement;
         userTime: HTMLElement;
-
+        percent: HTMLElement;
+        canvas : HTMLCanvasElement;
+        smoothie : any;
+        lineUser : any;
+        
         constructor(element: HTMLElement) {
             this.element = element;
             this.render();
@@ -274,13 +344,19 @@ module VORLON {
 
             this.element.innerHTML =
                 `<h1>CPU</h1>
-                ${entry("user time", "userTime")}                
-                `;
-
+                ${entry("user time", "userTime")}   
+                ${entry("percent", "percent")}                
+                <canvas id="userrealtime" width="360" height="100"></canvas>`;
+            this.canvas = <HTMLCanvasElement>this.element.querySelector("#userrealtime");
+            this.smoothie = new SmoothieChart({ millisPerPixel : 200 });
+            this.smoothie.streamTo(this.canvas);
+            this.lineUser = new TimeSeries();
+            this.smoothie.addTimeSeries(this.lineUser);
             this.userTime = <HTMLElement>this.element.querySelector(".userTime");
+            this.percent = <HTMLElement>this.element.querySelector(".percent");
         }
 
-        setData(cpu: IUWPCpuStatus) {
+        setData(date : Date, cpu: IUWPCpuStatus) {
             if (!cpu) {
                 this.element.style.display = "none";
                 return;
@@ -289,35 +365,139 @@ module VORLON {
             }
 
             this.userTime.textContent = cpu.user + " ms";
+            if (this.lastDate){
+                var difDate = <any>date - <any>this.lastDate;
+                var difUserTime = cpu.user - this.lastUserTime;
+                var percent = (100 * difUserTime / difDate).toFixed(2);
+                this.percent.textContent = percent + " %";
+                this.lineUser.append(date, percent);
+            }
+            this.lastDate = date;
+            this.lastUserTime = cpu.user;
         }
     }
 
     export class DiskMonitorControl {
         element: HTMLElement;
-
+        read: HTMLElement;
+        write: HTMLElement;
+        canvasRead : HTMLCanvasElement;
+        smoothieRead : any;
+        lineRead: any;
+        canvasWrite : HTMLCanvasElement;
+        smoothieWrite : any;
+        lineWrite: any;
+        lastDate : Date;
+        lastRead : number;
+        lastWrite : number;
+        
         constructor(element: HTMLElement) {
             this.element = element;
             this.render();
         }
 
         render() {
+            var entry = (title, identifier) => {
+                return `<div class="labelval"><div class="label">${title}</div><div class="val ${identifier}"></div></div>`
+            }
+
+            this.element.innerHTML =
+                `<h1>Disk</h1>
+                ${entry("read bytes", "bytesRead")}                                 
+                <canvas id="readrealtime" width="360" height="60"></canvas>
+                ${entry("write bytes", "bytesWritten")}    
+                <canvas id="writerealtime" width="360" height="60"></canvas>`;
+
+            this.canvasRead = <HTMLCanvasElement>this.element.querySelector("#readrealtime");
+            this.smoothieRead = new SmoothieChart({ millisPerPixel : 200 });
+            this.smoothieRead.streamTo(this.canvasRead);
+            this.lineRead= new TimeSeries();
+            this.smoothieRead.addTimeSeries(this.lineRead);
+            
+            this.canvasWrite = <HTMLCanvasElement>this.element.querySelector("#writerealtime");
+            this.smoothieWrite = new SmoothieChart({ millisPerPixel : 200 });
+            this.smoothieWrite.streamTo(this.canvasWrite);
+            this.lineWrite= new TimeSeries();
+            this.smoothieWrite.addTimeSeries(this.lineWrite);
+            
+            this.read = <HTMLElement>this.element.querySelector(".bytesRead");
+            this.write = <HTMLElement>this.element.querySelector(".bytesWritten");
+        }
+
+        setData(date : Date, disk: IUWPDiskStatus) {
+            if (!disk) {
+                this.element.style.display = "none";
+                return;
+            } else {
+                this.element.style.display = "";
+            }
+
+            this.read.textContent = formatBytes(disk.bytesRead);
+            this.write.textContent = formatBytes(disk.bytesWritten);
+            if (this.lastDate){
+                var datedif = <any>date - <any>this.lastDate;
+                var readDif = disk.bytesRead - this.lastRead;
+                var read = (readDif / datedif).toFixed(2);
+                var writeDif = disk.bytesWritten - this.lastWrite;
+                var write = (writeDif / datedif).toFixed(2);
+                this.lineRead.append(date, read);
+                this.lineWrite.append(date, write);
+            }
+            this.lastDate = date;
+            this.lastRead = disk.bytesRead;
+            this.lastWrite = disk.bytesWritten;
         }
     }
 
     export class NetworkMonitorControl {
         element: HTMLElement;
-
+        ianaInterfaceType:HTMLElement;
+        signal:HTMLElement;
+        
         constructor(element: HTMLElement) {
             this.element = element;
             this.render();
         }
 
         render() {
+            var entry = (title, identifier) => {
+                return `<div class="labelval"><div class="label">${title}</div><div class="val ${identifier}"></div></div>`
+            }
+
+            this.element.innerHTML =
+                `${entry("network type", "ianaInterfaceType")}                          
+                ${entry("signal", "signal")}    
+                `;
+                
+            this.ianaInterfaceType = <HTMLElement>this.element.querySelector(".ianaInterfaceType");
+            this.signal = <HTMLElement>this.element.querySelector(".signal");
+        }
+        
+        setData(date : Date, network: IUWPNetworkStatus) {
+            if (!network) {
+                this.element.style.display = "none";
+                return;
+            } else {
+                this.element.style.display = "";
+            }
+            
+            var networkType = "unknown (" + network.ianaInterfaceType + ")";
+            if (network.ianaInterfaceType == 243 || network.ianaInterfaceType == 244){
+                networkType = "3G or 4G";
+            } else if (network.ianaInterfaceType == 71){
+                networkType = "Wifi";
+            } else if (network.ianaInterfaceType == 6){
+                networkType = "LAN";
+            }
+            
+            this.ianaInterfaceType.textContent = networkType;
+            this.signal.textContent = (network.signal || "") + "";
         }
     }
 
     export class PowerMonitorControl {
         element: HTMLElement;
+        power: HTMLElement;
 
         constructor(element: HTMLElement) {
             this.element = element;
@@ -325,6 +505,27 @@ module VORLON {
         }
 
         render() {
+            var entry = (title, identifier) => {
+                return `<div class="labelval"><div class="label">${title}</div><div class="val ${identifier}"></div></div>`
+            }
+
+            this.element.innerHTML =
+                `${entry("power", "power")}    
+                `;
+                
+            this.power = <HTMLElement>this.element.querySelector(".power");
+        }
+        
+        setData(date : Date, power: IUWPPowerStatus) {
+            if (!power) {
+                this.element.style.display = "none";
+                return;
+            } else {
+                this.element.style.display = "";
+            }
+            
+            //this.power.textContent = power.remainingChargePercent  + '% (' + formatTime(power.remainingDischargeTime) + ')';
+            this.power.textContent = power.remainingChargePercent  + '%';
         }
     }
 
@@ -337,6 +538,9 @@ module VORLON {
         }
 
         render() {
+        }
+        
+        setData(date : Date, power: IUWPEnergyStatus) {
         }
     }
 }
