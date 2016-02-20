@@ -10,7 +10,7 @@ module VORLON {
             //     name   ,  html for dash   css for dash
             super("uwp", "control.html", "control.css");
             this._ready = true;
-            this.debug = true;
+            //this.debug = true;
         }
 
         //Return unique id for your plugin
@@ -71,7 +71,7 @@ module VORLON {
                         if (this.running) {
                             this.sendCommandToClient('stopMonitor');
                         } else {
-                            this.sendCommandToClient('startMonitor', { interval: 5000 });
+                            this.sendCommandToClient('startMonitor', { interval: streamdelay });
                         }
                     }
                 });
@@ -144,6 +144,8 @@ module VORLON {
                 this._networkMonitor = new NetworkMonitorControl(this._networkpanel);
             if (!this._powerMonitor)
                 this._powerMonitor = new PowerMonitorControl(this._powerpanel);
+            if (!this._energyMonitor)
+                this._energyMonitor = new EnergyMonitorControl(this._energypanel);
         }
 
         public renderStatus(status: IUWPStatus) {
@@ -162,6 +164,7 @@ module VORLON {
             this._diskMonitor.setData(date, status.disk);
             this._networkMonitor.setData(date, status.network);
             this._powerMonitor.setData(date, status.power);
+            this._energyMonitor.setData(date, status.energy);
         }
     }
 
@@ -235,11 +238,11 @@ module VORLON {
             }
             this.element.innerHTML =
                 `<h1>Client device</h1>
-                ${entry("name", "name")}
-                ${entry("app version", "appversion")}
+                ${entry("app. name", "name")}
+                ${entry("app. version", "appversion")}
                 ${entry("language", "language")}
                 ${entry("region", "region")}
-                ${entry("deviceType", "deviceType")}
+                ${entry("device family", "deviceType")}
                 ${entry("manufacturer", "systemManufacturer")}
                 ${entry("product name", "systemProductName")}
                 `;
@@ -273,6 +276,11 @@ module VORLON {
         }
     }
 
+    var timescale = 200;
+    var lineColor = '#00a5b3';
+    var linewidth = 2;
+    var streamdelay = 5000;
+    var maxValueScale = 1.1;
     
     export class MemoryMonitorControl {
         element: HTMLElement;
@@ -294,17 +302,17 @@ module VORLON {
 
             this.element.innerHTML =
                 `<h1>Memory</h1>
-                ${entry("workingSet", "workingSet")}                
+                ${entry("working set", "workingSet")}                
                 <canvas id="memoryrealtime" width="360" height="100"></canvas>`;
 
             this.workingSet = <HTMLElement>this.element.querySelector(".workingSet");
             this.canvas = <HTMLCanvasElement>this.element.querySelector("#memoryrealtime");
-            this.smoothie = new SmoothieChart({ millisPerPixel : 200 });
-            this.smoothie.streamTo(this.canvas);
+            this.smoothie = new SmoothieChart({ millisPerPixel : timescale, maxValueScale: maxValueScale });
+            this.smoothie.streamTo(this.canvas, streamdelay);
             this.lineWorkset = new TimeSeries();
             //this.linePeakWorkset = new TimeSeries();
-            this.smoothie.addTimeSeries(this.lineWorkset);
-            //this.smoothie.addTimeSeries(this.linePeakWorkset);
+            this.smoothie.addTimeSeries(this.lineWorkset, { lineWidth:linewidth, strokeStyle : lineColor });
+            //this.smoothie.addTimeSeries(this.linePeakWorkset, { lineWidth:linewidth, strokeStyle : lineColor });
         }
 
         setData(date : Date, memory: IUWPMemoryStatus, phone: IUWPPhoneMemoryStatus) {
@@ -344,14 +352,14 @@ module VORLON {
 
             this.element.innerHTML =
                 `<h1>CPU</h1>
-                ${entry("user time", "userTime")}   
+                ${entry("total time", "userTime")}   
                 ${entry("percent", "percent")}                
                 <canvas id="userrealtime" width="360" height="100"></canvas>`;
             this.canvas = <HTMLCanvasElement>this.element.querySelector("#userrealtime");
-            this.smoothie = new SmoothieChart({ millisPerPixel : 200 });
-            this.smoothie.streamTo(this.canvas);
+            this.smoothie = new SmoothieChart({ millisPerPixel : timescale, maxValueScale: maxValueScale });
+            this.smoothie.streamTo(this.canvas, streamdelay);
             this.lineUser = new TimeSeries();
-            this.smoothie.addTimeSeries(this.lineUser);
+            this.smoothie.addTimeSeries(this.lineUser, { lineWidth:linewidth, strokeStyle : lineColor });
             this.userTime = <HTMLElement>this.element.querySelector(".userTime");
             this.percent = <HTMLElement>this.element.querySelector(".percent");
         }
@@ -368,8 +376,8 @@ module VORLON {
             if (this.lastDate){
                 var difDate = <any>date - <any>this.lastDate;
                 var difUserTime = cpu.user - this.lastUserTime;
-                var percent = (100 * difUserTime / difDate).toFixed(2);
-                this.percent.textContent = percent + " %";
+                var percent = (100 * difUserTime / difDate);
+                this.percent.textContent = percent.toFixed(1) + " %";
                 this.lineUser.append(date, percent);
             }
             this.lastDate = date;
@@ -409,16 +417,16 @@ module VORLON {
                 <canvas id="writerealtime" width="360" height="60"></canvas>`;
 
             this.canvasRead = <HTMLCanvasElement>this.element.querySelector("#readrealtime");
-            this.smoothieRead = new SmoothieChart({ millisPerPixel : 200 });
-            this.smoothieRead.streamTo(this.canvasRead);
+            this.smoothieRead = new SmoothieChart({ millisPerPixel : timescale, maxValueScale: maxValueScale });
+            this.smoothieRead.streamTo(this.canvasRead, streamdelay);
             this.lineRead= new TimeSeries();
-            this.smoothieRead.addTimeSeries(this.lineRead);
+            this.smoothieRead.addTimeSeries(this.lineRead, { lineWidth:linewidth, strokeStyle : lineColor });
             
             this.canvasWrite = <HTMLCanvasElement>this.element.querySelector("#writerealtime");
-            this.smoothieWrite = new SmoothieChart({ millisPerPixel : 200 });
-            this.smoothieWrite.streamTo(this.canvasWrite);
+            this.smoothieWrite = new SmoothieChart({ millisPerPixel : timescale, maxValueScale: maxValueScale });
+            this.smoothieWrite.streamTo(this.canvasWrite, streamdelay);
             this.lineWrite= new TimeSeries();
-            this.smoothieWrite.addTimeSeries(this.lineWrite);
+            this.smoothieWrite.addTimeSeries(this.lineWrite, { lineWidth:linewidth, strokeStyle : lineColor });
             
             this.read = <HTMLElement>this.element.querySelector(".bytesRead");
             this.write = <HTMLElement>this.element.querySelector(".bytesWritten");
@@ -437,9 +445,9 @@ module VORLON {
             if (this.lastDate){
                 var datedif = <any>date - <any>this.lastDate;
                 var readDif = disk.bytesRead - this.lastRead;
-                var read = (readDif / datedif).toFixed(2);
+                var read = (readDif / datedif);
                 var writeDif = disk.bytesWritten - this.lastWrite;
-                var write = (writeDif / datedif).toFixed(2);
+                var write = (writeDif / datedif);
                 this.lineRead.append(date, read);
                 this.lineWrite.append(date, write);
             }
@@ -531,16 +539,43 @@ module VORLON {
 
     export class EnergyMonitorControl {
         element: HTMLElement;
-
+        recentEnergyUsage: HTMLElement;
+        canvas : HTMLCanvasElement;
+        smoothie : any;
+        lineFgUsage : any;
+        
         constructor(element: HTMLElement) {
             this.element = element;
             this.render();
         }
 
         render() {
+            var entry = (title, identifier) => {
+                return `<div class="labelval"><div class="label">${title}</div><div class="val ${identifier}"></div></div>`
+            }
+
+            this.element.innerHTML =
+                `<h1>Energy</h1>
+                ${entry("usage", "recentEnergyUsage")}        
+                <canvas id="fgusagerealtime" width="360" height="100"></canvas>`;
+            this.canvas = <HTMLCanvasElement>this.element.querySelector("#fgusagerealtime");
+            this.smoothie = new SmoothieChart({ millisPerPixel : timescale, maxValueScale: maxValueScale });
+            this.smoothie.streamTo(this.canvas, streamdelay);
+            this.lineFgUsage = new TimeSeries();
+            this.smoothie.addTimeSeries(this.lineFgUsage, { lineWidth:linewidth, strokeStyle : lineColor });
+            this.recentEnergyUsage = <HTMLElement>this.element.querySelector(".recentEnergyUsage");
         }
         
-        setData(date : Date, power: IUWPEnergyStatus) {
+        setData(date : Date, energy: IUWPEnergyStatus) {
+            if (!energy || !energy.foregroundEnergy) {
+                this.element.style.display = "none";
+                return;
+            } else {
+                this.element.style.display = "";
+            }
+
+            this.recentEnergyUsage.textContent = energy.foregroundEnergy.recentEnergyUsage + " %";
+            this.lineFgUsage.append(date, energy.foregroundEnergy.recentEnergyUsage);
         }
     }
 }

@@ -6,8 +6,7 @@ module VORLON {
             super("sample"); // Name
             this.monitorInterval = null;
             this._ready = true; // No need to wait
-            this.debug = true;
-            console.log('Started');
+            //this.debug = true;
         }
 
         //Return unique id for your plugin
@@ -31,14 +30,7 @@ module VORLON {
 
         // Handle messages from the dashboard, on the client
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
-            console.log('Got message from sample plugin', receivedObject.message);
-            //The dashboard will send us an object like { message: 'hello' }
-            //Let's just return it, reversed
-            var data = {
-                message: receivedObject.message.split("").reverse().join("")
-            };
-
-            this.sendToDashboard(data);
+            
         }
 
         public checkMetadata() {
@@ -69,23 +61,27 @@ module VORLON {
         }
 
         public checkStatus() {
-            console.log("checking status");
-            var res = <IUWPStatus>{
-                statusDate: new Date(),
-                winRTAvailable: false,
-                isRunning: this.monitorInterval != null
-            };
-            var global = <any>window;
-            if (global.Windows) {
-                res.winRTAvailable = true;
-                this.getWinRTStatus(res);
-                if (global.Windows.Phone) {
-                    this.getPhoneStatus(res);
+            try {
+                var res = <IUWPStatus>{
+                    statusDate: new Date(),
+                    winRTAvailable: false,
+                    isRunning: this.monitorInterval != null
+                };
+                var global = <any>window;
+                if (global.Windows) {
+                    res.winRTAvailable = true;
+                    this.getWinRTStatus(res);
+                    if (global.Windows.Phone) {
+                        this.getPhoneStatus(res);
+                    }
                 }
-            }
 
-            this.sendCommandToDashboard('showStatus', res);
-            return res;
+                this.sendCommandToDashboard('showStatus', res);
+
+                return res;
+            } catch (exception) {
+                console.error(exception);
+            }
         }
 
         public getPhoneStatus(status: IUWPStatus) {
@@ -192,7 +188,6 @@ module VORLON {
             if (this.monitorInterval) {
                 clearInterval(this.monitorInterval);
             }
-            console.log("starting monitoring");
 
             this.monitorInterval = setInterval(() => {
                 this.checkStatus();

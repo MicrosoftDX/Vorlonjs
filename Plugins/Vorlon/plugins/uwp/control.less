@@ -1,3 +1,5 @@
+@import "../vorlontheme.less";
+
 .plugin-uwp {
     .uwppanel{
         position: relative;
@@ -32,16 +34,29 @@
                 border: 1px solid #DDD;
                 width : 400px;
                 height : 300px;
+                
+                h1 {
+                    margin-bottom: 6px;
+                    font-size: 16px;
+                }
+                
                 .labelval{
                     display: flex;
                     flex-flow: row nowrap;
                     
+                    
                     .label{
                         width : 140px;    
+                        color : #777;
                     }
                     .val {
                         flex : 1;
+                        font-weight: 500;
                     }
+                }
+                
+                canvas{
+                    margin-top: 4px;
                 }
             }
         }
