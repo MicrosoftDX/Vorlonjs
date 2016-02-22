@@ -133,6 +133,8 @@ gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
         .pipe(concat('vorlon.office.dashboard.js'))
         .pipe(gulp.dest('Plugins/release/plugins/office/'));
 
+    
+
      gulp.src([
         'Plugins/release/plugins/office/vorlon.office.interfaces.min.js',
         'Plugins/release/plugins/office/vorlon.office.tools.min.js',
@@ -224,7 +226,9 @@ gulp.task('scripts-plugins', ['concat-webstandards-rules-plugins'], function () 
             './Plugins/**/office/vorlon.office.dashboard.js',
             './Plugins/**/babylonInspector/vorlon.babylonInspector.client.js',
             './Plugins/**/babylonInspector/vorlon.babylonInspector.interfaces.js',
-            './Plugins/**/babylonInspector/vorlon.babylonInspector.dashboard.js'
+            './Plugins/**/babylonInspector/vorlon.babylonInspector.dashboard.js',
+            './Plugins/**/uwp/vorlon.uwp.client.js',
+            './Plugins/**/uwp/vorlon.uwp.dashboard.js',
         ])
         .pipe(rename(function (path) {
                 path.extname = ".min.js";
