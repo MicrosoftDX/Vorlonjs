@@ -35,7 +35,8 @@
                 this._interactiveInput.addEventListener("keydown", (evt) => {
                     if (evt.keyCode === 13) { //enter
                         this.sendCommandToClient('order', {
-                            order: this._interactiveInput.value
+                            order: this.isLoggable(this._interactiveInput.value) ? "console.log(" + this._interactiveInput.value + ")" 
+                                                                            : this._interactiveInput.value
                         });
 
                         this._commandHistory.push(this._interactiveInput.value);
@@ -107,6 +108,21 @@
 
                 this._ready = true;
             });
+        }
+        
+        private isLoggable(input:string) : boolean{
+            // "val" && 'val
+            if(input[0] == '"' &&  input[input.length - 1] == '"' || (input[0] == '\'' &&  input[input.length - 1] == '\''))
+                return true;
+                
+             if(input.indexOf('.') > 0){
+                 // .command, c.command(), c.command
+                 return (input.indexOf("(") > -1  && input.indexOf(")") > -1 ) ? false : true;
+             }  
+             
+             // funct("") => return something or not
+             // Other case, will return a console error from the client
+             return false;
         }
 
         public addDashboardEntries(entries: ConsoleEntry[]) {
