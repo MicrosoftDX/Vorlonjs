@@ -5,7 +5,7 @@
 var $: any;
 module VORLON {
 
-    export class OfficeDocument {
+    export class OfficePowerPoint {
 
         private dashboardPlugin: DashboardPlugin;
 
@@ -14,23 +14,17 @@ module VORLON {
         }
 
         public execute() {
-
-            this.apis.forEach(api => {
+              this.apis.forEach(api => {
                 api().addTree();
             });
         }
 
-        public apis: { (): OfficeFunction }[] = [
+        public apis: { (): OfficeFunction; }[] = [
             (): OfficeFunction => {
-                var fn = new OfficeFunction(this.dashboardPlugin, "window.Office.context.requirements", "isSetSupported");
-                var apiName = OfficeTools.CreateTextBlock(fn.fullpathName + ".apiName", "Api name");
-                var apiVersion = OfficeTools.CreateTextBlock(fn.fullpathName + ".apiVersion", "Api Version");
-                fn.elements.push(apiName, apiVersion);
-                return fn;
+                return (new OfficeFunction(this.dashboardPlugin, "window.Office.context.document", "getActiveViewAsync"));
             },
             (): OfficeFunction => {
-                return new OfficeFunction(this.dashboardPlugin, "window.Office.context.document", "getAllAsync");
-
+                return (new OfficeFunction(this.dashboardPlugin, "window.Office.context.document", "getFilePropertiesAsync"));
             },
             (): OfficeFunction => {
 
@@ -50,12 +44,6 @@ module VORLON {
 
             },
             (): OfficeFunction => {
-
-                var fn = new OfficeFunction(this.dashboardPlugin, "window.Office.context.document", "getFileAsync");
-                fn.elements.push(OfficeTools.CreateTextBlock(fn.fullpathName + ".fileType", "Type", "text"));
-                return fn;
-            },
-            (): OfficeFunction => {
                 var fn = new OfficeFunction(this.dashboardPlugin, "window.Office.context.document", "setSelectedDataAsync");
                 var data = VORLON.OfficeTools.CreateTextArea(fn.fullpathName + ".data", "Data", "Hello World");
                 var coercionType = VORLON.OfficeTools.CreateTextBlock(fn.fullpathName + ".coerctionType", "Type", "text");
@@ -68,7 +56,7 @@ module VORLON {
                 };
                 return fn;
             }
+
         ]
     }
-
 }

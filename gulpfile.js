@@ -128,6 +128,7 @@ gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
         'Plugins/release/plugins/office/vorlon.office.tools.js',
         'Plugins/release/plugins/office/vorlon.office.document.js',
         'Plugins/release/plugins/office/vorlon.office.outlook.js',
+        'Plugins/release/plugins/office/vorlon.office.powerpoint.js',
         'Plugins/release/plugins/office/vorlon.office.dashboard.js'
     ])
         .pipe(concat('vorlon.office.dashboard.js'))
@@ -140,6 +141,7 @@ gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
         'Plugins/release/plugins/office/vorlon.office.tools.min.js',
         'Plugins/release/plugins/office/vorlon.office.document.min.js',
         'Plugins/release/plugins/office/vorlon.office.outlook.min.js',
+        'Plugins/release/plugins/office/vorlon.office.powerpoint.min.js',
         'Plugins/release/plugins/office/vorlon.office.dashboard.min.js'
     ])
         .pipe(concat('vorlon.office.dashboard.min.js'))
@@ -222,6 +224,7 @@ gulp.task('scripts-plugins', ['concat-webstandards-rules-plugins'], function () 
             './Plugins/**/office/vorlon.office.interfaces.js',
             './Plugins/**/office/vorlon.office.tools.js',
             './Plugins/**/office/vorlon.office.outlook.js',
+            './Plugins/**/office/vorlon.office.powerpoint.js',
             './Plugins/**/office/vorlon.office.document.js',
             './Plugins/**/office/vorlon.office.dashboard.js',
             './Plugins/**/babylonInspector/vorlon.babylonInspector.client.js',

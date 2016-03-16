@@ -11,6 +11,7 @@ module VORLON {
 
 
 
+
         public static AddTreeFunction(treeCategory: string, functionName: string): FluentDOM {
 
             if (document.getElementById(treeCategory) === null || document.getElementById(treeCategory) === undefined) {
@@ -178,7 +179,7 @@ module VORLON {
             }
 
             var itemBody = document.getElementById(parentTreeCategory).children[1];
-       
+
             // root of all
             var elt = new FluentDOM('DIV', 'objdescriptor', itemBody);
 
@@ -186,7 +187,7 @@ module VORLON {
             elt.append('DIV', 'expandable expanded', (zone) => {
                 var btn: FluentDOM;
                 zone.attr("id", parentTreeCategory + "." + category);
-                
+
                 // create the div containing both sigle (+ or -) and the label
                 zone.append('DIV', 'expand', container => {
                     btn = container.createChild("SPAN", "expand-btn").text("-")

@@ -313,7 +313,7 @@ module VORLON {
         }
 
         public getOfficeType(): any {
-            if (!window.Office) {
+            if (!window.Office || !window.Office.context) {
                 return undefined;
             }
 
@@ -323,15 +323,15 @@ module VORLON {
                 };
             }
 
-            if (window.Office.context.requirements._setMap._sets) {
+            if (window.Office.context.requirements && window.Office.context.requirements._setMap && window.Office.context.requirements._setMap._sets) {
                 return {
                     officeType: window.Office.context.requirements._setMap._sets
                 }
             }
-            
-             return {
-                    officeType: "Office"
-                };
+
+            return {
+                officeType: "Office"
+            };
 
         }
 
@@ -378,8 +378,8 @@ module VORLON {
                     this.query(receivedObject.name);
                     break;
                 case "officetype":
-                   var t = this.getOfficeType();
-                   this.sendToDashboard(
+                    var t = this.getOfficeType();
+                    this.sendToDashboard(
                         {
                             type: 'officetype',
                             value: t
