@@ -323,6 +323,7 @@ module VORLON {
                 };
             }
 
+
             if (window.Office.context.requirements && window.Office.context.requirements._setMap && window.Office.context.requirements._setMap._sets) {
                 return {
                     officeType: window.Office.context.requirements._setMap._sets

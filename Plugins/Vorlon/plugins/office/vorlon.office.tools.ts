@@ -56,7 +56,7 @@ module VORLON {
             if (sets.excelapi) {
                 return { officeType: "Excel", version: sets.excelapi, background: "#227447" }
             }
-            if (sets.pdffile && !sets.wordapi) {
+            if (!sets.excelapi && !sets.wordapi) {
                 return { officeType: "PowerPoint", version: sets.pdf, background: "#B7472A" }
             }
             if (sets.project) {
