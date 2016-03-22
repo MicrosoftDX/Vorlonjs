@@ -18,6 +18,8 @@ module VORLON {
         private treeviewwrapper: HTMLDivElement;
         private officetypeapp: HTMLSpanElement
         private officetype: any;
+        private officePropertiesTitle : HTMLElement;
+        private officePropertiesSection : HTMLDivElement;
 
         //Do any setup you need, call super to configure
         //the plugin with html and css for the dashboard
@@ -49,6 +51,8 @@ module VORLON {
                 this.refreshButton = this._filledDiv.querySelector('x-action[event="refresh"]');
                 this.treeviewwrapper = <HTMLDivElement>this._filledDiv.querySelector('.tree-view-wrapper');
                 this.officetypeapp = <HTMLSpanElement>this._filledDiv.querySelector('#office-type-app');
+                this.officePropertiesTitle = <HTMLElement>this._filledDiv.querySelector("#office-properties-title");
+                this.officePropertiesSection = <HTMLDivElement>this._filledDiv.querySelector("#office-properties");
                 this.clearTreeview();
 
                 this._filledDiv.addEventListener('refresh', () => {
@@ -68,14 +72,14 @@ module VORLON {
                     });
                 });
 
+                
+                // $("#accordion h3", this._filledDiv).click((elt) => {
+                //     $('.visible', elt.target.parentElement).removeClass('visible');
 
-                $("#accordion h3", this._filledDiv).click((elt) => {
-                    $('.visible', elt.target.parentElement).removeClass('visible');
+                //     $('#' + elt.target.className, elt.target.parentElement).addClass('visible');
 
-                    $('#' + elt.target.className, elt.target.parentElement).addClass('visible');
-
-                    elt.target.classList.add('visible');
-                });
+                //     elt.target.classList.add('visible');
+                // });
 
                 this.sendToClient({ type: 'officetype' })
             })

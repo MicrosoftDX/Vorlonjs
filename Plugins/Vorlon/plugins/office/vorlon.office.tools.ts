@@ -26,16 +26,16 @@ module VORLON {
         }
 
         private static _ClearPropertiesAndResults() {
-            var propertiesDiv = <HTMLDivElement>document.querySelector('#office-results');
+            // var propertiesDiv = <HTMLDivElement>document.querySelector('#office-results');
 
-            if (propertiesDiv !== undefined && propertiesDiv !== null) {
-                while (propertiesDiv.hasChildNodes()) {
-                    propertiesDiv.removeChild(propertiesDiv.lastChild);
-                }
+            // if (propertiesDiv !== undefined && propertiesDiv !== null) {
+            //     while (propertiesDiv.hasChildNodes()) {
+            //         propertiesDiv.removeChild(propertiesDiv.lastChild);
+            //     }
 
-            }
+            // }
 
-            propertiesDiv = <HTMLDivElement>document.querySelector('#office-properties');
+            var propertiesDiv = <HTMLDivElement>document.querySelector('#office-properties');
 
             if (propertiesDiv !== undefined && propertiesDiv !== null) {
                 while (propertiesDiv.hasChildNodes()) {
@@ -68,7 +68,9 @@ module VORLON {
         }
 
         public static ShowFunctionResult(r: any) {
-            var propertiesDiv = document.querySelector('#office-results');
+            var propertiesDiv = document.querySelector('#office-properties');
+            var titleDive = <HTMLDivElement>document.querySelector('#office-properties-title');
+            titleDive.innerHTML = "Result";
 
             if (propertiesDiv !== undefined && propertiesDiv !== null) {
                 while (propertiesDiv.hasChildNodes()) {
@@ -113,6 +115,8 @@ module VORLON {
             VORLON.OfficeTools._ClearPropertiesAndResults();
 
             var propertiesDiv = <HTMLDivElement>document.querySelector('#office-properties');
+            var titleDive = <HTMLDivElement>document.querySelector('#office-properties-title');
+            titleDive.innerHTML = "Function";
 
             var zone = new FluentDOM('DIV', 'office-properties-values', propertiesDiv);
 
@@ -147,6 +151,8 @@ module VORLON {
             VORLON.OfficeTools._ClearPropertiesAndResults();
 
             var propertiesDiv = <HTMLDivElement>document.querySelector('#office-properties');
+            var titleDive = <HTMLDivElement>document.querySelector('#office-properties-title');
+            titleDive.innerHTML = "Property";
 
             var zone = new FluentDOM('DIV', 'office-properties-values', propertiesDiv);
 
