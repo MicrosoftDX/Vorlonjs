@@ -68,25 +68,32 @@ module VORLON {
         }
 
         public static ShowFunctionResult(r: any) {
+
+            if (r.value !== undefined && r.value !== null)
+                r.value = JSON.parse(r.value);
+            var jsonValue = JSON.stringify(r.value, undefined, 4);
+
             var propertiesDiv = document.querySelector('#office-properties');
-            var titleDive = <HTMLDivElement>document.querySelector('#office-properties-title');
-            titleDive.innerHTML = "Result";
+            var propValues = document.querySelector('#office-results-values');
 
-            if (propertiesDiv !== undefined && propertiesDiv !== null) {
-                while (propertiesDiv.hasChildNodes()) {
-                    propertiesDiv.removeChild(propertiesDiv.lastChild);
+            if (propValues !== undefined && propValues !== null) {
+                while (propValues.hasChildNodes()) {
+                    propValues.removeChild(propValues.lastChild);
                 }
+            } else {
+                propValues = document.createElement('DIV');
+                propValues.className = 'office-results-values';
+                propValues.id = 'office-results-values';
+                propertiesDiv.appendChild(propValues);
             }
-            var zone = new VORLON.FluentDOM('DIV', 'office-results-values', propertiesDiv);
 
-            zone.append('pre', 'results', container => {
-                if (r.value !== undefined && r.value !== null)
-                    r.value = JSON.parse(r.value);
+            var container = document.createElement('pre');
+            container.className = 'results';
+            container.innerHTML = OfficeTools.FormatJson(jsonValue);
+            
+            
+            propValues.appendChild(container);
 
-                var jsonValue = JSON.stringify(r.value, undefined, 4);
-
-                container.html(OfficeTools.FormatJson(jsonValue));
-            });
         }
 
 
