@@ -6,6 +6,8 @@ Understand all about Vorlon.js in 20 minutes watching this video : https://chann
 
 Learn more at [VorlonJS](http://vorlonjs.com).
 
+[![Build Status](https://beedoo.visualstudio.com/DefaultCollection/_apis/public/build/definitions/fa96161d-5cae-4916-916e-704a3a441a4d/7/badge)]
+
 ## Deploy on Azure  
  [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)  
 
