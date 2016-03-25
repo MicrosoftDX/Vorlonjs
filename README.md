@@ -4,7 +4,7 @@ A new, open source, extensible, platform-agnostic tool for remotely debugging an
 
 Understand all about Vorlon.js in 20 minutes watching this video : https://channel9.msdn.com/Shows/codechat/046
 
-Learn more at [VorlonJS](http://vorlonjs.com).
+Learn more at [VorlonJS](http://vorlonjs.com) !
 
 ![Build Status](https://beedoo.visualstudio.com/DefaultCollection/_apis/public/build/definitions/fa96161d-5cae-4916-916e-704a3a441a4d/7/badge)
 
