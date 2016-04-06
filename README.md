@@ -8,6 +8,10 @@ Learn more at [VorlonJS](http://vorlonjs.com) !
 
 ![Build Status](https://jcorioland.visualstudio.com/DefaultCollection/_apis/public/build/definitions/593f5499-db9b-4e0f-ba42-fdd5d655592a/2/badge)
 
+Chat with us on slack (get a free invite clicking on the badge below)
+
+[![Slack Status](https://slackinvorlon.azurewebsites.net/badge.svg)](https://slackinvorlon.azurewebsites.net/)
+
 ## Deploy on Azure  
  [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)  
 
