@@ -3,6 +3,7 @@ import http = require("http");
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 import fs = require("fs");
 import path = require("path");
+var packageJson = require("../../package.json");
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
@@ -64,7 +65,7 @@ export module VORLON {
                 }
                 
                 this._log.debug("authenticated " + authent);
-                res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: "", authenticated: authent });
+                res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: "", authenticated: authent, version: packageJson.version });
             }
         }
 

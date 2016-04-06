@@ -3,7 +3,7 @@ section.sidebar
     h1.logo Vorlon.js
     .session-info
       p Session ID: 
-        span(data-hook='session-id') ab38dklf
+        span(data-hook='session-id') 
       p Client ID: 
         span(data-hook='client-id')
   #clientsListPane.client-pane
@@ -14,3 +14,4 @@ section.sidebar
     if authenticated
       a#logout(href='/logout').btn.btn-secondary.btn-small.btn-reset logout
     a(onclick='VORLON.DashboardManager.ReloadClient()')#reload.btn.btn-secondary.btn-small.btn-reset.hidden Reload Client
+    p#vorlonVersion= "Version: " + version
