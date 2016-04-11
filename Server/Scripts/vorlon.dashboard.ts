@@ -12,12 +12,11 @@ import vorloncontext = require("../config/vorlon.servercontext");
 
 export module VORLON {
     export class Dashboard implements iwsc.VORLON.IWebServerComponent {
-        
         private baseURLConfig: vorloncontext.VORLON.IBaseURLConfig;
         private _log: vorloncontext.VORLON.ILogger;
         
         constructor(context : vorloncontext.VORLON.IVorlonServerContext) {
-            this.baseURLConfig = context.baseURLConfig;       
+            this.baseURLConfig = context.baseURLConfig;   
             this._log = context.logger;    
         }
 
@@ -25,7 +24,6 @@ export module VORLON {
             app.route(this.baseURLConfig.baseURL + '/').get(vauth.VORLON.Authentication.ensureAuthenticated, this.defaultDashboard());
             app.route(this.baseURLConfig.baseURL + '/dashboard').get(vauth.VORLON.Authentication.ensureAuthenticated,this.defaultDashboard());
             app.route(this.baseURLConfig.baseURL + '/dashboard/').get(vauth.VORLON.Authentication.ensureAuthenticated,this.defaultDashboard());
-
             app.route(this.baseURLConfig.baseURL + '/dashboard/:sessionid').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboard());
             app.route(this.baseURLConfig.baseURL + '/dashboard/:sessionid/reset').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboardServerReset());
             app.route(this.baseURLConfig.baseURL + '/dashboard/:sessionid/:clientid').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboardWithClient());
@@ -38,8 +36,9 @@ export module VORLON {
                           failureFlash: false })
                 );
             
-           app.route(this.baseURLConfig.baseURL + '/login').get(this.login);  
-           
+           app.route(this.baseURLConfig.baseURL + '/login').get((req: express.Request, res: express.Response) => {
+                    res.render('login', { baseURL: this.baseURLConfig.baseURL, message: 'Please login' });
+                });  
            app.get(this.baseURLConfig.baseURL + '/logout', this.logout);
         }
 
@@ -76,11 +75,9 @@ export module VORLON {
         }
 
         private getsession(req: express.Request, res: express.Response) {
-            res.render('getsession', { title: 'Get Session' });
-        }
-        
-        private login(req: express.Request, res: express.Response) {
-            res.render('login', {  baseURL: this.baseURLConfig.baseURL, message: 'Please login' });
+            return (req: express.Request, res: express.Response) => {
+                 res.render('getsession', { title: 'Get Session' });
+            }
         }
         
         private logout(req: any, res: any) {
