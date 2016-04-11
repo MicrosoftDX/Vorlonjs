@@ -29,6 +29,6 @@
         { "id": "UNITTEST", "name": "Unit Test", "panel": "top", "foldername": "unitTestRunner", "enabled": true },
         { "id": "BABYLONINSPECTOR", "name": "Babylon Inspector", "panel": "top", "foldername": "babylonInspector", "enabled": false },
         { "id": "OFFICE", "name": "Office Addin", "panel": "top", "foldername": "office", "enabled": false },
-        { "id": "UWP", "name": "UWP apps", "panel": "top", "foldername": "uwp", "enabled": true }
+        { "id": "UWP", "name": "UWP apps", "panel": "top", "foldername": "uwp", "enabled": false }
     ]
 }
