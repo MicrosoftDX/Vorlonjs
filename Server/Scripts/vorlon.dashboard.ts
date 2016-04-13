@@ -28,6 +28,7 @@ export module VORLON {
             app.route(this.baseURLConfig.baseURL + '/dashboard/:sessionid').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboard());
             app.route(this.baseURLConfig.baseURL + '/dashboard/:sessionid/reset').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboardServerReset());
             app.route(this.baseURLConfig.baseURL + '/dashboard/:sessionid/:clientid').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboardWithClient());
+            app.route(this.baseURLConfig.baseURL + '/config').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboardConfig());
             
             //login
             app.post(this.baseURLConfig.baseURL + '/login',   
@@ -72,6 +73,12 @@ export module VORLON {
             return (req: express.Request, res: express.Response) => {
                 res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: req.params.clientid });
             }
+        }
+        
+        private dashboardConfig() {
+            return (req: express.Request, res: express.Response) => {
+                res.render('config', { baseURL: this.baseURLConfig.baseURL, title: 'Configuration', sessionid: "default", clientid: "" });
+            };
         }
 
         private getsession(req: express.Request, res: express.Response) {
