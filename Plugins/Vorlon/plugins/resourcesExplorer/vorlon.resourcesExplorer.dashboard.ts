@@ -27,6 +27,7 @@
                 this.toogleMenu();
                 this.splitPlugin();
                 this.searchResource();
+                this.buttonEvent();
                 this.addResource();
                 this.removeResource();
                 this.updateResource();
