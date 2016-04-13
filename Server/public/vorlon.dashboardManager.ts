@@ -8,6 +8,7 @@ module VORLON {
     
     export class DashboardManager {
         static CatalogUrl: string;
+        static vorlonBaseURL: string;
         static ListenClientid: string;
         static DisplayingClient: boolean;
         static ListenClientDisplayid: string;
@@ -27,6 +28,7 @@ module VORLON {
             DashboardManager.StartListeningServer()
             DashboardManager.GetClients();
             DashboardManager.CatalogUrl =  vorlonBaseURL + "/getplugins/" + sessionid;
+            DashboardManager.vorlonBaseURL = vorlonBaseURL;
         }
         
         public static StartListeningServer(clientid: string = ""): void{
@@ -349,7 +351,7 @@ module VORLON {
         public static goConfig(): void {
             location.href = '/config';
         }
-
+        
         public static ResetDashboard(reload: boolean = true): void {
             let sessionid = DashboardManager.SessionId;
             let xhr = new XMLHttpRequest();
