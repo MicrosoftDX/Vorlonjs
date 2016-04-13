@@ -146,7 +146,18 @@ export module VORLON {
         }
 
         private setPluginName(req: any, res: any) {
-            
+            var pluginid = req.params.pluginid;
+            var name = req.body.name;
+            this.pluginsConfig.setPluginName(pluginid, name, (err) => {
+                if (err) {
+                    this._log.error("SET_PLUGIN_NAME : PluginID unknown");
+                    res.header('Content-Type', 'application/json');
+                    return res.send({'error': true});
+                }
+
+                res.header('Content-Type', 'application/json');
+                return res.send({'error': false});
+            });
         }
 
         private _sendConfigJson(req: any, res: any) {
