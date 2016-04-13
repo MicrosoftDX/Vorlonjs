@@ -61,7 +61,6 @@ $('.plugins-list').on('keypress', 'h4 input', function(e) {
     if(e.which == 13) {
         var id = $(this).data('id');
         var name = $(this).val();
-        $('.plugin-' + id).addClass('pluginLoad');
         $('.plugin-' + id).find('.calque').fadeIn();
         var that = this;
         setTimeout(function() {
@@ -76,17 +75,26 @@ $('.plugins-list').on('keypress', 'h4 input', function(e) {
     }
 });
 
-$( ".plugins-list" ).sortable({update: function( event, ui ) {
-    var positions = [];
-    $('.plugins-list li').each(function() {
-         positions.push($(this).data('id'));
-    }); 
-    $('.plugins-list li').find('.calque').fadeIn();
-    setTimeout(function() {
-        $.post(VORLON.DashboardManager.vorlonBaseURL + '/setplugin/positions', {positions: JSON.stringify(positions)},function(data) {
-            $('.plugins-list li').find('.calque').fadeOut();
-        });
-    }, 500);
-}});
+$( ".plugins-list" ).sortable({
+    update: function( event, ui ) {
+        var positions = [];
+        $('.plugins-list li').each(function() {
+            positions.push($(this).data('id'));
+        }); 
+        $('.plugins-list li').find('.calque').fadeIn();
+        setTimeout(function() {
+            $.post(VORLON.DashboardManager.vorlonBaseURL + '/setplugin/positions', {positions: JSON.stringify(positions)},function(data) {
+                $('.plugins-list li').find('.calque').fadeOut();
+            });
+        }, 500);
+    },
+    placeholder: "ui-state-highlight",
+    start: function (event, ui) {
+        ui.item.css('border', '1px solid #6B2D81');
+    },
+    stop: function (event, ui) {
+        ui.item.css('border', '');
+    }
+});
 
 $( ".plugins-list" ).disableSelection();
