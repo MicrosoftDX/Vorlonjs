@@ -11,9 +11,10 @@ $.get(VORLON.DashboardManager.CatalogUrl, function(data) {
             selectedBottom: (data[plugin].panel == 'bottom') ? 'selected=selected' : '',
             nodeText: (data[plugin].nodeCompliant) ? 'This plugin do use NodeJS' : 'This plugin do not use NodeJS',
             id: data[plugin].id,
+            folder: data[plugin].foldername
         }
          
-        $('.plugins-list').append('<li class="plugin-'+tmp.id+'" data-id="'+tmp.id+'"><div class="calque"></div><h4><img src="images/angular.png" alt="icon"> <input data-id="'+tmp.id+'" type="text" value="'+tmp.name+'"> <span>'+tmp.name+' <i class="fa fa-pencil"></i></span></h4><img src="images/nodejs.png" title="'+tmp.nodeText+'" data-placement="top" alt="nodeCompliant" class="'+tmp.nodeClass+' nodeCompliant"><div class="panel_option"><label for="panel_select">Panel</label><select data-id="'+tmp.id+'" id="panel_select" class="panel_select"><option '+tmp.selectedTop+' value="top">Top</option><option value="bottom" '+tmp.selectedBottom+'>Bottom</option></select></div><div class="state_option"><label>State<input id="cb-'+tmp.id+'" '+tmp.checked+' type="checkbox" class="tgl tgl-skewed" data-id="'+tmp.id+'"><label data-tg-off="OFF" data-tg-on="ON" for="cb-'+tmp.id+'" class="tgl-btn"></label></label></div><i class="fa fa-arrows" aria-hidden="true"></i></li>');
+        $('.plugins-list').append('<li class="plugin-'+tmp.id+'" data-id="'+tmp.id+'"><div class="calque"></div><h4><img onerror="imgError(this)" src="'+VORLON.DashboardManager.vorlonBaseURL+'/getplugin/'+tmp.folder+'/icon" alt="icon"> <input data-id="'+tmp.id+'" type="text" value="'+tmp.name+'"> <span>'+tmp.name+' <i class="fa fa-pencil"></i></span></h4><img src="images/nodejs.png" title="'+tmp.nodeText+'" data-placement="top" alt="nodeCompliant" class="'+tmp.nodeClass+' nodeCompliant"><div class="panel_option"><label for="panel_select">Panel</label><select data-id="'+tmp.id+'" id="panel_select" class="panel_select"><option '+tmp.selectedTop+' value="top">Top</option><option value="bottom" '+tmp.selectedBottom+'>Bottom</option></select></div><div class="state_option"><label>State<input id="cb-'+tmp.id+'" '+tmp.checked+' type="checkbox" class="tgl tgl-skewed" data-id="'+tmp.id+'"><label data-tg-off="OFF" data-tg-on="ON" for="cb-'+tmp.id+'" class="tgl-btn"></label></label></div><i class="fa fa-arrows" aria-hidden="true"></i></li>');
 
         $(document).tooltip({
             position: {
@@ -119,3 +120,9 @@ $(".config-wrapper input").keyup(function () {
         }
     });
 });
+
+function imgError(image) {
+    image.onerror = "";
+    image.src = "/images/no_img.png";
+    return true;
+}
