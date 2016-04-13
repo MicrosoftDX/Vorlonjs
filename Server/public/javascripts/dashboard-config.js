@@ -12,7 +12,7 @@ $.get(VORLON.DashboardManager.CatalogUrl, function(data) {
             id: data[plugin].id,
         }
          
-        $('.plugins-list').append('<li class="plugin-'+tmp.id+'" data-id="'+tmp.id+'"><h4><img src="images/angular.png" alt="icon"> <input data-id="'+tmp.id+'" type="text" value="'+tmp.name+'"> <span>'+tmp.name+' <i class="fa fa-pencil"></i></span></h4><img src="images/nodejs.png" title="'+tmp.nodeText+'" data-placement="top" alt="nodeCompliant" class="'+tmp.nodeClass+' nodeCompliant"><div class="panel_option"><label for="panel_select">Panel</label><select data-id="'+tmp.id+'" id="panel_select" class="panel_select"><option '+tmp.selectedTop+' value="top">Top</option><option value="bottom" '+tmp.selectedBottom+'>Bottom</option></select></div><div class="state_option"><label>State<input id="cb-'+tmp.id+'" '+tmp.checked+' type="checkbox" class="tgl tgl-skewed" data-id="'+tmp.id+'"><label data-tg-off="OFF" data-tg-on="ON" for="cb-'+tmp.id+'" class="tgl-btn"></label></label></div><i class="fa fa-arrows" aria-hidden="true"></i></li>');
+        $('.plugins-list').append('<li class="plugin-'+tmp.id+'" data-id="'+tmp.id+'"><div class="calque"></div><h4><img src="images/angular.png" alt="icon"> <input data-id="'+tmp.id+'" type="text" value="'+tmp.name+'"> <span>'+tmp.name+' <i class="fa fa-pencil"></i></span></h4><img src="images/nodejs.png" title="'+tmp.nodeText+'" data-placement="top" alt="nodeCompliant" class="'+tmp.nodeClass+' nodeCompliant"><div class="panel_option"><label for="panel_select">Panel</label><select data-id="'+tmp.id+'" id="panel_select" class="panel_select"><option '+tmp.selectedTop+' value="top">Top</option><option value="bottom" '+tmp.selectedBottom+'>Bottom</option></select></div><div class="state_option"><label>State<input id="cb-'+tmp.id+'" '+tmp.checked+' type="checkbox" class="tgl tgl-skewed" data-id="'+tmp.id+'"><label data-tg-off="OFF" data-tg-on="ON" for="cb-'+tmp.id+'" class="tgl-btn"></label></label></div><i class="fa fa-arrows" aria-hidden="true"></i></li>');
 
         $(document).tooltip({
             position: {
@@ -31,19 +31,23 @@ $.get(VORLON.DashboardManager.CatalogUrl, function(data) {
 
 $('.plugins-list').on('change', '.tgl', function() {
     var id = $(this).data('id');
-    $('.plugin-' + id).addClass('pluginLoad');
-    $.get(VORLON.DashboardManager.vorlonBaseURL + '/setplugin/' + id + '/state', function(data) {
-        $('.plugin-' + id).removeClass('pluginLoad');
-    });
+    $('.plugin-' + id).find('.calque').fadeIn();
+    setTimeout(function() {
+        $.get(VORLON.DashboardManager.vorlonBaseURL + '/setplugin/' + id + '/state', function(data) {
+            $('.plugin-' + id).find('.calque').fadeOut();
+        });
+    }, 500);
 });
 
 $('.plugins-list').on('change', '.panel_select', function() {
     var id = $(this).data('id');
     var panel = $(this).val();
-    $('.plugin-' + id).addClass('pluginLoad');
-    $.post(VORLON.DashboardManager.vorlonBaseURL + '/setplugin/' + id + '/panel', {panel: panel},function(data) {
-        $('.plugin-' + id).removeClass('pluginLoad');
-    });
+    $('.plugin-' + id).find('.calque').fadeIn();
+    setTimeout(function() {
+        $.post(VORLON.DashboardManager.vorlonBaseURL + '/setplugin/' + id + '/panel', {panel: panel},function(data) {
+            $('.plugin-' + id).find('.calque').fadeOut();
+        });
+    }, 500);
 });
 
 $('.plugins-list').on('click', 'h4', function() {
@@ -58,15 +62,17 @@ $('.plugins-list').on('keypress', 'h4 input', function(e) {
         var id = $(this).data('id');
         var name = $(this).val();
         $('.plugin-' + id).addClass('pluginLoad');
+        $('.plugin-' + id).find('.calque').fadeIn();
         var that = this;
-        $.post(VORLON.DashboardManager.vorlonBaseURL + '/setplugin/' + id + '/name', {name: name},function(data) {
-            $('.plugin-' + id).removeClass('pluginLoad');
-            
-            $(that).fadeOut(function() {
-                $(that).val(name);
-                $(that).parent().find('span').text(name).fadeIn().css("display","inline-block");
+        setTimeout(function() {
+            $.post(VORLON.DashboardManager.vorlonBaseURL + '/setplugin/' + id + '/name', {name: name},function(data) {
+                $('.plugin-' + id).find('.calque').fadeOut();
+                $(that).fadeOut(function() {
+                    $(that).val(name);
+                    $(that).parent().find('span').text(name).fadeIn().css("display","inline-block");
+                });
             });
-        });
+        }, 500);
     }
 });
 
@@ -75,10 +81,12 @@ $( ".plugins-list" ).sortable({update: function( event, ui ) {
     $('.plugins-list li').each(function() {
          positions.push($(this).data('id'));
     }); 
-    $('.plugins-list li').addClass('pluginLoad');
-    $.post(VORLON.DashboardManager.vorlonBaseURL + '/setplugin/positions', {positions: JSON.stringify(positions)},function(data) {
-        $('.plugins-list li').removeClass('pluginLoad');
-    });
+    $('.plugins-list li').find('.calque').fadeIn();
+    setTimeout(function() {
+        $.post(VORLON.DashboardManager.vorlonBaseURL + '/setplugin/positions', {positions: JSON.stringify(positions)},function(data) {
+            $('.plugins-list li').find('.calque').fadeOut();
+        });
+    }, 500);
 }});
 
 $( ".plugins-list" ).disableSelection();
