@@ -69,3 +69,16 @@ $('.plugins-list').on('keypress', 'h4 input', function(e) {
         });
     }
 });
+
+$( ".plugins-list" ).sortable({update: function( event, ui ) {
+    var positions = [];
+    $('.plugins-list li').each(function() {
+         positions.push($(this).data('id'));
+    }); 
+    $('.plugins-list li').addClass('pluginLoad');
+    $.post(VORLON.DashboardManager.vorlonBaseURL + '/setplugin/positions', {positions: JSON.stringify(positions)},function(data) {
+        $('.plugins-list li').removeClass('pluginLoad');
+    });
+}});
+
+$( ".plugins-list" ).disableSelection();
