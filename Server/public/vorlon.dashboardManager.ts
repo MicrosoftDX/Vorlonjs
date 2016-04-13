@@ -188,13 +188,15 @@ module VORLON {
         static DisplayWaitingLogo(displayWaiter: boolean): void{
             //Hide waiting page and let's not bounce the logo !
             var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
-            VORLON.Tools.RemoveClass(elt, 'hidden');
-            if (displayWaiter) {
-                elt = <HTMLElement>document.querySelector('.waitLoader');
+            if(elt) {
                 VORLON.Tools.RemoveClass(elt, 'hidden');
+                if (displayWaiter) {
+                    elt = <HTMLElement>document.querySelector('.waitLoader');
+                    VORLON.Tools.RemoveClass(elt, 'hidden');
+                }
+                elt = document.getElementById('reload');
+                VORLON.Tools.AddClass(elt, 'hidden');
             }
-            elt = document.getElementById('reload');
-            VORLON.Tools.AddClass(elt, 'hidden');
         }
 
         public static loadPlugins(): void {
@@ -342,6 +344,10 @@ module VORLON {
 
         public identify(): void {
             Core.Messenger.sendRealtimeMessage("", { "_sessionid": DashboardManager.SessionId }, VORLON.RuntimeSide.Dashboard, "identify");
+        }
+
+        public static goConfig(): void {
+            location.href = '/config';
         }
 
         public static ResetDashboard(reload: boolean = true): void {
