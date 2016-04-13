@@ -110,6 +110,10 @@ export module VORLON {
                 this.setPluginName(req, res);
             });
             
+            app.post(this.baseURLConfig.baseURL + "/setplugin/positons", (req: any, res: any) => {
+                this.setPluginsPosition(req, res);
+            });
+            
             app.get(this.baseURLConfig.baseURL + "/setplugin/:pluginid/state", (req: any, res: any) => {
                 this.setPluginState(req, res);
             });
@@ -140,6 +144,20 @@ export module VORLON {
             this.pluginsConfig.setPluginState(pluginid, (err) => {
                 if (err) {
                     this._log.error("SET_PLUGIN_STATE : " + err);
+                    res.header('Content-Type', 'application/json');
+                    return res.send({'error': true});
+                }
+
+                res.header('Content-Type', 'application/json');
+                return res.send({'error': false});
+            });
+        }
+
+        private setPluginsPosition(req: any, res: any) {
+            var positions = req.body.positions;
+            this.pluginsConfig.setPluginsPosition(positions, (err) => {
+                if (err) {
+                    this._log.error("SET_PLUGINS_POSITION : " + err);
                     res.header('Content-Type', 'application/json');
                     return res.send({'error': true});
                 }
