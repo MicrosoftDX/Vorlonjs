@@ -106,6 +106,14 @@ export module VORLON {
                 this._sendConfigJson(req, res);
             });
             
+            app.post(this.baseURLConfig.baseURL + "/setplugin/:pluginid/name", (req: any, res: any) => {
+                this.setPluginName(req, res);
+            });
+            
+            app.get(this.baseURLConfig.baseURL + "/setplugin/:pluginid/state", (req: any, res: any) => {
+                this.setPluginState(req, res);
+            });
+            
             app.get(this.baseURLConfig.baseURL + "/vorlon.node.max.js/", (req: any, res: any) => {
                 res.redirect("/vorlon.node.max.js/default");
             });
@@ -123,6 +131,24 @@ export module VORLON {
             });
         }
 
+        private setPluginState(req: any, res: any) {
+            var pluginid = req.params.pluginid;
+            this.pluginsConfig.setPluginState(pluginid, (err) => {
+                if (err) {
+                    this._log.error("SET_PLUGIN_STATE : PluginID unknown");
+                    res.header('Content-Type', 'application/json');
+                    return res.send({'error': true});
+                }
+
+                res.header('Content-Type', 'application/json');
+                return res.send({'error': false});
+            });
+        }
+
+        private setPluginName(req: any, res: any) {
+            
+        }
+
         private _sendConfigJson(req: any, res: any) {
 
             var sessionid = req.params.idsession || "default";
@@ -131,7 +157,6 @@ export module VORLON {
                     this._log.error("ROUTE : Error reading config.json file");
                     return;
                 }
-
 
                 var catalogdata = JSON.stringify(catalog);
                 res.header('Content-Type', 'application/json');

@@ -28,5 +28,21 @@ export module VORLON {
             if (callback)
                 callback(null, sessionConfig);
         }
+        
+        setPluginState(pluginid:string, callback:(error) => void) {
+            var configurationFile: string = fs.readFileSync(path.join(__dirname, "../config.json"), "utf8");
+            var configurationString = configurationFile.toString().replace(/^\uFEFF/, '');
+            var configuration = JSON.parse(configurationString);
+            
+            for (var i = 0; i < configuration.plugins.length; i++) {
+                if (configuration.plugins[i].id == pluginid) {
+                    configuration.plugins[i].enabled = !configuration.plugins[i].enabled;
+                    fs.writeFileSync(path.join(__dirname, "../config.json"), JSON.stringify(configuration, null, 4) ,"utf8");
+                    return callback(null);
+                }
+            }
+            
+            return callback(true);
+        }
     }
 }
