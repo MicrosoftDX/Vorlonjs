@@ -89,7 +89,7 @@ export module VORLON {
             return callback('PluginID unknown');
         }
         
-        setPluginsPosition(positions:string, callback:(error) => void)
+        setPluginsPosition(positions:string, callback:(error) => void) {
             var configurationFile: string = fs.readFileSync(path.join(__dirname, "../config.json"), "utf8");
             var configurationString = configurationFile.toString().replace(/^\uFEFF/, '');
             var configuration = JSON.parse(configurationString);
@@ -98,13 +98,22 @@ export module VORLON {
                 return callback('Positions must be defined');
             }
             
+            positions = JSON.parse(positions);
+            var lookup = {};
+            var plugins_reorganised = [];
+            
             for (var i = 0; i < configuration.plugins.length; i++) {
-                if (configuration.plugins[i].id == pluginid) {
-                    configuration.plugins[i].panel = panel;
-                    fs.writeFileSync(path.join(__dirname, "../config.json"), JSON.stringify(configuration, null, 4) ,"utf8");
-                    return callback(null);
-                }
+                lookup[configuration.plugins[i].id] = configuration.plugins[i];
             }
+            
+            for (var i = 0; i < positions.length; i++) {
+                plugins_reorganised.push(lookup[positions[i]]);
+            }
+            
+            configuration.plugins = plugins_reorganised;
+            
+            fs.writeFileSync(path.join(__dirname, "../config.json"), JSON.stringify(configuration, null, 4) ,"utf8");
+
             
             return callback('PluginID unknown');
         }        

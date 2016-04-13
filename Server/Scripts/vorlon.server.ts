@@ -110,7 +110,7 @@ export module VORLON {
                 this.setPluginName(req, res);
             });
             
-            app.post(this.baseURLConfig.baseURL + "/setplugin/positons", (req: any, res: any) => {
+            app.post(this.baseURLConfig.baseURL + "/setplugin/positions", (req: any, res: any) => {
                 this.setPluginsPosition(req, res);
             });
             
