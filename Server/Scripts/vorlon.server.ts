@@ -122,6 +122,10 @@ export module VORLON {
                 this.setPluginPanel(req, res);
             });
             
+            app.get(this.baseURLConfig.baseURL + "/getplugin/:pluginfolder/icon", (req: any, res: any) => {
+                this.sendPluginIcon(req, res);
+            });
+            
             app.get(this.baseURLConfig.baseURL + "/vorlon.node.max.js/", (req: any, res: any) => {
                 res.redirect("/vorlon.node.max.js/default");
             });
@@ -137,6 +141,18 @@ export module VORLON {
             app.get(this.baseURLConfig.baseURL + "/vorlon.node.js/:idsession", (req: any, res: any) => {
                 this._sendVorlonJSFile(true, req, res, false, true);
             });
+        }
+
+        private sendPluginIcon(req: any, res: any) {
+            var pluginfolder = req.params.pluginfolder;
+            try {
+                var icon = fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + pluginfolder + "/icon.png"));
+                res.writeHead(200, {'Content-Type': 'image/png' });
+                res.end(icon, 'binary');
+            } catch (err) {
+                res.writeHead(404);
+                res.end();
+            }    
         }
 
         private setPluginState(req: any, res: any) {
