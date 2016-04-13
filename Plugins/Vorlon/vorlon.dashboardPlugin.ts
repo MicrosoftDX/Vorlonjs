@@ -4,13 +4,15 @@
     export class DashboardPlugin extends BasePlugin {
         public htmlFragmentUrl;
         public cssStyleSheetUrl;
+        public JavascriptSheetUrl;
 
         public DashboardCommands: any;
 
-        constructor(name: string, htmlFragmentUrl: string, cssStyleSheetUrl: string) {
+        constructor(name: string, htmlFragmentUrl: string, cssStyleSheetUrl?: (string | string[]), JavascriptSheetUrl?: (string | string[])) {
             super(name);
             this.htmlFragmentUrl = htmlFragmentUrl;
-            this.cssStyleSheetUrl = cssStyleSheetUrl;
+            this.cssStyleSheetUrl = (cssStyleSheetUrl instanceof Array) ? cssStyleSheetUrl : (typeof cssStyleSheetUrl === 'undefined') ? [] : [cssStyleSheetUrl];
+            this.JavascriptSheetUrl = (JavascriptSheetUrl instanceof Array) ? JavascriptSheetUrl : (typeof JavascriptSheetUrl === 'undefined') ? [] : [JavascriptSheetUrl];
             this.debug = Core.debug;
         }
 
@@ -61,12 +63,21 @@
                     if (request.status === 200) {
                         divContainer.innerHTML = this._stripContent(request.responseText);
                         var headID = document.getElementsByTagName("head")[0];
-                        var cssNode = document.createElement('link');
-                        cssNode.type = "text/css";
-                        cssNode.rel = "stylesheet";
-                        cssNode.href = basedUrl + this.cssStyleSheetUrl;
-                        cssNode.media = "screen";
-                        headID.appendChild(cssNode);
+                        for (var i = 0; i < this.cssStyleSheetUrl.length; i++) {
+                            var cssNode = document.createElement('link');
+                            cssNode.type = "text/css";
+                            cssNode.rel = "stylesheet";
+                            cssNode.href = basedUrl + this.cssStyleSheetUrl[i];
+                            cssNode.media = "screen";
+                            headID.appendChild(cssNode);
+                        }
+                        
+                        for (var i = 0; i < this.JavascriptSheetUrl.length; i++) {
+                            var jsNode = document.createElement('script');
+                            jsNode.type = "text/javascript";
+                            jsNode.src = basedUrl + this.JavascriptSheetUrl[i];
+                            headID.appendChild(jsNode);
+                        }
 
                         var firstDivChild = <HTMLDivElement>(divContainer.children[0]);
 
