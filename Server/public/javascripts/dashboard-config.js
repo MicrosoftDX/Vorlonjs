@@ -1,5 +1,6 @@
 $.get(VORLON.DashboardManager.CatalogUrl, function(data) {
      data = data.plugins;
+     $('.countPlugins').text(data.length);
      for (var plugin in data) {
          
         var tmp = {
@@ -98,3 +99,23 @@ $( ".plugins-list" ).sortable({
 });
 
 $( ".plugins-list" ).disableSelection();
+
+$('.config-wrapper .fa-search').click(function() {
+    if ($('.config-wrapper input').width() > 0) {
+        $('.config-wrapper input').css({'width': '0px', 'background-color': '#FFFFFF'});
+    } else {
+        $('.config-wrapper input').css({'width': '200px', 'background-color': '#7E6288'});
+        $('.config-wrapper input').focus();
+    }
+});
+
+$(".config-wrapper input").keyup(function () {
+    var filter = $(this).val();
+    $(".plugins-list li").each(function () {
+        if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+            $(this).hide();
+        } else {
+            $(this).show()
+        }
+    });
+});
