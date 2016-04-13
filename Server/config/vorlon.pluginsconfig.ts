@@ -42,7 +42,7 @@ export module VORLON {
                 }
             }
             
-            return callback(true);
+            return callback('PluginID unknown');
         }
         
         setPluginName(pluginid:string, name:string, callback:(error) => void) {
@@ -62,7 +62,31 @@ export module VORLON {
                 }
             }
             
-            return callback(true);
+            return callback('PluginID unknown');
+        }
+        
+        setPluginPanel(pluginid:string, panel:string, callback:(error) => void) {
+            var configurationFile: string = fs.readFileSync(path.join(__dirname, "../config.json"), "utf8");
+            var configurationString = configurationFile.toString().replace(/^\uFEFF/, '');
+            var configuration = JSON.parse(configurationString);
+            var panelPosible = ['top', 'bottom'];
+            if(!panel) {
+                return callback('Panel must be defined');
+            }
+            
+            if (panelPosible.indexOf(panel) == -1) {
+                return callback('Panel wrong value');
+            }
+            
+            for (var i = 0; i < configuration.plugins.length; i++) {
+                if (configuration.plugins[i].id == pluginid) {
+                    configuration.plugins[i].panel = panel;
+                    fs.writeFileSync(path.join(__dirname, "../config.json"), JSON.stringify(configuration, null, 4) ,"utf8");
+                    return callback(null);
+                }
+            }
+            
+            return callback('PluginID unknown');
         }
     }
 }

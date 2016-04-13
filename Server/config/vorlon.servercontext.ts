@@ -63,6 +63,7 @@ export module VORLON {
 		getPluginsFor(sessionid: string, callback: (error, plugins: ISessionPlugins) => void);
         setPluginState(pluginid:string, callback:(error) => void);
         setPluginName(pluginid:string, name:string, callback:(error) => void);
+        setPluginPanel(pluginid:string, panel:string, callback:(error) => void);
 	}
 
 	export interface IVorlonServerContext {

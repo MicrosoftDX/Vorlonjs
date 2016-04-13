@@ -114,6 +114,10 @@ export module VORLON {
                 this.setPluginState(req, res);
             });
             
+            app.post(this.baseURLConfig.baseURL + "/setplugin/:pluginid/panel", (req: any, res: any) => {
+                this.setPluginPanel(req, res);
+            });
+            
             app.get(this.baseURLConfig.baseURL + "/vorlon.node.max.js/", (req: any, res: any) => {
                 res.redirect("/vorlon.node.max.js/default");
             });
@@ -135,7 +139,7 @@ export module VORLON {
             var pluginid = req.params.pluginid;
             this.pluginsConfig.setPluginState(pluginid, (err) => {
                 if (err) {
-                    this._log.error("SET_PLUGIN_STATE : PluginID unknown");
+                    this._log.error("SET_PLUGIN_STATE : " + err);
                     res.header('Content-Type', 'application/json');
                     return res.send({'error': true});
                 }
@@ -150,7 +154,22 @@ export module VORLON {
             var name = req.body.name;
             this.pluginsConfig.setPluginName(pluginid, name, (err) => {
                 if (err) {
-                    this._log.error("SET_PLUGIN_NAME : PluginID unknown");
+                    this._log.error("SET_PLUGIN_NAME : " + err);
+                    res.header('Content-Type', 'application/json');
+                    return res.send({'error': true});
+                }
+
+                res.header('Content-Type', 'application/json');
+                return res.send({'error': false});
+            });
+        }
+
+        private setPluginPanel(req: any, res: any) {
+            var pluginid = req.params.pluginid;
+            var panel = req.body.panel;
+            this.pluginsConfig.setPluginPanel(pluginid, panel, (err) => {
+                if (err) {
+                    this._log.error("SET_PLUGIN_PANEL : " + err);
                     res.header('Content-Type', 'application/json');
                     return res.send({'error': true});
                 }
