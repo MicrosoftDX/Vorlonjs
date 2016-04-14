@@ -55,7 +55,7 @@ $('.plugins-list').on('change', '.panel_select', function() {
 $('.plugins-list').on('click', 'h4', function() {
     var that = this
     $(this).find('span').fadeOut(function() {
-        $(that).find('input').fadeIn().css("display","inline-block");
+        $(that).find('input').fadeIn().css("display","inline-block").focus();;
     });
 });
 
@@ -102,15 +102,15 @@ $( ".plugins-list" ).sortable({
 $( ".plugins-list" ).disableSelection();
 
 $('.config-wrapper .fa-search').click(function() {
-    if ($('.config-wrapper input').width() > 0) {
-        $('.config-wrapper input').css({'width': '0px', 'background-color': '#FFFFFF'});
+    if ($('.search-config input').width() > 0) {
+        $('.search-config input').css({'width': '0px', 'background-color': '#FFFFFF'});
     } else {
-        $('.config-wrapper input').css({'width': '200px', 'background-color': '#7E6288'});
-        $('.config-wrapper input').focus();
+        $('.search-config input').css({'width': '200px', 'background-color': '#7E6288'});
+        $('.search-config input').focus();
     }
 });
 
-$(".config-wrapper input").keyup(function () {
+$(".search-config input").keyup(function () {
     var filter = $(this).val();
     $(".plugins-list li").each(function () {
         if ($(this).text().search(new RegExp(filter, "i")) < 0) {
@@ -119,4 +119,10 @@ $(".config-wrapper input").keyup(function () {
             $(this).show()
         }
     });
+});
+
+$(".search-config input").keydown(function (e) {
+    if(e.which == 13 || e.which == 27) {
+        $('.config-wrapper .fa-search').trigger('click');
+    }
 });
