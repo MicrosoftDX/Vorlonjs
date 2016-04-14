@@ -55,4 +55,26 @@ jQuery(function ($) {
 
         }
     });
+    
+    $( "#pluginsListPaneBottom, #pluginsListPaneTop" ).sortable({
+        axis: 'x',
+        update: function( event, ui ) {
+            var positions = [];
+            $('#pluginsListPaneTop div, #pluginsListPaneBottom div').each(function() {
+                if($(this).data('plugin-target')) {
+                    positions.push($(this).data('plugin-target'));   
+                }
+            }); 
+            
+            $.post(VORLON.DashboardManager.vorlonBaseURL + '/setplugin/positions', {positions: JSON.stringify(positions)},function(data) {
+                $('.plugins-list li').find('.calque').fadeOut();
+            });
+        },
+        start: function() {
+            $('#pluginsListPaneTop').css('width', '1000%');
+        },
+        stop: function() {
+            $('#pluginsListPaneTop').css('width', '100%');
+        }
+    });
 });
