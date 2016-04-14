@@ -9,8 +9,19 @@
 
 .config-wrapper
   padding 20px
-
+  text-align center
+.machine
+  width 70px
+  position relative
+  top 7px
+  margin-right 15px
+.plugins-list-wrapper
+  float right
+  position relative
+  left -50%  
 .plugins-list
+  position relative
+  left 50%
   li
     opacity 1
     float left
@@ -18,10 +29,11 @@
     text-align left
     margin 10px
     display inline-block
-    width 250px
+    width 300px
     border 1px solid #C3C1C1
     background #EEEEEE
-    height 120px
+    height 150px
+    padding 15px
     position relative
     .panel_option, .state_option
       width 50%
@@ -40,10 +52,10 @@
       float right
       padding-left 25px
     h4
+      color black
       cursor pointer
-      padding-left 10px
       font-size 17px
-      margin-bottom 10px
+      margin-bottom 15px
       input
         display none
       i
@@ -53,16 +65,17 @@
         width 25px
         position relative
         top 7px
-        margin-right 1px
+        margin-right 10px
     .fa-arrows
       position absolute
-      bottom 5px
-      right 5px    
+      bottom 10px
+      right 10px
+      font-size 20px    
     .nodeCompliant
       position absolute
       cursor pointer
-      top 5px
-      right 5px
+      top 20px
+      right 10px
       width 25px
     .nodeCompliant.nodeCompliant_enable
       opacity 1
@@ -78,9 +91,13 @@
   z-index 312
   opacity 0.5
   display none
+  top 0px
+  left 0px
 .search-config
   display inline-block
   float right
+  position relative
+  top 15px
 .config-wrapper .search-config .fa-search
   float right
   cursor pointer
@@ -94,3 +111,5 @@
   width 0px
   color white
   transition 0.2s linear all
+.clear
+  clear both  

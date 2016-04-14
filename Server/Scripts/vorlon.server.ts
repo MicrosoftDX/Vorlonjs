@@ -150,8 +150,9 @@ export module VORLON {
                 res.writeHead(200, {'Content-Type': 'image/png' });
                 res.end(icon, 'binary');
             } catch (err) {
-                res.writeHead(404);
-                res.end();
+                var icon = fs.readFileSync(path.join(__dirname, "../public/images/no_img.png"));
+                res.writeHead(200, {'Content-Type': 'image/png' });
+                res.end(icon, 'binary');
             }    
         }
 
