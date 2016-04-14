@@ -19,9 +19,18 @@ jQuery(function ($) {
                     .hide()
                     .trigger("vorlon.plugins.inactive");
 
-        $('#pluginsPaneTop [data-plugin~=' + target + ']')
-                    .show()
+        var pluginTarget = $('#pluginsPaneTop [data-plugin~=' + target + ']');
+
+        pluginTarget.show()
                     .trigger("vorlon.plugins.active");
+        if (pluginTarget.find('.split').length && !pluginTarget.find('.vsplitter').length) {
+            pluginTarget.find('.split').split({
+                orientation: pluginTarget.find('.split').data('orientation'),
+                limit: pluginTarget.find('.split').data('limit'),
+                position: pluginTarget.find('.split').data('position'),
+            });
+
+        }
     });
 
     $('#pluginsPaneBottom').on('click', '[data-plugin-target]', function (e) {
@@ -32,8 +41,18 @@ jQuery(function ($) {
         $('#pluginsPaneBottom [data-plugin]')
                     .hide()
                     .trigger("vorlon.plugins.inactive");
-        $('#pluginsPaneBottom [data-plugin~=' + target + ']')
-                    .show()
+                    
+        var pluginTarget = $('#pluginsPaneBottom [data-plugin~=' + target + ']');   
+                 
+        pluginTarget.show()
                     .trigger("vorlon.plugins.active");
+        if (pluginTarget.find('.split').length && !pluginTarget.find('.vsplitter').length) {
+            pluginTarget.find('.split').split({
+                orientation: pluginTarget.find('.split').data('orientation'),
+                limit: pluginTarget.find('.split').data('limit'),
+                position: pluginTarget.find('.split').data('position'),
+            });
+
+        }
     });
 });

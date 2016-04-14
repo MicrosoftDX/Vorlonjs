@@ -1,6 +1,7 @@
 ﻿module VORLON {
     declare var vorlonBaseURL: string;
-
+    declare var $: any;
+    
     export class DashboardPlugin extends BasePlugin {
         public htmlFragmentUrl;
         public cssStyleSheetUrl;
@@ -62,6 +63,13 @@
                 if (request.readyState === 4) {
                     if (request.status === 200) {
                         divContainer.innerHTML = this._stripContent(request.responseText);
+                        if($(divContainer).find('.split').length && $(divContainer).find('.split').is(":visible") && !$(divContainer).find('.vsplitter').length) {
+                            $(divContainer).find('.split').split({
+                                orientation: $(divContainer).find('.split').data('orientation'),
+                                limit: $(divContainer).find('.split').data('limit'),
+                                position: $(divContainer).find('.split').data('position'),
+                            });                      
+                        }
                         var headID = document.getElementsByTagName("head")[0];
                         for (var i = 0; i < this.cssStyleSheetUrl.length; i++) {
                             var cssNode = document.createElement('link');

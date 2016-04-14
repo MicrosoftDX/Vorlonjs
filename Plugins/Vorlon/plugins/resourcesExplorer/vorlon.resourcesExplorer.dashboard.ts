@@ -25,7 +25,6 @@
                 this._containerCookies = Tools.QuerySelectorById(div, "cookiesTable");
                 
                 this.toogleMenu();
-                this.splitPlugin();
                 this.searchResource();
                 this.buttonEvent();
                 this.addResource();
@@ -34,14 +33,6 @@
                 
                 this._ready = true;                
             })
-        }
-
-        public splitPlugin(): void {
-            $('.dom-explorer2-container').split({
-                orientation: 'vertical',
-                limit: 50,
-                position: '70%'
-            });
         }
 
         public searchResource(): void {
