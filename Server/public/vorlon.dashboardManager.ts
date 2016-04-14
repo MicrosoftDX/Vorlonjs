@@ -279,6 +279,7 @@ module VORLON {
                                 if (plugin.panel === "bottom") {
                                     if (divPluginsBottom.children.length === 1) {
                                         pluginmaindiv.classList.add("active");
+                                        plugintab.classList.add('active');
                                     }
                                     divPluginsBottom.appendChild(pluginmaindiv);
                                     divPluginBottomTabs.appendChild(plugintab);
@@ -286,6 +287,7 @@ module VORLON {
                                 else {
                                     if (divPluginsTop.children.length === 1) {
                                         pluginmaindiv.classList.add("active");
+                                        plugintab.classList.add('active');
                                     }
                                     divPluginsTop.appendChild(pluginmaindiv);
                                     divPluginTopTabs.appendChild(plugintab);
