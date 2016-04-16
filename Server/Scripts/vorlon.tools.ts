@@ -2,44 +2,24 @@
     export class Tools {
         
         public static GetIconSystem(name: string) {
-            if (['Windows'].indexOf(name) > -1) {
-                return "windows.png"
-            }
             
-            if (['Windows Phone'].indexOf(name) > -1) {
-                return "windows_phone.png"
-            }
-            
-            if (['Android'].indexOf(name) > -1) {
-                return "android.png"
-            }
-            
-            if (['iOS', 'Macintosh'].indexOf(name) > -1) {
-                return "apple.png"
-            }
-            
-            if (['BlackBerry'].indexOf(name) > -1) {
-                return "bb.png"
-            }
-            
-            if (['Kindle'].indexOf(name) > -1) {
-                return "kindle.png"
-            }
-            
-            if (['Linux'].indexOf(name) > -1) {
-                return "linux.png"
-            }
-            
-            if (['OpenBSD'].indexOf(name) > -1) {
-                return "openbsd.png"
-            }
-            
-            if (['Firefox OS'].indexOf(name) > -1) {
-                return "firefox.png"
-            }
-            
-            if (['Node.js'].indexOf(name) > -1) {
-                return "nodejs.png"
+            var os = [
+                {name: ['Windows'], icon: 'windows.png'},
+                {name: ['iOS', 'Macintosh'], icon: 'apple.png'},
+                {name: ['Windows Phone'], icon: 'windows_phone.png'},
+                {name: ['Firefox OS'], icon: 'firefox.png'},
+                {name: ['Kindle'], icon: 'kindle.png'},
+                {name: ['Android'], icon: 'android.png'},
+                {name: ['BlackBerry'], icon: 'bb.png'},
+                {name: ['Linux'], icon: 'linux.png'},
+                {name: ['Linux'], icon: 'nodejs.png'},
+                {name: ['OpenBSD'], icon: 'openbsd.png'},
+                {name: ['Node.js'], icon: 'nodejs.png'},
+            ]
+            for (var i = 0, len = os.length; i < len; i++) {
+                if(os[i].name.indexOf(name) > -1) {
+                    return os[i].icon;
+                }
             }
             
             return 'unknown.png';
