@@ -1,5 +1,50 @@
 ﻿export module VORLON {
     export class Tools {
+        
+        public static GetIconSystem(name: string) {
+            if (['Windows'].indexOf(name) > -1) {
+                return "windows.png"
+            }
+            
+            if (['Windows Phone'].indexOf(name) > -1) {
+                return "windows_phone.png"
+            }
+            
+            if (['Android'].indexOf(name) > -1) {
+                return "android.png"
+            }
+            
+            if (['iOS', 'Macintosh'].indexOf(name) > -1) {
+                return "apple.png"
+            }
+            
+            if (['BlackBerry'].indexOf(name) > -1) {
+                return "bb.png"
+            }
+            
+            if (['Kindle'].indexOf(name) > -1) {
+                return "kindle.png"
+            }
+            
+            if (['Linux'].indexOf(name) > -1) {
+                return "linux.png"
+            }
+            
+            if (['OpenBSD'].indexOf(name) > -1) {
+                return "openbsd.png"
+            }
+            
+            if (['Firefox OS'].indexOf(name) > -1) {
+                return "firefox.png"
+            }
+            
+            if (['Node.js'].indexOf(name) > -1) {
+                return "nodejs.png"
+            }
+            
+            return 'unknown.png';
+        }
+        
         public static GetOperatingSystem(ua: string) {
             var currentLowerUA = ua.toLowerCase();
             

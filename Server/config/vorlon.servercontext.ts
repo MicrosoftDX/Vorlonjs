@@ -167,6 +167,8 @@ export module VORLON {
         public socket: SocketIO.Socket;
         public opened: boolean;
         public ua: string;
+        public icon: string;
+        public name: string;
 		public identity: string;
         public noWindow: boolean;
 
@@ -176,7 +178,8 @@ export module VORLON {
 				"displayid": this.displayId,
 				"ua": this.ua,
 				"identity" : this.identity,
-				"name": tools.VORLON.Tools.GetOperatingSystem(this.ua),
+				"name": this.name,
+                "icon": this.icon,
                 "noWindow": this.noWindow
 			};
         }
@@ -188,6 +191,8 @@ export module VORLON {
             this.displayId = displayId;
             this.opened = opened;
             this.noWindow = noWindow;
+            this.name = tools.VORLON.Tools.GetOperatingSystem(this.ua);
+            this.icon = tools.VORLON.Tools.GetIconSystem(this.name);
         }
     }
 

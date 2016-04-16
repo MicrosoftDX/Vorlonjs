@@ -60,7 +60,6 @@ module VORLON {
 
                         //Loading client list 
                         var clients = JSON.parse(xhr.responseText);
-
                         //Test if the client to display is in the list
                         var contains = false;
                         if (clients && clients.length) {
@@ -153,7 +152,7 @@ module VORLON {
             }
             
             var pluginlistelementa = document.createElement("a");
-            pluginlistelementa.textContent = " " + (client.identity ? client.identity : client.name) + " - " + client.displayid;
+            pluginlistelementa.innerHTML = " <img src='/images/systems/"+client.icon+"' alt='icon_system'> " + (client.identity ? client.identity : client.name) + " - " + client.displayid;
             pluginlistelementa.setAttribute("href", vorlonBaseURL + "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
             pluginlistelement.appendChild(pluginlistelementa);
 
