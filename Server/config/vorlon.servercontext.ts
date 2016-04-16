@@ -64,7 +64,7 @@ export module VORLON {
         setPluginState(pluginid:string, callback:(error) => void);
         setPluginName(pluginid:string, name:string, callback:(error) => void);
         setPluginPanel(pluginid:string, panel:string, callback:(error) => void);
-        setPluginsPosition(positions:string, callback:(error) => void);
+        setPluginsPosition(positions:any, callback:(error) => void);
 	}
 
 	export interface IVorlonServerContext {

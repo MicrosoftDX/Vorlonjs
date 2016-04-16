@@ -89,7 +89,7 @@ export module VORLON {
             return callback('PluginID unknown');
         }
         
-        setPluginsPosition(positions:string, callback:(error) => void) {
+        setPluginsPosition(positions:any, callback:(error) => void) {
             var configurationFile: string = fs.readFileSync(path.join(__dirname, "../config.json"), "utf8");
             var configurationString = configurationFile.toString().replace(/^\uFEFF/, '');
             var configuration = JSON.parse(configurationString);

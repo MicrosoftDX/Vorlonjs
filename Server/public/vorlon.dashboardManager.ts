@@ -252,8 +252,15 @@ module VORLON {
 
                         for (var i = 0; i < catalog.plugins.length; i++) {
                             var plugin = catalog.plugins[i]; 
-                            
+                            var existingLocation = document.querySelector('[data-plugin=' + plugin.id + ']');
+                            var plugintab = document.createElement('div');
+                            plugintab.classList.add('tab');
+                            plugintab.textContent = plugin.name;
+                            plugintab.setAttribute('data-plugin-target', plugin.id);
+                                
                             if (!plugin.enabled){
+                                plugintab.style.display = 'none';
+                                divPluginBottomTabs.appendChild(plugintab);
                                 continue;
                             }
                             
@@ -262,19 +269,12 @@ module VORLON {
                                     continue;
                                 }
                             }
-                            
-                            var existingLocation = document.querySelector('[data-plugin=' + plugin.id + ']');
 
                             if (!existingLocation) {
                                 var pluginmaindiv = document.createElement('div');
                                 pluginmaindiv.classList.add('plugin');
                                 pluginmaindiv.classList.add('plugin-' + plugin.id.toLowerCase());
                                 pluginmaindiv.setAttribute('data-plugin', plugin.id);
-
-                                var plugintab = document.createElement('div');
-                                plugintab.classList.add('tab');
-                                plugintab.textContent = plugin.name;
-                                plugintab.setAttribute('data-plugin-target', plugin.id);
 
                                 if (plugin.panel === "bottom") {
                                     if (divPluginsBottom.children.length === 1) {
