@@ -2,7 +2,7 @@
     export class Tools {
         
         public static GetIconSystem(name: string) {
-            
+
             var os = [
                 {name: ['Windows'], icon: 'windows.png'},
                 {name: ['iOS', 'Macintosh'], icon: 'apple.png'},
@@ -15,7 +15,8 @@
                 {name: ['Linux'], icon: 'nodejs.png'},
                 {name: ['OpenBSD'], icon: 'openbsd.png'},
                 {name: ['Node.js'], icon: 'nodejs.png'},
-            ]
+            ];
+            
             for (var i = 0, len = os.length; i < len; i++) {
                 if(os[i].name.indexOf(name) > -1) {
                     return os[i].icon;
