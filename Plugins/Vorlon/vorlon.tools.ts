@@ -52,12 +52,15 @@
             return previousFunction;
         }
         
-        public static HookProperty(rootObject: any, propertyToHook: string, callback){            
+        public static HookProperty(rootObjectName: string, propertyToHook: string, callback){  
+            var rootObject = (Tools.IsWindowAvailable ? window : global)[rootObjectName]; 
             var initialValue = rootObject[propertyToHook];
             Object.defineProperty(rootObject, propertyToHook, {
                 get: function() {
                     if (callback){
-                        callback(VORLON.Tools.getCallStack(1));
+                        var stack = VORLON.Tools.getCallStack(1);
+                        stack.property = propertyToHook;
+                        callback(stack);
                     }
                     return initialValue;
                 }
@@ -106,7 +109,8 @@
                         closing = linetext.length - 1;
                     var filename = linetext.substr(opening, closing - opening);
                     var linestart = filename.indexOf(":", filename.lastIndexOf("/"));
-                    res.file = filename.substr(0, linestart);
+                    res.file = filename.substr(0, linestart);                    
+                    res.line = filename.substr(linestart + 1);
                 }
                 return res;
             }

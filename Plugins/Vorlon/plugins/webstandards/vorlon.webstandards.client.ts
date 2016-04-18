@@ -7,21 +7,6 @@ module VORLON {
         private _currentAnalyze: any = {};
         private _refreshLoop : any;
 
-        public browserDetectionHook = {
-            userAgent: [],
-            appVersion: [],
-            appName: [],
-            product: [],
-            vendor: [],
-        };
-
-        private exceptions = [
-            "vorlon.max.js",
-            "vorlon.min.js",
-            "vorlon.js",
-            "google-analytics.com"
-        ];
-
         constructor() {
             super("webstandards");
             this._id = "WEBSTANDARDS";
@@ -39,30 +24,18 @@ module VORLON {
 
         // Start the clientside code
         public startClientSide(): void {
-            this.hook(window.navigator, "userAgent");
-            this.hook(window.navigator, "appVersion");
-            this.hook(window.navigator, "appName");
-            this.hook(window.navigator, "product");
-            this.hook(window.navigator, "vendor");
-        }
-
-        public hook(root, prop) {
-            VORLON.Tools.HookProperty(root, prop, (stack) => {
-                //this.trace("browser detection " + stack.file);
-                //this.trace(stack.stack);
-                if (stack.file) {
-                    if (this.exceptions.some((s) => { return stack.file.indexOf(s) >= 0 })) {
-                        //this.trace("skip browser detection access " + stack.file)
-                        
-                        return;
+            for (var generalRuleName in VORLON.WebStandards.Rules) {
+                for (var ruleName in VORLON.WebStandards.Rules[generalRuleName]) {
+                    var rule = VORLON.WebStandards.Rules[generalRuleName][ruleName];
+                    if (rule.init) {
+                        rule.init();
                     }
                 }
-                this.browserDetectionHook[prop].push(stack);
-            });
-        }        
+            }
+        }    
 
         public startNewAnalyze(data): void {            
-            this.trace("start webstandards analyze " + data.id);
+            this.trace("start webstandards analyzis " + data.id);
 
             this._currentAnalyze = {
                 id: data.id,
@@ -71,7 +44,6 @@ module VORLON {
                 canceled: false,
                 location : window.location.href,
                 html: document.documentElement.outerHTML,
-                browserDetection : this.browserDetectionHook,
                 doctype: {
                     html: null,
                     name: null,
@@ -436,7 +408,7 @@ module VORLON {
                 };
 
                 xhr.open("GET", documentUrl, true);
-                xhr.send();
+                xhr.send(null);
                 timeoutRef = setTimeout(() => {
                     if (!completed) {
                         completed = true;

@@ -1,0 +1,185 @@
+#office-information {
+  min-width: 40%;
+  max-width: 80%;
+}
+#office-information table {
+  width: 100%;
+  margin: 20px 0 30px;
+}
+#office-information table td {
+  text-align: left;
+}
+.header {
+  background: #f7f7f7;
+  border-bottom: 1px solid #ddd;
+  font-weight: 400;
+}
+#office-information table td {
+  border-bottom: 1px solid #eee;
+}
+#office-information table td:first-child {
+  width: 30%;
+}
+
+
+#office-type-app{
+     color: #FFFFFF;
+     vertical-align: middle;
+     margin-left: 10px;
+     font-weight: bolder;
+     font-size: 18px;
+     
+}
+
+.objdescriptor {
+  margin-bottom: 5px;
+}
+.expandable > .expand {
+  cursor: pointer;
+}
+.expandable > .expand > .expand-btn {
+  color: #BBB;
+  margin-left: -18px;
+  margin-right: 4px;
+  width: 14px;
+  height: 14px;
+  line-height: 12px;
+  border: 1px solid #DDD;
+  text-align: center;
+  cursor: pointer;
+  display: inline-block;
+}
+.expandable > .expand-content {
+  display: none;
+  padding-left: 30px;
+  margin-left: -12px;
+  border-left: 1px solid #DDD;
+}
+.expandable.expanded > .expand-content {
+  display: block;
+}
+
+.prop-value {
+  color: #00a5b3;
+  margin-left: 10px;
+}
+.func-name {
+  color: #4b0082;
+}
+
+#treeViewObj{
+    padding: 5px 20px;
+}
+
+.office-container {
+  height: 100%;
+  overflow: hidden !important;
+}
+
+.panel-left, .panel-right {
+  height: 100%;
+}
+.panel-right {
+  overflow: hidden;
+}
+
+#accordion {
+  height: 100%;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  overflow: auto;
+}
+
+#accordion h3 {
+  font-family: "Menlo", "Consolas", "Lucida Console", Courier, monospace;
+  background: #eee;
+  padding: 10px;
+  margin: 0;
+  cursor: pointer;
+  border-bottom: 1px solid #CCC;
+  height: 36px;
+}
+#accordion h3.visible {
+  background: #CCC;
+}
+
+#accordion .accordion-section {
+  display: block;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  height: 80px;
+}
+#accordion .accordion-section.visible {
+  display: block;
+  overflow: auto;
+  min-height: 100px;
+  max-height: 80%;
+}
+
+.office-properties-values{
+  padding: 10px;
+  font-size: 12px;
+}
+
+
+.office-properties-values .name{
+  min-width: 20%;
+  display:inline-block;
+}
+
+.office-properties-values .options, .office-properties-values .fullpath, 
+.office-properties-values .prop-fullpath, .office-properties-values .prop-name, .office-properties-values .prop-type {
+  padding: 5px;
+}
+ .office-properties-values .fullpath {
+  padding: 5px;
+}
+ 
+.office-results-values{
+  padding: 10px;
+  font-size: 12px;
+  word-wrap : break-word;
+}
+
+ 
+.office-results-values pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+.office-results-values .string { color: green; }
+.office-results-values .number { color: darkorange; }
+.office-results-values .boolean { color: blue; }
+.office-results-values .null { color: magenta; }
+.office-results-values .key { color: red; }
+
+ 
+.office-properties-values .value {
+  display: inline-block;
+  margin-left: 5px;
+  /*position: relative;
+  float: right;
+  top: 3px;*/
+}
+.office-properties-values .function-name {
+  min-width: 20%;
+  display:inline-block;
+}
+.office-properties-values .function-value {
+  display: inline-block;
+  margin-left: 5px;
+  color: #4b0082;
+}
+.office-properties-values .function-invoker {
+  display: block;
+  position: relative;
+  border:0px;
+  padding: 4px;
+  width: 80px;
+  max-width: 50%;
+  margin: 10px auto 0;
+  color: #444;
+  text-align: center;
+  background: #eee;
+  border-radius: 3px;
+  cursor: pointer;
+}

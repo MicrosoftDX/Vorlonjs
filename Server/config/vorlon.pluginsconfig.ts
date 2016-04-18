@@ -19,7 +19,7 @@ export module VORLON {
             catch(e){
                 if (!sessionConfig || !sessionConfig.plugins || !sessionConfig.plugins.length) {
                     sessionConfig = {
-                        includeSocketIO: configuration.includeSocketIO || true,
+                        includeSocketIO: (configuration.includeSocketIO != undefined) ? configuration.includeSocketIO : true,
                         plugins: <ctx.VORLON.IPluginConfig[]>configuration.plugins
                     };
                 }

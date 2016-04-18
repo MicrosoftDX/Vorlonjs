@@ -367,6 +367,7 @@ export module VORLON {
                     }
                     this._log.debug(formatLog("PLUGIN", "Client Reconnect (" + client.displayId + ")[" + data.ua + "] socketid=" + socket.id, receiveMessage));
                 }
+                
                 this._sessions.update(metadata.sessionId, session);
 
                 this._log.debug(formatLog("PLUGIN", "Number clients in session : " + (session.nbClients + 1), receiveMessage));

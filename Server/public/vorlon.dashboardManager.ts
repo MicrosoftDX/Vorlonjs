@@ -60,6 +60,7 @@ module VORLON {
 
                         //Loading client list 
                         var clients = JSON.parse(xhr.responseText);
+
                         //Test if the client to display is in the list
                         var contains = false;
                         if (clients && clients.length) {
@@ -268,6 +269,8 @@ module VORLON {
                                     continue;
                                 }
                             }
+                            
+                            var existingLocation = document.querySelector('[data-plugin=' + plugin.id + ']');
 
                             if (!existingLocation) {
                                 var pluginmaindiv = document.createElement('div');

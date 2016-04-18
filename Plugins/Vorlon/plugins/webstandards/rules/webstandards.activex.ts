@@ -7,7 +7,7 @@ module VORLON.WebStandards.Rules.DOM {
         
         prepare: function(rulecheck, analyzeSummary) {
             rulecheck.items = rulecheck.items || [];   
-            rulecheck.type = "blockitems";          
+            rulecheck.type = "blockitems";    
         },
         
         check: function(node: HTMLElement, rulecheck: any, analyzeSummary: any, htmlString: string) {

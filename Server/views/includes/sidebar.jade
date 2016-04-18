@@ -4,7 +4,7 @@ section.sidebar
     .session-info
       p
         | Session ID: 
-        span(data-hook='session-id') ab38dklf
+        span(data-hook='session-id')
       p
         | Client ID: 
         span(data-hook='client-id')
@@ -12,7 +12,10 @@ section.sidebar
     a#identify.btn.btn-primary(onclick='vorlonDashboard.identify()') Identify a client
     h2 Client List
     #clientsListPaneContent.client-list
-    a.btn.btn-secondary.btn-small.btn-reset(onclick='VORLON.DashboardManager.ResetDashboard()') Reset Dashboard
-    a#reload.btn.btn-secondary.btn-small.btn-reset.hidden(onclick='VORLON.DashboardManager.ReloadClient()') Reload Client
+    a(onclick='VORLON.DashboardManager.ResetDashboard()').btn.btn-secondary.btn-small.btn-reset Reset Dashboard
+    if authenticated
+      a#logout(href='/logout').btn.btn-secondary.btn-small.btn-reset logout
+    a(onclick='VORLON.DashboardManager.ReloadClient()')#reload.btn.btn-secondary.btn-small.btn-reset.hidden Reload Client
+    p#vorlonVersion= "Version: " + version
   #settingsBtn(onclick='VORLON.DashboardManager.goConfig()')
     i.fa.fa-cogs(aria-hidden='true')
