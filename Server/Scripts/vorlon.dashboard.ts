@@ -70,7 +70,7 @@ export module VORLON {
 
         private dashboardWithClient() {
             return (req: express.Request, res: express.Response) => {
-                res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: req.params.clientid });
+                res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: req.params.clientid, version: packageJson.version });
             }
         }
 
