@@ -28,6 +28,7 @@ module VORLON {
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
             if (receivedObject.message == 'screen') {
+                console.log('hereree');
                 $('.screen-img').attr('src', receivedObject.image).fadeIn();
                 $('.screen-wrapper').find('p').fadeIn();
                 $('.screen-wrapper').find('div').fadeOut();
