@@ -331,6 +331,7 @@
             this.element.className = 'log-entry ' + this.getTypeClass();
             this.element.title = "Message received at " + new Date().toLocaleTimeString();
             parent.appendChild(this.element);
+            this.element.scrollIntoView();
 
             for (var i = 0, l = entry.messages.length; i < l; i++) {
                 this.addMessage(entry.messages[i]);
