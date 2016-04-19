@@ -8,6 +8,7 @@ module VORLON {
     
     export class DashboardManager {
         static CatalogUrl: string;
+        static vorlonBaseURL: string;
         static ListenClientid: string;
         static DisplayingClient: boolean;
         static ListenClientDisplayid: string;
@@ -27,6 +28,7 @@ module VORLON {
             DashboardManager.StartListeningServer()
             DashboardManager.GetClients();
             DashboardManager.CatalogUrl =  vorlonBaseURL + "/getplugins/" + sessionid;
+            DashboardManager.vorlonBaseURL = vorlonBaseURL;
         }
         
         public static StartListeningServer(clientid: string = ""): void{
@@ -151,7 +153,7 @@ module VORLON {
             }
             
             var pluginlistelementa = document.createElement("a");
-            pluginlistelementa.textContent = " " + (client.identity ? client.identity : client.name) + " - " + client.displayid;
+            pluginlistelementa.innerHTML = " <img src='/images/systems/"+client.icon+"' alt='icon_system'> " + (client.identity ? client.identity : client.name) + " - " + client.displayid;
             pluginlistelementa.setAttribute("href", vorlonBaseURL + "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
             pluginlistelement.appendChild(pluginlistelementa);
 
@@ -188,13 +190,15 @@ module VORLON {
         static DisplayWaitingLogo(displayWaiter: boolean): void{
             //Hide waiting page and let's not bounce the logo !
             var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
-            VORLON.Tools.RemoveClass(elt, 'hidden');
-            if (displayWaiter) {
-                elt = <HTMLElement>document.querySelector('.waitLoader');
+            if(elt) {
                 VORLON.Tools.RemoveClass(elt, 'hidden');
+                if (displayWaiter) {
+                    elt = <HTMLElement>document.querySelector('.waitLoader');
+                    VORLON.Tools.RemoveClass(elt, 'hidden');
+                }
+                elt = document.getElementById('reload');
+                VORLON.Tools.AddClass(elt, 'hidden');
             }
-            elt = document.getElementById('reload');
-            VORLON.Tools.AddClass(elt, 'hidden');
         }
 
         public static loadPlugins(): void {
@@ -248,8 +252,15 @@ module VORLON {
 
                         for (var i = 0; i < catalog.plugins.length; i++) {
                             var plugin = catalog.plugins[i]; 
-                            
+                            var existingLocation = document.querySelector('[data-plugin=' + plugin.id + ']');
+                            var plugintab = document.createElement('div');
+                            plugintab.classList.add('tab');
+                            plugintab.textContent = plugin.name;
+                            plugintab.setAttribute('data-plugin-target', plugin.id);
+                                
                             if (!plugin.enabled){
+                                plugintab.style.display = 'none';
+                                divPluginBottomTabs.appendChild(plugintab);
                                 continue;
                             }
                             
@@ -267,14 +278,10 @@ module VORLON {
                                 pluginmaindiv.classList.add('plugin-' + plugin.id.toLowerCase());
                                 pluginmaindiv.setAttribute('data-plugin', plugin.id);
 
-                                var plugintab = document.createElement('div');
-                                plugintab.classList.add('tab');
-                                plugintab.textContent = plugin.name;
-                                plugintab.setAttribute('data-plugin-target', plugin.id);
-
                                 if (plugin.panel === "bottom") {
                                     if (divPluginsBottom.children.length === 1) {
                                         pluginmaindiv.classList.add("active");
+                                        plugintab.classList.add('active');
                                     }
                                     divPluginsBottom.appendChild(pluginmaindiv);
                                     divPluginBottomTabs.appendChild(plugintab);
@@ -282,6 +289,7 @@ module VORLON {
                                 else {
                                     if (divPluginsTop.children.length === 1) {
                                         pluginmaindiv.classList.add("active");
+                                        plugintab.classList.add('active');
                                     }
                                     divPluginsTop.appendChild(pluginmaindiv);
                                     divPluginTopTabs.appendChild(plugintab);
@@ -344,6 +352,10 @@ module VORLON {
             Core.Messenger.sendRealtimeMessage("", { "_sessionid": DashboardManager.SessionId }, VORLON.RuntimeSide.Dashboard, "identify");
         }
 
+        public static goConfig(): void {
+            location.href = '/config';
+        }
+        
         public static ResetDashboard(reload: boolean = true): void {
             let sessionid = DashboardManager.SessionId;
             let xhr = new XMLHttpRequest();

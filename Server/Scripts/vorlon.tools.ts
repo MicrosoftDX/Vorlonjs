@@ -1,5 +1,31 @@
 ﻿export module VORLON {
     export class Tools {
+        
+        public static GetIconSystem(name: string) {
+
+            var os = [
+                {name: ['Windows'], icon: 'windows.png'},
+                {name: ['iOS', 'Macintosh'], icon: 'apple.png'},
+                {name: ['Windows Phone'], icon: 'windows_phone.png'},
+                {name: ['Firefox OS'], icon: 'firefox.png'},
+                {name: ['Kindle'], icon: 'kindle.png'},
+                {name: ['Android'], icon: 'android.png'},
+                {name: ['BlackBerry'], icon: 'bb.png'},
+                {name: ['Linux'], icon: 'linux.png'},
+                {name: ['Linux'], icon: 'nodejs.png'},
+                {name: ['OpenBSD'], icon: 'openbsd.png'},
+                {name: ['Node.js'], icon: 'nodejs.png'},
+            ];
+            
+            for (var i = 0, len = os.length; i < len; i++) {
+                if(os[i].name.indexOf(name) > -1) {
+                    return os[i].icon;
+                }
+            }
+            
+            return 'unknown.png';
+        }
+        
         public static GetOperatingSystem(ua: string) {
             var currentLowerUA = ua.toLowerCase();
             

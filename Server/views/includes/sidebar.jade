@@ -2,9 +2,11 @@ section.sidebar
   header.sidebar-header
     h1.logo Vorlon.js
     .session-info
-      p Session ID: 
-        span(data-hook='session-id') 
-      p Client ID: 
+      p
+        | Session ID: 
+        span(data-hook='session-id')
+      p
+        | Client ID: 
         span(data-hook='client-id')
   #clientsListPane.client-pane
     a#identify.btn.btn-primary(onclick='vorlonDashboard.identify()') Identify a client
@@ -15,3 +17,5 @@ section.sidebar
       a#logout(href='/logout').btn.btn-secondary.btn-small.btn-reset logout
     a(onclick='VORLON.DashboardManager.ReloadClient()')#reload.btn.btn-secondary.btn-small.btn-reset.hidden Reload Client
     p#vorlonVersion= "Version: " + version
+  #settingsBtn(onclick='VORLON.DashboardManager.goConfig()')
+    i.fa.fa-cogs(aria-hidden='true')

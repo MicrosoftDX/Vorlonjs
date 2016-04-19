@@ -124,12 +124,7 @@
                     }
 
                 }, true);
-
-                $('.dom-explorer-container').split({
-                    orientation: 'vertical',
-                    limit: 50,
-                    position: '70%'
-                });
+                
                 $("#accordion h3", this._containerDiv).click((elt) => {
                     $('.visible', elt.target.parentElement).removeClass('visible');
                     $('#' + elt.target.className, elt.target.parentElement).addClass('visible');

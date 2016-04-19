@@ -19,9 +19,18 @@ jQuery(function ($) {
                     .hide()
                     .trigger("vorlon.plugins.inactive");
 
-        $('#pluginsPaneTop [data-plugin~=' + target + ']')
-                    .show()
+        var pluginTarget = $('#pluginsPaneTop [data-plugin~=' + target + ']');
+
+        pluginTarget.show()
                     .trigger("vorlon.plugins.active");
+        if (pluginTarget.find('.split').length && !pluginTarget.find('.vsplitter').length) {
+            pluginTarget.find('.split').split({
+                orientation: pluginTarget.find('.split').data('orientation'),
+                limit: pluginTarget.find('.split').data('limit'),
+                position: pluginTarget.find('.split').data('position'),
+            });
+
+        }
     });
 
     $('#pluginsPaneBottom').on('click', '[data-plugin-target]', function (e) {
@@ -32,8 +41,40 @@ jQuery(function ($) {
         $('#pluginsPaneBottom [data-plugin]')
                     .hide()
                     .trigger("vorlon.plugins.inactive");
-        $('#pluginsPaneBottom [data-plugin~=' + target + ']')
-                    .show()
+                    
+        var pluginTarget = $('#pluginsPaneBottom [data-plugin~=' + target + ']');   
+                 
+        pluginTarget.show()
                     .trigger("vorlon.plugins.active");
+        if (pluginTarget.find('.split').length && !pluginTarget.find('.vsplitter').length) {
+            pluginTarget.find('.split').split({
+                orientation: pluginTarget.find('.split').data('orientation'),
+                limit: pluginTarget.find('.split').data('limit'),
+                position: pluginTarget.find('.split').data('position'),
+            });
+
+        }
+    });
+    
+    $( "#pluginsListPaneBottom, #pluginsListPaneTop" ).sortable({
+        axis: 'x',
+        update: function( event, ui ) {
+            var positions = [];
+            $('#pluginsListPaneTop div, #pluginsListPaneBottom div').each(function() {
+                if($(this).data('plugin-target')) {
+                    positions.push($(this).data('plugin-target'));   
+                }
+            }); 
+            
+            $.post(VORLON.DashboardManager.vorlonBaseURL + '/setplugin/positions', {positions: JSON.stringify(positions)},function(data) {
+                $('.plugins-list li').find('.calque').fadeOut();
+            });
+        },
+        start: function() {
+            $('#pluginsListPaneTop').css('width', '1000%');
+        },
+        stop: function() {
+            $('#pluginsListPaneTop').css('width', '100%');
+        }
     });
 });
