@@ -278,6 +278,14 @@ module VORLON {
                                 pluginmaindiv.classList.add('plugin-' + plugin.id.toLowerCase());
                                 pluginmaindiv.setAttribute('data-plugin', plugin.id);
 
+                                var plugintab = document.createElement('div');
+                                plugintab.classList.add('tab');
+                                plugintab.textContent = plugin.name;
+                                plugintab.setAttribute('data-plugin-target', plugin.id);
+                                plugintab.setAttribute('aria-describedby', 'aria-pluginDesc');
+                                plugintab.setAttribute('tabindex', "0");
+                                plugintab.setAttribute('role', 'button');
+
                                 if (plugin.panel === "bottom") {
                                     if (divPluginsBottom.children.length === 1) {
                                         pluginmaindiv.classList.add("active");
@@ -313,6 +321,11 @@ module VORLON {
                         var addPluginBtn = document.createElement('div');
                         addPluginBtn.className = "tab";
                         addPluginBtn.innerText = "+";
+                        addPluginBtn.setAttribute('aria-describedby', 'aria-pluginAddition');
+                        addPluginBtn.setAttribute('aria-label', 'Add new plugins');
+                        addPluginBtn.setAttribute('role', 'button');
+                        addPluginBtn.setAttribute('tabindex', '0');
+                        
                         divPluginTopTabs.appendChild(addPluginBtn);
                         addPluginBtn.addEventListener('click',() => {
                             window.open("http://www.vorlonjs.io/plugins", "_blank");

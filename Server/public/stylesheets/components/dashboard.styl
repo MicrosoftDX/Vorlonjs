@@ -157,14 +157,14 @@ body, .dashboard, .dashboard-main-view
     float: left
 
     &:not(.active)
-      cursor: pointer
-      opacity: .5
+      cursor: pointer 
 
       &:hover
         opacity: .9
 
     &:not(.add)
-      background: white
+      background: #00616a
+      color: #fff
       border-right: $border-med
 
   // Close button styles, not used right now
@@ -220,3 +220,6 @@ body, .dashboard, .dashboard-main-view
   input[type=text]::placeholder
     color: #AAA
     font-style: italic
+    
+  .aria-descHelper
+    display: none
