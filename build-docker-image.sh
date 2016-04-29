@@ -4,7 +4,6 @@
 appVersion=$(cat package.json | jq -r '.version')
 echo "Building Docker Vorlon.JS image version $appVersion"
 
-echo "Building MusicStore Front Docker Image"
 docker build -t vorlonjs/dashboard:$appVersion .
 
 docker login --username="$1" --password="$2"
