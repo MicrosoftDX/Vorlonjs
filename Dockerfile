@@ -19,5 +19,8 @@ COPY . /usr/src/vorlonjs/
 # Set app root as working directory
 WORKDIR /usr/src/vorlonjs
 
+# Upgrade to last NPM version
+RUN npm upgrade -g npm
+
 # Run npm install
 RUN npm install
