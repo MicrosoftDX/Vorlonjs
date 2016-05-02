@@ -71,13 +71,13 @@ export module VORLON {
 
         private dashboardWithClient() {
             return (req: express.Request, res: express.Response) => {
-                res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: req.params.clientid });
+                res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: req.params.clientid, version: packageJson.version });
             }
         }
         
         private dashboardConfig() {
             return (req: express.Request, res: express.Response) => {
-                res.render('config', { baseURL: this.baseURLConfig.baseURL, title: 'Configuration', sessionid: "default", clientid: "" });
+                res.render('config', { baseURL: this.baseURLConfig.baseURL, title: 'Configuration', sessionid: "default", clientid: "", version: packageJson.version });
             };
         }
 
