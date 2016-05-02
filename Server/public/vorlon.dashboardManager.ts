@@ -246,6 +246,13 @@ module VORLON {
                                         continue;
                                     }
                                 }
+                                
+                                if (!DashboardManager.NoWindowMode) {
+                                    if (plugin.nodeOnly) {
+                                        continue;
+                                    }
+                                }
+                                
                                 pluginstoload ++;
                             }
                         }
@@ -266,6 +273,12 @@ module VORLON {
                             
                             if (DashboardManager.NoWindowMode) {
                                 if (!plugin.nodeCompliant) {
+                                    continue;
+                                }
+                            }
+                            
+                            if (!DashboardManager.NoWindowMode) {
+                                if (plugin.nodeOnly) {
                                     continue;
                                 }
                             }
