@@ -22,5 +22,11 @@ WORKDIR /usr/src/vorlonjs
 # Upgrade to last NPM version
 RUN npm upgrade -g npm
 
+# Install gulp
+RUN npm install -g gulp
+
 # Run npm install
 RUN npm install
+
+# Run gulp
+RUN gulp
