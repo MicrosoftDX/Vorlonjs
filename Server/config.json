@@ -21,15 +21,8 @@
             "panel": "top",
             "foldername": "nodejs",
             "enabled": true,
-            "nodeCompliant": true
-        },
-        {
-            "id": "CONSOLE",
-            "name": "Interactive Console",
-            "panel": "top",
-            "foldername": "interactiveConsole",
-            "enabled": true,
-            "nodeCompliant": true
+            "nodeCompliant": true,
+            "nodeOnly": true
         },
         {
             "id": "DOM",
@@ -39,10 +32,10 @@
             "enabled": true
         },
         {
-            "id": "MODERNIZR",
-            "name": "Modernizr",
-            "panel": "bottom",
-            "foldername": "modernizrReport",
+            "id": "DEVICE",
+            "name": "My Device",
+            "panel": "top",
+            "foldername": "device",
             "enabled": true
         },
         {
@@ -69,13 +62,6 @@
             "nodeCompliant": true
         },
         {
-            "id": "NGINSPECTOR",
-            "name": "Ng. Inspector",
-            "panel": "top",
-            "foldername": "ngInspector",
-            "enabled": false
-        },
-        {
             "id": "NETWORK",
             "name": "Network Monitor",
             "panel": "top",
@@ -90,18 +76,40 @@
             "enabled": true
         },
         {
-            "id": "DEVICE",
-            "name": "My Device",
-            "panel": "top",
-            "foldername": "device",
-            "enabled": true
-        },
-        {
             "id": "UNITTEST",
             "name": "Unit Test",
             "panel": "top",
             "foldername": "unitTestRunner",
             "enabled": true
+        },
+        {
+            "id": "UWP",
+            "name": "UWP apps",
+            "panel": "top",
+            "foldername": "uwp",
+            "enabled": true
+        },
+        {
+            "id": "CONSOLE",
+            "name": "Interactive Console",
+            "panel": "bottom",
+            "foldername": "interactiveConsole",
+            "enabled": true,
+            "nodeCompliant": true
+        },
+        {
+            "id": "MODERNIZR",
+            "name": "Modernizr",
+            "panel": "bottom",
+            "foldername": "modernizrReport",
+            "enabled": true
+        },
+        {
+            "id": "NGINSPECTOR",
+            "name": "Ng. Inspector",
+            "panel": "top",
+            "foldername": "ngInspector",
+            "enabled": false
         },
         {
             "id": "BABYLONINSPECTOR",
@@ -116,13 +124,6 @@
             "panel": "top",
             "foldername": "office",
             "enabled": false
-        },
-        {
-            "id": "UWP",
-            "name": "UWP apps",
-            "panel": "top",
-            "foldername": "uwp",
-            "enabled": true
         },
         {
             "id": "SCREEN",

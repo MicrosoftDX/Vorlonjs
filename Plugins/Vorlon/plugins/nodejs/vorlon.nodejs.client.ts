@@ -23,21 +23,54 @@ module VORLON {
 
         // Start the clientside code
         public startClientSide(): void {
-
+            console.log('client');
         }
+        
+        public simpleStringify (object :any): void {
+            var simpleObject = {};
+            for (var prop in object ){
+                if (!object.hasOwnProperty(prop)){
+                    continue;
+                }
+                if (typeof(object[prop]) == 'object'){
+                    continue;
+                }
+                if (typeof(object[prop]) == 'function'){
+                    continue;
+                }
+                simpleObject[prop] = object[prop];
+            }
+            return JSON.stringify(simpleObject); // returns cleaned up JSON
+        };
 
         // Handle messages from the dashboard, on the client
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
-            if (receivedObject == 'modules') {
-                this.sendToDashboard({ type: 'modules', data: Object.keys(require('module')._cache)});
-            } else if (receivedObject == 'routes') {
-                console.log('test');
-                console.log('test2');
-                var routes = [];
-                this.sendToDashboard({ type: 'modules', data: routes});
-            }  else if (receivedObject == 'memory') {
-                this.sendToDashboard({ type: 'memory', data: process.memoryUsage()});
-            }
+            if (!Tools.IsWindowAvailable) {
+                if (receivedObject == 'modules') {
+                    this.sendToDashboard({ type: 'modules', data: Object.keys(require('module')._cache)});
+                } else if (receivedObject == 'infos') {
+                    this.sendToDashboard({ type: 'infos', data: {
+                        title: process.title,
+                        version: process.version,
+                        platform: process.platform,
+                        arch: process.arch,
+                        debugPort: process.debugPort,
+                        pid: process.pid,
+                        USERNAME: process.env.USERNAME,
+                        USERDOMAIN_ROAMINGPROFILE: process.env.USERDOMAIN_ROAMINGPROFILE,
+                        USERPROFILE: process.env.USERPROFILE,
+                        WINDIR: process.env.WINDIR,
+                        UATDATA: process.env.UATDATA,
+                        USERDOMAIN: process.env.USERDOMAIN,
+                    }});
+                }  else if (receivedObject == 'memory') {
+                    var _that = this;
+                    _that.sendToDashboard({ type: 'memory', data: process.memoryUsage()}); 
+                    setInterval(function() {
+                        _that.sendToDashboard({ type: 'memory', data: process.memoryUsage()}); 
+                    }, 5000);
+                }
+            }        
         }
     }
 
