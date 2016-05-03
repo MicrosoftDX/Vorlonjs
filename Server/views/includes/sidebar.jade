@@ -12,10 +12,10 @@ section.sidebar
     a#identify.btn.btn-primary(onclick='vorlonDashboard.identify()',tabindex='0',role="button") Identify a client
     h2 Client List
     #clientsListPaneContent.client-list
-    a(onclick='VORLON.DashboardManager.ResetDashboard()').btn.btn-secondary.btn-small.btn-reset(tabindex='0',role="button") Reset Dashboard
+    a.btn.btn-secondary.btn-small.btn-reset(onclick='VORLON.DashboardManager.ResetDashboard()', tabindex='0',role="button") Reset Dashboard
     if authenticated
-      a#logout(href='/logout').btn.btn-secondary.btn-small.btn-reset(tabindex='0',role="button") logout
-    a(onclick='VORLON.DashboardManager.ReloadClient()')#reload.btn.btn-secondary.btn-small.btn-reset.hidden(tabindex='0',role="button") Reload Client
+      a#logout.btn.btn-secondary.btn-small.btn-reset(href='/logout', tabindex='0',role="button") logout
+    a#reload.btn.btn-secondary.btn-small.btn-reset.hidden(onclick='VORLON.DashboardManager.ReloadClient()', tabindex='0',role="button") Reload Client
     p#vorlonVersion= "Version: " + version
   #settingsBtn(onclick='VORLON.DashboardManager.goConfig()')
     i.fa.fa-cogs(aria-hidden='true')
