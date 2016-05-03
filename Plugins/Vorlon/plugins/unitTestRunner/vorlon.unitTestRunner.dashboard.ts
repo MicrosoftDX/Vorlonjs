@@ -95,12 +95,12 @@
                     this._containerList.appendChild(tr);
                     break;
                 case "done":
-                    var tdName = document.createElement('th');
-                    var tdModule = document.createElement('th');
-                    var tdPassed = document.createElement('th');
-                    var tdFailed = document.createElement('th');
-                    var tdTime = document.createElement('th');
-                    var tdTotal = document.createElement('th');
+                    var tdName = document.createElement('td');
+                    var tdModule = document.createElement('td');
+                    var tdPassed = document.createElement('td');
+                    var tdFailed = document.createElement('td');
+                    var tdTime = document.createElement('td');
+                    var tdTotal = document.createElement('td');
 
                     tdPassed.innerHTML = receivedObject.passed;
                     tdFailed.innerHTML = receivedObject.failed;

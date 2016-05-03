@@ -109,7 +109,7 @@
                         }
                     });
 
-                    element.find('td').prop('tabindex', 1);
+                    element.find('td').prop('tabindex', 0);
 
                     $(window).on('resize', function () {
                         if (editor.is(':visible')) {

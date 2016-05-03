@@ -7,23 +7,23 @@
 <body>
     <x-controlbar>
         <x-action id="runTest" class="filter-btn" event="run" tabindex="0"><i class="fa fa-cog"></i>&nbsp;Run test</x-action>
-        <input type="file" id="files" name="files[]" multiple>
+        <input type="file" aria-label="select QUnit test files" id="files" name="files[]" multiple>
     </x-controlbar>
     <div id="dropPanel">
         <h1>Unit test</h1>
-        <textarea id="txtRunTest"></textarea>
+        <textarea aria-label="Run test execution" id="txtRunTest"></textarea>
     </div>
     <div class="test-results-panel">
         <h1>Results</h1>
         <table class="test-results-list">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Module</th>
-                    <th>Passed</th>
-                    <th>Failed</th>
-                    <th>Time</th>
-                    <th>Total</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Module</th>
+                    <th scope="col">Passed</th>
+                    <th scope="col">Failed</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Total</th>
                 </tr>
             </thead>
             <tbody id="testResultsList"></tbody>
