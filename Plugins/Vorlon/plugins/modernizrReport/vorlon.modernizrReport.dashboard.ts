@@ -26,7 +26,6 @@
 
                 var list = this._filterList;
                 var filter = <HTMLInputElement>document.getElementById('css_feature_filter');
-                filter.setAttribute('aria-label', 'Search CSS features')
                 filter.addEventListener('input',() => {
                     var value = filter.value;
                     for (var z in list) {

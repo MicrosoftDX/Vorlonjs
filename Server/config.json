@@ -16,18 +16,10 @@
     "vorlonProxyURL": "",
     "plugins": [
         {
-            "id": "CONSOLE",
-            "name": "Interactive Console",
-            "panel": "bottom",
-            "foldername": "interactiveConsole",
-            "enabled": true,
-            "nodeCompliant": true
-        },
-        {
-            "id": "MODERNIZR",
-            "name": "Modernizr",
-            "panel": "bottom",
-            "foldername": "modernizrReport",
+            "id": "DOM",
+            "name": "Dom Explorer",
+            "panel": "top",
+            "foldername": "domExplorer",
             "enabled": true
         },
         {
@@ -54,13 +46,6 @@
             "nodeCompliant": true
         },
         {
-            "id": "NGINSPECTOR",
-            "name": "Ng. Inspector",
-            "panel": "top",
-            "foldername": "ngInspector",
-            "enabled": false
-        },
-        {
             "id": "NETWORK",
             "name": "Network Monitor",
             "panel": "top",
@@ -72,13 +57,6 @@
             "name": "Resources Explorer",
             "panel": "top",
             "foldername": "resourcesExplorer",
-            "enabled": true
-        },
-        {
-            "id": "DOM",
-            "name": "Dom Explorer",
-            "panel": "top",
-            "foldername": "domExplorer",
             "enabled": true
         },
         {
@@ -94,6 +72,28 @@
             "panel": "top",
             "foldername": "unitTestRunner",
             "enabled": true
+        },
+        {
+            "id": "CONSOLE",
+            "name": "Interactive Console",
+            "panel": "bottom",
+            "foldername": "interactiveConsole",
+            "enabled": true,
+            "nodeCompliant": true
+        },
+        {
+            "id": "MODERNIZR",
+            "name": "Modernizr",
+            "panel": "bottom",
+            "foldername": "modernizrReport",
+            "enabled": true
+        },
+        {
+            "id": "NGINSPECTOR",
+            "name": "Ng. Inspector",
+            "panel": "top",
+            "foldername": "ngInspector",
+            "enabled": false
         },
         {
             "id": "BABYLONINSPECTOR",
