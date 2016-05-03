@@ -19,11 +19,17 @@
         // Start dashboard code
         // uses _insertHtmlContentAsync to insert the control.html content
         // into the dashboard
-        private _table: HTMLTableElement;
+        private _resolutionTable: HTMLTableElement;
+        private _miscTable: HTMLTableElement;
+        private _viewportTable: HTMLTableElement;
+        private _screensizeTable: HTMLTableElement;
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div, (filledDiv) => {
-                this._table = <HTMLTableElement>filledDiv.querySelector('table');
+                this._resolutionTable = <HTMLTableElement>filledDiv.querySelector('#resolution');
+                this._miscTable = <HTMLTableElement>filledDiv.querySelector('#misc');
+                this._viewportTable = <HTMLTableElement>filledDiv.querySelector('#viewport');
+                this._screensizeTable = <HTMLTableElement>filledDiv.querySelector('#screensize');
             })
         }
 
@@ -31,14 +37,14 @@
         public update(data: any): void {
             // resolution
             var resolution = data.resolution;
-            this.setTableValue('dpi', this.round2decimals(resolution.dpi).toString());
-            this.setTableValue('dppx', this.round2decimals(resolution.dppx).toString());
-            this.setTableValue('dpcm', this.round2decimals(resolution.dpcm).toString());
+            this.setTableValue(this._resolutionTable, 'dpi', this.round2decimals(resolution.dpi).toString());
+            this.setTableValue(this._resolutionTable,'dppx', this.round2decimals(resolution.dppx).toString());
+            this.setTableValue(this._resolutionTable,'dpcm', this.round2decimals(resolution.dpcm).toString());
 
             // miscellaneous
-            this.setTableValue('root-font-size', data.rootFontSize + 'px');
-            this.setTableValue('pixel-ratio', this.round2decimals(data.pixelRatio).toString());
-            this.setTableValue('user-agent', data.userAgent);
+            this.setTableValue(this._miscTable, 'root-font-size', data.rootFontSize + 'px');
+            this.setTableValue(this._miscTable,'pixel-ratio', this.round2decimals(data.pixelRatio).toString());
+            this.setTableValue(this._miscTable,'user-agent', data.userAgent);
 
 
             this.updateResize(data);
@@ -48,22 +54,24 @@
         public updateResize(data: any): void {
             // viewport
             var viewport = data.viewport;
-            this.setTableValue('aspect-ratio', this.round2decimals(viewport.aspectRatio).toString());
-            this.setTableValue('width', viewport.width + 'px');
-            this.setTableValue('width-em', viewport.widthEm + 'em');
-            this.setTableValue('meta-viewport-tag', data.metaViewport);
+            this.setTableValue(this._viewportTable, 'aspect-ratio', this.round2decimals(viewport.aspectRatio).toString());
+            this.setTableValue(this._viewportTable, 'width', viewport.width + 'px');
+            this.setTableValue(this._viewportTable, 'width-em', viewport.widthEm + 'em');
+            if(data.metaViewport){
+                this.setTableValue(this._viewportTable, 'meta-viewport-tag', data.metaViewport);
+            }
 
             // screen width
             var screenWidths = data.screenWidths
-            this.setTableValue('screen-width', screenWidths.screenWidth + 'px');
-            this.setTableValue('screen-available-width', screenWidths.screenAvailWidth + 'px');
-            this.setTableValue('window-inner-width', screenWidths.windowInnerWidth + 'px');
-            this.setTableValue('body-client-width', screenWidths.bodyClientWidth + 'px');
+            this.setTableValue(this._screensizeTable, 'screen-width', screenWidths.screenWidth + 'px');
+            this.setTableValue(this._screensizeTable, 'screen-available-width', screenWidths.screenAvailWidth + 'px');
+            this.setTableValue(this._screensizeTable, 'window-inner-width', screenWidths.windowInnerWidth + 'px');
+            this.setTableValue(this._screensizeTable, 'body-client-width', screenWidths.bodyClientWidth + 'px');
         }
 
-        public setTableValue(cssClass: string, value: string): void {
-            if (this._table)
-                this._table.querySelector('.' + cssClass).textContent = value;
+        public setTableValue(table: HTMLTableElement, cssClass: string, value: string): void {
+            if (table)
+                table.querySelector('.' + cssClass).textContent = value;
         }
         
         private round2decimals(value: any):number{
