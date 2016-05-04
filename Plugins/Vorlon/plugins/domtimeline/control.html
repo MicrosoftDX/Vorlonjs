@@ -1,0 +1,16 @@
+<div>
+  
+  <div class="toolbar">
+  	<button data-client-command="domHistory.startRecording()">Start recording</button>
+  	<button data-client-command="domHistory.stopRecording()">Stop recording</button>
+  	<button data-client-command="domHistory.undo()">Undo</button>
+  	<button data-client-command="domHistory.redo()">Redo</button>
+  	<input id="echoInput" placeholder="Execute some code on the client" />
+	<button data-client-command="domHistory.isRecording">Is recording?</button>
+	<button data-client-command="domHistory.isRecordingStopped">Is recording stopped?</button>
+  </div>
+
+  <pre id="output"></pre>
+	<pre id="toast"><p>Ready for instructions</p></pre>
+  
+</div>
