@@ -12,10 +12,6 @@ Chat with us on slack (get a free invite clicking on the badge below)
 
 [![Slack Status](https://slackinvorlon.azurewebsites.net/badge.svg)](https://slackinvorlon.azurewebsites.net/)
 
-Chat with us on slack (get a free invite clicking on the badge below)
-
-[![Slack Status](https://slackinvorlon.azurewebsites.net/badge.svg)](https://slackinvorlon.azurewebsites.net/)
-
 ## Deploy on Azure  
  [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)  
 
