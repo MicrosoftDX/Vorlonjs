@@ -15,7 +15,14 @@
     "vorlonServerURL": "",
     "vorlonProxyURL": "",
     "plugins": [
-<<<<<<< HEAD
+        {
+            "id": "OBJEXPLORER",
+            "name": "Obj. Explorer",
+            "panel": "top",
+            "foldername": "objectExplorer",
+            "enabled": true,
+            "nodeCompliant": true
+        },
         {
             "id": "NODEJS",
             "name": "NodeJS",
@@ -26,11 +33,12 @@
             "nodeOnly": true
         },
         {
-            "id": "DOM",
-            "name": "Dom Explorer",
+            "id": "XHRPANEL",
+            "name": "XHR",
             "panel": "top",
-            "foldername": "domExplorer",
-            "enabled": true
+            "foldername": "xhrPanel",
+            "enabled": true,
+            "nodeCompliant": true
         },
         {
             "id": "DEVICE",
@@ -40,12 +48,11 @@
             "enabled": true
         },
         {
-            "id": "OBJEXPLORER",
-            "name": "Obj. Explorer",
+            "id": "DOM",
+            "name": "Dom Explorer",
             "panel": "top",
-            "foldername": "objectExplorer",
-            "enabled": true,
-            "nodeCompliant": true
+            "foldername": "domExplorer",
+            "enabled": true
         },
         {
             "id": "WEBSTANDARDS",
@@ -53,14 +60,6 @@
             "panel": "top",
             "foldername": "webstandards",
             "enabled": true
-        },
-        {
-            "id": "XHRPANEL",
-            "name": "XHR",
-            "panel": "top",
-            "foldername": "xhrPanel",
-            "enabled": true,
-            "nodeCompliant": true
         },
         {
             "id": "NETWORK",
@@ -88,6 +87,13 @@
             "name": "UWP apps",
             "panel": "top",
             "foldername": "uwp"
+        },
+        {
+            "id": "DOMTIMELINE",
+            "name": "DOM Timeline",
+            "panel": "bottom",
+            "foldername": "domtimeline",
+            "enabled": true
         },
         {
             "id": "CONSOLE",
@@ -132,7 +138,6 @@
             "foldername": "screenshot",
             "enabled": false
         },
-        { "id": "DOMTIMELINE", "name": "DOM Timeline", "panel": "bottom", "foldername": "domtimeline", "enabled": true },
         {
             "id": "EXPRESS",
             "name": "Express",
