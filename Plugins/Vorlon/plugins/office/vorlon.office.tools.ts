@@ -74,7 +74,7 @@ module VORLON {
             var jsonValue = JSON.stringify(r.value, undefined, 4);
 
             var propertiesDiv = document.querySelector('#office-properties');
-            var propValues = document.querySelector('#office-results-values');
+            var propValues: any = document.querySelector('#office-results-values');
 
             if (propValues !== undefined && propValues !== null) {
                 while (propValues.hasChildNodes()) {

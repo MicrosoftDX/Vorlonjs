@@ -574,6 +574,7 @@
         renderDOMNodeContent() {
             var root = FluentDOM.forElement(this.element);
             root.append('BUTTON', 'treeNodeButton',(nodeButton) => {
+                nodeButton.attr("aria-label", "This is a tree node button that allows you to navigate trought the DOM tree");
                 nodeButton.element.id = "plusbtn" + this.node.internalId;
                 if (this.node.hasChildNodes && (!this.node.children || this.node.children.length === 0)) {
                     Tools.AddClass(this.element, "collapsed");

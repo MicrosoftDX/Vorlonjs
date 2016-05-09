@@ -29,7 +29,7 @@
     "xmlhttprequest": "~1.7.0"
   },
   "devDependencies": {
-    "gulp": "~3.8.11",
+    "gulp": "~3.9.1",
     "gulp-concat": "~2.2.0",
     "gulp-filter": "~0.4.1",
     "gulp-less": "~3.0.3",
