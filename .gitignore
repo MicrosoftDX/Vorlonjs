@@ -15,3 +15,7 @@ Server/public/stylesheets/style.css
 /Server/public/stylesheets/style.css
 /DeploymentTools/deployment-package.zip
 DeploymentTools/deployment-package.zip
+!/Plugins/Vorlon/plugins/domtimeline/**
+!/Plugins/Vorlon/plugins/domtimeline/**/*.css
+!/Plugins/Vorlon/plugins/domtimeline/**/*.js
+!/Plugins/Vorlon/plugins/domtimeline/dom-timeline.js
