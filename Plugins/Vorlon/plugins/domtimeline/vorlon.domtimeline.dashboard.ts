@@ -67,7 +67,7 @@ module VORLON {
                             me._outputDiv.textContent=JSON.stringify(e.message,null,"    ");
                         }
                     ); 
-                }, 333);
+                }, 100);
             })
         }
 
