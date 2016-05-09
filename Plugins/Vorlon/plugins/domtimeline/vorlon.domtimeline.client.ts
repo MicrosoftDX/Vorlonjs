@@ -2,6 +2,7 @@
 /// <reference path="api/vorlon.clientPlugin.d.ts" />
 var domTimelineOptions: any;
 interface ExtentedMutationRecord extends MutationRecord {
+    claim: string
     stack: string
     timestamp: number
     newValue: string
@@ -21,7 +22,7 @@ var domHistory: {
     isRecording:boolean
     isRecordingStopped:boolean
     
-    generateDashboardData:()=>any
+    generateDashboardData:(knownEvents:number)=>any
 		
 };
 interface Window {
@@ -30,9 +31,8 @@ interface Window {
 interface DataForEntry {
     type:string,
     description: string,
-    isCancelled: boolean,
     timestamp: number,
-    details: any
+    details: any,
 }
 module VORLON {
 	export class DOMTimelineClient extends ClientPlugin {
@@ -59,22 +59,34 @@ module VORLON {
 
         // Start the clientside code
         public startClientSide(): void {
-            domHistory.generateDashboardData = function() {
+            domTimelineOptions.considerLoggingRecords = function(c,entries,s) {
+                for(var i = entries.length; i--;) {
+                    var e = entries[i];
+                    e.__dashboardData = generateDashboardDataForEntry(e);
+                }
+            }
+            domHistory.generateDashboardData = function(knownEvents) {
                 var data:any = {};
                 data.isRecordingNow = domHistory.isRecording;
                 data.isRecordingEnded = domHistory.isRecordingStopped;
                 data.isPageFrozen = domHistory.future.length>0;
+                data.pastEventsCount = domHistory.past.length;
+                data.futureEventsCounts = domHistory.future.length;
                 data.history = (
                     []
-                    .concat(domHistory.past.map(generateDashboardDataForPastEntry))
-                    .concat(domHistory.future.map(generateDashboardDataForFutureEntry))
+                    .concat(domHistory.past.map(getDashboardDataForEntry))
+                    .concat(domHistory.future.map(getDashboardDataForEntry))
                 );
+                data.history.splice(0,knownEvents);
                 data.lostFuture = (
-                    domHistory.lostFuture.map(generateDashboardDataForFutureEntry)
+                    domHistory.lostFuture.map(getDashboardDataForEntry)
                 );
                 return data;
             }
-            function generateDashboardDataForEntry(e:ExtentedMutationRecord, isCancelled:boolean):DataForEntry {
+            function getDashboardDataForEntry(e) {
+                return (<any>e).__dashboardData;
+            }
+            function generateDashboardDataForEntry(e:ExtentedMutationRecord):DataForEntry {
                 var targetDescription = descriptionOf(e.target);
                 if(e.addedNodes.length > 0) {
                     var nodeDescription = (
@@ -85,12 +97,12 @@ module VORLON {
                     return {
                         type:"added",
                         description: "Inserted " + nodeDescription + " into " + targetDescription,
-                        isCancelled: isCancelled,
                         timestamp: e.timestamp,
                         details: {
                             "Added nodes": descriptionOfNodeList(e.addedNodes),
                             "Target": targetDescription,
                             "Timestamp": e.timestamp/1000+"s",
+                            "Claim": e.claim,
                             "Stack": "`"+e.stack+"`"
                         }
                     }
@@ -103,12 +115,12 @@ module VORLON {
                     return {
                         type:"removed",
                         description: "Removed " + nodeDescription + " from " + targetDescription,
-                        isCancelled: isCancelled,
                         timestamp: e.timestamp,
                         details: {
                             "Removed nodes": descriptionOfNodeList(e.addedNodes),
                             "Target": targetDescription,
                             "Timestamp": e.timestamp/1000+"s",
+                            "Claim": e.claim,
                             "Stack": "`"+e.stack+"`"
                         }
                     }
@@ -117,7 +129,6 @@ module VORLON {
                         return {
                             type:"updated",
                             description: "Removed attribute `"+e.attributeName+"` from " + targetDescription,
-                            isCancelled: isCancelled,
                             timestamp: e.timestamp,
                             details: {
                                 "Attribute name": e.attributeName,
@@ -125,6 +136,7 @@ module VORLON {
                                 "New value": e.newValue,
                                 "Target": targetDescription,
                                 "Timestamp": e.timestamp/1000+"s",
+                                "Claim": e.claim,
                                 "Stack": "`"+e.stack+"`"
                             }
                         }
@@ -132,7 +144,6 @@ module VORLON {
                         return {
                             type:"updated",
                             description: "Added attribute `"+e.attributeName+"` to " + targetDescription,
-                            isCancelled: isCancelled,
                             timestamp: e.timestamp,
                             details: {
                                 "Attribute name": e.attributeName,
@@ -140,6 +151,7 @@ module VORLON {
                                 "New value": e.newValue,
                                 "Target": targetDescription,
                                 "Timestamp": e.timestamp/1000+"s",
+                                "Claim": e.claim,
                                 "Stack": "`"+e.stack+"`"
                             }
                         }
@@ -147,7 +159,6 @@ module VORLON {
                         return {
                             type:"updated",
                             description: "Updated attribute `"+e.attributeName+"` of " + targetDescription,
-                            isCancelled: isCancelled,
                             timestamp: e.timestamp,
                             details: {
                                 "Attribute name": e.attributeName,
@@ -155,6 +166,7 @@ module VORLON {
                                 "New value": e.newValue,
                                 "Target": targetDescription,
                                 "Timestamp": e.timestamp/1000+"s",
+                                "Claim": e.claim,
                                 "Stack": "`"+e.stack+"`"
                             }
                         }
@@ -164,31 +176,25 @@ module VORLON {
                     return {
                             type:"updated",
                             description: "Updated text content of " + nodeDescription,
-                            isCancelled: isCancelled,
                             timestamp: e.timestamp,
                             details: {
                                 "Old value": e.oldValue,
                                 "New value": e.newValue,
                                 "Timestamp": e.timestamp/1000+"s",
+                                "Claim": e.claim,
                                 "Stack": "`"+e.stack+"`"
                             }
                         }
                 }
-            }
-            function generateDashboardDataForPastEntry(e:ExtentedMutationRecord) {
-                return generateDashboardDataForEntry(e,false);
-            }
-            function generateDashboardDataForFutureEntry(e:ExtentedMutationRecord) {
-                return generateDashboardDataForEntry(e,true);
             }
             function descriptionOf(e:Node) {
                 if(e instanceof HTMLElement) {
                     if(e.firstChild) {
                         e = e.cloneNode(false); 
                         e.appendChild(document.createTextNode("…"));
-                        return "`"+e.outerHTML+"`"
+                        return "`"+(<any>e).outerHTML+"`"
                     } else {
-                        return "`"+e.outerHTML+"`"
+                        return "`"+(<any>e).outerHTML+"`"
                     }
                 }
                 if(e instanceof SVGElement) { return "`<"+e.tagName+"…>`" }

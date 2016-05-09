@@ -55,10 +55,17 @@ module VORLON {
                 });
                 
                 // Refresh the output from time to time
+                var alreadyKnownEvents = [];
                 setInterval(function() {
                     me.sendMessageToClient(
-                        "domHistory.generateDashboardData()", 
-                        (e)=>(me._outputDiv.textContent=JSON.stringify(e.message,null,"    "))
+                        "domHistory.generateDashboardData("+alreadyKnownEvents.length+")", 
+                        (e)=>{
+                            alreadyKnownEvents = e.message.history = alreadyKnownEvents.concat(e.message.history);
+                            for(var i = alreadyKnownEvents.length; i--;) {
+                                alreadyKnownEvents[i].isCancelled = i >= e.message.pastEventsCount;
+                            }
+                            me._outputDiv.textContent=JSON.stringify(e.message,null,"    ");
+                        }
                     ); 
                 }, 333);
             })
