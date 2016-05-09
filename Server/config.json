@@ -86,7 +86,7 @@
             "id": "UWP",
             "name": "UWP apps",
             "panel": "top",
-            "foldername": "uwp",
+            "foldername": "uwp"
         },
         {
             "id": "CONSOLE",
