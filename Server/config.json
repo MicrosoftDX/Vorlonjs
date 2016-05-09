@@ -15,6 +15,7 @@
     "vorlonServerURL": "",
     "vorlonProxyURL": "",
     "plugins": [
+<<<<<<< HEAD
         {
             "id": "NODEJS",
             "name": "NodeJS",
@@ -131,6 +132,7 @@
             "foldername": "screenshot",
             "enabled": false
         },
+        { "id": "DOMTIMELINE", "name": "DOM Timeline", "panel": "bottom", "foldername": "domtimeline", "enabled": true },
         {
             "id": "EXPRESS",
             "name": "Express",

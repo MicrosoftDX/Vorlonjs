@@ -2,3 +2,7 @@
 *.min.js
 !verge.min.js
 !res.min.js
+!plugins/domtimeline/**
+!plugins/domtimeline/**/*.css
+!plugins/domtimeline/**/*.js
+!plugins/domtimeline/dom-timeline.js
