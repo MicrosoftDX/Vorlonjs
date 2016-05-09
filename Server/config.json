@@ -16,14 +16,6 @@
     "vorlonProxyURL": "",
     "plugins": [
         {
-            "id": "OBJEXPLORER",
-            "name": "Obj. Explorer",
-            "panel": "top",
-            "foldername": "objectExplorer",
-            "enabled": true,
-            "nodeCompliant": true
-        },
-        {
             "id": "NODEJS",
             "name": "NodeJS",
             "panel": "top",
@@ -31,6 +23,14 @@
             "enabled": true,
             "nodeCompliant": true,
             "nodeOnly": true
+        },
+        {
+            "id": "OBJEXPLORER",
+            "name": "Obj. Explorer",
+            "panel": "top",
+            "foldername": "objectExplorer",
+            "enabled": true,
+            "nodeCompliant": true
         },
         {
             "id": "XHRPANEL",

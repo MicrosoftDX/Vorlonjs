@@ -8,7 +8,7 @@ module VORLON {
         //the plugin with html and css for the dashboard
         constructor() {
             //     name   ,  html for dash   css for dash
-            super("domtimeline", "control.html", "control.css");
+            super("domtimeline", "control.html", ["control.css"], ["control.js"]);
             (<any>this)._ready = true;
             this._messageHandlers = {};
             this._messageId = 0;
@@ -87,6 +87,7 @@ module VORLON {
 
         // execute the planned callback when we receive a message from the client
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
+            console.log(receivedObject.messageId);
             var callback = this._messageHandlers[receivedObject.messageId];
             if(callback) {
                 this._messageHandlers[receivedObject.messageId] = undefined;

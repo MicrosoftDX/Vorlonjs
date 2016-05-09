@@ -231,6 +231,7 @@ gulp.task('copyPlugins-plugins', function () {
           'Plugins/Vorlon/plugins/**/*.css',
           'Plugins/Vorlon/plugins/**/*.html',
           'Plugins/Vorlon/plugins/**/*.png',
+          'Plugins/Vorlon/plugins/**/*.PNG',          
           'Plugins/release/plugins/**/*.js'
     ])
         .pipe(gulp.dest('./Server/public/vorlon/plugins'));
