@@ -12,16 +12,16 @@
             <x-controlbar>
                 <x-action class="add-value" tabindex="0"><i class="fa fa-plus"></i> Add</x-action>
                 <x-action class="refresh" tabindex="0"><i class="fa fa-refresh"></i> Refresh</x-action>
-                <input type="text" placeholder="Search by key..." id="searchlist"/>
+                <input type="text" aria-label="search by key" placeholder="Search by key..." id="searchlist"/>
             </x-controlbar>
             <div id="treeView2" class="code-text">
                 <div class="explorer-menu" id="localStorage" style="display:block;">
                     <table class="table-resources resources-features-list table-resources-localStorage">
                         <thead>
                             <tr class="trHead">
-                                <th></th>
-                                <th class="th50">Key</th>
-                                <th class="th50">Value</th>
+                                <th scope="col">Ok?</th>
+                                <th scope="col" class="th50">Key</th>
+                                <th scope="col" class="th50">Value</th>
                             </tr>
                         </thead>
                         <tbody id="localStorageTable">
@@ -29,17 +29,17 @@
                         </tbody>
                     </table>
                     <div class="new-entry new-entry-localstorage">
-                        <input type="text" class="new-key-localstorage" placeholder="Key...">
-                        <input type="text" class="new-value-localstorage" placeholder="Value...">                        
+                        <input aria-label="key" type="text" class="new-key-localstorage" placeholder="Key...">
+                        <input aria-label="value" type="text" class="new-value-localstorage" placeholder="Value...">                        
                     </div>
                 </div>
                 <div class="explorer-menu" id="sessionStorage" style="display:none;">
                     <table class="table-resources resources-features-list table-resources-sessionStorage">
                         <thead>
                             <tr class="trHead">
-                                <th></th>
-                                <th class="th50">Key</th>
-                                <th class="th50">Value</th>
+                                <th scope="col">Ok?</th>
+                                <th scope="col" class="th50">Key</th>
+                                <th scope="col" class="th50">Value</th>
                             </tr>
                         </thead>
                         <tbody id="sessionStorageTable">
@@ -47,17 +47,17 @@
                         </tbody>
                     </table>
                     <div class="new-entry new-entry-sessionstorage">
-                        <input type="text" class="new-key-sessionstorage" placeholder="Key...">
-                        <input type="text" class="new-value-sessionstorage" placeholder="Value...">                        
+                        <input aria-label="key" type="text" class="new-key-sessionstorage" placeholder="Key...">
+                        <input aria-label="value" type="text" class="new-value-sessionstorage" placeholder="Value...">                        
                     </div>
                 </div>
                 <div class="explorer-menu" id="cookies" style="display:none;">
                     <table class="table-resources resources-features-list table-resources-cookies">
                         <thead>
                             <tr class="trHead">
-                                <th></th>
-                                <th class="th50">Key</th>
-                                <th class="th50">Value</th>
+                                <th scope="col">Ok?</th>
+                                <th scope="col" class="th50">Key</th>
+                                <th scope="col" class="th50">Value</th>
                             </tr>
                         </thead>
                         <tbody id="cookiesTable">
@@ -65,14 +65,14 @@
                         </tbody>
                     </table>
                     <div class="new-entry new-entry-cookies">
-                        <input type="text" class="new-key-cookies" placeholder="Key...">
-                        <input type="text" class="new-value-cookies" placeholder="Value...">                        
+                        <input aria-label="key" type="text" class="new-key-cookies" placeholder="Key...">
+                        <input aria-label="value" type="text" class="new-value-cookies" placeholder="Value...">                        
                     </div>
                 </div>
             </div>
         </div>
         <div class="style-view-wrapper panel-right code-text">
-            <div id="accordion">
+            <div id="accordion-resourceExplorer">
                 <h3 class="open-menu active-menu" data-menu="localStorage"><i class="fa fa-archive" aria-hidden="true"></i> Local Storage</h3>
                 <h3 class="open-menu" data-menu="sessionStorage"><i class="fa fa-database" aria-hidden="true"></i> Session Storage</h3>
                 <h3 class="open-menu" data-menu="cookies"><i class="fa fa-asterisk" aria-hidden="true"></i> Cookies</h3> 

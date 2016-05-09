@@ -72,6 +72,7 @@ body, .dashboard, .dashboard-main-view
       margin-top : 0.5em
       margin-bottom : 0.5em  
     h4
+      color:black;
 	  font-size: 16px
 
 .dashboard-plugins-overlay.hidden
@@ -157,14 +158,14 @@ body, .dashboard, .dashboard-main-view
     float: left
 
     &:not(.active)
-      cursor: pointer
-      opacity: .5
+      cursor: pointer 
 
       &:hover
         opacity: .9
 
     &:not(.add)
-      background: white
+      background: #7A5886
+      color: #fff
       border-right: $border-med
 
   // Close button styles, not used right now
@@ -220,3 +221,6 @@ body, .dashboard, .dashboard-main-view
   input[type=text]::placeholder
     color: #AAA
     font-style: italic
+    
+  .aria-descHelper
+    display: none

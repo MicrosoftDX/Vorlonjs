@@ -87,7 +87,6 @@
             "name": "UWP apps",
             "panel": "top",
             "foldername": "uwp",
-            "enabled": true
         },
         {
             "id": "CONSOLE",
@@ -130,6 +129,13 @@
             "name": "Screenshot",
             "panel": "top",
             "foldername": "screenshot",
+            "enabled": false
+        },
+        {
+            "id": "EXPRESS",
+            "name": "Express",
+            "panel": "top",
+            "foldername": "express",
             "enabled": false
         }
     ]

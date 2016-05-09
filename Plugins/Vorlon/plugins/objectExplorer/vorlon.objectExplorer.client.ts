@@ -1,4 +1,9 @@
-﻿module VORLON {
+﻿/// <reference path="../../vorlon.clientPlugin.ts" />
+/// <reference path="../../vorlon.tools.ts" />
+/// <reference path="../../vorlon.core.ts" />
+/// <reference path="../../vorlon.basePlugin.ts" />
+/// <reference path="vorlon.objectExplorer.interfaces.ts" />
+module VORLON {
     export class ObjectExplorerClient extends ClientPlugin {
         private _selectedObjProperty;
         private _previousSelectedNode;

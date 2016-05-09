@@ -1,3 +1,22 @@
+## 0.2.2
+- Plugins
+	- Interactive Console :
+		- Displays log in correct order
+	- Office addin
+		- Allows you to debug office addin (they are done using web tech) : http://i1.blogs.msdn.com/b/mim/archive/2016/02/18/vorlonjs-plugin-for-debugging-office-addin.aspx
+	- UWP Plugin 
+		- Allows you to debug Universal windows apps dev in JavaScript
+	- Various fixes and improvements
+		- Fix bug when activating authentication
+		- Moved to Gulp 3.9.1
+		- Added vorlon.js version on the bottom left of the dashboard
+	- Azure deploy
+		- Fix dependencies in AzureDeploy.json
+	- General
+		- Added a https link to download vorlon desktop on vorlonjs.io website
+		- Added a build success badge on vorlon.js website
+		
+
 ## 0.2.0
 
 - Plugins
