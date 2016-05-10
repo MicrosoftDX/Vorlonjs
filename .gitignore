@@ -1,6 +1,5 @@
 npm-debug.log
 *.log
-tsconfig.json
 /Plugins/obj
 **/node_modules
 sync.bat

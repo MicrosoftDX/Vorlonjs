@@ -244,7 +244,6 @@ module VORLON {
                 }
                 return value;
             });
-            cache = null;
         }
 
         public getAsyncResult(deferred: any): Object {

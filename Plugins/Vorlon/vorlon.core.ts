@@ -1,5 +1,4 @@
 ﻿module VORLON {
-
     export class _Core {
         _clientPlugins = new Array<ClientPlugin>();
         _dashboardPlugins = new Array<DashboardPlugin>();
