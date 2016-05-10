@@ -9,13 +9,13 @@
 			// Type of configuration. Possible values: "node", "mono".
 			"type": "node",
 			// Workspace relative or absolute path to the program.
-			"program": "Server/server.js",
+			"program": "${workspaceRoot}/Server/server.js",
 			// Automatically stop program after launch.
 			"stopOnEntry": false,
 			// Command line arguments passed to the program.
 			"args": [],
 			// Workspace relative or absolute path to the working directory of the program being debugged. Default is the current workspace.
-			"cwd": ".",
+			"cwd": "${workspaceRoot}",
 			// Workspace relative or absolute path to the runtime executable to be used. Default is the runtime executable on the PATH.
 			"runtimeExecutable": null,
 			// Optional arguments passed to the runtime executable.
@@ -42,25 +42,25 @@
 			// not working since latest vs code and electron versions :-(
 			"name": "Launch desktop App",
 			"type": "node",
-			"program": "desktop/app/background.js",
+			"program": "${workspaceRoot}/desktop/app/background.js",
 			"stopOnEntry": false,
 			"args": [
 				"--dev"
 			],
-			"cwd": ".",
-			"runtimeExecutable": "desktop/node_modules/electron-prebuilt/dist/electron.exe",
+			"cwd": "${workspaceRoot}",
+			"runtimeExecutable": "${workspaceRoot}/desktop/node_modules/electron-prebuilt/dist/electron.exe",
 			"env": {}
 		},
         {
 			// not working since latest vs code and electron versions :-(
 			"name": "Launch node.js sample",
 			"type": "node",
-			"program": "client samples/nodejs/app.js",
+			"program": "${workspaceRoot}/client samples/nodejs/app.js",
 			"stopOnEntry": false,
 			"args": [
 				"--nolazy"
 			],
-			"cwd": ".",
+			"cwd": "${workspaceRoot}",
 			"runtimeExecutable": null,
 			"env": {}
 		},
@@ -70,13 +70,13 @@
 			// Type of configuration. Possible values: "node", "mono".
 			"type": "node",
 			// Workspace relative or absolute path to the program.
-			"program": "Server/server.ts",
+			"program": "${workspaceRoot}/Server/server.ts",
 			// Automatically stop program after launch.
 			"stopOnEntry": false,
 			// Command line arguments passed to the program.
 			"args": [],
 			// Workspace relative or absolute path to the working directory of the program being debugged. Default is the current workspace.
-			"cwd": ".",
+			"cwd": "${workspaceRoot}",
 			// Workspace relative or absolute path to the runtime executable to be used. Default is the runtime executable on the PATH.
 			"runtimeExecutable": null,
 			// Optional arguments passed to the runtime executable.

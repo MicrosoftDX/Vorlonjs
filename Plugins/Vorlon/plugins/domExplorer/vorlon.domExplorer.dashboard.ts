@@ -124,12 +124,7 @@
                     }
 
                 }, true);
-
-                $('.dom-explorer-container').split({
-                    orientation: 'vertical',
-                    limit: 50,
-                    position: '70%'
-                });
+                
                 $("#accordion h3", this._containerDiv).click((elt) => {
                     $('.visible', elt.target.parentElement).removeClass('visible');
                     $('#' + elt.target.className, elt.target.parentElement).addClass('visible');
@@ -579,6 +574,7 @@
         renderDOMNodeContent() {
             var root = FluentDOM.forElement(this.element);
             root.append('BUTTON', 'treeNodeButton',(nodeButton) => {
+                nodeButton.attr("aria-label", "This is a tree node button that allows you to navigate trought the DOM tree");
                 nodeButton.element.id = "plusbtn" + this.node.internalId;
                 if (this.node.hasChildNodes && (!this.node.children || this.node.children.length === 0)) {
                     Tools.AddClass(this.element, "collapsed");

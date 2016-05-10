@@ -1,0 +1,26 @@
+<div class="uwppanel">  
+  <x-controlbar class="toolbar">
+    <x-action event="toggleState" tabindex="0">
+        <i class="fa fa-play"></i>
+    </x-action>
+    <x-action event="btnrefresh" tabindex="0">
+        <i class="fa fa-refresh"></i>
+    </x-action>
+  </x-controlbar>
+  <div class="uwp-status-bloc">
+      <div class="contentbloc">
+          <div id="metadata" style="display: none"></div>
+          <div id="network" style="display: none"></div>
+          <div id="power" style="display: none"></div>
+      </div>
+      <div class="contentbloc" id="memory" style="display: none"></div>
+      <div class="contentbloc" id="cpu" style="display: none"></div>
+      <div class="contentbloc" id="disk" style="display: none"></div>
+      <div class="contentbloc" id="energy" style="display: none"></div>
+  </div>
+  <div id="nowinrt">
+      <div class="message">
+          This plugin is intended to be used for Universal Windows Platform applications (or UWP app). The client is not an UWP application or doesn't have access to WinRT API. 
+      </div>
+  </div>
+</div>

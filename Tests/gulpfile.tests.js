@@ -6,5 +6,5 @@ var gulp = require('gulp'),
  */
 gulp.task('tests', function(){
    gulp.src('server.vorlon.tools.tests.js')
-    .pipe(mocha()); 
+    .pipe(mocha({reporter: 'mocha-junit-reporter'})); 
 });

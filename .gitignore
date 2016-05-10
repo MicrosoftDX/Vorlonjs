@@ -8,6 +8,7 @@ sync.bat
 /.vs/
 bin/
 **/control.css
+!Plugins/Vorlon/plugins/office/control.css
 sync.bat
 .settings/launch.json
 *.dat

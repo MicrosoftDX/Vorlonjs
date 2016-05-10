@@ -122,6 +122,31 @@ gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
         .pipe(concat('vorlon.babylonInspector.dashboard.min.js'))
         .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
         
+    // Office
+    gulp.src([
+        'Plugins/release/plugins/office/vorlon.office.interfaces.js',
+        'Plugins/release/plugins/office/vorlon.office.tools.js',
+        'Plugins/release/plugins/office/vorlon.office.document.js',
+        'Plugins/release/plugins/office/vorlon.office.outlook.js',
+        'Plugins/release/plugins/office/vorlon.office.powerpoint.js',
+        'Plugins/release/plugins/office/vorlon.office.dashboard.js'
+    ])
+        .pipe(concat('vorlon.office.dashboard.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/office/'));
+
+    
+
+     gulp.src([
+        'Plugins/release/plugins/office/vorlon.office.interfaces.min.js',
+        'Plugins/release/plugins/office/vorlon.office.tools.min.js',
+        'Plugins/release/plugins/office/vorlon.office.document.min.js',
+        'Plugins/release/plugins/office/vorlon.office.outlook.min.js',
+        'Plugins/release/plugins/office/vorlon.office.powerpoint.min.js',
+        'Plugins/release/plugins/office/vorlon.office.dashboard.min.js'
+    ])
+        .pipe(concat('vorlon.office.dashboard.min.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/office/'));     
+           
     // NG Inspector
     gulp.src([
         'Plugins/release/plugins/ngInspector/vorlon.ngInspector.interfaces.js',
@@ -160,44 +185,9 @@ gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
 gulp.task('scripts-plugins', ['concat-webstandards-rules-plugins'], function () {
 
     return gulp.src([
-            './Plugins/**/vorlon.interactiveConsole.interfaces.js',
-            './Plugins/**/vorlon.interactiveConsole.client.js',
-            './Plugins/**/vorlon.interactiveConsole.dashboard.js',
-            './Plugins/**/vorlon.domExplorer.interfaces.js',
-            './Plugins/**/vorlon.domExplorer.client.js',
-            './Plugins/**/vorlon.domExplorer.dashboard.js',
-            './Plugins/**/vorlon.modernizrReport.interfaces.js',
-            './Plugins/**/vorlon.modernizrReport.client.js',
-            './Plugins/**/vorlon.modernizrReport.dashboard.js',
-            './Plugins/**/objectExplorer/vorlon.objectExplorer.interfaces.js',
-            './Plugins/**/objectExplorer/vorlon.objectExplorer.client.js',
-            './Plugins/**/objectExplorer/vorlon.objectExplorer.dashboard.js',
-            './Plugins/**/xhrPanel/vorlon.xhrPanel.interfaces.js',
-            './Plugins/**/xhrPanel/vorlon.xhrPanel.client.js',
-            './Plugins/**/xhrPanel/vorlon.xhrPanel.dashboard.js',
-            './Plugins/**/vorlon.ngInspector.interfaces.js',
-            './Plugins/**/vorlon.ngInspector.client.js',
-            './Plugins/**/vorlon.ngInspector.dashboard.js',
-            './Plugins/**/networkMonitor/vorlon.networkMonitor.interfaces.js',
-            './Plugins/**/networkMonitor/vorlon.networkMonitor.client.js',
-            './Plugins/**/networkMonitor/vorlon.networkMonitor.dashboard.js',
-            './Plugins/**/resourcesExplorer/vorlon.resourcesExplorer.interfaces.js',
-            './Plugins/**/resourcesExplorer/vorlon.resourcesExplorer.client.js',
-            './Plugins/**/resourcesExplorer/vorlon.resourcesExplorer.dashboard.js',
-            './Plugins/**/unitTestRunner/vorlon.unitTestRunner.interfaces.js',
-            './Plugins/**/unitTestRunner/vorlon.unitTestRunner.client.js',
-            './Plugins/**/unitTestRunner/vorlon.unitTestRunner.dashboard.js',
-            './Plugins/**/sample/vorlon.sample.client.js',
-            './Plugins/**/sample/vorlon.sample.dashboard.js',
-            './Plugins/**/device/vorlon.device.interfaces.js',
-            './Plugins/**/device/vorlon.device.client.js',
-            './Plugins/**/device/vorlon.device.dashboard.js',
-            './Plugins/**/webstandards/vorlon.webstandards.client.js',
-            './Plugins/**/webstandards/vorlon.webstandards.interfaces.js',
-            './Plugins/**/webstandards/vorlon.webstandards.dashboard.js',
-            './Plugins/**/babylonInspector/vorlon.babylonInspector.client.js',
-            './Plugins/**/babylonInspector/vorlon.babylonInspector.interfaces.js',
-            './Plugins/**/babylonInspector/vorlon.babylonInspector.dashboard.js'
+            './Plugins/**/vorlon.*.interfaces.js',
+            './Plugins/**/vorlon.*.client.js',
+            './Plugins/**/vorlon.*.dashboard.js'
         ])
         .pipe(rename(function (path) {
                 path.extname = ".min.js";
@@ -305,13 +295,8 @@ gulp.task('typescript-to-js-server', function() {
 gulp.task('build-server', ['typescript-to-js-server'], function() {
 	//copy server files to desktop app
   return gulp.src([
-  		'./config.json',
-  		'cert/**',
-  		'config/**',
-  		'public/**',
-  		'Scripts/**',
-  		'views/**',
-  	], { base: './Plugins' })
+  		'./server/**/*.*'
+  	])
   	.pipe(gulp.dest('./desktop/app/vorlon'));
 });
 

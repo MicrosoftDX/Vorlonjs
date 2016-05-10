@@ -44,12 +44,24 @@
         public refresh(): void {
             this.sendClientData();
         }
+        
+        public evalOrderFromDashboard(order: string) {
+            try {
+                eval(order);
+            } catch (e) {
+                console.error("Unable to execute order: " + e.message);
+            }
+        }
     }
     
     ResourcesExplorerClient.prototype.ClientCommands = {
         refresh: function (data: any) {
             var plugin = <ResourcesExplorerClient>this;
             plugin.refresh();
+        },
+        order: function (data: any) {
+            var plugin = <ResourcesExplorerClient>this;
+            plugin.evalOrderFromDashboard(data.order);
         }
     };
 
