@@ -1,16 +1,57 @@
-<div>
-  
-  <div class="toolbar">
-  	<button data-client-command="domHistory.startRecording()">Start recording</button>
-  	<button data-client-command="domHistory.stopRecording()">Stop recording</button>
-  	<button data-client-command="domHistory.undo()">Undo</button>
-  	<button data-client-command="domHistory.redo()">Redo</button>
-  	<input id="echoInput" placeholder="Execute some code on the client" />
-	<button data-client-command="domHistory.isRecording">Is recording?</button>
-	<button data-client-command="domHistory.isRecordingStopped">Is recording stopped?</button>
-  </div>
-
-  <pre id="output"></pre>
-	<pre id="toast"><p>Ready for instructions</p></pre>
-  
-</div>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dom Timeline</title>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300italic,900italic,700italic,900,700,500italic,500,400italic,300,100italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Oswald:400,700,300' rel='stylesheet' type='text/css'>
+</head>
+<body>
+    <div style="position: absolute; bottom: 0px; left: 0px; right: 30px; padding: 5px; background: white; font-size: 90%; z-index: 1;">
+        <button data-client-command="domHistory.startRecording()">Start recording</button>
+        <button data-client-command="domHistory.stopRecording()">Stop recording</button>
+        <button data-client-command="domHistory.undo()">Undo</button>
+        <button data-client-command="domHistory.redo()">Redo</button>
+        <input id="echoInput" placeholder="Execute some code on the client" />
+        <button data-client-command="domHistory.isRecording" style="display:none">Is recording?</button>
+        <button data-client-command="domHistory.isRecordingStopped" style="display:none">Is recording stopped?</button>
+    </div>
+    <div id="dom-recorder" class="colorblind-off">
+        <!-- todo: add a checkbox hack to allow open the settings -->
+        <div id="options" style="display: none">
+            <div id="option-autorecord">
+                <input type="checkbox" name="autorecord" id="autorecord" value="true"> <label for="autorecord">Auto-record before DOM-ready (Refresh to apply)</label>
+            </div>
+            <div id="option-colorblind">
+                <input type="checkbox" name="colorblind" id="colorblind" value="true"> <label for="colorblind">Color-blind friendly mode</label>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div id="wrapper-timeline">
+            <div id="offsetW"></div>
+            <div class="seconds-list"></div>
+            <div id="timeline">
+                <span id="lev" class="lev" style="width: 0px;">
+                    <span class="lev1 handle"></span>
+                    <span class="lev2 handle"></span>
+                    <span class="drag-lev"></span>
+                </span>
+            </div>
+        </div>
+        <div id="filter-changes" style="position: fixed; top: 0; right: 0; background: white;">
+            Filter time range: <input onkeypress='window["validateInputNumber"](event)' class="from">s to <input onkeypress='window["validateInputNumber"](event)' class="to">s <a href="#">Reset range</a>
+        </div>
+        <div id="node-changes">
+            <!-- todo: show them when we switch to full-height style -->
+            <input type="text" placeholder="Filter results by keyword..." style="display: none">
+            <h1 style="display: none">Node changes</h1>
+            <ul class="inline-changes" style="display: none">
+                <li class="inline-changes-added"><span></span> added,</li>
+                <li class="inline-changes-modified"><span></span> modified,</li>
+                <li class="inline-changes-removed"><span></span> removed</li>       
+            </ul>
+            <ul class="accordion-changes"></ul>
+        </div>
+        <div style="height: 50px"></div>
+    </div>
+</body>
+</html>
