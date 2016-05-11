@@ -36,11 +36,11 @@ export module VORLON {
             res.header('Pragma', 'no-cache');
         }
 
-        public addRoutes(app: express.Express, passport: any): void {
+        public addRoutes(app: express.Express, passport: express.Response): void {
             app.get(this.baseURLConfig.baseURL + "/api/createsession", (req: any, res: any) => {
                 this.json(res, this.guid());
             });
-
+            
             app.get(this.baseURLConfig.baseURL + "/api/reset/:idSession", (req: any, res: any) => {
                 var session = this._sessions.get(req.params.idSession);
                 if (session && session.connectedClients) {
@@ -199,7 +199,7 @@ export module VORLON {
             });
         }
 
-        private setPluginPanel(req: any, res: any) {
+        private setPluginPanel(req: express.Request, res: express.Response) {
             var pluginid = req.params.pluginid;
             var panel = req.body.panel;
             this.pluginsConfig.setPluginPanel(pluginid, panel, (err) => {
