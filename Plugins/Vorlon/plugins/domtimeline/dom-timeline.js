@@ -436,7 +436,7 @@ void function() {
 		if("style" in window.HTMLElement.prototype) wrapStyleInProxy(window.HTMLElement);
 		
 		// otherwhise, we can hook most properties and functions from those classes
-		for(let protoName of ['SVGElement','HTMLElement','Element','Node','Range','Selection',classListInstance,styleInstance]) {
+		for(let protoName of ['SVGElement','HTMLElement','Element','Node','Range','Selection','HTMLImageElement','Image',classListInstance,styleInstance]) {
 			try{
 				let proto = (typeof(protoName) == 'string') ? (window[protoName].prototype) : Object.getPrototypeOf(protoName);
 				protoName = (typeof(protoName) == 'string') ? protoName : Object.prototype.toString.call(protoName).replace(/\[object (.*)\]/,'$1');
@@ -454,7 +454,7 @@ void function() {
 							
 								proto[propName] = function() {
 									isDoingOffRecordsMutations || logUnclaimedMutations();
-									let result = prop.value.apply(this, arguments);
+									let result = prop.value.apply(this.__this||this, arguments);
 									isDoingOffRecordsMutations || logClaimedMutations("call "+propName, new Error().stack.replace(/^Error *\r?\n/i,''));
 									return result;
 								};
@@ -475,7 +475,7 @@ void function() {
 							Object.defineProperty(proto, propName, { 
 								get() {
 									try {
-										let result = prop.get.apply(this,arguments);
+										let result = prop.get.apply(this.__this||this,arguments);
 										return result;
 									} catch (ex) {
 										if(ex.stack.indexOf("Illegal invocation")==-1) {
@@ -486,9 +486,8 @@ void function() {
 									}
 								},
 								set() {
-									//if(propName=="transitionDelay") { console.warn("Blocked transitionDelay"); return; }
 									isDoingOffRecordsMutations || logUnclaimedMutations();
-									let result = prop.set ? prop.set.apply(this,arguments) : undefined;
+									let result = prop.set ? prop.set.apply(this.__this||this,arguments) : undefined;
 									isDoingOffRecordsMutations || logClaimedMutations("set "+propName, new Error().stack.replace(/^Error *\r?\n/i,''));
 									return result;
 								}
@@ -512,6 +511,7 @@ void function() {
 				get() {
 					try {
 						let result = prop.get.apply(this,arguments);
+						Object.defineProperty(result,'__this',{enumerable:false,value:result});
 						return wrapInProxy(
 							result,
 							propName,
@@ -546,7 +546,6 @@ void function() {
 					return oTarget[sKey];
 				  },
 				  "set": function (oTarget, sKey, vValue) {
-					//if(sKey=="transitionDelay") { console.warn("Blocked transitionDelay"); return; }
 					onbeforechange("set " + objName + "." + sKey);
 					var result = oTarget[sKey] = vValue;
 					onafterchange("set " + objName + "." + sKey);

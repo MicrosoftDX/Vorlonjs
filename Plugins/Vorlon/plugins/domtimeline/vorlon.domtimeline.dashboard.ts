@@ -6,6 +6,7 @@ interface DataForEntry {
     description: string,
     timestamp: number,
     details: any,
+    isCancelled: boolean // added here
 }
 
 module VORLON {
@@ -70,6 +71,11 @@ module VORLON {
                     me.sendMessageToClient(
                         "domHistory.generateDashboardData("+alreadyKnownEvents.length+")", 
                         (e)=>{
+                            
+                            // refresh metadata
+                            document.getElementById("dom-recorder").setAttribute('is-recording-started', e.message.isRecordingNow || e.message.isRecordingEnded);
+                            document.getElementById("dom-recorder").setAttribute('is-recording-ended', e.message.isRecordingEnded);
+
                             // nothing significant changed, don't update
                             if(e.message.history.length == 0 && e.message.pastEventsCount == lastPastEventsCount) {
                                 return;
@@ -88,9 +94,10 @@ module VORLON {
                             // refresh content
                             dashboard.setTimeline(alreadyKnownEvents);
                             //me._outputDiv.textContent=JSON.stringify(e.message,null,"    ");
+                            
                         }
                     ); 
-                }, 2000);
+                }, 500);
             })
         }
 
@@ -152,7 +159,7 @@ function initDashboard() {
                 details_table += '<tr><td class="td-name">' + key + ':</td><td class="td-value" title="'+escapeHtml(value)+'">' + escapeHtml2(value_line) + '</td></tr>';
             }
             var details = '<li class="acc" style="display:none;"><table>' + details_table + '</table></li>';
-            html += '<li data-id=" ' + i + ' " data-time=" ' + changeTime + ' " class="show-change acc-tr accordion-changes-' + change.type + '">' + escapeHtml(change.description) + ' <span>' + changeTime + 's</span><i class="fa fa-undo"></i></li>' + details;
+            html += '<li data-id=" ' + i + ' " data-time=" ' + changeTime + ' " is-cancelled="'+change.isCancelled+'" class="show-change acc-tr accordion-changes-' + change.type + '">' + escapeHtml(change.description) + ' <span>' + changeTime + 's</span><i class="fa fa-undo"></i></li>' + details;
             if (typeof times[changeTime] === 'undefined') {
                 times[changeTime] = { added: 0, removed: 0, modified: 0, count: 0 };
             }
@@ -199,10 +206,13 @@ function initDashboard() {
         html = "";
         for (var timeIndex in times) {
             var time = times[timeIndex];
+            var minHeight = (time.added?3:0) + (time.added?3:0) + (time.added?3:0);
             var totalHeight = SCALE * 85 * Math.log(1 + time.count / 10) / Math.log(1 + max.count / 10);
-            var addedHeight = totalHeight * time.added / time.count;
-            var removedHeight = totalHeight * time.removed / time.count;
-            var modifiedHeight = totalHeight * time.modified / time.count;
+            totalHeight = Math.max(totalHeight, minHeight);
+            var distributableHeight = totalHeight - minHeight;
+            var addedHeight = (time.added?3:0) + distributableHeight * time.added / time.count;
+            var removedHeight = (time.removed?3:0) + distributableHeight * time.removed / time.count;
+            var modifiedHeight = (time.modified?3:0) + distributableHeight * time.modified / time.count;
             var times_h = '';
             times_h += '<span data-hint="' + time.added + ' added" class="added_h hint--right hint--success" style="' + (((time.modified || time.removed) && time.added) ? 'border-bottom: 1px solid white;' : '') + 'height: ' + addedHeight + 'px;"></span>';
             times_h += '<span data-hint="' + time.modified + ' modified" ' + ((!time.modified) ? 'style="border:none !important;"' : '') + ' class="modified_h hint--right hint--info" style="' + ((time.removed && time.modified) ? 'border-bottom: 1px solid white;' : '') + 'height: ' + modifiedHeight + 'px;"></span>';

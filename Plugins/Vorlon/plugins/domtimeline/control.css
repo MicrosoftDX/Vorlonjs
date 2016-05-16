@@ -7,6 +7,7 @@
     margin: auto;
     padding: 10px;
     font-size: 16px;
+	position: relative;
 }
 
 .plugin-domtimeline #options {
@@ -23,6 +24,26 @@
 
 .plugin-domtimeline #option-colorblind {
     float:right;
+}
+
+.plugin-domtimeline #dom-recorder[is-recording-started="false"] #pre-recording-mode {
+	display: block !important;
+}
+.plugin-domtimeline  #dom-recorder[is-recording-started="true"] #recording-mode {
+	display: block !important;
+}
+
+#is-recording-now-buttons, #is-recording-ended-buttons {
+	position: absolute;
+	top: 8px; right: 8px;
+	z-index: 10000;
+}
+
+.plugin-domtimeline #dom-recorder[is-recording-ended="true"] #is-recording-ended-buttons {
+	display: block !important;
+}
+.plugin-domtimeline  #dom-recorder[is-recording-ended="false"] #is-recording-now-buttons {
+	display: block !important;
 }
 
 .plugin-domtimeline #wrapper-timeline {
@@ -81,7 +102,7 @@
 }
 
 .plugin-domtimeline ul.inline-changes li {
-    display: inline;
+    /*display: inline;*/
     margin-right: 5px;
 }
 
@@ -142,6 +163,11 @@ ul.accordion-changes {
     border-bottom: 1px solid #E0E0E0;
 }
 
+.plugin-domtimeline ul.accordion-changes li[is-cancelled="true"] {
+	text-decoration: line-through;
+    color: gray;
+}
+
 .plugin-domtimeline ul.accordion-changes .td-name {
     font-weight: bold;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 9pt;
@@ -153,8 +179,11 @@ ul.accordion-changes {
     opacity: 0.7;
 }
 
-.plugin-domtimeline ul.accordion-changes li.hide-change:before {
-    display:none;
+.plugin-domtimeline ul.accordion-changes li.hide-change::before {
+    visibility: hidden;
+}
+.plugin-domtimeline ul.accordion-changes li.hide-change > * {
+    visibility: hidden;
 }
 
 .plugin-domtimeline ul.accordion-changes li .fa-undo {
@@ -351,6 +380,17 @@ ul.accordion-changes li > span {
     border: 1px solid #D7CDBF;
     cursor: pointer;
 }
+
+.plugin-domtimeline button:hover {
+    background: purple;
+	color: white;
+}
+
+.plugin-domtimeline button:active:hover {
+    background: darkmagenta;
+	color: violet;
+}
+
 
 .plugin-domtimeline .ui-selectable-helper {
     background: #482045;
