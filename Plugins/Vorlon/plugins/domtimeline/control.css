@@ -4,9 +4,10 @@
 }
 
 .plugin-domtimeline #dom-recorder {
-    width: 90%;
+    /* width: 90%; */
     margin: auto;
-    padding-top: 20px;
+    padding: 10px;
+    font-size: 16px;
 }
 
 .plugin-domtimeline #options {
@@ -26,12 +27,12 @@
 }
 
 .plugin-domtimeline #wrapper-timeline {
-    overflow-x: auto;
+    overflow-x: /*auto*/hidden;
     overflow-y: hidden;
     width: 100%;
     position: relative;
     padding-bottom: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
 }
 
 .plugin-domtimeline #timeline {
@@ -94,15 +95,15 @@
 }
 
 .plugin-domtimeline .colorblind-off ul.inline-changes li.inline-changes-added:before {
-    background-color: #007C29;   
+    background-color: #007C29;
 }
 
 .plugin-domtimeline .colorblind-off ul.inline-changes li.inline-changes-removed:before {
-    background-color: #F2002D;   
+    background-color: #F2002D;
 }
 
 .plugin-domtimeline .colorblind-off ul.inline-changes li.inline-changes-modified:before {
-    background-color: #223879;   
+    background-color: #223879;
 }
 
 .plugin-domtimeline .colorblind-on ul.inline-changes li.inline-changes-added:before {
@@ -120,20 +121,31 @@
     background-image: url('images/blind.png');
 }
 
-.plugin-domtimeline 
+.plugin-domtimeline
 ul.accordion-changes {
-    height: 260px;
+    /* height: 260px; */
     padding: 0;
     margin: 0;
-    border: 1px solid #E0E0E0;
+    /* border: 1px solid #E0E0E0; */
     list-style-type: none;
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
+    overflow-x: hidden;
 }
 
 .plugin-domtimeline ul.accordion-changes li {
+    position: relative;
     cursor: pointer;
-    padding: 12px 20px;
+    padding: 6px 10px;
+    font-weight: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 9pt;
+    white-space: nowrap;
     border-bottom: 1px solid #E0E0E0;
+}
+
+.plugin-domtimeline ul.accordion-changes .td-name {
+    font-weight: bold;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 9pt;
+    white-space: nowrap;
 }
 
 .plugin-domtimeline ul.accordion-changes li.hide-change {
@@ -149,60 +161,63 @@ ul.accordion-changes {
     display: none;
     cursor: pointer;
     margin-right: 10px;
-    float:right;
+    position: absolute; right: 30px; top: 9px;
+	background: white; outline: 5px solid white;
 }
 
 .plugin-domtimeline ul.accordion-changes li:hover .fa-undo{
     display: inline;
 }
 
-.plugin-domtimeline ul.accordion-changes li:before {
+.plugin-domtimeline ul.accordion-changes li[data-id]::before {
     display: inline-block;
     content: "";
     width: 8px;
     height: 15px;
     margin-right: 13px;
     transition: all linear 0.2s;
-} 
+    vertical-align: bottom;
+}
 
-.plugin-domtimeline ul.accordion-changes li.rotate:before {
+.plugin-domtimeline ul.accordion-changes li.rotate[data-id]::before {
     -ms-transform: rotate(90deg); /* IE 9 */
     -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
     transform: rotate(90deg);
 }
 
-.plugin-domtimeline .colorblind-off ul.accordion-changes li.accordion-changes-added:before {
+.plugin-domtimeline .colorblind-off ul.accordion-changes li.accordion-changes-added[data-id]::before {
     background-image: url('images/arrow-green.png');
 }
 
-.plugin-domtimeline .colorblind-off ul.accordion-changes li.accordion-changes-removed:before {
+.plugin-domtimeline .colorblind-off ul.accordion-changes li.accordion-changes-removed[data-id]::before {
     background-image: url('images/arrow-red.png');
 }
 
-.plugin-domtimeline .colorblind-off ul.accordion-changes li.accordion-changes-modified:before {
+.plugin-domtimeline .colorblind-off ul.accordion-changes li.accordion-changes-modified[data-id]::before {
     background-image: url('images/arrow-blue.png');
 }
 
-.plugin-domtimeline .colorblind-on ul.accordion-changes li.accordion-changes-added:before {
+.plugin-domtimeline .colorblind-on ul.accordion-changes li.accordion-changes-added[data-id]::before {
     background-image: url('images/arrow-green-b.png');
 }
 
-.plugin-domtimeline .colorblind-on ul.accordion-changes li.accordion-changes-removed:before {
+.plugin-domtimeline .colorblind-on ul.accordion-changes li.accordion-changes-removed[data-id]::before {
     background-image: url('images/arrow-red-b.png');
 }
 
-.plugin-domtimeline .colorblind-on ul.accordion-changes li.accordion-changes-modified:before {
+.plugin-domtimeline .colorblind-on ul.accordion-changes li.accordion-changes-modified[data-id]::before {
     background-image: url('images/arrow-blue-b.png');
 }
 
-.plugin-domtimeline 
-ul.accordion-changes li span {
-    float:right;
+.plugin-domtimeline
+ul.accordion-changes li > span {
+    position: absolute; right: 5px; top: 7px;
+	background: white; outline: 5px solid white;
 }
 
 .plugin-domtimeline .seconds-list {
     position: relative;
-    height: 22px;
+    height: calc(22em / 16);
     cursor: -moz-grab;
     cursor: -webkit-grab;
     cursor: grab;
@@ -211,13 +226,13 @@ ul.accordion-changes li span {
 .plugin-domtimeline .seconds-list span {
     position: absolute;
     display: inline-block;
-    width: 61px;
+    width: calc(61em / 16);
 }
 
 .plugin-domtimeline #timeline div {
     position: absolute;
     bottom: 0px;
-    width: 10px;
+    width: calc(10em / 16);
     display: inline-block;
 }
 
@@ -265,15 +280,19 @@ ul.accordion-changes li span {
 }
 
 .plugin-domtimeline .acc table {
-    padding: 0px 50px;
+    padding: 5px 0 5px 40px;
     display: block;
 }
 
 .plugin-domtimeline .acc table .td-name {
-    font-weight: bold;
-    font-size: 17px;
     margin-right: 15px;
     padding-right: 20px;
+}
+
+.plugin-domtimeline .acc table code {
+    font-family: "Consolas", monospace;
+	font-size: 11px;
+	white-space: pre-line;
 }
 
 .plugin-domtimeline .lev {

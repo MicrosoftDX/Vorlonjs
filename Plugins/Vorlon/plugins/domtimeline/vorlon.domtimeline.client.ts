@@ -101,9 +101,9 @@ module VORLON {
                         details: {
                             "Added nodes": descriptionOfNodeList(e.addedNodes),
                             "Target": targetDescription,
-                            "Timestamp": e.timestamp/1000+"s",
+                            "Timestamp": Math.round(10*e.timestamp)/10000+"s",
                             "Claim": e.claim,
-                            "Stack": "`"+e.stack+"`"
+                            "Stack": "`"+e.stack.split('\n').filter(l => l.indexOf("vorlon.max")==-1).join('\n')+"`"
                         }
                     }
                 } else if(e.removedNodes.length > 0) {
@@ -119,15 +119,15 @@ module VORLON {
                         details: {
                             "Removed nodes": descriptionOfNodeList(e.addedNodes),
                             "Target": targetDescription,
-                            "Timestamp": e.timestamp/1000+"s",
+                            "Timestamp": Math.round(10*e.timestamp)/10000+"s",
                             "Claim": e.claim,
-                            "Stack": "`"+e.stack+"`"
+                            "Stack": "`"+e.stack.split('\n').filter(l => l.indexOf("vorlon.max")==-1).join('\n')+"`"
                         }
                     }
                 } else if(e.attributeName) {
                     if(e.newValue === null || e.newValue === undefined) {
                         return {
-                            type:"updated",
+                            type:"modified",
                             description: "Removed attribute `"+e.attributeName+"` from " + targetDescription,
                             timestamp: e.timestamp,
                             details: {
@@ -135,14 +135,14 @@ module VORLON {
                                 "Old value": e.oldValue,
                                 "New value": e.newValue,
                                 "Target": targetDescription,
-                                "Timestamp": e.timestamp/1000+"s",
+                                "Timestamp": Math.round(10*e.timestamp)/10000+"s",
                                 "Claim": e.claim,
-                                "Stack": "`"+e.stack+"`"
+                                "Stack": "`"+e.stack.split('\n').filter(l => l.indexOf("vorlon.max")==-1).join('\n')+"`"
                             }
                         }
                     } else if(e.oldValue === null || e.oldValue === undefined) {
                         return {
-                            type:"updated",
+                            type:"modified",
                             description: "Added attribute `"+e.attributeName+"` to " + targetDescription,
                             timestamp: e.timestamp,
                             details: {
@@ -150,14 +150,14 @@ module VORLON {
                                 "Old value": e.oldValue,
                                 "New value": e.newValue,
                                 "Target": targetDescription,
-                                "Timestamp": e.timestamp/1000+"s",
+                                "Timestamp": Math.round(10*e.timestamp)/10000+"s",
                                 "Claim": e.claim,
-                                "Stack": "`"+e.stack+"`"
+                                "Stack": "`"+e.stack.split('\n').filter(l => l.indexOf("vorlon.max")==-1).join('\n')+"`"
                             }
                         }
                     } else {
                         return {
-                            type:"updated",
+                            type:"modified",
                             description: "Updated attribute `"+e.attributeName+"` of " + targetDescription,
                             timestamp: e.timestamp,
                             details: {
@@ -165,24 +165,24 @@ module VORLON {
                                 "Old value": e.oldValue,
                                 "New value": e.newValue,
                                 "Target": targetDescription,
-                                "Timestamp": e.timestamp/1000+"s",
+                                "Timestamp": Math.round(10*e.timestamp)/10000+"s",
                                 "Claim": e.claim,
-                                "Stack": "`"+e.stack+"`"
+                                "Stack": "`"+e.stack.split('\n').filter(l => l.indexOf("vorlon.max")==-1).join('\n')+"`"
                             }
                         }
                     }
                 } else {
                     var nodeDescription = descriptionOf(e.target.parentNode)
                     return {
-                            type:"updated",
+                            type:"modified",
                             description: "Updated text content of " + nodeDescription,
                             timestamp: e.timestamp,
                             details: {
                                 "Old value": e.oldValue,
                                 "New value": e.newValue,
-                                "Timestamp": e.timestamp/1000+"s",
+                                "Timestamp": Math.round(10*e.timestamp)/10000+"s",
                                 "Claim": e.claim,
-                                "Stack": "`"+e.stack+"`"
+                                "Stack": "`"+e.stack.split('\n').filter(l => l.indexOf("vorlon.max")==-1).join('\n')+"`"
                             }
                         }
                 }

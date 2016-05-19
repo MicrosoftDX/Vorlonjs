@@ -6,10 +6,18 @@
     <link href='https://fonts.googleapis.com/css?family=Oswald:400,700,300' rel='stylesheet' type='text/css'>
 </head>
 <body>
-    <button data-client-command="domHistory.startRecording()">Start recording</button>
-    <button data-client-command="domHistory.stopRecording()">Stop recording</button>
+    <div style="position: absolute; bottom: 0px; left: 0px; right: 30px; padding: 5px; background: white; font-size: 90%; z-index: 1;">
+        <button data-client-command="domHistory.startRecording()">Start recording</button>
+        <button data-client-command="domHistory.stopRecording()">Stop recording</button>
+        <button data-client-command="domHistory.undo()">Undo</button>
+        <button data-client-command="domHistory.redo()">Redo</button>
+        <input id="echoInput" placeholder="Execute some code on the client" />
+        <button data-client-command="domHistory.isRecording" style="display:none">Is recording?</button>
+        <button data-client-command="domHistory.isRecordingStopped" style="display:none">Is recording stopped?</button>
+    </div>
     <div id="dom-recorder" class="colorblind-off">
-        <div id="options">
+        <!-- todo: add a checkbox hack to allow open the settings -->
+        <div id="options" style="display: none">
             <div id="option-autorecord">
                 <input type="checkbox" name="autorecord" id="autorecord" value="true"> <label for="autorecord">Auto-record before DOM-ready (Refresh to apply)</label>
             </div>
@@ -29,24 +37,20 @@
                 </span>
             </div>
         </div>
-        <div id="filter-changes">
-            Filter time range: <input onkeypress='validate(event)' class="from">s to <input onkeypress='validate(event)' class="to">s <a href="#">Reset range</a>
+        <div id="filter-changes" style="position: fixed; top: 0; right: 0; background: white;">
+            Filter time range: <input onkeypress='window["validateInputNumber"](event)' class="from">s to <input onkeypress='window["validateInputNumber"](event)' class="to">s <a href="#">Reset range</a>
         </div>
         <div id="node-changes">
-            <input type="text" placeholder="Filter results by keyword...">
-            <h1>Node changes</h1>
-            <ul class="inline-changes">
-                <li class="inline-changes-added"><span></span> added,</li>
+            <!-- todo: show them when we switch to full-height style -->
+            <input type="text" placeholder="Filter results by keyword..." style="display: none">
+            <h1 style="display: none">Node changes</h1>
+            <ul class="inline-changes" style="display: none">                <li class="inline-changes-added"><span></span> added,</li>
                 <li class="inline-changes-modified"><span></span> modified,</li>
-                <li class="inline-changes-removed"><span></span> removed</li>       
+                <li class="inline-changes-removed"><span></span> removed</li>
             </ul>
             <ul class="accordion-changes"></ul>
         </div>
-        <div id="history-control">
-            <button data-client-command="domHistory.undo()"><i class="fa fa-undo"></i> Undo change</button>
-            <button data-client-command="domHistory.redo()"><i class="fa fa-repeat"></i> Redo change</button>            
-            <input type="text" id="echoInput" placeholder="Execute some code on the client">
-        </div>
+        <div style="height: 50px"></div>
     </div>
 </body>
 </html>
