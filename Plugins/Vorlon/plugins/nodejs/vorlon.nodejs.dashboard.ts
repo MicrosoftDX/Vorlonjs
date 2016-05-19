@@ -189,10 +189,15 @@ module VORLON {
             if (receivedObject.type == 'modules') {
                 var list = receivedObject.data;
                 var data = [];
-
+                console.log(list);
                 for(var i = 0; i < list.length; i++) {
                     list[i] = list[i].split("\\");
-                    console.log(list);
+                    for (var z = 0; z < list[i].length; z++) {
+                      if (list[i][z] == 'node_modules') {
+                          list[i].splice(0, z);
+                          break;
+                      }
+                    }
                     this.buildTree(list[i], data);
                 }
 
