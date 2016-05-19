@@ -16,6 +16,14 @@
     "vorlonProxyURL": "",
     "plugins": [
         {
+            "id": "OBJEXPLORER",
+            "name": "Obj. Explorer",
+            "panel": "top",
+            "foldername": "objectExplorer",
+            "enabled": true,
+            "nodeCompliant": true
+        },
+        {
             "id": "NODEJS",
             "name": "NodeJS",
             "panel": "top",
@@ -23,14 +31,6 @@
             "enabled": true,
             "nodeCompliant": true,
             "nodeOnly": true
-        },
-        {
-            "id": "OBJEXPLORER",
-            "name": "Obj. Explorer",
-            "panel": "top",
-            "foldername": "objectExplorer",
-            "enabled": true,
-            "nodeCompliant": true
         },
         {
             "id": "XHRPANEL",
@@ -93,7 +93,7 @@
             "name": "DOM Timeline",
             "panel": "bottom",
             "foldername": "domtimeline",
-            "enabled": true
+            "enabled": false
         },
         {
             "id": "CONSOLE",
@@ -141,9 +141,11 @@
         {
             "id": "EXPRESS",
             "name": "Express",
-            "panel": "top",
+            "panel": "bottom",
             "foldername": "express",
-            "enabled": false
+            "enabled": true,
+            "nodeCompliant": true,
+            "nodeOnly": true
         }
     ]
 }

@@ -5,7 +5,7 @@
     <link href="control.css" rel="stylesheet" />
 </head>
 <body>
-    
+
 <div class="split" data-orientation="vertical" data-limit="50" data-position="70%">
         <div class="tree-view-wrapper panel-left">
             <div id="treeView2" class="code-text">
@@ -17,19 +17,20 @@
                         </x-controlbar>
                         <div id="jstree" class="code-text tree">
 
-                        </div>          
+                        </div>
                     </div>
                 </div>
                 <div class="explorer-menu" id="memory" style="display:none;    height: 100%;">
-                    <canvas id="memory-chart" style="width: 100% !important;height: 100% !important;"></canvas>
+                    <canvas id="memory-chart" style="width: 95% !important;height: 95% !important;"></canvas>
                 </div>
                 <div class="explorer-menu" id="infos" style="display:none;">
                 <div id="nodejs-information">
-                    <table>
+                    <h1>NODEJS PROCESS INFORMATION</h1>
+                    <table id="viewport">
                         <!-- Viewport -->
                         <tbody>
                         <tr class="viewport-header">
-                            <th colspan="2">NodeJS Process Information</th>
+                            <th class="header" colspan="2">NodeJS Process Information</th>
                         </tr>
                         <tr>
                             <td>Title</td>
@@ -56,7 +57,7 @@
                             <td class="infos-pid"></td>
                         </tr>
                         <tr class="viewport-header">
-                            <th colspan="2">User</th>
+                            <th class="header" colspan="2">User</th>
                         </tr>
                         <tr>
                             <td>USERNAME</td>
@@ -90,8 +91,8 @@
         <div class="style-view-wrapper panel-right code-text">
             <div id="accordion-nodejs">
                 <h3 class="open-menu active-menu" data-menu="modules"><i class="fa fa-folder-open" aria-hidden="true"></i> Modules required</h3>
-                <h3 class="open-menu" data-menu="memory"><i class="fa fa-area-chart" aria-hidden="true"></i> Memory usage</h3>              
-                <h3 class="open-menu" data-menu="infos"><i class="fa fa-info-circle" aria-hidden="true"></i> Process Informations</h3>                          
+                <h3 class="open-menu" data-menu="memory"><i class="fa fa-area-chart" aria-hidden="true"></i> Memory usage</h3>
+                <h3 class="open-menu" data-menu="infos"><i class="fa fa-info-circle" aria-hidden="true"></i> Process Informations</h3>
             </div>
         </div>
     </div>

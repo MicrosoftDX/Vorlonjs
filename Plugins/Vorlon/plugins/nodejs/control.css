@@ -506,7 +506,7 @@ body .b-m-mpanel {
   /*.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
         background: #CCC;
     }
- 
+
     .ui-menu-item {
         padding: 10px;
         font-size: 10pt;
@@ -569,6 +569,10 @@ body .b-m-mpanel .b-m-ifocus {
 #searchlist {
   margin-left: auto;
   width: 200px;
+}
+
+#nodejs-information {
+  padding: 20px;
 }
 
 #nodejs-information > table {

@@ -33,18 +33,18 @@ module VORLON {
         }
 
         public toogleMenu(): void {
-            $('.open-menu').click(function() {
-                $('.open-menu').removeClass('active-menu');
-                $('#searchlist').val('');
-                $('.explorer-menu').hide();
-                $('#' + $(this).data('menu')).show();
-                $('.new-entry').fadeOut();
+            $('.plugin-express .open-menu').click(function() {
+                $('.plugin-express .open-menu').removeClass('active-menu');
+                $('.plugin-express #searchlist').val('');
+                $('.plugin-express .explorer-menu').hide();
+                $('.plugin-express #' + $(this).data('menu')).show();
+                $('.plugin-express .new-entry').fadeOut();
                 $(this).addClass('active-menu');
-            });                 
+            });
         }
-        
+
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-                
+
         }
     }
 

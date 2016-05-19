@@ -1,46 +1,29 @@
-module VORLON {
-
-    declare var $: any;
-
-    export class NodejsDashboard extends DashboardPlugin {
-
-        //Do any setup you need, call super to configure
-        //the plugin with html and css for the dashboard
-        constructor() {
-            //     name   ,  html for dash   css for dash
-            super("nodejs", "control.html", ["control.css", "tree.css"], "chart.js");
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var VORLON;
+(function (VORLON) {
+    var NodejsDashboard = (function (_super) {
+        __extends(NodejsDashboard, _super);
+        function NodejsDashboard() {
+            _super.call(this, "nodejs", "control.html", ["control.css", "tree.css"], "chart.js");
             this._ready = true;
             this.__MEGA_BYTE = 1048576;
             console.log('Started');
         }
-
-        //Return unique id for your plugin
-        public getID(): string {
+        NodejsDashboard.prototype.getID = function () {
             return "NODEJS";
-        }
-
-        // This code will run on the dashboard //////////////////////
-
-        // Start dashboard code
-        // uses _insertHtmlContentAsync to insert the control.html content
-        // into the dashboard
-        private _inputField: HTMLInputElement
-        private _outputDiv: HTMLElement
-        private _time: Number
-        private _chart: any
-        private __html: any
-        private __MEGA_BYTE: number
-        private _ctx: HTMLCanvasElement
-        private _chart_data: Object
-
-        public startDashboardSide(div: HTMLDivElement = null): void {
-            this._insertHtmlContentAsync(div, (filledDiv) => {
-                this.toogleMenu();
-
-                this._time = 0;
-
-                this._ctx = document.getElementById("memory-chart").getContext("2d");
-                this._chart_data = {
+        };
+        NodejsDashboard.prototype.startDashboardSide = function (div) {
+            var _this = this;
+            if (div === void 0) { div = null; }
+            this._insertHtmlContentAsync(div, function (filledDiv) {
+                _this.toogleMenu();
+                _this._time = 0;
+                _this._ctx = document.getElementById("memory-chart").getContext("2d");
+                _this._chart_data = {
                     labels: [],
                     datasets: [
                         {
@@ -108,94 +91,77 @@ module VORLON {
                         }
                     ]
                 };
-
-                this._chart = false;
-                this.__html = [];
-
-                this.sendToClient('infos');
-                this.sendToClient('memory');
-                this.sendToClient('modules');
-            })
-        }
-
-        public chart(): void {
+                _this._chart = false;
+                _this.__html = [];
+                _this.sendToClient('infos');
+                _this.sendToClient('memory');
+                _this.sendToClient('modules');
+            });
+        };
+        NodejsDashboard.prototype.chart = function () {
             Chart.defaults.global.responsive = true;
             Chart.defaults.global.maintainAspectRatio = false;
             Chart.defaults.global.animation.easing = 'linear';
-
             this._chart = new Chart.Line(this._ctx, {
                 data: this._chart_data,
             });
-        }
-
-        public jstree(): void {
-            $( '.tree li' ).each( function() {
-                if( $( this ).find('ul').children( 'li' ).length > 0 ) {
-                    $( this ).addClass( 'parent' );
+        };
+        NodejsDashboard.prototype.jstree = function () {
+            $('.tree li').each(function () {
+                if ($(this).find('ul').children('li').length > 0) {
+                    $(this).addClass('parent');
                 }
             });
-
-            $( '.tree li.parent > a' ).click( function( ) {
-                $( this ).parent().toggleClass( 'active' );
-                $( this ).parent().children( 'ul' ).slideToggle( 'fast' );
+            $('.tree li.parent > a').click(function () {
+                $(this).parent().toggleClass('active');
+                $(this).parent().children('ul').slideToggle('fast');
             });
-        }
-
-        public toogleMenu(): void {
-          $('.plugin-nodejs .open-menu').click(function() {
-              $('.plugin-nodejs .open-menu').removeClass('active-menu');
-              $('.plugin-nodejs #searchlist').val('');
-              $('.plugin-nodejs .explorer-menu').hide();
-              $('.plugin-nodejs #' + $(this).data('menu')).show();
-              $('.plugin-nodejs .new-entry').fadeOut();
-              $(this).addClass('active-menu');
-          });
-        }
-
-        public renderTree(arr: any): void {
+        };
+        NodejsDashboard.prototype.toogleMenu = function () {
+            $('.plugin-nodejs .open-menu').click(function () {
+                $('.plugin-nodejs .open-menu').removeClass('active-menu');
+                $('.plugin-nodejs #searchlist').val('');
+                $('.plugin-nodejs .explorer-menu').hide();
+                $('.plugin-nodejs #' + $(this).data('menu')).show();
+                $('.plugin-nodejs .new-entry').fadeOut();
+                $(this).addClass('active-menu');
+            });
+        };
+        NodejsDashboard.prototype.renderTree = function (arr) {
             var __that = this;
             __that.__html.push('<ul>');
-            $.each(arr, function(i, val) {
-                __that.__html.push('<li><a>' + val.text +'</a>');
+            $.each(arr, function (i, val) {
+                __that.__html.push('<li><a>' + val.text + '</a>');
                 if (val.children) {
-                    __that.renderTree(val.children)
+                    __that.renderTree(val.children);
                 }
                 __that.__html.push('</li>');
             });
             __that.__html.push('</ul>');
-        }
-
-        public buildTree(parts: any,treeNode: any): void {
-            if(parts.length === 0)
-            {
+        };
+        NodejsDashboard.prototype.buildTree = function (parts, treeNode) {
+            if (parts.length === 0) {
                 return;
             }
-
-            for(var i = 0 ; i < treeNode.length; i++)
-            {
-                if(parts[0] == treeNode[i].text)
-                {
-                    this.buildTree(parts.splice(1,parts.length),treeNode[i].children);
+            for (var i = 0; i < treeNode.length; i++) {
+                if (parts[0] == treeNode[i].text) {
+                    this.buildTree(parts.splice(1, parts.length), treeNode[i].children);
                     return;
                 }
             }
-
-            var newNode = {'text': parts[0] ,'children':[]};
+            var newNode = { 'text': parts[0], 'children': [] };
             treeNode.push(newNode);
-            this.buildTree(parts.splice(1,parts.length),newNode.children);
-        }
-
-        public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
+            this.buildTree(parts.splice(1, parts.length), newNode.children);
+        };
+        NodejsDashboard.prototype.onRealtimeMessageReceivedFromClientSide = function (receivedObject) {
             if (receivedObject.type == 'modules') {
                 var list = receivedObject.data;
                 var data = [];
-
-                for(var i = 0; i < list.length; i++) {
+                for (var i = 0; i < list.length; i++) {
                     list[i] = list[i].split("\\");
                     console.log(list);
                     this.buildTree(list[i], data);
                 }
-
                 this.renderTree(data);
                 $('#jstree').append(this.__html.join(''));
                 this.jstree();
@@ -219,11 +185,10 @@ module VORLON {
                         icon = 'apple.png';
                         break;
                 }
-
                 $('.infos-platform img').attr('src', '/images/systems/' + icon);
             }
             if (receivedObject.type == 'memory') {
-                if(!this._chart) {
+                if (!this._chart) {
                     this.chart();
                 }
                 if (this._time >= 70) {
@@ -232,18 +197,16 @@ module VORLON {
                     this._chart.data.datasets[2].data.splice(0, 1);
                     this._chart.data.labels.splice(0, 1);
                 }
-
                 this._chart.data.labels.push(this._time);
-
                 this._chart.data.datasets[0].data.push(receivedObject.data['heapUsed'] / this.__MEGA_BYTE);
                 this._chart.data.datasets[1].data.push(receivedObject.data['heapTotal'] / this.__MEGA_BYTE);
                 this._chart.data.datasets[2].data.push(receivedObject.data['rss'] / this.__MEGA_BYTE);
-
                 this._chart.update();
                 this._time += 5;
             }
-        }
-    }
-
-    Core.RegisterDashboardPlugin(new NodejsDashboard());
-}
+        };
+        return NodejsDashboard;
+    }(VORLON.DashboardPlugin));
+    VORLON.NodejsDashboard = NodejsDashboard;
+    VORLON.Core.RegisterDashboardPlugin(new NodejsDashboard());
+})(VORLON || (VORLON = {}));
