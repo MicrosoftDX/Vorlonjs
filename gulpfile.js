@@ -134,8 +134,6 @@ gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
         .pipe(concat('vorlon.office.dashboard.js'))
         .pipe(gulp.dest('Plugins/release/plugins/office/'));
 
-    
-
      gulp.src([
         'Plugins/release/plugins/office/vorlon.office.interfaces.min.js',
         'Plugins/release/plugins/office/vorlon.office.tools.min.js',
@@ -185,9 +183,7 @@ gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
 gulp.task('scripts-plugins', ['concat-webstandards-rules-plugins'], function () {
 
     return gulp.src([
-            './Plugins/**/vorlon.*.interfaces.js',
-            './Plugins/**/vorlon.*.client.js',
-            './Plugins/**/vorlon.*.dashboard.js'
+            './Plugins/**/vorlon.*.js'
         ])
         .pipe(rename(function (path) {
                 path.extname = ".min.js";
