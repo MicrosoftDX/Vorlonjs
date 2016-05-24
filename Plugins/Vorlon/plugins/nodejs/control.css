@@ -1,0 +1,604 @@
+.plugin-nodejs [button-block] {
+  display: block;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+}
+.plugin-nodejs .split {
+  height: 100%;
+  overflow: hidden !important;
+}
+.plugin-nodejs .panel-left,
+.plugin-nodejs .panel-right {
+  height: 100%;
+}
+.plugin-nodejs .vsplitter {
+  left: 70%;
+}
+.plugin-nodejs .panel-right {
+  overflow: hidden;
+  width: 30%;
+}
+.plugin-nodejs .panel-left {
+  width: 70%;
+}
+.plugin-nodejs .tree-view,
+.plugin-nodejs .style-view {
+  padding: 0;
+}
+.plugin-nodejs #accordion-nodejs {
+  height: 100%;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  overflow: auto;
+}
+.plugin-nodejs #accordion-nodejs .accordion-nodejs-section {
+  display: none;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+.plugin-nodejs #accordion-nodejs .accordion-nodejs-section.visible {
+  display: block;
+  overflow: auto;
+  min-height: 100px;
+}
+.plugin-nodejs #accordion-nodejs #htmlsection.accordion-nodejs-section.visible {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+.plugin-nodejs #accordion-nodejs #htmlsection.accordion-nodejs-section #innerHTMLView {
+  height: 100%;
+  -webkit-flex: 1;
+  flex: 1;
+  width: 100%;
+}
+.plugin-nodejs #accordion-nodejs #layoutsection {
+  /*padding: 20px;*/
+  position: relative;
+  overflow: hidden;
+}
+.plugin-nodejs #accordion-nodejs #layoutsection.hide {
+  display: none;
+}
+.plugin-nodejs #accordion-nodejs #layoutsection .label {
+  top: 0;
+  left: 0;
+  position: absolute;
+  margin-top: 2px;
+  margin-left: 4px;
+  font-size: 7pt;
+}
+.plugin-nodejs #accordion-nodejs #layoutsection .margin {
+  width: 320px;
+  height: 150px;
+  border: 1px dashed black;
+  left: 50%;
+  margin-left: -160px;
+  position: absolute;
+  top: 50%;
+  margin-top: -75px;
+}
+.plugin-nodejs #accordion-nodejs #layoutsection .margin .container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.plugin-nodejs #accordion-nodejs #layoutsection .margin .top {
+  left: 50%;
+  position: relative;
+  margin-left: -10px;
+}
+.plugin-nodejs #accordion-nodejs #layoutsection .margin .left {
+  top: 50%;
+  left: 2px;
+  position: absolute;
+  margin-top: -10px;
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+}
+.plugin-nodejs #accordion-nodejs #layoutsection .margin .right {
+  top: 50%;
+  right: 2px;
+  position: absolute;
+  margin-top: -10px;
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+.plugin-nodejs #accordion-nodejs #layoutsection .margin .bottom {
+  left: 50%;
+  bottom: 0;
+  position: absolute;
+  margin-left: -10px;
+}
+.plugin-nodejs #accordion-nodejs #layoutsection .margin .border {
+  top: 0;
+  width: 260px;
+  height: 110px;
+  margin-top: 20px;
+  margin-left: 30px;
+  border: 1px solid black;
+  background-color: #adadad;
+  position: absolute;
+}
+.plugin-nodejs #accordion-nodejs #layoutsection .margin .border .padding {
+  top: 0;
+  margin-top: 20px;
+  margin-left: 30px;
+  width: 200px;
+  height: 70px;
+  background-color: #CCC;
+  border: 1px solid black;
+  position: absolute;
+}
+.plugin-nodejs #accordion-nodejs #layoutsection .margin .border .padding .size {
+  top: 0;
+  position: absolute;
+  margin-top: 20px;
+  margin-left: 30px;
+  border: 1px solid black;
+  width: 140px;
+  height: 30px;
+  text-align: center;
+  line-height: 27px;
+}
+.plugin-nodejs #accordion-nodejs h3 {
+  font-family: "Menlo", "Consolas", "Lucida Console", Courier, monospace;
+  background: #eee;
+  padding: 10px;
+  margin: 0;
+  cursor: pointer;
+  border-bottom: 1px solid #CCC;
+  height: 36px;
+}
+.plugin-nodejs #accordion-nodejs h3.visible {
+  background: #CCC;
+}
+.plugin-nodejs #treeView2 {
+  height: 100%;
+  overflow-x: none;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.7em;
+}
+.plugin-nodejs #styleView,
+.plugin-nodejs #settings,
+.plugin-nodejs #computedsection {
+  padding: 15px;
+}
+.plugin-nodejs #computedsection {
+  overflow: auto;
+}
+.plugin-nodejs #settings > div {
+  clear: both;
+}
+.plugin-nodejs #settings .switch-wrapper {
+  display: inline-block;
+  position: relative;
+  float: right;
+  top: 3px;
+}
+.plugin-nodejs #htmlsection {
+  /*.filter-btn {
+            border-radius: 0;
+            background-color: transparent;
+            width: 32px;
+            text-align: center;
+            margin-left: 2px;
+            background-color: #333;
+            color: white;
+        }*/
+}
+.plugin-nodejs .tree-view-wrapper {
+  position: relative;
+}
+.plugin-nodejs .tree-view-wrapper .domload-spinner {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #CCC;
+}
+.plugin-nodejs .tree-view-wrapper .domload-spinner .fa-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+.plugin-nodejs .tree-view-wrapper.active .domload-spinner {
+  display: none;
+}
+.plugin-nodejs .tree-view-wrapper > x-controlbar {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+.plugin-nodejs .tree-view-wrapper > x-controlbar #searchresults {
+  display: none;
+  position: relative;
+  font-size: 70%;
+  font-weight: bold;
+  text-align: center;
+}
+.plugin-nodejs .tree-view-wrapper > x-controlbar #searchresults:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  padding: 0 0.75em 0 0;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.plugin-nodejs .tree-view-wrapper > x-controlbar #searchresults.found {
+  display: block;
+  color: #777;
+}
+.plugin-nodejs .tree-view-wrapper > x-controlbar #searchresults.found:before {
+  content: attr(content);
+}
+.plugin-nodejs .tree-view-wrapper > x-controlbar #searchresults.noresults {
+  display: block;
+  color: #ed2424;
+}
+.plugin-nodejs .tree-view-wrapper > x-controlbar #searchresults.noresults:before {
+  content: "0/0";
+}
+.plugin-nodejs .tree-view-wrapper > x-controlbar #searchinput {
+  min-width: 220px;
+  margin-left: auto;
+}
+.plugin-nodejs .notexpansible .treeNodeButton {
+  display: none;
+}
+.plugin-nodejs .treeNodeButton {
+  color: #444;
+  margin-left: -7px;
+  background: #fff;
+  cursor: pointer;
+  border: 1px solid #DDD;
+  /*media screen*/
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  line-height: 10px;
+  vertical-align: middle;
+  text-align: center;
+  margin-right: 4px;
+  box-sizing: border-box;
+  outline: none;
+}
+.plugin-nodejs .treeNodeButton:before {
+  content: "-";
+  outline: none;
+}
+.plugin-nodejs .treeNodeButton.loading {
+  border-color: transparent;
+}
+.plugin-nodejs .treeNodeButton.loading:before {
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+  font-family: 'FontAwesome';
+  content: "\f110";
+  outline: none;
+}
+.plugin-nodejs .treeNodeButton[data-collapsed]:before {
+  content: "+";
+  vertical-align: middle;
+  outline: none;
+}
+.plugin-nodejs .treeNodeButton[data-collapsed] ~ .treeNodeHeader .closetag:after {
+  content: '...';
+  color: black;
+}
+.plugin-nodejs .treeNodeButton[data-collapsed] ~ .treeNodeHeader.emptynode .closetag:after {
+  content: '';
+}
+.plugin-nodejs .treeNodeButton[data-collapsed] ~ .nodeContentContainer {
+  display: none;
+}
+.plugin-nodejs .treeNodeButton::-moz-focus-inner {
+  border: none;
+}
+.plugin-nodejs .treeNodeButton:focus {
+  /*outline: 1px dotted #000;*/
+}
+.plugin-nodejs .editable {
+  cursor: text;
+}
+.plugin-nodejs .treeNodeHeader {
+  text-decoration: none;
+  color: #ccc;
+  /*font-weight: bold;*/
+  cursor: pointer;
+}
+.plugin-nodejs .treeNodeHeader .fa-plus-circle {
+  color: #BBB;
+  font-size: 0.9em;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.plugin-nodejs .treeNodeHeader .editable {
+  -moz-box-shadow: 0 0 2px 2px #888;
+  -webkit-box-shadow: 0 0 2px 2px #888;
+  box-shadow: 0 0 2px 2px #888;
+  background-color: transparent !important;
+}
+.plugin-nodejs .treeNodeHeader:focus {
+  outline: 1px dotted #000;
+}
+.plugin-nodejs .treeNodeHeader .opentag {
+  /*content: "<";*/
+  color: #BBB;
+}
+.plugin-nodejs .treeNodeHeader .closetag {
+  /*content: ">";*/
+  color: #BBB;
+}
+.plugin-nodejs .open-menu.active-menu {
+  background: #3E3D3D !important;
+  color: white;
+}
+.plugin-nodejs .nodeContentContainer {
+  padding-left: 20px;
+}
+.plugin-nodejs .nodeContentContainer[data-has-children] {
+  border-left: 1px solid #EEE;
+  margin-left: -2px;
+}
+.plugin-nodejs .nodeContentContainer:not([data-has-children]),
+.plugin-nodejs .nodeContentContainer:not([data-has-children]) .treeNodeClosingText {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.plugin-nodejs .nodeContentContainer:not([data-has-children]) .nodeTextContent {
+  padding: 0 0.25em;
+}
+.plugin-nodejs .nodeContentContainer:not([data-has-children]) .nodeTextContent.editable {
+  -moz-box-shadow: 0 0 2px 2px #888;
+  -webkit-box-shadow: 0 0 2px 2px #888;
+  box-shadow: 0 0 2px 2px #888;
+}
+.plugin-nodejs [data-hovered-tag] > .treeNodeHeader,
+.plugin-nodejs [data-hovered-tag] > .nodeContentContainer,
+.plugin-nodejs [data-hovered-tag] > .treeNodeClosingText .openclosingtag,
+.plugin-nodejs [data-hovered-tag] > .treeNodeClosingText .nodeName,
+.plugin-nodejs [data-hovered-tag] > .treeNodeClosingText .closetag {
+  background: cyan !important;
+}
+.plugin-nodejs .treeNodeSelected,
+.plugin-nodejs .treeNodeSelected .treeNodeClosingText .nodeName {
+  background-color: yellow;
+}
+.plugin-nodejs .editableselection.treeNodeSelected,
+.plugin-nodejs .editableselection.treeNodeSelected .treeNodeClosingText .nodeName {
+  background: white !important;
+}
+.plugin-nodejs .treeNodeTools {
+  color: #666;
+  float: right;
+  text-decoration: none;
+  border: 1px solid #DDD;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  box-sizing: border-box;
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.8em;
+}
+.plugin-nodejs .treeNodeText {
+  text-decoration: none;
+  border-left: 1px solid #eee;
+}
+.plugin-nodejs .firstTreeNodeText {
+  text-decoration: none;
+  padding-left: 0;
+}
+.plugin-nodejs .nodeTextContent {
+  color: #111;
+}
+.plugin-nodejs .nodeTextContent.nodeComment {
+  color: #3fa83f;
+}
+.plugin-nodejs .nodeTextContent.nodeComment:before {
+  content: '<!--';
+}
+.plugin-nodejs .nodeTextContent.nodeComment:after {
+  content: '--!>';
+}
+.plugin-nodejs .treeNodeClosingText {
+  display: inline-block;
+  cursor: pointer;
+}
+.plugin-nodejs .treeNodeClosingText .openclosingtag {
+  color: #BBB;
+}
+.plugin-nodejs .treeNodeClosingText .closetag {
+  color: #BBB;
+}
+.plugin-nodejs .nodeName {
+  color: #6b2d81;
+}
+.plugin-nodejs .nodeAttribute {
+  padding-left: 0.5em;
+  color: #6b2d81;
+}
+.plugin-nodejs .nodeAttribute span.attr-name {
+  color: #ed2424;
+}
+.plugin-nodejs .nodeAttribute span.link-hovered {
+  text-decoration: underline;
+}
+.plugin-nodejs .nodeAttribute span.attr-value {
+  color: #007ca7;
+}
+.plugin-nodejs .colored-square {
+  display: inline-flex;
+  height: 10px;
+  width: 10px;
+  border: 1px #000 solid;
+}
+.plugin-nodejs .styleLabel,
+.plugin-nodejs .attributeName {
+  display: inline-block;
+  margin-right: 2px;
+  padding: 0 2px;
+  color: #ed2424;
+}
+.plugin-nodejs .styleLabel:after,
+.plugin-nodejs .attributeName:after {
+  content: ":";
+}
+.plugin-nodejs .styleValue,
+.plugin-nodejs .attributeValue {
+  display: inline;
+  margin-left: 2px;
+  padding: 0 2px;
+  color: #444;
+  word-wrap: break-word;
+  vertical-align: top;
+}
+.plugin-nodejs .styleLabel.editable,
+.plugin-nodejs .attributeName.editable,
+.plugin-nodejs .styleValue.editable,
+.plugin-nodejs .attributeValue.editable {
+  background-color: rgba(0, 183, 199, 0.1);
+  color: #666;
+  outline: 1px solid #ff1493;
+}
+.plugin-nodejs .styleButton {
+  width: 80px;
+  max-width: 50%;
+  margin: 10px auto 0;
+  color: #444;
+  text-align: center;
+  background: #eee;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.plugin-nodejs x-action[event="refresh"] .fa {
+  color: #aaa;
+}
+.plugin-nodejs x-action[event="refresh"][changed] .fa {
+  color: red;
+}
+body .b-m-mpanel {
+  z-index: 5000;
+  background: #eee;
+  padding: 0;
+  border-color: #888;
+  /*.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+        background: #CCC;
+    }
+
+    .ui-menu-item {
+        padding: 10px;
+        font-size: 10pt;
+    }*/
+}
+body .b-m-mpanel .b-m-item,
+body .b-m-mpanel .b-m-ifocus {
+  background: #eee;
+  padding: 10px;
+  font-size: 10pt;
+  margin: 0;
+}
+body .b-m-mpanel .b-m-item img,
+body .b-m-mpanel .b-m-ifocus img {
+  display: none;
+}
+body .b-m-mpanel .b-m-ifocus {
+  background: #CCC;
+  cursor: pointer;
+  border: none;
+}
+.resources-features-list {
+  width: 100%;
+}
+.resources-features-list th,
+.resources-features-list td {
+  padding: 5px 10px;
+  text-align: left;
+}
+.resources-features-list th {
+  background: #f7f7f7;
+  border-bottom: 1px solid #ddd;
+  font-weight: 400;
+}
+.resources-features-list .th50 {
+  width: 50%;
+}
+.resources-features-list td.valueClass {
+  border-left: 1px solid #BFBFBF;
+  background-color: #CCC;
+}
+.resources-features-list td {
+  border-bottom: 1px solid #eee;
+}
+.resources-features-list td .fa-times {
+  color: #D81919;
+  font-size: 14px;
+}
+.resources-features-list .actionClass {
+  cursor: pointer;
+}
+.new-entry {
+  display: none;
+}
+.new-entry input {
+  width: 48%;
+  padding: 5px;
+  margin: 5px;
+}
+#searchlist {
+  margin-left: auto;
+  width: 200px;
+}
+
+#nodejs-information {
+  padding: 20px;
+}
+
+#nodejs-information > table {
+  width: 100%;
+  margin: 20px 0 30px;
+}
+#nodejs-information > table th,
+#nodejs-information > table td {
+  padding: 5px 10px;
+  text-align: left;
+}
+#nodejs-information > table td {
+  border-bottom: 1px solid #eee;
+}
+#nodejs-information > table td:first-child {
+  width: 30%;
+}
+#nodejs-information > table .header {
+  background: #f7f7f7;
+  border-bottom: 1px solid #ddd;
+  font-weight: 400;
+}
+
+#nodejs-information img {
+    width: 20px;
+    position: relative;
+    top: 5px;
+    margin-right: 5px;
+}

@@ -16,13 +16,6 @@
     "vorlonProxyURL": "",
     "plugins": [
         {
-            "id": "DOM",
-            "name": "Dom Explorer",
-            "panel": "top",
-            "foldername": "domExplorer",
-            "enabled": true
-        },
-        {
             "id": "OBJEXPLORER",
             "name": "Obj. Explorer",
             "panel": "top",
@@ -31,11 +24,13 @@
             "nodeCompliant": true
         },
         {
-            "id": "WEBSTANDARDS",
-            "name": "Best practices",
+            "id": "NODEJS",
+            "name": "NodeJS",
             "panel": "top",
-            "foldername": "webstandards",
-            "enabled": true
+            "foldername": "nodejs",
+            "enabled": true,
+            "nodeCompliant": true,
+            "nodeOnly": true
         },
         {
             "id": "XHRPANEL",
@@ -44,6 +39,27 @@
             "foldername": "xhrPanel",
             "enabled": true,
             "nodeCompliant": true
+        },
+        {
+            "id": "DEVICE",
+            "name": "My Device",
+            "panel": "top",
+            "foldername": "device",
+            "enabled": true
+        },
+        {
+            "id": "DOM",
+            "name": "Dom Explorer",
+            "panel": "top",
+            "foldername": "domExplorer",
+            "enabled": true
+        },
+        {
+            "id": "WEBSTANDARDS",
+            "name": "Best practices",
+            "panel": "top",
+            "foldername": "webstandards",
+            "enabled": true
         },
         {
             "id": "NETWORK",
@@ -60,18 +76,24 @@
             "enabled": true
         },
         {
-            "id": "DEVICE",
-            "name": "My Device",
-            "panel": "top",
-            "foldername": "device",
-            "enabled": true
-        },
-        {
             "id": "UNITTEST",
             "name": "Unit Test",
             "panel": "top",
             "foldername": "unitTestRunner",
             "enabled": true
+        },
+        {
+            "id": "UWP",
+            "name": "UWP apps",
+            "panel": "top",
+            "foldername": "uwp"
+        },
+        {
+            "id": "DOMTIMELINE",
+            "name": "DOM Timeline",
+            "panel": "bottom",
+            "foldername": "domtimeline",
+            "enabled": false
         },
         {
             "id": "CONSOLE",
@@ -110,11 +132,20 @@
             "enabled": false
         },
         {
-            "id": "UWP",
-            "name": "UWP apps",
+            "id": "SCREEN",
+            "name": "Screenshot",
             "panel": "top",
-            "foldername": "uwp",
+            "foldername": "screenshot",
             "enabled": false
+        },
+        {
+            "id": "EXPRESS",
+            "name": "Express",
+            "panel": "bottom",
+            "foldername": "express",
+            "enabled": true,
+            "nodeCompliant": true,
+            "nodeOnly": true
         }
     ]
 }
