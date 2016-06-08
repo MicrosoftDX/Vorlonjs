@@ -1,13 +1,8 @@
 /// <reference path="api/vorlon.core.d.ts" />
 /// <reference path="api/vorlon.dashboardPlugin.d.ts" />
+/// <reference path="api/mapping-system.d.ts" />
+/// <reference path="api/shared-definitions.d.ts" />
 var $ : any;
-interface DataForEntry {
-    type:string,
-    description: string,
-    timestamp: number,
-    details: any,
-    isCancelled: boolean // added here
-}
 
 module VORLON {
 	
@@ -43,6 +38,168 @@ module VORLON {
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div, (filledDiv) => {
                 this._inputField = <HTMLInputElement>filledDiv.querySelector('#echoInput');
+                filledDiv.querySelector("#open-popup-button").addEventListener('click', () => {
+
+                    var popup = window.open("about:blank", "popup", "width=800,height=600,menubar=no,toolbar=no,location=no,resizable=yes,scrollbars=yes,status=no");
+                    var pDoc = popup.document;
+                    var doctypeText = getDoctypeText();
+                    pDoc.open();
+                    pDoc.write(doctypeText+"<html></html>");
+                    pDoc.close();
+                    var oRE : HTMLHtmlElement = <any>pDoc.documentElement;
+                    var nRE : HTMLHtmlElement = <any>getNewRootElement();
+                    var nHE : HTMLHeadElement = <any>nRE.querySelector("head") || createHeadFor(nRE);
+                    var nBE : HTMLBaseElement = <any>nHE.querySelector("base") || createBaseFor(nHE);
+                    nBE.href = clientUrl;
+                    disableScripts(nRE);
+                    popup.document.replaceChild(nRE,oRE);
+                    enableScripts(nRE);
+                    __startAnimation();
+
+                    function getDoctypeText() {
+                        var docStart = domData.p2oMap.get("0:0");
+                        return ("tagName" in docStart) ? '' : domData.data[0].outerHTML;
+                    }
+                    function getNewRootElement() {
+                        var docStart = domData.p2oMap.get("0:0");
+                        if(!("tagName" in docStart)) {
+                            docStart = domData.p2oMap.get("1:0");
+                        }
+                        return docStart;
+                    }
+                    function createHeadFor(htmlElement) {
+                        // normal position of the head, 
+                        // but we are screwed by now I think because doc will likely insert another one soon
+                        var headElement = pDoc.createElement('head');
+                        htmlElement.insertBefore(headElement, htmlElement.firstChild); 
+                        return headElement;
+                    }
+                    function createBaseFor(headElement) {
+                        // position least likely to hurt anything, 
+                        // we should be okay
+                        var baseElement = pDoc.createElement('base');
+                        headElement.insertBefore(baseElement, headElement.lastChild); 
+                        return baseElement;
+                    }
+                    function disableScripts(root) {
+                        var scripts = root.querySelectorAll('script');
+                        for(var s = scripts.length; s--;) {
+                            var script = scripts[s];
+                            script.type = "!" + script.type;
+                        }
+                    }
+                    function enableScripts(root) {
+                        var scripts = root.querySelectorAll('script[type^="!"]');
+                        for(var s = scripts.length; s--;) {
+                            var script = scripts[s];
+                            script.type = "!" + script.type;
+                        }
+                    }
+                    function __startAnimation() {
+
+                        var popupLastPastEventsCount = 0;
+                        setInterval(function() {
+                            if(popupLastPastEventsCount != lastPastEventsCount) {
+                                // we should sync our view with the real view now
+                                if(popupLastPastEventsCount < lastPastEventsCount) {
+                                    // we need to redo some changes
+                                    for(var i = popupLastPastEventsCount; i != lastPastEventsCount; i++) {
+                                        redoMutationRecord(convertToMutationRecord(alreadyKnownEvents[i].rawData));
+                                    }
+                                } else {
+                                    // we need to undo some changes
+                                    for(var i = popupLastPastEventsCount; i != lastPastEventsCount; i--) {
+                                        undoMutationRecord(convertToMutationRecord(alreadyKnownEvents[i-1].rawData));
+                                    }
+                                }
+                                // save the fact we synced
+                                popupLastPastEventsCount = lastPastEventsCount;
+                            }
+                        }, 33);
+
+                        function convertToMutationRecord(d) {
+                            var e : any = {};
+                            for(var key in d) { e[key] = d[key]; }
+                            if(e.target) e.target = domData.getObjectFor(e.target);
+                            if(e.nextSibling) e.nextSibling = domData.getObjectFor(e.nextSibling);
+                            if(e.addedNodes) e.addedNodes = domData.getObjectListFor(e.addedNodes);
+                            if(e.removedNodes) e.removedNodes = domData.getObjectListFor(e.removedNodes);
+                            return e; 
+                        }
+
+                        // 
+                        // execute the action which cancels a mutation record
+                        // 
+                        function undoMutationRecord(change) {
+                            switch(change.type) {
+                                
+                                //
+                                case "attributes":
+                                    change.target.setAttribute(change.attributeName, change.oldValue);
+                                    if(change.attributeName=='value') change.target.value = change.oldValue||'';
+                                return;
+                                
+                                //
+                                case "characterData":
+                                    change.target.nodeValue = change.oldValue;
+                                return;
+                                
+                                //
+                                case "childList":
+                                    if(change.addedNodes) {
+                                        for(var i = change.addedNodes.length; i--;) {
+                                            change.addedNodes[i].remove();
+                                        }
+                                    } 
+                                    if(change.removedNodes) {
+                                        var lastNode = change.nextSibling;
+                                        for(var i = change.removedNodes.length; i--;) {
+                                            change.target.insertBefore(change.removedNodes[i], lastNode);
+                                            lastNode = change.removedNodes[i];
+                                        }
+                                    }
+                                return;
+                                
+                            }
+                        }
+                        
+                        // 
+                        // execute the action which replicates a mutation record
+                        // 
+                        function redoMutationRecord(change) {
+                            switch(change.type) {
+                                
+                                //
+                                case "attributes":
+                                    change.target.setAttribute(change.attributeName, change.newValue);
+                                    if(change.attributeName=='value') change.target.value = change.newValue||'';
+                                return;
+                                
+                                //
+                                case "characterData":
+                                    change.target.nodeValue = change.newValue;
+                                return;
+                                
+                                //
+                                case "childList":
+                                    if(change.addedNodes) {
+                                        var lastNode = change.nextSibling;
+                                        for(var i = change.addedNodes.length; i--;) {
+                                            change.target.insertBefore(change.addedNodes[i], lastNode);
+                                            lastNode = change.addedNodes[i];
+                                        }
+                                    } 
+                                    if(change.removedNodes) {
+                                        for(var i = change.removedNodes.length; i--;) {
+                                            change.removedNodes[i].remove();
+                                        }
+                                    }
+                                return;
+                                
+                            }
+                        }
+                    }
+                });
                 //this._outputDiv = <HTMLElement>filledDiv.querySelector('#output');
                 //this._toastDiv = <HTMLElement>filledDiv.querySelector('#toast');
                 
@@ -66,13 +223,16 @@ module VORLON {
                 });
                 
                 // Refresh the output from time to time
+                var clientUrl = "about:blank";
+                var domData = new MappingSystem.NodeMappingSystem();
                 var alreadyKnownEvents = [], lastPastEventsCount = 0;
                 var updateTimer = setInterval(function() {
                     me.sendMessageToClient(
-                        "domHistory.generateDashboardData("+alreadyKnownEvents.length+")", 
+                        "domHistory.generateDashboardData("+`{history:${alreadyKnownEvents.length},lostFuture:0,domData:${domData.data.length}}`+")", 
                         (e)=>{
                             
                             // refresh metadata
+                            clientUrl = e.message.url;
                             document.getElementById("dom-recorder").setAttribute('is-recording-started', e.message.isRecordingNow || e.message.isRecordingEnded);
                             document.getElementById("dom-recorder").setAttribute('is-recording-ended', e.message.isRecordingEnded);
 
@@ -91,6 +251,8 @@ module VORLON {
                                 alreadyKnownEvents[i].isCancelled = i >= e.message.pastEventsCount;
                                 lastPastEventsCount = e.message.pastEventsCount;
                             }
+                            // merge domData
+                            domData.importData(e.message.domData);
                             // refresh content
                             dashboard.setTimeline(alreadyKnownEvents);
                             //me._outputDiv.textContent=JSON.stringify(e.message,null,"    ");
@@ -139,13 +301,13 @@ function initDashboard() {
     var TIMELINE_SECONDS = 20;
     var timelineBaseHTML = document.getElementById('timeline').innerHTML;
 
-    var setNumberChanges = function (timeline : DataForEntry[]) {
+    var setNumberChanges = function (timeline : DashboardDataForEntry[]) {
         document.querySelectorAll('.inline-changes-added span')[0].innerHTML = '' + countByType('added', timeline);
         document.querySelectorAll('.inline-changes-removed span')[0].innerHTML = '' + countByType('removed', timeline);
         document.querySelectorAll('.inline-changes-modified span')[0].innerHTML = '' + countByType('modified', timeline);
     }
 
-    var setChanges = function (changes : DataForEntry[]) {
+    var setChanges = function (changes : DashboardDataForEntry[]) {
         var html = '';
         
         var times = {};
@@ -245,7 +407,7 @@ function initDashboard() {
         document.getElementById('timeline').style.width = SCALE * (61 * (s + 1)) + 'px';
     }
 
-    var setTimeline = function (timeline : DataForEntry[]) {
+    var setTimeline = function (timeline : DashboardDataForEntry[]) {
         setNumberChanges(timeline);
         setChanges(timeline);
         setTimelineSeconds(TIMELINE_SECONDS);
@@ -314,7 +476,7 @@ function initDashboard() {
         return count;
     }
 
-    var timeline: DataForEntry[] = [];
+    var timeline: DashboardDataForEntry[] = [];
     setTimeline(timeline);
 
     var selectable = function () {

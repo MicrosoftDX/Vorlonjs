@@ -107,7 +107,22 @@ var domTimelineOptions = domTimelineOptions || {
 				);
 			}
 		}
-	}
+	},
+
+	// ------------------------------------------------------------------------------------------------------------------
+	// this function is being called inline when recording starts
+	// ------------------------------------------------------------------------------------------------------------------
+	onRecordingStart() {},
+
+	// ------------------------------------------------------------------------------------------------------------------
+	// this function is being called inline when recording restarts
+	// ------------------------------------------------------------------------------------------------------------------
+	onRecordingRestart() {},
+
+	// ------------------------------------------------------------------------------------------------------------------
+	// this function is being called inline when recording stops
+	// ------------------------------------------------------------------------------------------------------------------
+	onRecordingStop() {}
 	
 };
 
@@ -199,14 +214,35 @@ void function() {
 		startRecording() {
 			if(isRecordingStopped) {
 				isRecordingStopped = false;
+				onRecordingRestart();
 				return true;
 			}
 			if(isDoingOffRecordsMutations >= 1e9) {
 				isDoingOffRecordsMutations -= 1e9;
 				recordingStartDate = (window.performance ? window.performance.now() : Date.now());
+				onRecordingStart();
 				return true;
 			}
 			return false;
+
+			function onRecordingStart() {
+				try { 
+					if(domTimelineOptions.onRecordingStart) { 
+						domTimelineOptions.onRecordingStart(); 
+					}
+				} catch (ex) {
+					console.error(ex);
+				}
+			}
+			function onRecordingRestart() {
+				try { 
+					if(domTimelineOptions.onRecordingRestart) { 
+						domTimelineOptions.onRecordingRestart(); 
+					}
+				} catch (ex) {
+					console.error(ex);
+				}
+			}
 		},
 		
 		stopRecording() {
@@ -215,9 +251,20 @@ void function() {
 			}
 			if(!isRecordingStopped) {
 				isRecordingStopped = true;
-				return false;
+				onRecordingStop();
+				return true;
 			}
-			return true;
+			return false;
+
+			function onRecordingStop() {
+				try { 
+					if(domTimelineOptions.onRecordingStop) { 
+						domTimelineOptions.onRecordingStop(); 
+					}
+				} catch (ex) {
+					console.error(ex);
+				}
+			}
 		},
 		
 		get isRecording() {
@@ -636,6 +683,7 @@ void function() {
 			//
 			case "attributes":
 				change.target.setAttribute(change.attributeName, change.oldValue);
+				if(change.attributeName=='value') change.target.value = change.oldValue||'';
 			return;
 			
 			//
@@ -671,6 +719,7 @@ void function() {
 			//
 			case "attributes":
 				change.target.setAttribute(change.attributeName, change.newValue);
+				if(change.attributeName=='value') change.target.value = change.newValue||'';
 			return;
 			
 			//

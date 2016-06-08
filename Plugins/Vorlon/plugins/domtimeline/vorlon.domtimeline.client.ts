@@ -1,5 +1,12 @@
 /// <reference path="api/vorlon.core.d.ts" />
 /// <reference path="api/vorlon.clientPlugin.d.ts" />
+/// <reference path="api/mapping-system.d.ts" />
+/// <reference path="api/shared-definitions.d.ts" />
+
+
+// ===============================================================
+// 
+// ===============================================================
 var domTimelineOptions: any;
 interface ExtentedMutationRecord extends MutationRecord {
     claim: string
@@ -22,18 +29,20 @@ var domHistory: {
     isRecording:boolean
     isRecordingStopped:boolean
     
-    generateDashboardData:(knownEvents:number)=>any
+    generateDashboardData:(knownData:{history:number,lostFuture:number,domData:number})=>any
 		
 };
+
+// ===============================================================
+// 
+// ===============================================================
 interface Window {
 	eval: (string) => (any)
 }
-interface DataForEntry {
-    type:string,
-    description: string,
-    timestamp: number,
-    details: any,
-}
+
+// ===============================================================
+// 
+// ===============================================================
 module VORLON {
 	export class DOMTimelineClient extends ClientPlugin {
 		
@@ -59,34 +68,61 @@ module VORLON {
 
         // Start the clientside code
         public startClientSide(): void {
+            var domData : NodeMappingSystem = null;
+            domTimelineOptions.onRecordingStart = function() {
+                domData = MappingSystem.NodeMappingSystem.initFromDocument();
+                window["domData"] = domData;
+            }
             domTimelineOptions.considerLoggingRecords = function(c,entries,s) {
                 for(var i = entries.length; i--;) {
                     var e = entries[i];
+                    // TODO: we should undo then redo all changes
+                    ensureDomDataIsUpToDate(e); 
                     e.__dashboardData = generateDashboardDataForEntry(e);
                 }
+                function ensureDomDataIsUpToDate(e: ExtentedMutationRecord) {
+                    if(e.addedNodes && e.addedNodes.length) {
+                        for(var i = 0; i < e.addedNodes.length; i++) {
+                            var addedNode = e.addedNodes[i];
+                            domData.addNodeAndChildren(addedNode);
+                        }
+                    }
+                }
             }
-            domHistory.generateDashboardData = function(knownEvents) {
+            domHistory.generateDashboardData = function(knownData:{history:number,lostFuture:number,domData:number}) {
                 var data:any = {};
+
+                // basic data
+                data.url = location.href;
                 data.isRecordingNow = domHistory.isRecording;
                 data.isRecordingEnded = domHistory.isRecordingStopped;
                 data.isPageFrozen = domHistory.future.length>0;
                 data.pastEventsCount = domHistory.past.length;
                 data.futureEventsCounts = domHistory.future.length;
+                
+                // history
                 data.history = (
                     []
                     .concat(domHistory.past.map(getDashboardDataForEntry))
                     .concat(domHistory.future.map(getDashboardDataForEntry))
                 );
-                data.history.splice(0,knownEvents);
+                data.history.splice(0,knownData.history|0);
+
+                // lostFuture
                 data.lostFuture = (
                     domHistory.lostFuture.map(getDashboardDataForEntry)
                 );
+                data.lostFuture.splice(0,knownData.lostFuture|0);
+
+                // domData
+                data.domData = domData ? domData.data.slice(knownData.domData|0) : [];
+
                 return data;
             }
             function getDashboardDataForEntry(e) {
-                return (<any>e).__dashboardData;
+                return e.__dashboardData;
             }
-            function generateDashboardDataForEntry(e:ExtentedMutationRecord):DataForEntry {
+            function generateDashboardDataForEntry(e:ExtentedMutationRecord):ClientDataForEntry {
                 var targetDescription = descriptionOf(e.target);
                 if(e.addedNodes.length > 0) {
                     var nodeDescription = (
@@ -104,6 +140,12 @@ module VORLON {
                             "Timestamp": Math.round(10*e.timestamp)/10000+"s",
                             "Claim": e.claim,
                             "Stack": "`"+e.stack.split('\n').filter(l => l.indexOf("vorlon.max")==-1).join('\n')+"`"
+                        },
+                        rawData: {
+                            type: "childList",
+                            addedNodes: domData.getPointerListFor(e.addedNodes),
+                            nextSibling: domData.getPointerFor(e.nextSibling),
+                            target: domData.getPointerFor(e.target),
                         }
                     }
                 } else if(e.removedNodes.length > 0) {
@@ -122,6 +164,12 @@ module VORLON {
                             "Timestamp": Math.round(10*e.timestamp)/10000+"s",
                             "Claim": e.claim,
                             "Stack": "`"+e.stack.split('\n').filter(l => l.indexOf("vorlon.max")==-1).join('\n')+"`"
+                        },
+                        rawData: {
+                            type: "childList",
+                            removedNodes: domData.getPointerListFor(e.removedNodes),
+                            nextSibling: domData.getPointerFor(e.nextSibling),
+                            target: domData.getPointerFor(e.target),
                         }
                     }
                 } else if(e.attributeName) {
@@ -138,6 +186,13 @@ module VORLON {
                                 "Timestamp": Math.round(10*e.timestamp)/10000+"s",
                                 "Claim": e.claim,
                                 "Stack": "`"+e.stack.split('\n').filter(l => l.indexOf("vorlon.max")==-1).join('\n')+"`"
+                            },
+                            rawData: {
+                                type: "attributes",
+                                attributeName: e.attributeName,
+                                oldValue: e.oldValue,
+                                newValue: e.newValue,
+                                target: domData.getPointerFor(e.target)
                             }
                         }
                     } else if(e.oldValue === null || e.oldValue === undefined) {
@@ -153,6 +208,13 @@ module VORLON {
                                 "Timestamp": Math.round(10*e.timestamp)/10000+"s",
                                 "Claim": e.claim,
                                 "Stack": "`"+e.stack.split('\n').filter(l => l.indexOf("vorlon.max")==-1).join('\n')+"`"
+                            },
+                            rawData: {
+                                type: "attributes",
+                                attributeName: e.attributeName,
+                                oldValue: e.oldValue,
+                                newValue: e.newValue,
+                                target: domData.getPointerFor(e.target)
                             }
                         }
                     } else {
@@ -168,6 +230,13 @@ module VORLON {
                                 "Timestamp": Math.round(10*e.timestamp)/10000+"s",
                                 "Claim": e.claim,
                                 "Stack": "`"+e.stack.split('\n').filter(l => l.indexOf("vorlon.max")==-1).join('\n')+"`"
+                            },
+                            rawData: {
+                                type: "attributes",
+                                attributeName: e.attributeName,
+                                oldValue: e.oldValue,
+                                newValue: e.newValue,
+                                target: domData.getPointerFor(e.target)
                             }
                         }
                     }
@@ -183,6 +252,12 @@ module VORLON {
                                 "Timestamp": Math.round(10*e.timestamp)/10000+"s",
                                 "Claim": e.claim,
                                 "Stack": "`"+e.stack.split('\n').filter(l => l.indexOf("vorlon.max")==-1).join('\n')+"`"
+                            },
+                            rawData: {
+                                type: "characterData",
+                                oldValue: e.oldValue,
+                                newValue: e.newValue,
+                                target: domData.getPointerFor(e.target)
                             }
                         }
                 }
