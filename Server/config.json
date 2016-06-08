@@ -89,13 +89,6 @@
             "foldername": "uwp"
         },
         {
-            "id": "DOMTIMELINE",
-            "name": "DOM Timeline",
-            "panel": "bottom",
-            "foldername": "domtimeline",
-            "enabled": false
-        },
-        {
             "id": "CONSOLE",
             "name": "Interactive Console",
             "panel": "bottom",
