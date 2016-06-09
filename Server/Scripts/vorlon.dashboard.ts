@@ -77,7 +77,7 @@ export module VORLON {
         
         private dashboardConfig() {
             return (req: express.Request, res: express.Response) => {
-                res.render('config', { baseURL: this.baseURLConfig.baseURL, title: 'Configuration', sessionid: "default", clientid: "" });
+                res.render('config', { baseURL: this.baseURLConfig.baseURL, title: 'Configuration', sessionid: "default", clientid: "", version: packageJson.version });
             };
         }
 
