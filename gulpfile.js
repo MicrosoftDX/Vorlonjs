@@ -197,7 +197,8 @@ gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
 gulp.task('scripts-plugins', ['concat-webstandards-rules-plugins'], function () {
 
     return gulp.src([
-            './Plugins/**/vorlon.*.js'
+            './Plugins/**/vorlon.*.js',
+            '!./Plugins/**/vorlon.*.min.js'
         ])
         .pipe(rename(function (path) {
                 path.extname = ".min.js";
