@@ -93,6 +93,20 @@ gulp.task('concat-webstandards-rules-plugins', ['typescript-to-js-plugins'], fun
  * Do not hesitate to update it if you need to add your own files
  */
 gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
+    // DOMTimeline
+    gulp.src([
+        'Plugins/release/plugins/domtimeline/vorlon.domtimeline.dashboard.js',
+    ])
+        .pipe(concat('vorlon.domtimeline.dashboard.min.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/domtimeline/'));
+	gulp.src([
+		'Plugins/Vorlon/plugins/domtimeline/dom-timeline.js',
+        'Plugins/release/plugins/domtimeline/vorlon.domtimeline.client.js',
+    ])
+        .pipe(concat('vorlon.domtimeline.client.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/domtimeline/'));
+
+		
     // Babylon Inspector
     gulp.src([
         'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
@@ -213,6 +227,7 @@ gulp.task('copyPlugins-plugins', function () {
           'Plugins/Vorlon/plugins/**/*.css',
           'Plugins/Vorlon/plugins/**/*.html',
           'Plugins/Vorlon/plugins/**/*.png',
+          'Plugins/Vorlon/plugins/**/*.PNG',          
           'Plugins/release/plugins/**/*.js'
     ])
         .pipe(gulp.dest('./Server/public/vorlon/plugins'));
