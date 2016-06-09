@@ -22,7 +22,7 @@ declare module VORLON {
         childs: Array<FluentDOM>;
         parent: FluentDOM;
         constructor(nodeType: string, className?: string, parentElt?: Element, parent?: FluentDOM);
-        static forElement(element: HTMLElement): VORLON.FluentDOM;
+        static forElement(element: HTMLElement): FluentDOM;
         addClass(classname: string): FluentDOM;
         toggleClass(classname: string): FluentDOM;
         className(classname: string): FluentDOM;
@@ -37,7 +37,7 @@ declare module VORLON {
         style(name: string, val: string): FluentDOM;
         appendTo(elt: Element): FluentDOM;
         append(nodeType: string, className?: string, callback?: (fdom: FluentDOM) => void): FluentDOM;
-        createChild(nodeType: string, className?: string): VORLON.FluentDOM;
+        createChild(nodeType: string, className?: string): FluentDOM;
         click(callback: (EventTarget) => void): FluentDOM;
         blur(callback: (EventTarget) => void): FluentDOM;
         keydown(callback: (EventTarget) => void): FluentDOM;

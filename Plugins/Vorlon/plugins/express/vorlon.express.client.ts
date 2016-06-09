@@ -4,7 +4,7 @@ module VORLON {
         private _expressSource;
         private _hookAlreadyDone;
         public hooked: boolean = false;
-        
+
         constructor() {
             super("express"); // Name
             this._ready = true; // No need to wait
@@ -27,28 +27,30 @@ module VORLON {
 
         // Start the clientside code
         public startClientSide(): void {
-            this.setupExpressHook();
+            //this.setupExpressHook();
         }
 
         public setupExpressHook(){
+          console.log('Hooking express');
+
             var expressSource;
-            
+
             if (!Tools.IsWindowAvailable) {
                 if (!this._hookAlreadyDone) {
                     this._hookAlreadyDone = true;
-                    var express = require('express');       
+                    var express = require('express');
                 }
-            }     
-      
+            }
+
             this.hooked = true;
         }
 
         private _hookPrototype(that, expressSource) {
-            if(!this._previousExpress){ 
-                this._previousExpress = expressSource.response.ServerResponse.send;
+            if(!this._previousExpress){
+                this._previousExpress = expressSource.application.init;
             }
-            
-            expressSource.response.ServerResponse.send = function() {
+
+            expressSource.application.init = function() {
                 console.log('IN EXPRESS !');
                 return that._previousExpress.apply(this);
             }
@@ -57,8 +59,10 @@ module VORLON {
         // Handle messages from the dashboard, on the client
         public onRealtimeMessageReceivedFromDashboardSide(receivedObject: any): void {
             if (!Tools.IsWindowAvailable) {
-
-            }        
+              if (receivedObject == 'express') {
+                this.sendToDashboard({ type: 'express', data: global.express_vorlonJS});
+              }
+            }
         }
     }
 

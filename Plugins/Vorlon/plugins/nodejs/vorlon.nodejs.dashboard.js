@@ -22,7 +22,8 @@ var VORLON;
             this._insertHtmlContentAsync(div, function (filledDiv) {
                 _this.toogleMenu();
                 _this._time = 0;
-                _this._ctx = document.getElementById("memory-chart").getContext("2d");
+                _this._ctx = document.getElementById("memory-chart");
+                _this._ctx = _this._ctx.getContext("2d");
                 _this._chart_data = {
                     labels: [],
                     datasets: [
@@ -157,7 +158,6 @@ var VORLON;
             if (receivedObject.type == 'modules') {
                 var list = receivedObject.data;
                 var data = [];
-                console.log(list);
                 for (var i = 0; i < list.length; i++) {
                     list[i] = list[i].split("\\");
                     for (var z = 0; z < list[i].length; z++) {

@@ -16,21 +16,19 @@
     "vorlonProxyURL": "",
     "plugins": [
         {
+            "id": "SCREEN",
+            "name": "Screenshot",
+            "panel": "top",
+            "foldername": "screenshot",
+            "enabled": true
+        },
+        {
             "id": "OBJEXPLORER",
             "name": "Obj. Explorer",
             "panel": "top",
             "foldername": "objectExplorer",
             "enabled": true,
             "nodeCompliant": true
-        },
-        {
-            "id": "NODEJS",
-            "name": "NodeJS",
-            "panel": "top",
-            "foldername": "nodejs",
-            "enabled": true,
-            "nodeCompliant": true,
-            "nodeOnly": true
         },
         {
             "id": "XHRPANEL",
@@ -41,10 +39,10 @@
             "nodeCompliant": true
         },
         {
-            "id": "DEVICE",
-            "name": "My Device",
+            "id": "BABYLONINSPECTOR",
+            "name": "Babylon Inspector",
             "panel": "top",
-            "foldername": "device",
+            "foldername": "babylonInspector",
             "enabled": true
         },
         {
@@ -86,7 +84,38 @@
             "id": "UWP",
             "name": "UWP apps",
             "panel": "top",
-            "foldername": "uwp"
+            "foldername": "uwp",
+            "enabled": true
+        },
+        {
+            "id": "NGINSPECTOR",
+            "name": "Ng. Inspector",
+            "panel": "top",
+            "foldername": "ngInspector",
+            "enabled": true
+        },
+        {
+            "id": "DEVICE",
+            "name": "My Device",
+            "panel": "top",
+            "foldername": "device",
+            "enabled": true
+        },
+        {
+            "id": "OFFICE",
+            "name": "Office Addin",
+            "panel": "top",
+            "foldername": "office",
+            "enabled": false
+        },
+        {
+            "id": "NODEJS",
+            "name": "NodeJS",
+            "panel": "top",
+            "foldername": "nodejs",
+            "enabled": true,
+            "nodeCompliant": true,
+            "nodeOnly": true
         },
         {
             "id": "CONSOLE",
@@ -102,34 +131,6 @@
             "panel": "bottom",
             "foldername": "modernizrReport",
             "enabled": true
-        },
-        {
-            "id": "NGINSPECTOR",
-            "name": "Ng. Inspector",
-            "panel": "top",
-            "foldername": "ngInspector",
-            "enabled": false
-        },
-        {
-            "id": "BABYLONINSPECTOR",
-            "name": "Babylon Inspector",
-            "panel": "top",
-            "foldername": "babylonInspector",
-            "enabled": false
-        },
-        {
-            "id": "OFFICE",
-            "name": "Office Addin",
-            "panel": "top",
-            "foldername": "office",
-            "enabled": false
-        },
-        {
-            "id": "SCREEN",
-            "name": "Screenshot",
-            "panel": "top",
-            "foldername": "screenshot",
-            "enabled": false
         },
         {
             "id": "EXPRESS",

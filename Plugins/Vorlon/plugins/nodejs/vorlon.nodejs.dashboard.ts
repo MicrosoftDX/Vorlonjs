@@ -1,6 +1,7 @@
 module VORLON {
 
     declare var $: any;
+    declare var Chart: any;
 
     export class NodejsDashboard extends DashboardPlugin {
 
@@ -26,11 +27,11 @@ module VORLON {
         // into the dashboard
         private _inputField: HTMLInputElement
         private _outputDiv: HTMLElement
-        private _time: Number
+        private _time: any
         private _chart: any
         private __html: any
         private __MEGA_BYTE: number
-        private _ctx: HTMLCanvasElement
+        private _ctx: any
         private _chart_data: Object
 
         public startDashboardSide(div: HTMLDivElement = null): void {
@@ -39,7 +40,8 @@ module VORLON {
 
                 this._time = 0;
 
-                this._ctx = document.getElementById("memory-chart").getContext("2d");
+                this._ctx = document.getElementById("memory-chart");
+                this._ctx = this._ctx.getContext("2d");
                 this._chart_data = {
                     labels: [],
                     datasets: [
@@ -189,7 +191,6 @@ module VORLON {
             if (receivedObject.type == 'modules') {
                 var list = receivedObject.data;
                 var data = [];
-                console.log(list);
                 for(var i = 0; i < list.length; i++) {
                     list[i] = list[i].split("\\");
                     for (var z = 0; z < list[i].length; z++) {

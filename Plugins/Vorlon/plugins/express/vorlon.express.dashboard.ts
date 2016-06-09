@@ -25,11 +25,25 @@ module VORLON {
         // into the dashboard
         private _inputField: HTMLInputElement
         private _outputDiv: HTMLElement
+        private _express: any
 
         public startDashboardSide(div: HTMLDivElement = null): void {
+            this.sendToClient('express');
             this._insertHtmlContentAsync(div, (filledDiv) => {
                 this.toogleMenu();
             })
+        }
+
+        public setRoutes(): void {
+          console.log('6', this._express);
+            this._express._router.stack.filter(r => r.route).map(r => {
+              var route = '<p> ' + r.route.path + ' - [';
+              for (var key in r.route.methods) {
+                route += key + ' ';
+              }
+              route += '] </p>';
+              $('#express-routes').append(route);
+            });
         }
 
         public toogleMenu(): void {
@@ -44,7 +58,17 @@ module VORLON {
         }
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
-
+          console.log('3', receivedObject);
+          if (receivedObject.type == 'express') {
+              console.log('4');
+              this._express = receivedObject.data;
+              if (typeof this._express === 'undefined') {
+                alert('EXPRESS IN NOT DEFINED (express_vorlonJS)');
+              } else {
+                console.log('5');
+                this.setRoutes();
+              }
+          }
         }
     }
 
