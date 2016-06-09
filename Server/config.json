@@ -113,7 +113,7 @@
             "name": "NodeJS",
             "panel": "top",
             "foldername": "nodejs",
-            "enabled": true,
+            "enabled": false,
             "nodeCompliant": true,
             "nodeOnly": true
         },

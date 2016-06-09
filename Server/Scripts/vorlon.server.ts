@@ -103,6 +103,7 @@ export module VORLON {
             });
 
             app.get(this.baseURLConfig.baseURL + "/getplugins/:idsession", (req: any, res: any) => {
+                this.noCache(res);
                 this._sendConfigJson(req, res);
             });
             
@@ -123,6 +124,7 @@ export module VORLON {
             });
             
             app.get(this.baseURLConfig.baseURL + "/getplugin/:pluginfolder/icon", (req: any, res: any) => {
+                this.noCache(res);
                 this.sendPluginIcon(req, res);
             });
             
