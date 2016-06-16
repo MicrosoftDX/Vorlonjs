@@ -22,10 +22,10 @@ html(lang='en')
         input#url(type='text', placeholder='enter website url')
       div.button
         div.spacebutton
-          a#inject.btn.btn-default.left Inspect with VORLON.JS
-          a#openSite.btn.btn-default.left Open website only
-          a#openDashboard.btn.btn-default.left Open dashboard only
-          a#error.message.left.error.hide URL is not valid
+          a#inject.btn.btn-default.left(role='button', tabindex='0') Inspect with VORLON.JS
+          a#openSite.btn.btn-default.left(role='button', tabindex='0') Open website only
+          a#openDashboard.btn.btn-default.left(role='button', tabindex='0') Open dashboard only
+          a#error.message.left.error.hide(role='button', tabindex='0')URL is not valid
 
  script(type='text/javascript').
  	$(document).ready(function() {	
