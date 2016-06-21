@@ -598,3 +598,167 @@ body .b-m-mpanel .b-m-ifocus {
     top: 5px;
     margin-right: 5px;
 }
+
+#no_vorlon {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: rgb(179, 121, 199);
+    z-index: 1000;
+}
+
+#no_vorlon .logos {
+    text-align: center;
+    margin-top: 40px;
+}
+
+#no_vorlon .logos .logo_vorlon {
+    height: 50px;
+}
+
+#no_vorlon .logos .logo_express {
+    height: 40px;
+    position: relative;
+    top: 5px;
+}
+
+#no_vorlon .logos span {
+    margin: 0px 25px;
+    font-size: 50px;
+    color: white;
+}
+
+#no_vorlon p {
+        color: white;
+        text-align: center;
+        margin-top: 5px;
+        font-size: 20px;
+        padding: 0px 10px;
+}
+
+#no_vorlon .vorlon-script {
+        text-align: center;
+        color: black;
+        margin-top: 8px;
+}
+
+#no_vorlon .vorlon-script span {
+    color: white;
+}
+
+.routes-list li {
+    height: 50px;
+    display: block;
+    line-height: 50px;
+    width: 100%;
+    font-size: 15px;
+    border-bottom: 1px solid #cacaca;
+    padding-right: 10px;
+    position: relative;
+    cursor: pointer;
+}
+
+.routes-list span.method {
+    color: white;
+    margin-right: 10px;
+    width: 75px;
+    display: inline-block;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.routes-list span.method-post {
+    background: orange;
+}
+
+.routes-list span.method-delete {
+    background: red;
+}
+
+.routes-list span.method-options {
+    background: blue;
+}
+
+.routes-list span.method-get {
+    background: green;
+}
+
+.routes-list span.method-put {
+    background: purple;
+}
+
+.routes-list span.method-post {
+    background: orange;
+}
+
+.routes-list span.method-any {
+    background: black;
+}
+
+.code-res {
+    color: white;
+    padding: 3px;
+    margin-right: 6px;
+    border-radius: 3px;
+    background: black;
+}
+
+.code-200 {
+    background: green !important;
+}
+
+.code-404 {
+    background: red !important;
+}
+
+.hour_request {
+    float: right;
+    position: absolute;
+    bottom: 7px;
+    right: 0px;
+}
+
+.headers_request {
+    position: absolute;
+    bottom: -12px;
+    right: 7px;
+}
+
+#headers-req {
+        width: 100%;
+    height: 0%;
+    position: absolute;
+    top: 0px;
+    background: #FFFFFF;
+    z-index: 1000;
+    /* padding: 20px; */
+    transition: all linear 0.3s;
+    
+        overflow: hidden;
+}
+
+#headers-req div {
+    padding: 0px;
+    color: black;
+    transition: all linear 0.3s;
+    border: 3px solid #6b2d81;
+    height: 100%;
+}
+
+#headers-req div h2 {
+    color: black;
+    font-size: 25px;
+}
+
+pre {outline: 1px solid #ccc; padding: 5px; margin: 5px;     overflow: scroll; }
+.string { color: green; }
+.number { color: darkorange; }
+.boolean { color: blue; }
+.null { color: magenta; }
+.key { color: red; }
+
+#headers-req div h2 i {
+    color: #6b2d81;
+    font-size: 35px !important;
+    float: right;
+}

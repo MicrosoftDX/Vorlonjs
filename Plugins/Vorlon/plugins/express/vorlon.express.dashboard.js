@@ -19,11 +19,15 @@ var VORLON;
             var _this = this;
             if (div === void 0) { div = null; }
             this.sendToClient('express');
+            this.sendToClient('request');
+            this.sendToClient('sessions');
+            this.sendToClient('locals');
             this._insertHtmlContentAsync(div, function (filledDiv) {
                 _this.toogleMenu();
             });
         };
         ExpressDashboard.prototype.setRoutes = function () {
+            console.log('6', this._express);
             this._express._router.stack.filter(function (r) { return r.route; }).map(function (r) {
                 var route = '<p> ' + r.route.path + ' - [';
                 for (var key in r.route.methods) {
@@ -44,12 +48,15 @@ var VORLON;
             });
         };
         ExpressDashboard.prototype.onRealtimeMessageReceivedFromClientSide = function (receivedObject) {
+            console.log('3', receivedObject);
             if (receivedObject.type == 'express') {
+                console.log('4');
                 this._express = receivedObject.data;
                 if (typeof this._express === 'undefined') {
                     alert('EXPRESS IN NOT DEFINED (express_vorlonJS)');
                 }
                 else {
+                    console.log('5');
                     this.setRoutes();
                 }
             }

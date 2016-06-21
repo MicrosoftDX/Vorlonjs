@@ -45,6 +45,12 @@ var VORLON;
                 if (receivedObject == 'express') {
                     this.sendToDashboard({ type: 'express', data: global.express_vorlonJS });
                 }
+                else if (receivedObject == 'locals') {
+                }
+                else if (receivedObject == 'sessions') {
+                }
+                else if (receivedObject == 'request') {
+                }
             }
         };
         return ExpressClient;
