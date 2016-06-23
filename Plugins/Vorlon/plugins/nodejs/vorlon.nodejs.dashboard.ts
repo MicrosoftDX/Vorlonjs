@@ -1,7 +1,7 @@
 module VORLON {
 
     declare var $: any;
-    declare var Chart: any;
+    declare var Chartist: any;
 
     export class NodejsDashboard extends DashboardPlugin {
 
@@ -9,7 +9,7 @@ module VORLON {
         //the plugin with html and css for the dashboard
         constructor() {
             //     name   ,  html for dash   css for dash
-            super("nodejs", "control.html", ["control.css", "tree.css"], "chart.js");
+            super("nodejs", "control.html", ["control.css", "tree.css"], ["chart.js", "chart-legend.js"]);
             this._ready = true;
             this.__MEGA_BYTE = 1048576;
             console.log('Started');
@@ -31,87 +31,21 @@ module VORLON {
         private _chart: any
         private __html: any
         private __MEGA_BYTE: number
-        private _ctx: any
-        private _chart_data: Object
+        private _set_chart: any
+        private _chart_data: any
+        private _chart_container: any
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div, (filledDiv) => {
+                var _that = this;
                 this.toogleMenu();
-
-                this._time = 0;
-
-                this._ctx = document.getElementById("memory-chart");
-                this._ctx = this._ctx.getContext("2d");
-                this._chart_data = {
-                    labels: [],
-                    datasets: [
-                        {
-                            label: "Heap Used (MB)",
-                            fill: false,
-                            lineTension: 0.1,
-                            backgroundColor: "rgba(75,192,192,0.4)",
-                            borderColor: "rgba(75,192,192,1)",
-                            borderCapStyle: 'butt',
-                            borderDash: [],
-                            borderDashOffset: 0.0,
-                            borderJoinStyle: 'miter',
-                            pointBorderColor: "rgba(75,192,192,1)",
-                            pointBackgroundColor: "#fff",
-                            pointBorderWidth: 1,
-                            pointHoverRadius: 5,
-                            pointHoverBackgroundColor: "rgba(75,192,192,1)",
-                            pointHoverBorderColor: "rgba(220,220,220,1)",
-                            pointHoverBorderWidth: 2,
-                            pointRadius: 1,
-                            pointHitRadius: 10,
-                            data: [],
-                        },
-                        {
-                            label: "Heap Total (MB)",
-                            fill: false,
-                            lineTension: 0.1,
-                            backgroundColor: "rgba(142, 68, 173,0.4)",
-                            borderColor: "rgba(142, 68, 173,1.0)",
-                            borderCapStyle: 'butt',
-                            borderDash: [],
-                            borderDashOffset: 0.0,
-                            borderJoinStyle: 'miter',
-                            pointBorderColor: "rgba(142, 68, 173,1.0)",
-                            pointBackgroundColor: "#fff",
-                            pointBorderWidth: 1,
-                            pointHoverRadius: 5,
-                            pointHoverBackgroundColor: "rgba(142, 68, 173,1.0)",
-                            pointHoverBorderColor: "rgba(155, 89, 182,1.0)",
-                            pointHoverBorderWidth: 2,
-                            pointRadius: 1,
-                            pointHitRadius: 10,
-                            data: [],
-                        },
-                        {
-                            label: "RSS (MB)",
-                            fill: false,
-                            lineTension: 0.1,
-                            backgroundColor: "rgba(192, 57, 43,0.4)",
-                            borderColor: "rgba(192, 57, 43,1.0)",
-                            borderCapStyle: 'butt',
-                            borderDash: [],
-                            borderDashOffset: 0.0,
-                            borderJoinStyle: 'miter',
-                            pointBorderColor: "rgba(192, 57, 43,1.0)",
-                            pointBackgroundColor: "#fff",
-                            pointBorderWidth: 1,
-                            pointHoverRadius: 5,
-                            pointHoverBackgroundColor: "rgba(192, 57, 43,1.0)",
-                            pointHoverBorderColor: "rgba(231, 76, 60,1.0)",
-                            pointHoverBorderWidth: 2,
-                            pointRadius: 1,
-                            pointHitRadius: 10,
-                            data: [],
-                        }
-                    ]
-                };
-
+                
+                this._time = 5;
                 this._chart = false;
+                this._chart_data = {labels: [0], series: [[0], [0], [0]]};
+                this._set_chart = setInterval(function() {
+                    _that.chart();
+                }, 500);
                 this.__html = [];
 
                 this.sendToClient('infos');
@@ -121,12 +55,27 @@ module VORLON {
         }
 
         public chart(): void {
-            Chart.defaults.global.responsive = true;
-            Chart.defaults.global.maintainAspectRatio = false;
-            Chart.defaults.global.animation.easing = 'linear';
-
-            this._chart = new Chart.Line(this._ctx, {
-                data: this._chart_data,
+            if (typeof Chartist !== 'object') {
+                return;
+            }
+            this._chart = true;
+            clearInterval(this._set_chart);
+            console.log('stating chart');
+            new Chartist.Line('#memory-chart', this._chart_data, {
+                plugins: [
+                    Chartist.plugins.legend({
+                    legendNames: ['HEAP Used', 'HEAP Total', 'RSS'],
+                })
+                ],
+                fullWidth: true,
+                chartPadding: {
+                    right: 40
+                },
+                axisY: {
+                    labelInterpolationFnc: function(value) {
+                    return value + 'MB';
+                    }
+                }
             });
         }
 
@@ -229,23 +178,23 @@ module VORLON {
                 $('.infos-platform img').attr('src', '/images/systems/' + icon);
             }
             if (receivedObject.type == 'memory') {
-                if(!this._chart) {
-                    this.chart();
+                if (!this._chart) {
+                    return;
                 }
                 if (this._time >= 70) {
-                    this._chart.data.datasets[0].data.splice(0, 1);
-                    this._chart.data.datasets[1].data.splice(0, 1);
-                    this._chart.data.datasets[2].data.splice(0, 1);
-                    this._chart.data.labels.splice(0, 1);
+                    this._chart_data.series[0].splice(0, 1);
+                    this._chart_data.series[1].splice(0, 1);
+                    this._chart_data.series[2].splice(0, 1);
+                    this._chart_data.labels.splice(0, 1);
                 }
 
-                this._chart.data.labels.push(this._time);
+                this._chart_data.labels.push(this._time);
 
-                this._chart.data.datasets[0].data.push(receivedObject.data['heapUsed'] / this.__MEGA_BYTE);
-                this._chart.data.datasets[1].data.push(receivedObject.data['heapTotal'] / this.__MEGA_BYTE);
-                this._chart.data.datasets[2].data.push(receivedObject.data['rss'] / this.__MEGA_BYTE);
+                this._chart_data.series[0].push(receivedObject.data['heapUsed'] / this.__MEGA_BYTE);
+                this._chart_data.series[1].push(receivedObject.data['heapTotal'] / this.__MEGA_BYTE);
+                this._chart_data.series[2].push(receivedObject.data['rss'] / this.__MEGA_BYTE);
 
-                this._chart.update();
+                this.chart();
                 this._time += 5;
             }
         }
