@@ -336,6 +336,8 @@
                 setTimeout(() => {
                     document.body.removeChild(div);
                 }, 4000);
+            } else {
+                console.log('Vorlon client n° ' + message);
             }
         }
 
