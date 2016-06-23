@@ -1,7 +1,3 @@
-///<reference path='../../vorlon.dashboardPlugin.ts' />
-///<reference path='vorlon.office.tools.ts' />
-
-
 module VORLON {
     export class OfficeFunction {
 

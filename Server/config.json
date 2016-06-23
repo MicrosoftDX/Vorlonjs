@@ -16,10 +16,10 @@
     "vorlonProxyURL": "",
     "plugins": [
         {
-            "id": "SCREEN",
-            "name": "Screenshot",
+            "id": "DOM",
+            "name": "Dom Explorer",
             "panel": "top",
-            "foldername": "screenshot",
+            "foldername": "domExplorer",
             "enabled": true
         },
         {
@@ -43,14 +43,7 @@
             "name": "Babylon Inspector",
             "panel": "top",
             "foldername": "babylonInspector",
-            "enabled": true
-        },
-        {
-            "id": "DOM",
-            "name": "Dom Explorer",
-            "panel": "top",
-            "foldername": "domExplorer",
-            "enabled": true
+            "enabled": false
         },
         {
             "id": "WEBSTANDARDS",
@@ -85,14 +78,14 @@
             "name": "UWP apps",
             "panel": "top",
             "foldername": "uwp",
-            "enabled": true
+            "enabled": false
         },
         {
             "id": "NGINSPECTOR",
             "name": "Ng. Inspector",
             "panel": "top",
             "foldername": "ngInspector",
-            "enabled": true
+            "enabled": false
         },
         {
             "id": "DEVICE",
@@ -100,6 +93,13 @@
             "panel": "top",
             "foldername": "device",
             "enabled": true
+        },
+        {
+            "id": "SCREEN",
+            "name": "Screenshot",
+            "panel": "top",
+            "foldername": "screenshot",
+            "enabled": false
         },
         {
             "id": "OFFICE",
@@ -113,7 +113,7 @@
             "name": "NodeJS",
             "panel": "top",
             "foldername": "nodejs",
-            "enabled": true,
+            "enabled": false,
             "nodeCompliant": true,
             "nodeOnly": true
         },
@@ -137,7 +137,7 @@
             "name": "Express",
             "panel": "bottom",
             "foldername": "express",
-            "enabled": true,
+            "enabled": false,
             "nodeCompliant": true,
             "nodeOnly": true
         }

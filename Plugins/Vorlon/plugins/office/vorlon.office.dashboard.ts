@@ -1,8 +1,3 @@
-///<reference path='vorlon.office.tools.ts' />
-///<reference path='vorlon.office.document.ts' />
-///<reference path='vorlon.office.outlook.ts' />
-///<reference path='vorlon.office.powerpoint.ts' />
-///<reference path='../../vorlon.dashboardPlugin.ts' />
 var $: any;
 
 module VORLON {
