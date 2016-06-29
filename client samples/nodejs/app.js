@@ -2,16 +2,21 @@ var vorlonWrapper = require("vorlon-node-wrapper");
 var serverUrl = "http://localhost:1337";
 var dashboardSession = "default";
 var express = require('express');
-// COMMENT
+var open = require("openurl");
+var methodOverride = require('method-override');
+
 vorlonWrapper.start(serverUrl, dashboardSession, false);
 
 var app = express();
-// COMMENT
 EXPRESS_VORLONJS = app;
 
 app.set('view engine', 'ejs');
-// COMMENT
 app.set('MY_APP_CONFIG', 'MY_APP_CONFIG');
+app.use(methodOverride('_method'));
+
+app.get('/', function(request, response) {
+    response.render('index');
+});
 
 app.get('/api/bears', function(request, response) {
     response.send('GET	Get all the bears.');
@@ -39,3 +44,5 @@ app.use(function(request, response, next){
 });
 
 app.listen(1995);
+
+open.open("http://localhost:1995");
