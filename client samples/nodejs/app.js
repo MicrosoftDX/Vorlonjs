@@ -1,50 +1,41 @@
 var vorlonWrapper = require("vorlon-node-wrapper");
 var serverUrl = "http://localhost:1337";
 var dashboardSession = "default";
-
+var express = require('express');
+// COMMENT
 vorlonWrapper.start(serverUrl, dashboardSession, false);
 
-console.log({
-    "ok": "oui",
-    "non": "si"
+var app = express();
+// COMMENT
+EXPRESS_VORLONJS = app;
+
+app.set('view engine', 'ejs');
+// COMMENT
+app.set('MY_APP_CONFIG', 'MY_APP_CONFIG');
+
+app.get('/api/bears', function(request, response) {
+    response.send('GET	Get all the bears.');
+});
+	
+app.post('/api/bears', function(request, response) {
+    response.send('POST	Create a bear.');
+});
+	
+app.get('/api/bears/:bear_id', function(request, response) {
+    response.send('GET	Get a single bear.');
+});
+	
+app.put('/api/bears/:bear_id', function(request, response) {
+    response.send('PUT	Update a bear with new info.');
+});
+	
+app.delete('/api/bears/:bear_id', function(request, response) {
+    response.send('DELETE	Delete a bear.');
 });
 
-var a = 2;
-var first = function(){
-    setTimeout(
-        function(){
-            console.log(a++);
-            second();
-        },
-        1000
-    );
-} 
+app.use(function(request, response, next){
+  response.status(404);
+  response.send('404');
+});
 
-var second = function(){
-    setTimeout(
-        function(){
-            console.log(a++);
-            first();
-            
-            if (a > 2) {
-                
-                var XMLHttpRequest = require("xhr2");
-                var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function(){
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            console.log("xhr OK");
-                        }
-                    }
-                }
-
-                xhr.open("GET", "http://www.google.fr");
-                xhr.send();
-            }
-        },
-        1000
-    );
-}
-
-first();
-
+app.listen(1995);
