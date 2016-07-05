@@ -18,6 +18,7 @@
 		- Accessibility improvements
 		- Adding support for identify in node.js debugging
 		- Fixed a bug that made express with static files crashes when debugging using vorlon
+		- Fixed ssl support
 	
 
 ## 0.2.2
