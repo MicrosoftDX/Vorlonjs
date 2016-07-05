@@ -95,13 +95,6 @@
             "enabled": true
         },
         {
-            "id": "SCREEN",
-            "name": "Screenshot",
-            "panel": "top",
-            "foldername": "screenshot",
-            "enabled": false
-        },
-        {
             "id": "OFFICE",
             "name": "Office Addin",
             "panel": "top",
