@@ -1,5 +1,7 @@
 ## 0.3.0
 - Plugins
+	- Node.js sample:
+		- New sample using Express with landing page and buttons to simulate express routes
 	- Express.js plugin :
 		- Displays information about an Express app connected to Vorlon.js
 		- Routes and objects are available
@@ -15,6 +17,7 @@
 		- Fixing errors in gulp file
 		- Accessibility improvements
 		- Adding support for identify in node.js debugging
+		- Fixed a bug that made express with static files crashes when debugging using vorlon
 	
 
 ## 0.2.2
