@@ -237,7 +237,7 @@
 
             Error = <any>((message: any) => {
                 var error = new previousError(message);
-
+                
                 var data = {
                     messages: this.getMessages(message),
                     type: "exception"
@@ -247,6 +247,8 @@
 
                 return error;
             });
+
+            Error.prototype = previousError.prototype;
 
             if (Tools.IsWindowAvailable) {
                 window.addEventListener('error', (err) => {
