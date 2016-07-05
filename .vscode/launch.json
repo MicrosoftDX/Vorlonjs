@@ -52,7 +52,6 @@
 			"env": {}
 		},
         {
-			// not working since latest vs code and electron versions :-(
 			"name": "Launch node.js sample",
 			"type": "node",
 			"program": "${workspaceRoot}/client samples/nodejs/app.js",
@@ -60,7 +59,7 @@
 			"args": [
 				"--nolazy"
 			],
-			"cwd": "${workspaceRoot}",
+			"cwd": "${workspaceRoot}/client samples/nodejs",
 			"runtimeExecutable": null,
 			"env": {}
 		},

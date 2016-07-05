@@ -1,7 +1,3 @@
-/// <reference path="../Scripts/typings/vorlon/vorlon.core.d.ts" /> 
-/// <reference path="../Scripts/typings/vorlon/vorlon.clientMessenger.d.ts" /> 
-/// <reference path="../Scripts/typings/vorlon/vorlon.clientPlugin.d.ts" /> 
-
 module VORLON {
     declare var $: any;
     declare var vorlonBaseURL: string;
@@ -246,6 +242,13 @@ module VORLON {
                                         continue;
                                     }
                                 }
+                                
+                                if (!DashboardManager.NoWindowMode) {
+                                    if (plugin.nodeOnly) {
+                                        continue;
+                                    }
+                                }
+                                
                                 pluginstoload ++;
                             }
                         }
@@ -258,16 +261,10 @@ module VORLON {
                             plugintab.textContent = plugin.name;
                             plugintab.setAttribute('data-plugin-target', plugin.id);
                                 
-                            if (!plugin.enabled){
+                            if (!plugin.enabled || (DashboardManager.NoWindowMode && !plugin.nodeCompliant) || (!DashboardManager.NoWindowMode && plugin.nodeOnly)){
                                 plugintab.style.display = 'none';
                                 divPluginBottomTabs.appendChild(plugintab);
                                 continue;
-                            }
-                            
-                            if (DashboardManager.NoWindowMode) {
-                                if (!plugin.nodeCompliant) {
-                                    continue;
-                                }
                             }
                             
                             var existingLocation = document.querySelector('[data-plugin=' + plugin.id + ']');

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="control.css" rel="stylesheet" />
+</head>
+<body>
+
+<div class="split" data-orientation="vertical" data-limit="50" data-position="70%">
+        <div class="tree-view-wrapper panel-left">
+            <div id="treeView2" class="code-text">
+                <div class="explorer-menu" id="modules" style="display:block;">
+                    <div class="tree-view-wrapper">
+                        <x-controlbar id="searchbox">
+                            <input type="text" name="txtFilter" id="txtFilter" class="dashboard-input" placeholder="Filter by name" />
+                            <button id="btnSearchUp" class="fa fa-arrow-up" title="Search up"></button>
+                        </x-controlbar>
+                        <div id="jstree" class="code-text tree">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="explorer-menu" id="memory" style="display:none;    height: 100%;">
+                    <div id="memory-chart"></div>
+                </div>
+                <div class="explorer-menu" id="infos" style="display:none;">
+                <div id="nodejs-information">
+                    <h1>NODEJS PROCESS INFORMATION</h1>
+                    <table id="viewport">
+                        <!-- Viewport -->
+                        <tbody>
+                        <tr class="viewport-header">
+                            <th class="header" colspan="2">NodeJS Process Information</th>
+                        </tr>
+                        <tr>
+                            <td>Title</td>
+                            <td class="infos-title"></td>
+                        </tr>
+                        <tr>
+                            <td>Version</td>
+                            <td class="infos-version"></td>
+                        </tr>
+                        <tr>
+                            <td>OS</td>
+                            <td class="infos-platform"><img alt="OS"></td>
+                        </tr>
+                        <tr>
+                            <td>Arch</td>
+                            <td class="infos-arch"></td>
+                        </tr>
+                        <tr>
+                            <td>Debug Port</td>
+                            <td class="infos-debugPort"></td>
+                        </tr>
+                        <tr>
+                            <td>PID</td>
+                            <td class="infos-pid"></td>
+                        </tr>
+                        <tr class="viewport-header">
+                            <th class="header" colspan="2">User</th>
+                        </tr>
+                        <tr>
+                            <td>USERNAME</td>
+                            <td class="infos-USERNAME"></td>
+                        </tr>
+                        <tr>
+                            <td>USERDOMAIN</td>
+                            <td class="infos-USERDOMAIN"></td>
+                        </tr>
+                        <tr>
+                            <td>USERDOMAIN_ROAMINGPROFILE</td>
+                            <td class="infos-USERDOMAIN_ROAMINGPROFILE"></td>
+                        </tr>
+                        <tr>
+                            <td>USERPROFILE</td>
+                            <td class="infos-USERPROFILE"></td>
+                        </tr>
+                        <tr>
+                            <td>WINDIR</td>
+                            <td class="infos-WINDIR"></td>
+                        </tr>
+                        <tr>
+                            <td>UATDATA</td>
+                            <td class="infos-UATDATA"></td>
+                        </tr>
+                    </tbody></table>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="style-view-wrapper panel-right code-text">
+            <div id="accordion-nodejs">
+                <h3 class="open-menu active-menu" data-menu="modules"><i class="fa fa-folder-open" aria-hidden="true"></i> Modules required</h3>
+                <h3 class="open-menu" data-menu="memory"><i class="fa fa-area-chart" aria-hidden="true"></i> Memory usage</h3>
+                <h3 class="open-menu" data-menu="infos"><i class="fa fa-info-circle" aria-hidden="true"></i> Process Informations</h3>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

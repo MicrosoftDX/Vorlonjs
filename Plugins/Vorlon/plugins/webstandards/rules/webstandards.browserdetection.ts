@@ -25,11 +25,22 @@ module VORLON.WebStandards.Rules.DOM {
         
         init: function() {
             var pageWindow = document.parentNode
-            this.hook("navigator", "userAgent");
-            this.hook("navigator", "appVersion");
-            this.hook("navigator", "appName");
-            this.hook("navigator", "product");
-            this.hook("navigator", "vendor");
+            try{
+                this.hook("navigator", "userAgent");
+                this.hook("navigator", "appVersion");
+                this.hook("navigator", "appName");
+                this.hook("navigator", "product");
+                this.hook("navigator", "vendor");
+            }
+            catch(e){
+                console.warn("Vorlon.js Web Standards Plugin : Browser detection rule not available due to browser limitations");
+                var check = {
+                    title: "Vorlon.js Web Standards Plugin no available.",
+                    content:  "Browser detection rule not available due to browser limitations"
+                };
+
+                this.violations.push(check);
+            }
         },
         
         hook: function(root, prop) {
