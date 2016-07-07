@@ -7,6 +7,12 @@ MAINTAINER Julien Corioland (Microsoft, DX)
 # Expose port 1337
 EXPOSE 1337
 
+# Upgrade to last NPM version
+RUN npm upgrade -g npm
+
+# Install gulp
+RUN npm install -g gulp
+
 # Set the entry point
 ENTRYPOINT ["npm", "start"]
 
@@ -18,12 +24,6 @@ COPY . /usr/src/vorlonjs/
 
 # Set app root as working directory
 WORKDIR /usr/src/vorlonjs
-
-# Upgrade to last NPM version
-RUN npm upgrade -g npm
-
-# Install gulp
-RUN npm install -g gulp
 
 # Run npm install
 RUN npm install
