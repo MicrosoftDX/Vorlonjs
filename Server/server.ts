@@ -4,7 +4,6 @@ import vorlonDashboard = require("./Scripts/vorlon.dashboard");
 import vorlonWebserver = require("./Scripts/vorlon.webServer");
 import vorlonHttpProxy = require("./Scripts/vorlon.httpproxy.server");
 import winstonLogger = require("./Scripts/vorlon.winstonlogger");
-//import argv = require('minimist');
 
 var context = new servercontext.VORLON.DefaultContext();
 
