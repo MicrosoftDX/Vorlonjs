@@ -28,8 +28,8 @@ if (!context.httpConfig.proxyEnvPort) {
     webServer.components.push(server);
     webServer.components.push(HttpProxy);
     webServer.start();
-} 
-else {    
+}
+else {
     var serverProxy = new vorlonHttpProxy.VORLON.HttpProxy(context, true);
     serverProxy.start();
 }
