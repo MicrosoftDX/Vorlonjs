@@ -25,6 +25,7 @@ var domTimelineOptions = domTimelineOptions || {
 	// ------------------------------------------------------------------------------------------------------------------
 	startRecordingImmediately: false,
 	
+	
 	// ------------------------------------------------------------------------------------------------------------------
 	// this function is called whenever (claimed or unclaimed) change records are being added to the dom history
 	// its primary purpose is to allow you to log these events (in whole or after applying some filter)
@@ -51,7 +52,7 @@ var domTimelineOptions = domTimelineOptions || {
 	
 	// ------------------------------------------------------------------------------------------------------------------
 	// this function is being called inline when a change record is being discovered (before it is added to history)
-	// its primary usage is to allow you to return "false" and avoid the change to clutter the history
+	// its primary usage is to allow you to return "true" and avoid the change to clutter the history
 	// ------------------------------------------------------------------------------------------------------------------
 	// note: not including a change in the history means it cannot be undone/redone! 
 	// note: this feature may be easier to use if 'enableCallstackTracking' is on and working
@@ -76,9 +77,9 @@ var domTimelineOptions = domTimelineOptions || {
 		shouldIgnore = shouldIgnore || !!(m.stack && m.stack.indexOf("vorlon.max.js") >= 0 && m.stack.indexOf("DOMExplorerClient.inspect") >= 0);
 		
 		// ignore vorlon scripts and styles
-		shouldIgnore = shouldIgnore || !!(e.tagName == "LINK" && e.href.indexOf("vorlon") >= 0);
-		shouldIgnore = shouldIgnore || !!(e.tagName == "STYLE" && e.src.indexOf("vorlon") >= 0);
-		shouldIgnore = shouldIgnore || !!(e.tagName == "SCRIPT" && e.src.indexOf("vorlon") >= 0);
+		shouldIgnore = shouldIgnore || !!(e.tagName == "LINK" && e.href && e.href.indexOf("vorlon") >= 0);
+		shouldIgnore = shouldIgnore || !!(e.tagName == "STYLE" && e.src && e.src.indexOf("vorlon") >= 0);
+		shouldIgnore = shouldIgnore || !!(e.tagName == "SCRIPT" && e.src && e.src.indexOf("vorlon") >= 0);
 		shouldIgnore = shouldIgnore || !!(m.addedNodes[0] && m.addedNodes[0].href && m.addedNodes[0].href.indexOf("vorlon") >= 0);
 		shouldIgnore = shouldIgnore || !!(m.addedNodes[1] && m.addedNodes[1].href && m.addedNodes[1].href.indexOf("vorlon") >= 0);
 		shouldIgnore = shouldIgnore || !!(m.removedNodes[0] && m.removedNodes[0].href && m.removedNodes[0].href.indexOf("vorlon") >= 0);
@@ -210,6 +211,27 @@ void function() {
 			return true;
 			
 		},
+
+		// ------------------------------------------------------------------------------------------------------------------
+		// takes the last dom change added to the future history, redoes it, and add it to the past history
+		// ------------------------------------------------------------------------------------------------------------------
+		// note: this could either lock or unlock the page future history, depending on the value sent
+		// ------------------------------------------------------------------------------------------------------------------
+		seek(amountOfPastEvents) {
+
+			var couldUndo = domHistoryPast.length > 0;
+			while(domHistoryPast.length > amountOfPastEvents && couldUndo) {
+				couldUndo = this.undo();
+			}
+
+			var couldRedo = domHistoryFuture.length > 0
+			while(domHistoryPast.length < amountOfPastEvents && couldRedo) {
+				couldRedo = this.redo();
+			}
+
+			return domHistoryPast.length == amountOfPastEvents;
+
+		},
 		
 		startRecording() {
 			if(isRecordingStopped) {
@@ -218,6 +240,7 @@ void function() {
 				return true;
 			}
 			if(isDoingOffRecordsMutations >= 1e9) {
+				o.takeRecords();
 				isDoingOffRecordsMutations -= 1e9;
 				recordingStartDate = (window.performance ? window.performance.now() : Date.now());
 				onRecordingStart();
@@ -227,11 +250,14 @@ void function() {
 
 			function onRecordingStart() {
 				try { 
+					isDoingOffRecordsMutations++;
 					if(domTimelineOptions.onRecordingStart) { 
-						domTimelineOptions.onRecordingStart(); 
+						domTimelineOptions.onRecordingStart();
 					}
 				} catch (ex) {
 					console.error(ex);
+				} finally {
+					isDoingOffRecordsMutations--;
 				}
 			}
 			function onRecordingRestart() {
@@ -372,7 +398,7 @@ void function() {
 			}
 			
 			record.claim = claim;
-			record.stack = stack;
+			record.stack = ''+stack;
 			record.timestamp = (window.performance ? window.performance.now() : Date.now())-recordingStartDate;
 			
 			// give the owner an opportunity to hide the record
@@ -411,7 +437,7 @@ void function() {
 					
 				}
 				
-				record.stack = stack;
+				record.stack = ''+stack;
 				
 				// give the owner an opportunity to hide the record
 				if(domTimelineOptions.considerIgnoringRecord(record)) {
@@ -478,18 +504,33 @@ void function() {
 		var styleInstance = document.documentElement.style;
 		
 		// the style object is special in some browsers, we need special attention to it
-		if("style" in window.Element.prototype) wrapStyleInProxy(window.Element);
-		if("style" in window.SVGElement.prototype) wrapStyleInProxy(window.SVGElement);
-		if("style" in window.HTMLElement.prototype) wrapStyleInProxy(window.HTMLElement);
+		if(window.Element.prototype.hasOwnProperty('style')) wrapStyleInProxy(window.Element);
+		if(window.SVGElement.prototype.hasOwnProperty('style')) wrapStyleInProxy(window.SVGElement);
+		if(window.HTMLElement.prototype.hasOwnProperty('style')) wrapStyleInProxy(window.HTMLElement);
+		
+		// the classList object does require some more attention too
+		if(window.Element.prototype.hasOwnProperty('classList')) wrapClassListInProxy(window.Element);
+		if(window.SVGElement.prototype.hasOwnProperty('classList')) wrapClassListInProxy(window.SVGElement);
+		if(window.HTMLElement.prototype.hasOwnProperty('classList')) wrapClassListInProxy(window.HTMLElement);
 		
 		// otherwhise, we can hook most properties and functions from those classes
-		for(let protoName of ['SVGElement','HTMLElement','Element','Node','Range','Selection','HTMLImageElement','Image',classListInstance,styleInstance]) {
+		var protoNames = ['SVGElement','HTMLElement','Element','Node','Range','Selection','HTMLImageElement','Image',classListInstance,styleInstance];
+		var candidateNames = Object.getOwnPropertyNames(window);
+		for(var i = 0; i<candidateNames.length; i++) {
+			var candidateName = candidateNames[i];
+			if(/^(HTML|SVG).*Element$/.test(candidateName)) {
+				if(protoNames.indexOf(candidateName) == -1) {
+					protoNames.push(candidateName);
+				}
+			}
+		}
+		for(let _protoName of protoNames) { let protoName = _protoName;
 			try{
 				let proto = (typeof(protoName) == 'string') ? (window[protoName].prototype) : Object.getPrototypeOf(protoName);
 				protoName = (typeof(protoName) == 'string') ? protoName : Object.prototype.toString.call(protoName).replace(/\[object (.*)\]/,'$1');
 				
 				// for each property, we might want to setup a hook
-				for(let propName of Object.getOwnPropertyNames(proto)) {
+				for(let _propName of Object.getOwnPropertyNames(proto)) { let propName = _propName;
 					if(/^on/.test(propName)) { continue/* and don't mess with events */; }
 					
 					let prop = Object.getOwnPropertyDescriptor(proto, propName);
@@ -582,6 +623,37 @@ void function() {
 			});
 		}
 		
+		function wrapClassListInProxy(HTMLElement) {
+			var propName = 'classList';
+			var prop = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'classList');
+			Object.defineProperty(HTMLElement.prototype, 'classList', { 
+				get() {
+					try {
+						let result = prop.get.apply(this,arguments);
+						Object.defineProperty(result,'__this',{enumerable:false,value:result});
+						return wrapInProxy(
+							result,
+							propName,
+							(claim)=>(isDoingOffRecordsMutations || logUnclaimedMutations()),
+							(claim)=>(isDoingOffRecordsMutations || logClaimedMutations(claim, new Error().stack.replace(/^Error *\r?\n/i,'')))
+						);
+					} catch (ex) {
+						if(ex.stack.indexOf("Illegal invocation")==-1) {
+							throw ex;
+						} else {
+							console.log(ex);
+						}
+					}
+				},
+				set() {
+					isDoingOffRecordsMutations || logUnclaimedMutations();
+					let result = prop.set.apply(this,arguments);
+					isDoingOffRecordsMutations || logClaimedMutations("set "+propName, new Error().stack.replace(/^Error *\r?\n/i,''));
+					return result;
+				}
+			});
+		}
+		
 		// some objects need special wrapping, which we try to get using a proxy
 		function wrapInProxy(obj,objName,onbeforechange,onafterchange) {
 			
@@ -590,7 +662,16 @@ void function() {
 				// wrap using proxy
 				return new Proxy(obj, {
 				  "get": function (oTarget, sKey) {
-					return oTarget[sKey];
+					var value = oTarget[sKey];
+					if(typeof(value) == 'function') {
+						return function() {
+							onbeforechange("call " + objName + "." + sKey);
+							var result = value.apply(this, arguments);
+							onafterchange("call " + objName + "." + sKey);
+							return result;
+						}
+					}
+					return value;
 				  },
 				  "set": function (oTarget, sKey, vValue) {
 					onbeforechange("set " + objName + "." + sKey);

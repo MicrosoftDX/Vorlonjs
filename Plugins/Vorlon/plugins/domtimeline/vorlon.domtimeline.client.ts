@@ -8,7 +8,7 @@
 // 
 // ===============================================================
 var domTimelineOptions: any;
-interface ExtentedMutationRecord extends MutationRecord {
+interface ExtendedMutationRecord extends MutationRecord {
     claim: string
     stack: string
     timestamp: number
@@ -16,9 +16,9 @@ interface ExtentedMutationRecord extends MutationRecord {
 }
 var domHistory: {
     
-    past: Array<ExtentedMutationRecord>
-    future: Array<ExtentedMutationRecord>
-    lostFuture: Array<ExtentedMutationRecord>
+    past: Array<ExtendedMutationRecord>
+    future: Array<ExtendedMutationRecord>
+    lostFuture: Array<ExtendedMutationRecord>
     
     undo:()=>boolean
     redo:()=>boolean
@@ -36,20 +36,13 @@ var domHistory: {
 // ===============================================================
 // 
 // ===============================================================
-interface Window {
-	eval: (string) => (any)
-}
-
-// ===============================================================
-// 
-// ===============================================================
 module VORLON {
 	export class DOMTimelineClient extends ClientPlugin {
 		
 		constructor() {
             super("domtimeline"); // Name
             (<any>this)._ready = true; // No need to wait
-            console.log('Started');
+            //console.log('Started');
         }
 
         //Return unique id for your plugin
@@ -69,18 +62,21 @@ module VORLON {
         // Start the clientside code
         public startClientSide(): void {
             var domData : NodeMappingSystem = null;
+            //window.addEventListener('DOMContentLoaded', x => console.warn('DOMContentLoaded'));
+            //window.addEventListener('load', x => console.warn('load'));
             domTimelineOptions.onRecordingStart = function() {
                 domData = MappingSystem.NodeMappingSystem.initFromDocument();
                 window["domData"] = domData;
             }
             domTimelineOptions.considerLoggingRecords = function(c,entries,s) {
+                if(!domData) return console.warn("domData not yet initalized; entries ignored: ", entries);
                 for(var i = entries.length; i--;) {
                     var e = entries[i];
                     // TODO: we should undo then redo all changes
                     ensureDomDataIsUpToDate(e); 
                     e.__dashboardData = generateDashboardDataForEntry(e);
                 }
-                function ensureDomDataIsUpToDate(e: ExtentedMutationRecord) {
+                function ensureDomDataIsUpToDate(e: ExtendedMutationRecord) {
                     if(e.addedNodes && e.addedNodes.length) {
                         for(var i = 0; i < e.addedNodes.length; i++) {
                             var addedNode = e.addedNodes[i];
@@ -94,11 +90,13 @@ module VORLON {
 
                 // basic data
                 data.url = location.href;
+                data.title = document.title;
                 data.isRecordingNow = domHistory.isRecording;
                 data.isRecordingEnded = domHistory.isRecordingStopped;
                 data.isPageFrozen = domHistory.future.length>0;
                 data.pastEventsCount = domHistory.past.length;
-                data.futureEventsCounts = domHistory.future.length;
+                data.futureEventsCount = domHistory.future.length;
+                data.assumedKnownData = knownData;
                 
                 // history
                 data.history = (
@@ -119,10 +117,16 @@ module VORLON {
 
                 return data;
             }
+
+            if(!!sessionStorage['domTimelineOptions_startRecordingImmediately']) {
+                sessionStorage['domTimelineOptions_startRecordingImmediately'] = false;
+                domHistory.startRecording();
+            }
+
             function getDashboardDataForEntry(e) {
                 return e.__dashboardData;
             }
-            function generateDashboardDataForEntry(e:ExtentedMutationRecord):ClientDataForEntry {
+            function generateDashboardDataForEntry(e:ExtendedMutationRecord):ClientDataForEntry {
                 var targetDescription = descriptionOf(e.target);
                 if(e.addedNodes.length > 0) {
                     var nodeDescription = (
@@ -278,7 +282,7 @@ module VORLON {
                 return "`"+e.nodeValue.substr(0,15)+"…`"
             }
             function descriptionOfNodeList(elements:NodeList) {
-                if(elements.length == 1) { return "`empty node list`" }
+                if(elements.length == 0) { return "`empty node list`" }
                 if(elements.length == 1) { return "`1 node: "+descriptionOf(elements[0]).replace(/^`|`$/g,'')+"`"}
                 var desc = "`"+elements.length + " nodes:";
                 for(var i = 0; i < elements.length; i++) { 

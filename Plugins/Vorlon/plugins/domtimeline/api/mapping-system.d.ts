@@ -17,7 +17,7 @@ interface MappingSystem<IndexType, MetaType, DataType, LiveType> {
     addToMaps(index: IndexType, meta: MetaType, value: LiveType)
 }
 interface NodeMappingSystemConstructor {
-    new(): NodeMappingSystem
+    new(document?: Document): NodeMappingSystem
     initFromDocument(): NodeMappingSystem
     initFromData(data: DehydratedNode[]): NodeMappingSystem
 }
