@@ -1,0 +1,76 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Page recorded on {{date}} ({{title}})</title>
+
+<link href="https://opensource.keycdn.com/fontawesome/4.6.3/font-awesome.min.css" rel="stylesheet" />
+<script src="http://code.jquery.com/jquery-3.0.0.slim.min.js"></script>
+<style>
+
+	/* no settings in standalone mode */
+	#open-settings-button { display: none !important; }
+
+	/* don't display content before load event */
+	#dom-recorder[is-recording-started="false"][is-recording-ended="false"] {
+		display: none !important;
+	}
+
+</style>
+
+<script>
+
+	// VorlonJS shim
+	var VORLON = {};
+	VORLON.DashboardPlugin = function() {
+		this._insertHtmlContentAsync = (arg, callback) => {
+			callback(document.querySelector('#dom-recorder'));
+		};
+		this.sendToClient = (e) => {
+			var result; try {
+				result = document.getElementById('content-frame').contentWindow.eval(e.message);
+			} catch (ex) {
+				result = ex;
+			}
+			this.onRealtimeMessageReceivedFromClientSide({ 
+				message: result, 
+				messageId: e.messageId 
+			});
+		};
+	};
+	VORLON.Core = {};
+	VORLON.Core.RegisterDashboardPlugin = function(plugin) {
+
+		var clientUrl = {{url}};
+		var alreadyKnownEvents = {{history}};
+		var domData = new MappingSystem.NodeMappingSystem();
+		domData.importData({{domData}});
+
+		window.addEventListener(
+			'load',
+			x => {
+				
+				var popup = window.open("about:blank", "content-frame", "width=800,height=600,menubar=no,toolbar=no,location=no,resizable=yes,scrollbars=yes,status=no");
+				VORLON.Helpers.implementDomHistoryInWindow({ clientUrl: clientUrl, events: alreadyKnownEvents, domData: domData }, popup);
+				//popup.eval("domHistory.seek(" + 0 + ")");
+
+				plugin.startDashboardSide();
+
+			}
+		);
+	}
+
+</script>
+
+<script>
+
+{{script}}
+
+</script>
+
+<table role="presentation" border="0" cellspacing="0" cellpadding="0" style="position: fixed; width: 100vw; height: 100vh; top: 0; left: 0; font-family: 'Segoe UI', sans-serif">
+	<tr><td style="position:relative"><iframe id="content-frame" name="content-frame" style="width: 100%; height: 100%; position: absolute; top:0; left:0; right:0; bottom:0;" frameborder="0"></iframe></td></tr>
+	<tr><td style="height: 300px;"><div style="height: 300px; width: 100vw; position: relative;" class="plugin plugin-domtimeline">
+
+{{html}}
+
+	</div></td></tr>
+</table>
