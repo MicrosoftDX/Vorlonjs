@@ -227,6 +227,7 @@ export module VORLON {
 
                 var catalogdata = JSON.stringify(catalog);
                 res.header('Content-Type', 'application/json');
+				res.header('Access-Control-Allow-Origin', '*');
                 res.send(catalogdata);
             });
         }
@@ -288,6 +289,7 @@ export module VORLON {
                 }
 
                 res.header('Content-Type', 'application/javascript');
+				res.header('Access-Control-Allow-Origin', '*');
                 res.send(javascriptFile);
             });
         }
