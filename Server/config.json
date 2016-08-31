@@ -133,6 +133,15 @@
             "enabled": false,
             "nodeCompliant": true,
             "nodeOnly": true
+        },
+        {
+            "id": "DOMTIMELINE",
+            "name": "Dom timeline",
+            "panel": "top",
+            "foldername": "domtimeline",
+            "enabled": false,
+            "nodeCompliant": false,
+            "nodeOnly": false
         }
     ]
 }
