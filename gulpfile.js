@@ -95,12 +95,14 @@ gulp.task('concat-webstandards-rules-plugins', ['typescript-to-js-plugins'], fun
 gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
     // DOMTimeline
     gulp.src([
+        'Plugins/Vorlon/plugins/domtimeline/mapping-system.js',
         'Plugins/release/plugins/domtimeline/vorlon.domtimeline.dashboard.js',
     ])
         .pipe(concat('vorlon.domtimeline.dashboard.min.js'))
         .pipe(gulp.dest('Plugins/release/plugins/domtimeline/'));
 	gulp.src([
 		'Plugins/Vorlon/plugins/domtimeline/dom-timeline.js',
+        'Plugins/Vorlon/plugins/domtimeline/mapping-system.js',
         'Plugins/release/plugins/domtimeline/vorlon.domtimeline.client.js',
     ])
         .pipe(concat('vorlon.domtimeline.client.js'))
