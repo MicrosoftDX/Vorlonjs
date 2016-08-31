@@ -1,0 +1,13 @@
+DeploymentTools/
+desktop/
+.vscode/
+Tests/
+node_modules/
+Contributing.md
+Readme.md
+azuredeploy.json
+azuredeploy-parameters.json
+deploy.cmd
+build-docker-image.sh
+VorlonNodeWrapper/
+client samples/

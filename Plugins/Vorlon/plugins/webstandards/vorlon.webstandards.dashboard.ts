@@ -6,7 +6,7 @@ module VORLON {
         "webstandards": "1. Web standards",
         "accessibility": "2. Accessibility",
         "performances": "3. Performances",
-        "mobileweb": "4. Mobile web",
+        "mobileweb": "4. Mobile web"
     }
 
     export class WebStandardsDashboard extends DashboardPlugin {
@@ -43,7 +43,7 @@ module VORLON {
                     this._cancelCheckButton.disabled = false;
 
                     this._rootDiv.classList.add("loading");
-                    this._rulesPanel.clear("analyze in progress...");
+                    this._rulesPanel.clear("analysis in progress...");
                     this._currentAnalyseId = VORLON.Tools.CreateGUID();
                     this._analysePending = true;
                     this._analyseResult = null;
@@ -141,11 +141,12 @@ module VORLON {
                     continue;
                 }
                 if (!rule.title) {
+                    if(rule.rules !== undefined){
+                        rule.stats = this.getRuleStats(rule.rules);
+                    }
                     rule.title = rulesLabels[rule.id];
                 }
-                if (!rule.title) {
-                    rule.title = n;
-                }
+                 
                 items.push(rule);              
             }
 
@@ -161,10 +162,24 @@ module VORLON {
         renderRule(rule, parent: HTMLElement, level: number) {
             var ruleitem = new FluentDOM('DIV', 'rule level' + level, parent);
             ruleitem.append('DIV', 'title', (title) => {
+                    
                 if (rule.failed !== undefined) {
                     title.createChild("SPAN", "state fa " + (rule.failed ? "fa-close" : "fa-check"));
+                } 
+                 
+                title.createChild("SPAN").text(rule.title);
+                
+                if(rule.stats !== undefined){
+                    var ruleSummary = title.createChild("SPAN").addClass("ruleSummary-container");
+                    if(!rule.stats.isAxeRulesSet){ 
+                        ruleSummary.createChild("SPAN").addClass("ruleSummary-succeed").text(rule.stats.succeed);
+                        ruleSummary.createChild("SPAN").addClass("ruleSummary-failed").text(rule.stats.failed);
+                    }
+                    else{
+                        ruleSummary.createChild("SPAN").addClass("ruleSummary-failed").text("(" + rule.stats.failed);
+                    }
                 }
-                title.createChild("SPAN").html(rule.title);
+                 
                 if (rule.rules) {
                     title.click(() => {
                         ruleitem.toggleClass("collapsed");
@@ -196,6 +211,28 @@ module VORLON {
                 });
             }
         }
+        
+         getRuleStats(rulesArray) : any {
+            var failedRules = 0, 
+                arrayWidth = 0;  
+            var isAxe = false;
+            
+            if(rulesArray.aXeCheck !== undefined){
+                rulesArray = rulesArray.aXeCheck.items;
+                isAxe = true;
+            } 
+            Object.keys(rulesArray).forEach(function(key) {
+                if(rulesArray[key].failed !== undefined && rulesArray[key].failed)
+                    failedRules++;
+                arrayWidth++;
+            });
+            
+            return{ 
+                succeed : (arrayWidth - failedRules),
+                failed : failedRules,
+                isAxeRulesSet : isAxe
+            }
+        }
     }
 
     class WebStandardsRuleDetailPanel {
@@ -218,12 +255,12 @@ module VORLON {
 
                     item.append("H1", "title", (title) => {
                         title.createChild("SPAN", "state fa " + (rule.failed ? "fa-close" : "fa-check"));
-                        title.createChild("SPAN", "text").html(rule.title);
+                        title.createChild("SPAN", "text").text(rule.title);
                     });
 
                     if (rule.description) {
                         item.append("DIV", "description", (desc) => {
-                            desc.html(rule.description);
+                            desc.text(rule.description);
                         });
                     }
 

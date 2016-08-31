@@ -36,11 +36,11 @@ export module VORLON {
             res.header('Pragma', 'no-cache');
         }
 
-        public addRoutes(app: express.Express, passport: any): void {
+        public addRoutes(app: express.Express, passport: express.Response): void {
             app.get(this.baseURLConfig.baseURL + "/api/createsession", (req: any, res: any) => {
                 this.json(res, this.guid());
             });
-
+            
             app.get(this.baseURLConfig.baseURL + "/api/reset/:idSession", (req: any, res: any) => {
                 var session = this._sessions.get(req.params.idSession);
                 if (session && session.connectedClients) {
@@ -103,7 +103,29 @@ export module VORLON {
             });
 
             app.get(this.baseURLConfig.baseURL + "/getplugins/:idsession", (req: any, res: any) => {
+                this.noCache(res);
                 this._sendConfigJson(req, res);
+            });
+            
+            app.post(this.baseURLConfig.baseURL + "/setplugin/:pluginid/name", (req: any, res: any) => {
+                this.setPluginName(req, res);
+            });
+            
+            app.post(this.baseURLConfig.baseURL + "/setplugin/positions", (req: any, res: any) => {
+                this.setPluginsPosition(req, res);
+            });
+            
+            app.get(this.baseURLConfig.baseURL + "/setplugin/:pluginid/state", (req: any, res: any) => {
+                this.setPluginState(req, res);
+            });
+            
+            app.post(this.baseURLConfig.baseURL + "/setplugin/:pluginid/panel", (req: any, res: any) => {
+                this.setPluginPanel(req, res);
+            });
+            
+            app.get(this.baseURLConfig.baseURL + "/getplugin/:pluginfolder/icon", (req: any, res: any) => {
+                this.noCache(res);
+                this.sendPluginIcon(req, res);
             });
             
             app.get(this.baseURLConfig.baseURL + "/vorlon.node.max.js/", (req: any, res: any) => {
@@ -123,6 +145,77 @@ export module VORLON {
             });
         }
 
+        private sendPluginIcon(req: any, res: any) {
+            var pluginfolder = req.params.pluginfolder;
+            try {
+                var icon = fs.readFileSync(path.join(__dirname, "../public/vorlon/plugins/" + pluginfolder + "/icon.png"));
+                res.writeHead(200, {'Content-Type': 'image/png' });
+                res.end(icon, 'binary');
+            } catch (err) {
+                var icon = fs.readFileSync(path.join(__dirname, "../public/images/no_img.png"));
+                res.writeHead(200, {'Content-Type': 'image/png' });
+                res.end(icon, 'binary');
+            }    
+        }
+
+        private setPluginState(req: any, res: any) {
+            var pluginid = req.params.pluginid;
+            this.pluginsConfig.setPluginState(pluginid, (err) => {
+                if (err) {
+                    this._log.error("SET_PLUGIN_STATE : " + err);
+                    res.header('Content-Type', 'application/json');
+                    return res.send({'error': true});
+                }
+
+                res.header('Content-Type', 'application/json');
+                return res.send({'error': false});
+            });
+        }
+
+        private setPluginsPosition(req: any, res: any) {
+            var positions = req.body.positions;
+            this.pluginsConfig.setPluginsPosition(positions, (err) => {
+                if (err) {
+                    this._log.error("SET_PLUGINS_POSITION : " + err);
+                    res.header('Content-Type', 'application/json');
+                    return res.send({'error': true});
+                }
+
+                res.header('Content-Type', 'application/json');
+                return res.send({'error': false});
+            });
+        }
+
+        private setPluginName(req: any, res: any) {
+            var pluginid = req.params.pluginid;
+            var name = req.body.name;
+            this.pluginsConfig.setPluginName(pluginid, name, (err) => {
+                if (err) {
+                    this._log.error("SET_PLUGIN_NAME : " + err);
+                    res.header('Content-Type', 'application/json');
+                    return res.send({'error': true});
+                }
+
+                res.header('Content-Type', 'application/json');
+                return res.send({'error': false});
+            });
+        }
+
+        private setPluginPanel(req: express.Request, res: express.Response) {
+            var pluginid = req.params.pluginid;
+            var panel = req.body.panel;
+            this.pluginsConfig.setPluginPanel(pluginid, panel, (err) => {
+                if (err) {
+                    this._log.error("SET_PLUGIN_PANEL : " + err);
+                    res.header('Content-Type', 'application/json');
+                    return res.send({'error': true});
+                }
+
+                res.header('Content-Type', 'application/json');
+                return res.send({'error': false});
+            });
+        }
+
         private _sendConfigJson(req: any, res: any) {
 
             var sessionid = req.params.idsession || "default";
@@ -131,7 +224,6 @@ export module VORLON {
                     this._log.error("ROUTE : Error reading config.json file");
                     return;
                 }
-
 
                 var catalogdata = JSON.stringify(catalog);
                 res.header('Content-Type', 'application/json');
@@ -279,6 +371,7 @@ export module VORLON {
                     }
                     this._log.debug(formatLog("PLUGIN", "Client Reconnect (" + client.displayId + ")[" + data.ua + "] socketid=" + socket.id, receiveMessage));
                 }
+                
                 this._sessions.update(metadata.sessionId, session);
 
                 this._log.debug(formatLog("PLUGIN", "Number clients in session : " + (session.nbClients + 1), receiveMessage));

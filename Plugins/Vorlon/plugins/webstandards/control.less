@@ -57,8 +57,30 @@
                     }
                     .title{
                         padding : 0.3em 1em;
+                        font-size: 12px;
                         font-size: 0.9em;
                         cursor : pointer;
+                        color: black;
+                        
+                         .ruleSummary-container{
+                             float: right;
+                                .ruleSummary-succeed{
+                                    padding-left: 5px;
+                                    &::before{
+                                        content: "(";
+                                    }
+                                    &::after{
+                                        content: " ✓ |";
+                                    }
+                                }
+                            
+                                .ruleSummary-failed{ 
+                                    padding-left: 3px;
+                                    &::after{
+                                        content: " x)";
+                                    }
+                                } 
+                         }
                     }
                     
                     &.collapsible {
@@ -71,7 +93,7 @@
                     
                     &.level1{
                         >.title{
-                            background-color: #999;
+                            background-color: #636363;
                             color : white;
                             text-transform: uppercase;
                         }
@@ -80,10 +102,12 @@
                      &.level2, &.level3, &.level4{
                         &:hover{
                             background-color: #AAA;
+                            color: black;
                         }
                         
                         &:hover.selected, &.selected{
                             background-color: #CCC;
+                            color: black;
                         }
                      }
                 }
@@ -97,7 +121,7 @@
                     margin-top : 10%;
                     width: 80%;
                     max-width: 400px;
-                    color: #BBB;
+                    color: #565555;
                     text-align: center;    
                 }
                 
@@ -191,7 +215,7 @@
                                 >.items{
                                     padding-left : 20px;
                                     >.item{
-                                        color: #AAA;
+                                        color: #790505;
                                         font-style: italic;
                                         font-size : 0.9em;
                                     }

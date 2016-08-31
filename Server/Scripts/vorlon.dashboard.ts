@@ -3,6 +3,7 @@ import http = require("http");
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 import fs = require("fs");
 import path = require("path");
+var packageJson = require("../../package.json");
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
@@ -11,12 +12,11 @@ import vorloncontext = require("../config/vorlon.servercontext");
 
 export module VORLON {
     export class Dashboard implements iwsc.VORLON.IWebServerComponent {
-        
         private baseURLConfig: vorloncontext.VORLON.IBaseURLConfig;
         private _log: vorloncontext.VORLON.ILogger;
         
         constructor(context : vorloncontext.VORLON.IVorlonServerContext) {
-            this.baseURLConfig = context.baseURLConfig;       
+            this.baseURLConfig = context.baseURLConfig;   
             this._log = context.logger;    
         }
 
@@ -24,10 +24,10 @@ export module VORLON {
             app.route(this.baseURLConfig.baseURL + '/').get(vauth.VORLON.Authentication.ensureAuthenticated, this.defaultDashboard());
             app.route(this.baseURLConfig.baseURL + '/dashboard').get(vauth.VORLON.Authentication.ensureAuthenticated,this.defaultDashboard());
             app.route(this.baseURLConfig.baseURL + '/dashboard/').get(vauth.VORLON.Authentication.ensureAuthenticated,this.defaultDashboard());
-
             app.route(this.baseURLConfig.baseURL + '/dashboard/:sessionid').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboard());
             app.route(this.baseURLConfig.baseURL + '/dashboard/:sessionid/reset').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboardServerReset());
             app.route(this.baseURLConfig.baseURL + '/dashboard/:sessionid/:clientid').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboardWithClient());
+            app.route(this.baseURLConfig.baseURL + '/config').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboardConfig());
             
             //login
             app.post(this.baseURLConfig.baseURL + '/login',   
@@ -37,8 +37,9 @@ export module VORLON {
                           failureFlash: false })
                 );
             
-           app.route(this.baseURLConfig.baseURL + '/login').get(this.login);  
-           
+           app.route(this.baseURLConfig.baseURL + '/login').get((req: express.Request, res: express.Response) => {
+                    res.render('login', { baseURL: this.baseURLConfig.baseURL, message: 'Please login' });
+                });  
            app.get(this.baseURLConfig.baseURL + '/logout', this.logout);
         }
 
@@ -64,22 +65,26 @@ export module VORLON {
                 }
                 
                 this._log.debug("authenticated " + authent);
-                res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: "", authenticated: authent });
+                res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: "", authenticated: authent, version: packageJson.version });
             }
         }
 
         private dashboardWithClient() {
             return (req: express.Request, res: express.Response) => {
-                res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: req.params.clientid });
+                res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: req.params.clientid, version: packageJson.version });
             }
+        }
+        
+        private dashboardConfig() {
+            return (req: express.Request, res: express.Response) => {
+                res.render('config', { baseURL: this.baseURLConfig.baseURL, title: 'Configuration', sessionid: "default", clientid: "", version: packageJson.version });
+            };
         }
 
         private getsession(req: express.Request, res: express.Response) {
-            res.render('getsession', { title: 'Get Session' });
-        }
-        
-        private login(req: express.Request, res: express.Response) {
-            res.render('login', {  baseURL: this.baseURLConfig.baseURL, message: 'Please login' });
+            return (req: express.Request, res: express.Response) => {
+                 res.render('getsession', { title: 'Get Session' });
+            }
         }
         
         private logout(req: any, res: any) {

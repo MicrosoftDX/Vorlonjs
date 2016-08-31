@@ -1,13 +1,10 @@
-/// <reference path="../Scripts/typings/vorlon/vorlon.core.d.ts" /> 
-/// <reference path="../Scripts/typings/vorlon/vorlon.clientMessenger.d.ts" /> 
-/// <reference path="../Scripts/typings/vorlon/vorlon.clientPlugin.d.ts" /> 
-
 module VORLON {
     declare var $: any;
     declare var vorlonBaseURL: string;
     
     export class DashboardManager {
         static CatalogUrl: string;
+        static vorlonBaseURL: string;
         static ListenClientid: string;
         static DisplayingClient: boolean;
         static ListenClientDisplayid: string;
@@ -27,6 +24,7 @@ module VORLON {
             DashboardManager.StartListeningServer()
             DashboardManager.GetClients();
             DashboardManager.CatalogUrl =  vorlonBaseURL + "/getplugins/" + sessionid;
+            DashboardManager.vorlonBaseURL = vorlonBaseURL;
         }
         
         public static StartListeningServer(clientid: string = ""): void{
@@ -151,7 +149,7 @@ module VORLON {
             }
             
             var pluginlistelementa = document.createElement("a");
-            pluginlistelementa.textContent = " " + (client.identity ? client.identity : client.name) + " - " + client.displayid;
+            pluginlistelementa.innerHTML = " <img src='/images/systems/"+client.icon+"' alt='icon_system'> " + (client.identity ? client.identity : client.name) + " - " + client.displayid;
             pluginlistelementa.setAttribute("href", vorlonBaseURL + "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
             pluginlistelement.appendChild(pluginlistelementa);
 
@@ -188,13 +186,15 @@ module VORLON {
         static DisplayWaitingLogo(displayWaiter: boolean): void{
             //Hide waiting page and let's not bounce the logo !
             var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
-            VORLON.Tools.RemoveClass(elt, 'hidden');
-            if (displayWaiter) {
-                elt = <HTMLElement>document.querySelector('.waitLoader');
+            if(elt) {
                 VORLON.Tools.RemoveClass(elt, 'hidden');
+                if (displayWaiter) {
+                    elt = <HTMLElement>document.querySelector('.waitLoader');
+                    VORLON.Tools.RemoveClass(elt, 'hidden');
+                }
+                elt = document.getElementById('reload');
+                VORLON.Tools.AddClass(elt, 'hidden');
             }
-            elt = document.getElementById('reload');
-            VORLON.Tools.AddClass(elt, 'hidden');
         }
 
         public static loadPlugins(): void {
@@ -242,21 +242,29 @@ module VORLON {
                                         continue;
                                     }
                                 }
+                                
+                                if (!DashboardManager.NoWindowMode) {
+                                    if (plugin.nodeOnly) {
+                                        continue;
+                                    }
+                                }
+                                
                                 pluginstoload ++;
                             }
                         }
 
                         for (var i = 0; i < catalog.plugins.length; i++) {
                             var plugin = catalog.plugins[i]; 
-                            
-                            if (!plugin.enabled){
+                            var existingLocation = document.querySelector('[data-plugin=' + plugin.id + ']');
+                            var plugintab = document.createElement('div');
+                            plugintab.classList.add('tab');
+                            plugintab.textContent = plugin.name;
+                            plugintab.setAttribute('data-plugin-target', plugin.id);
+                                
+                            if (!plugin.enabled || (DashboardManager.NoWindowMode && !plugin.nodeCompliant) || (!DashboardManager.NoWindowMode && plugin.nodeOnly)){
+                                plugintab.style.display = 'none';
+                                divPluginBottomTabs.appendChild(plugintab);
                                 continue;
-                            }
-                            
-                            if (DashboardManager.NoWindowMode) {
-                                if (!plugin.nodeCompliant) {
-                                    continue;
-                                }
                             }
                             
                             var existingLocation = document.querySelector('[data-plugin=' + plugin.id + ']');
@@ -271,10 +279,14 @@ module VORLON {
                                 plugintab.classList.add('tab');
                                 plugintab.textContent = plugin.name;
                                 plugintab.setAttribute('data-plugin-target', plugin.id);
+                                plugintab.setAttribute('aria-describedby', 'aria-pluginDesc');
+                                plugintab.setAttribute('tabindex', "0");
+                                plugintab.setAttribute('role', 'button');
 
                                 if (plugin.panel === "bottom") {
                                     if (divPluginsBottom.children.length === 1) {
                                         pluginmaindiv.classList.add("active");
+                                        plugintab.classList.add('active');
                                     }
                                     divPluginsBottom.appendChild(pluginmaindiv);
                                     divPluginBottomTabs.appendChild(plugintab);
@@ -282,6 +294,7 @@ module VORLON {
                                 else {
                                     if (divPluginsTop.children.length === 1) {
                                         pluginmaindiv.classList.add("active");
+                                        plugintab.classList.add('active');
                                     }
                                     divPluginsTop.appendChild(pluginmaindiv);
                                     divPluginTopTabs.appendChild(plugintab);
@@ -305,6 +318,11 @@ module VORLON {
                         var addPluginBtn = document.createElement('div');
                         addPluginBtn.className = "tab";
                         addPluginBtn.innerText = "+";
+                        addPluginBtn.setAttribute('aria-describedby', 'aria-pluginAddition');
+                        addPluginBtn.setAttribute('aria-label', 'Add new plugins');
+                        addPluginBtn.setAttribute('role', 'button');
+                        addPluginBtn.setAttribute('tabindex', '0');
+                        
                         divPluginTopTabs.appendChild(addPluginBtn);
                         addPluginBtn.addEventListener('click',() => {
                             window.open("http://www.vorlonjs.io/plugins", "_blank");
@@ -344,6 +362,10 @@ module VORLON {
             Core.Messenger.sendRealtimeMessage("", { "_sessionid": DashboardManager.SessionId }, VORLON.RuntimeSide.Dashboard, "identify");
         }
 
+        public static goConfig(): void {
+            location.href = '/config';
+        }
+        
         public static ResetDashboard(reload: boolean = true): void {
             let sessionid = DashboardManager.SessionId;
             let xhr = new XMLHttpRequest();

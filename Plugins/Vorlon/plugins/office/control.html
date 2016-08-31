@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title></title>
+    <link href="control.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div style="height: 100%;">
+
+        <div class="office-container panel-left">
+            <div id="office-information">
+                <div class="tree-view-wrapper">
+                    <x-controlbar style="background:transparent;">
+                        <x-action event="refresh" tabindex="0" style="background:#fafafa;"><i class="fa fa-circle"></i> Refresh</x-action>
+                        <span id="office-type-app"></span>
+                    </x-controlbar>
+                </div>
+                <div id="treeViewObj" class="code-text">
+                    Loading ...
+                </div>
+
+            </div>
+            <div id="office-properties-results">
+                <div id="accordion">
+
+                    <h3 class="office-properties" id="office-properties-title">Properties</h3>
+
+                    <div id="office-properties" class="accordion-section visible">
+
+                       
+                    </div>
+
+
+
+                    <!--<h3 class="office-results">Results</h3>
+
+                    <div id="office-results" class="accordion-section">
+
+                    </div>-->
+                </div>
+            </div>
+        </div>
+</body>
+
+</html>

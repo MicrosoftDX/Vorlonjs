@@ -1,5 +1,8 @@
 // Main dashboard view styling
 
+body, .dashboard, .dashboard-main-view 
+  width 100%
+
 .dashboard
   min-width: 700px
   min-height: 350px
@@ -9,7 +12,7 @@
 .dashboard-initial
   height: 100vh
   position:relative
-
+  overflow: auto
   .get-started
     max-width: 300px
     padding: 30px
@@ -69,6 +72,7 @@
       margin-top : 0.5em
       margin-bottom : 0.5em  
     h4
+      color:black;
 	  font-size: 16px
 
 .dashboard-plugins-overlay.hidden
@@ -154,14 +158,14 @@
     float: left
 
     &:not(.active)
-      cursor: pointer
-      opacity: .5
+      cursor: pointer 
 
       &:hover
         opacity: .9
 
     &:not(.add)
-      background: white
+      background: #7A5886
+      color: #fff
       border-right: $border-med
 
   // Close button styles, not used right now
@@ -217,3 +221,6 @@
   input[type=text]::placeholder
     color: #AAA
     font-style: italic
+    
+  .aria-descHelper
+    display: none

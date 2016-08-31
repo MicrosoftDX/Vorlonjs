@@ -1,3 +1,45 @@
+## 0.3.0
+- Plugins
+	- Node.js sample:
+		- New sample using Express with landing page and buttons to simulate express routes
+	- Express.js plugin :
+		- Displays information about an Express app connected to Vorlon.js
+		- Routes and objects are available
+		- A new entry appears each time a route is hit via a request
+	- Node.js plugin :
+		- Generic node.js debugging plugin
+		- Displays env variables and their values
+		- There is a graph connected to memory usage
+		- List for modules required inside the app
+	- Various fixes and improvements
+		- Fix a bug that made safari remote debug impossible
+		- Various refactoring
+		- Fixing errors in gulp file
+		- Accessibility improvements
+		- Adding support for identify in node.js debugging
+		- Fixed a bug that made express with static files crashes when debugging using vorlon
+		- Fixed ssl support
+	
+
+## 0.2.2
+- Plugins
+	- Interactive Console :
+		- Displays log in correct order
+	- Office addin
+		- Allows you to debug office addin (they are done using web tech) : http://i1.blogs.msdn.com/b/mim/archive/2016/02/18/vorlonjs-plugin-for-debugging-office-addin.aspx
+	- UWP Plugin 
+		- Allows you to debug Universal windows apps dev in JavaScript
+	- Various fixes and improvements
+		- Fix bug when activating authentication
+		- Moved to Gulp 3.9.1
+		- Added vorlon.js version on the bottom left of the dashboard
+	- Azure deploy
+		- Fix dependencies in AzureDeploy.json
+	- General
+		- Added a https link to download vorlon desktop on vorlonjs.io website
+		- Added a build success badge on vorlon.js website
+		
+
 ## 0.2.0
 
 - Plugins

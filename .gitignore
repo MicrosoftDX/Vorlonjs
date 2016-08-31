@@ -1,6 +1,5 @@
 npm-debug.log
 *.log
-tsconfig.json
 /Plugins/obj
 **/node_modules
 sync.bat
@@ -8,6 +7,7 @@ sync.bat
 /.vs/
 bin/
 **/control.css
+!Plugins/Vorlon/plugins/office/control.css
 sync.bat
 .settings/launch.json
 *.dat

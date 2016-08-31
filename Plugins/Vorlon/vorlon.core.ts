@@ -1,5 +1,4 @@
 ﻿module VORLON {
-
     export class _Core {
         _clientPlugins = new Array<ClientPlugin>();
         _dashboardPlugins = new Array<DashboardPlugin>();
@@ -12,6 +11,7 @@
         _socketIOWaitCount = 0;
         public debug: boolean = false;
         _RetryTimeout = 1002;
+        _isHttpsEnabled = false;
 
         public get Messenger(): ClientMessenger {
             return Core._messenger;
@@ -19,6 +19,10 @@
 
         public get ClientPlugins(): Array<ClientPlugin> {
             return Core._clientPlugins;
+        }
+        
+        public get IsHttpsEnabled(): boolean {
+            return Core._isHttpsEnabled;
         }
 
         public get DashboardPlugins(): Array<DashboardPlugin> {
@@ -44,6 +48,10 @@
             Core._side = RuntimeSide.Client;
             Core._sessionID = sessionId;
             Core._listenClientId = listenClientId;
+            
+            if(serverUrl.match("$https://")){
+                Core._isHttpsEnabled = true;
+            }
            
             // Checking socket.io
             if (Tools.IsWindowAvailable && (<any>window).io === undefined) {
@@ -328,6 +336,8 @@
                 setTimeout(() => {
                     document.body.removeChild(div);
                 }, 4000);
+            } else {
+                console.log('Vorlon client n° ' + message);
             }
         }
 

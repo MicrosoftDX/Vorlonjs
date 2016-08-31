@@ -16,7 +16,7 @@
             this.trace("network monitor sending data ")
             this.performanceItems = [];
 
-            if (window.performance) {
+            if (typeof window.performance.getEntries !== 'undefined' && window.performance) {
                 var entries = window.performance.getEntries();
 
                 for (var i = 0; i < entries.length; i++) {

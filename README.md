@@ -4,7 +4,9 @@ A new, open source, extensible, platform-agnostic tool for remotely debugging an
 
 Understand all about Vorlon.js in 20 minutes watching this video : https://channel9.msdn.com/Shows/codechat/046
 
-Learn more at [VorlonJS](http://vorlonjs.com).
+Learn more at [VorlonJS](http://vorlonjs.com) !
+
+![Build Status](https://jcorioland.visualstudio.com/DefaultCollection/_apis/public/build/definitions/593f5499-db9b-4e0f-ba42-fdd5d655592a/2/badge)
 
 Chat with us on slack (get a free invite clicking on the badge below)
 
@@ -57,6 +59,7 @@ If you want to run the server with SSL support proceed as follows:
 6. Exit and save JSON file
 
 ## SSL Support on Azure
+
 1. Navigate to the installation folder
 2. Modify JSON file for activation SSLAzure support
 3. In JSON file set to true
@@ -64,15 +67,17 @@ If you want to run the server with SSL support proceed as follows:
 5. Navigate with https protole on your Azure WebSite
 
 ## Custom log file
+
 By default Vorlon.JS application logs with debug level and files are stored in the installation folder.
 If you want to customize logs, proceed as follows :
+
 1. Navigate to the installation folder
 2. Modify JSON file, add or edit the "logs" section :
-	- enableConsole : enabled logging to the console,
-	- level : allowed values : info, warn, error
-	- filePath : folder where log files should be store
-	- vorlonLogFileName : name of Vorlon.JS log file,
-	- exceptionsLogFileName : name of the log files for exceptions
+ * enableConsole : enabled logging to the console,
+ * level : allowed values : info, warn, error
+ * filePath : folder where log files should be store
+ * vorlonLogFileName : name of Vorlon.JS log file,
+ * exceptionsLogFileName : name of the log files for exceptions
 3. Exit and save JSON file	
 
 ```console

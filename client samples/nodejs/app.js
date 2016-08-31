@@ -1,50 +1,48 @@
 var vorlonWrapper = require("vorlon-node-wrapper");
 var serverUrl = "http://localhost:1337";
 var dashboardSession = "default";
+var express = require('express');
+var open = require("openurl");
+var methodOverride = require('method-override');
 
 vorlonWrapper.start(serverUrl, dashboardSession, false);
 
-console.log({
-    "ok": "oui",
-    "non": "si"
+var app = express();
+EXPRESS_VORLONJS = app;
+
+app.set('view engine', 'ejs');
+app.set('MY_APP_CONFIG', 'MY_APP_CONFIG');
+app.use(methodOverride('_method'));
+
+app.get('/', function(request, response) {
+    response.render('index');
 });
 
-var a = 2;
-var first = function(){
-    setTimeout(
-        function(){
-            console.log(a++);
-            second();
-        },
-        1000
-    );
-} 
+app.get('/api/bears', function(request, response) {
+    response.send('GET	Get all the bears.');
+});
+	
+app.post('/api/bears', function(request, response) {
+    response.send('POST	Create a bear.');
+});
+	
+app.get('/api/bears/:bear_id', function(request, response) {
+    response.send('GET	Get a single bear.');
+});
+	
+app.put('/api/bears/:bear_id', function(request, response) {
+    response.send('PUT	Update a bear with new info.');
+});
+	
+app.delete('/api/bears/:bear_id', function(request, response) {
+    response.send('DELETE	Delete a bear.');
+});
 
-var second = function(){
-    setTimeout(
-        function(){
-            console.log(a++);
-            first();
-            
-            if (a > 2) {
-                
-                var XMLHttpRequest = require("xhr2");
-                var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function(){
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            console.log("xhr OK");
-                        }
-                    }
-                }
+app.use(function(request, response, next){
+  response.status(404);
+  response.send('404');
+});
 
-                xhr.open("GET", "http://www.google.fr");
-                xhr.send();
-            }
-        },
-        1000
-    );
-}
+app.listen(1995);
 
-first();
-
+open.open("http://localhost:1995");
