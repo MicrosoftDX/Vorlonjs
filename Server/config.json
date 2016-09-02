@@ -139,7 +139,7 @@
             "name": "Dom timeline",
             "panel": "top",
             "foldername": "domtimeline",
-            "enabled": false,
+            "enabled": true,
             "nodeCompliant": false,
             "nodeOnly": false
         }

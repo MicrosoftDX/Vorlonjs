@@ -1,5 +1,3 @@
-/// <reference path="api/vorlon.core.d.ts" />
-/// <reference path="api/vorlon.clientPlugin.d.ts" />
 /// <reference path="api/mapping-system.d.ts" />
 /// <reference path="api/shared-definitions.d.ts" />
 

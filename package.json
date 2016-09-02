@@ -37,7 +37,7 @@
     "gulp-mocha": "~2.2.0",
     "gulp-rename": "~1.2.0",
     "gulp-sourcemaps": "~1.5.2",
-    "gulp-typescript": "~2.8.2",
+    "gulp-typescript": "~2.13.6",
     "gulp-uglify": "~0.3.0",
     "gulp-util": "~2.2.14",
     "gulp-webserver": "~0.9.0",
@@ -45,7 +45,7 @@
     "merge2": "~0.3.5",
     "mocha-junit-reporter": "^1.9.1",
     "through": "~2.3.4",
-    "typescript": "~1.6.0-beta"
+    "typescript": "^1.8.10"
   },
   "scripts": {
     "global-deploy-gulp": "npm install -g gulp",

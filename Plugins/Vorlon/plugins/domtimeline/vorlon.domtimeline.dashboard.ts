@@ -1,5 +1,3 @@
-/// <reference path="api/vorlon.core.d.ts" />
-/// <reference path="api/vorlon.dashboardPlugin.d.ts" />
 /// <reference path="api/mapping-system.d.ts" />
 /// <reference path="api/shared-definitions.d.ts" />
 var $ : any;
@@ -737,7 +735,7 @@ function initDashboard(executeScriptOnClient: (string)=>void) {
                     } else {
                         var url = window.URL.createObjectURL(blob);
                         a.href = url;
-                        a.download = 'standalone.html';
+                        (<any>a).download = 'standalone.html';
                         document.body.appendChild(a);
                         a.click();
                         setTimeout(function() {
