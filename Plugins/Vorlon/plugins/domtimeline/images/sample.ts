@@ -1,9 +1,3 @@
-interface ExtendedMutationRecord extends MutationRecord {
-    claim: string
-    stack: string
-    timestamp: number
-    newValue: string
-}
 var m : ExtendedMutationRecord;
 
 //if(true) { debugger; };
@@ -15,7 +9,7 @@ function closest(selector: string, node: Node, converter: Function) {
     return node ? converter(node) : node;
 }
 
-function matches(selector: string, node: Node) {
+function matches(selector: string, node: any) {
     var matches = node.matches || node.webkitMatchesSelector || node.mozMatchesSelector || node.msMatchesSelector || function() { return false };
     return matches.call(node, selector);
 }
