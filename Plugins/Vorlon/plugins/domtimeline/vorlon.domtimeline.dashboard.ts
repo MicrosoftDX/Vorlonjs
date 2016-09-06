@@ -774,7 +774,7 @@ function initDashboard(executeScriptOnClient: (string)=>void) {
                 images.forEach((s,i) => {
                     var f = s.substring(5,s.length-2);
                     var x = new XMLHttpRequest();
-                    x.open('GET', window['vorlonBaseURL']+'/vorlon/plugins/domtimeline/'+f, true);
+                    x.open('GET', window['vorlonBaseURL']+f, true);
                     x.responseType = 'arraybuffer';
                     x.onload = function() { images[i] = 'url(data:image/png;base64,'+convertToBase64(this.response)+')'; onload(); };
                     x.send(null);
