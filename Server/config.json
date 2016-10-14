@@ -106,7 +106,7 @@
             "name": "NodeJS",
             "panel": "top",
             "foldername": "nodejs",
-            "enabled": false,
+            "enabled": true,
             "nodeCompliant": true,
             "nodeOnly": true
         },
@@ -130,7 +130,7 @@
             "name": "Express",
             "panel": "bottom",
             "foldername": "express",
-            "enabled": false,
+            "enabled": true,
             "nodeCompliant": true,
             "nodeOnly": true
         },
