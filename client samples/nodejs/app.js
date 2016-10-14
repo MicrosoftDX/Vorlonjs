@@ -1,4 +1,4 @@
-var vorlonWrapper = require("vorlon-node-wrapper");
+var vorlonWrapper = require("../../VorlonNodeWrapper/wrapper.js");
 var serverUrl = "http://localhost:1337";
 var dashboardSession = "default";
 var express = require('express');
