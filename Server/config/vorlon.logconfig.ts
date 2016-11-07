@@ -1,5 +1,6 @@
 ﻿import fs = require("fs");
 import path = require("path");
+import config = require("./vorlon.configprovider");
 
 export module VORLON {
     export class LogConfig {
@@ -9,7 +10,7 @@ export module VORLON {
         public level: string;
 
         public constructor() {
-            var configurationFile: string = fs.readFileSync(path.join(__dirname, "../config.json"), "utf8");
+            var configurationFile: string = fs.readFileSync(config.VORLON.ConfigProvider.getConfigPath(), "utf8");
             var configurationString = configurationFile.toString().replace(/^\uFEFF/, '');
             var configuration = JSON.parse(configurationString);
             if (configuration.logs) {

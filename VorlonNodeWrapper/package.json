@@ -6,7 +6,7 @@
   "author": "Vorlon Team",
   "dependencies": {
     "require-hook": "^0.1.2",
-    "socket.io-client": "^1.4.4",
+    "socket.io-client": "^1.5.0",
     "url-join": "0.0.1",
     "xmlhttprequest": "^1.8.0"
   }

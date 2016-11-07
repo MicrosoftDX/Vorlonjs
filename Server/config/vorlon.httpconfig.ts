@@ -2,6 +2,7 @@
 import http = require("http");
 import https = require("https");
 import path = require("path");
+import config = require("./vorlon.configprovider");
 
 export module VORLON {
     export class HttpConfig {
@@ -17,7 +18,7 @@ export module VORLON {
         public proxyEnvPort: boolean;
 
         public constructor() {
-            var catalogdata: string = fs.readFileSync(path.join(__dirname, "../config.json"), "utf8");
+            var catalogdata: string = fs.readFileSync(config.VORLON.ConfigProvider.getConfigPath(), "utf8");
             var catalogstring = catalogdata.toString().replace(/^\uFEFF/, '');
             var catalog = JSON.parse(catalogstring);
 
