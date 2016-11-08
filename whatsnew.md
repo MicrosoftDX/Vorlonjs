@@ -1,3 +1,16 @@
+## 0.4.0
+- Plugins
+	- Dom Timeline
+		- New plugin to record history of dom changes
+		- Article available here : https://meulta.com/en/?p=208
+		- Credit : @FremyCompany
+	- Configuration
+		- You can now provide a --config flag at startup to use another config file
+	- Various fixes and improvements
+		- Various refactoring
+		- Fixing version of socket.io to avoid security issues
+
+
 ## 0.3.0
 - Plugins
 	- Node.js sample:
