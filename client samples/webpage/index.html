@@ -63,6 +63,14 @@
       }
     </script>
     <button onclick="ajaxCall()">make ajax call</button>
+
+    <h2>Test Dom timeline</h2>
+    <p>
+        If you want to test Dom timeline you just have to click on the "Start recording" button on the plugin and click on the following button to change the Dom in the current page.  
+    </p>
+    <button onclick="addDom()">Add dom element</button>
+    <div id="toAddDom"></div>
+
     <h2>unitTest</h2>
     <p>You can run this QUnit test in dashboard</p>
     <div id="test2" style="font-family: monospace">
@@ -87,6 +95,16 @@
     
     <script type="text/javascript">
         console.log('The sample page has loaded!');
+
+        function addDom(){
+          var para = document.createElement("p");
+          var node = document.createTextNode("This is new.");
+          para.appendChild(node);
+
+          var hostDiv = document.getElementById("toAddDom");
+          hostDiv.appendChild(para);
+        }
+
         function intenseLog() {
             for (var i = 0 ; i < 500 ; i++) {
                 console.log('hey ' + i + ' !');
