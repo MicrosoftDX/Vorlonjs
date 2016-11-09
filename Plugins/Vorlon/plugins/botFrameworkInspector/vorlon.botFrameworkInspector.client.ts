@@ -1,30 +1,49 @@
 ﻿///<reference path="../../typings/botbuilder/botbuilder.d.ts" />
+var path = require("path");
+var requireHook = require("require-hook");
 
 module VORLON {
     export class BotFrameworkInspectorClient extends ClientPlugin {
-        private _libraryHooked:boolean;
+        private _hooked:boolean;
         private _botInfo:BotInfo;
 
         constructor() {
             super("botFrameworkInspector");
             //this.debug = true;
             this._ready = true;
-            this._libraryHooked = false;
+            this._hooked = false;
             this._botInfo = new BotInfo();
         }
 
         public startClientSide(): void {
-            this.hookLibraryDialogFunction()
+            requireHook.attach(path.resolve());
+            this.hookBotFrameworkFunctions();
         }
 
-        public hookLibraryDialogFunction(){
-            var path = require("path");
-            var requireHook = require("require-hook");
-            requireHook.attach(path.resolve());
-
+        public hookBotFrameworkFunctions(){
             var that = this;
             requireHook.setEvent(function(result, e){
-                if (!that._libraryHooked && e.require === "botbuilder") {
+                if (!that._hooked && e.require === "botbuilder") {
+                    //Hooking onSave on Session class
+                    var previousSendBatchFunction = result.Session.prototype.sendBatch;
+                    
+                    result.Session.prototype.sendBatch = function(callback:any) {
+                        var returned = previousSendBatchFunction.apply(this, arguments);
+                        var previousOnSaveFunction = this.options.onSave;
+                        
+                        var thatSession = this;
+                        this.options.onSave(function(err:any){
+                            var botCallStack = new BotCallstack();
+                            botCallStack.sessionState = thatSession.sessionState;
+                            that._botInfo.callStackHistory.push(botCallStack);
+                            that.refresh();
+                            return previousOnSaveFunction.apply(this, arguments);
+                        });
+                        
+                        return returned;
+                    }
+
+                    // Hooking Dialog on Library class
                     var previousDialogFunction = result.Library.prototype.dialog;
                     
                     result.Library.prototype.dialog = function(id: string, dialog?: any | any[] | any) {
@@ -38,7 +57,7 @@ module VORLON {
                         return previousDialogFunction.apply(this, arguments);
                     }
 
-                    that._libraryHooked = true;
+                    that._hooked = true;
                 }
                 return result;                        
             });  

@@ -22,6 +22,6 @@
     }
 
     export class BotCallstack {
-        public callstack:any[];
+        public sessionState;
     }
 } 
