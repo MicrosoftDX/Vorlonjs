@@ -64,6 +64,18 @@
 			"env": {}
 		},
 		{
+			"name": "Launch botbuilder sample",
+			"type": "node",
+			"program": "${workspaceRoot}/client samples/botbuilder/index.js",
+			"stopOnEntry": false,
+			"args": [
+				"--nolazy"
+			],
+			"cwd": "${workspaceRoot}/client samples/botbuilder",
+			"runtimeExecutable": null,
+			"env": {}
+		},
+		{
 			// Name of configuration; appears in the launch configuration drop down menu.
 			"name": "Launch w/TypeScript",
 			// Type of configuration. Possible values: "node", "mono".
