@@ -142,6 +142,15 @@
             "enabled": true,
             "nodeCompliant": false,
             "nodeOnly": false
+        },
+        {
+            "id": "BOTFRAMEWORKINSPECTOR",
+            "name": "Bot Framework Inspector",
+            "panel": "bottom",
+            "foldername": "botFrameworkInspector",
+            "enabled": true,
+            "nodeCompliant": true,
+            "nodeOnly": true
         }
     ]
 }
