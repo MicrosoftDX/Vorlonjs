@@ -137,6 +137,35 @@ gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
     ])
         .pipe(concat('vorlon.babylonInspector.dashboard.min.js'))
         .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
+
+    // Bot framework inspector
+    gulp.src([
+        'Plugins/release/plugins/botFrameworkInspector/vorlon.botFrameworkInspector.interfaces.js',
+        'Plugins/release/plugins/botFrameworkInspector/vorlon.botFrameworkInspector.client.js'
+    ])
+        .pipe(concat('vorlon.botFrameworkInspector.client.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/botFrameworkInspector/'));
+
+    gulp.src([
+        'Plugins/release/plugins/botFrameworkInspector/vorlon.botFrameworkInspector.interfaces.js',
+        'Plugins/release/plugins/botFrameworkInspector/vorlon.botFrameworkInspector.dashboard.js'
+    ])
+        .pipe(concat('vorlon.botFrameworkInspector.dashboard.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/botFrameworkInspector/'));
+        
+    gulp.src([
+        'Plugins/release/plugins/botFrameworkInspector/vorlon.botFrameworkInspector.interfaces.min.js',
+        'Plugins/release/plugins/botFrameworkInspector/vorlon.botFrameworkInspector.client.min.js'
+    ])
+        .pipe(concat('vorlon.botFrameworkInspector.client.min.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/botFrameworkInspector/'));
+
+    gulp.src([
+        'Plugins/release/plugins/botFrameworkInspector/vorlon.botFrameworkInspector.interfaces.min.js',
+        'Plugins/release/plugins/botFrameworkInspector/vorlon.botFrameworkInspector.dashboard.min.js'
+    ])
+        .pipe(concat('vorlon.botFrameworkInspector.dashboard.min.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/botFrameworkInspector/'));
         
     // Office
     gulp.src([

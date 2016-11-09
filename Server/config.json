@@ -16,13 +16,6 @@
     "vorlonProxyURL": "",
     "plugins": [
         {
-            "id": "DOM",
-            "name": "Dom Explorer",
-            "panel": "top",
-            "foldername": "domExplorer",
-            "enabled": true
-        },
-        {
             "id": "OBJEXPLORER",
             "name": "Obj. Explorer",
             "panel": "top",
@@ -37,6 +30,48 @@
             "foldername": "xhrPanel",
             "enabled": true,
             "nodeCompliant": true
+        },
+        {
+            "id": "NODEJS",
+            "name": "NodeJS",
+            "panel": "top",
+            "foldername": "nodejs",
+            "enabled": true,
+            "nodeCompliant": true,
+            "nodeOnly": true
+        },
+        {
+            "id": "BOTFRAMEWORKINSPECTOR",
+            "name": "Bot Framework Inspector",
+            "panel": "top",
+            "foldername": "botFrameworkInspector",
+            "enabled": true,
+            "nodeCompliant": true,
+            "nodeOnly": true
+        },
+        {
+            "id": "CONSOLE",
+            "name": "Interactive Console",
+            "panel": "top",
+            "foldername": "interactiveConsole",
+            "enabled": true,
+            "nodeCompliant": true
+        },
+        {
+            "id": "EXPRESS",
+            "name": "Express",
+            "panel": "top",
+            "foldername": "express",
+            "enabled": true,
+            "nodeCompliant": true,
+            "nodeOnly": true
+        },
+        {
+            "id": "DOM",
+            "name": "Dom Explorer",
+            "panel": "top",
+            "foldername": "domExplorer",
+            "enabled": true
         },
         {
             "id": "BABYLONINSPECTOR",
@@ -102,55 +137,20 @@
             "enabled": false
         },
         {
-            "id": "NODEJS",
-            "name": "NodeJS",
-            "panel": "top",
-            "foldername": "nodejs",
-            "enabled": true,
-            "nodeCompliant": true,
-            "nodeOnly": true
-        },
-        {
-            "id": "CONSOLE",
-            "name": "Interactive Console",
-            "panel": "bottom",
-            "foldername": "interactiveConsole",
-            "enabled": true,
-            "nodeCompliant": true
-        },
-        {
             "id": "MODERNIZR",
             "name": "Modernizr",
             "panel": "bottom",
             "foldername": "modernizrReport",
-            "enabled": true
-        },
-        {
-            "id": "EXPRESS",
-            "name": "Express",
-            "panel": "bottom",
-            "foldername": "express",
-            "enabled": true,
-            "nodeCompliant": true,
-            "nodeOnly": true
+            "enabled": false
         },
         {
             "id": "DOMTIMELINE",
             "name": "Dom timeline",
             "panel": "top",
             "foldername": "domtimeline",
-            "enabled": true,
+            "enabled": false,
             "nodeCompliant": false,
             "nodeOnly": false
-        },
-        {
-            "id": "BOTFRAMEWORKINSPECTOR",
-            "name": "Bot Framework Inspector",
-            "panel": "bottom",
-            "foldername": "botFrameworkInspector",
-            "enabled": true,
-            "nodeCompliant": true,
-            "nodeOnly": true
         }
     ]
 }
