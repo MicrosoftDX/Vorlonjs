@@ -30,10 +30,12 @@ server.post('/api/messages', connector.listen());
 
 bot.dialog('/', function (session) {
     session.send("Slash, oh oh, savior of the universe!");
+    session.beginDialog("/hello");
 });
 
 bot.dialog('/hello', function (session) {
     session.send("Hello World");
+    builder.Prompts.text(session, "What do you want?");
 });
 
 bot.dialog('/coucou', function (session) {
