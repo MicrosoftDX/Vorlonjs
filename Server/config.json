@@ -52,7 +52,7 @@
         {
             "id": "CONSOLE",
             "name": "Interactive Console",
-            "panel": "top",
+            "panel": "bottom",
             "foldername": "interactiveConsole",
             "enabled": true,
             "nodeCompliant": true
