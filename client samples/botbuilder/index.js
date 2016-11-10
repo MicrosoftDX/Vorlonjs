@@ -33,10 +33,15 @@ bot.dialog('/', function (session) {
     session.beginDialog("/hello");
 });
 
-bot.dialog('/hello', function (session) {
+bot.dialog('/hello', [function (session) {
     session.send("Hello World");
     builder.Prompts.text(session, "What do you want?");
-});
+},
+function (session, args) {
+    session.send("Ok!");
+    builder.Prompts.text(session, "Quoi d'autre?");
+},
+]);
 
 bot.dialog('/coucou', function (session) {
     session.send("Coucou world");
