@@ -119,16 +119,27 @@
         }
 
         public startDashboardSide(div: HTMLDivElement = null): void {
-            this._loadScript("http://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.0/raphael-min.js", () => {
-                this._loadScript("http://flowchart.js.org/flowchart-latest.js", () => {
-                    this._insertHtmlContentAsync(div, (filledDiv) => {
-                        this._dialogsList = <HTMLUListElement>document.getElementById("dialogsList");
-                        //this._containerDiv = Tools.QuerySelectorById(div, "botFrameworkInspector");
-                        this._ready = true;
-                        this.display();
-                    })
-                })
-            })
+            this._insertHtmlContentAsync(div, (filledDiv) => {
+                //this._dialogsList = <HTMLUListElement>document.getElementById("dialogsList");
+                
+
+                $("#menu").on("click", "li#display-dialog", function(event){
+                    $("#dialogs").removeClass("hidden");  
+                    $("#callstacks").addClass("hidden");  
+                    $("#display-dialog").addClass("selected");  
+                    $("#display-callstacks").removeClass("selected");  
+                });
+
+                $("#menu").on("click", "li#display-callstacks", function(event){
+                    $("#dialogs").addClass("hidden");
+                    $("#callstacks").removeClass("hidden"); 
+                    $("#display-dialog").removeClass("selected");  
+                    $("#display-callstacks").addClass("selected"); 
+                });
+
+                this._ready = true;
+                this.display();
+            });
         }
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {

@@ -1,18 +1,46 @@
 ﻿<!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title></title>
         <link href="control.css" rel="stylesheet" />
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.0/raphael-min.js"></script>
-        <script src="http://flowchart.js.org/flowchart-latest.js"></script>
     </head>
     <body>
-        <div id="botFrameworkInspector">
-            <div>
-                <b>Dialogs List</b>
-                <ul id="dialogsList"></ul>
+        <div id="splitter">
+            <div id="left" class="hidden">
+                <div id="dialogs">
+                    <div id="dialog">
+                        <p class="dialog-id">Dialog id : @/</p>
+                        <div class="dialog-detail">
+                            <p>Waterfall steps: </p>
+                            <div class="waterfall-steps">
+                                <div class="waterfall-step">0</div>
+                                <div class="waterfall-step">1</div>
+                                <div class="waterfall-step">2</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dialog">
+                        <p class="dialog-id">Dialog id : @/</p>
+                        <div class="dialog-detail">
+                            <p>Waterfall steps: </p>
+                            <div class="waterfall-steps">
+                                <div class="waterfall-step">0</div>
+                                <div class="waterfall-step">1</div>
+                                <div class="waterfall-step">2</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="callstacks">
+                    Here are callstacks
+                </div>
             </div>
-            <div id="canvas"></div>
+            <div id="right">
+                <ul id="menu">
+                    <li id="display-dialog">Dialogs</li>
+                    <li id="display-callstacks"  class="selected">Callstacks</li>
+                </ul>
+            </div>
         </div>
     </body>
 </html>
