@@ -8,13 +8,16 @@ body {
     font-family: "Menlo", "Consolas", "Lucida Console", Courier, monospace;
 }
 
-
 .hidden{
     visibility: collapse;
+    display: none!important;
 }
 
 #left {
     flex-grow: 4;
+    overflow: scroll;
+    overflow-x: hidden;
+    height:100vh;
 }
 
 #left .section-header {
@@ -28,7 +31,7 @@ body {
     flex-direction: column;
 }
 
-#left #dialog {
+#left .dialog {
     display:flex;
     flex-direction: row;
     line-height: 80px;
@@ -70,7 +73,6 @@ body {
 }
 
 #left .dialog-detail .waterfall-step {
-    display: inline-block;
     background-color: #3E3D3D;
     color: white;
     text-align: center;
@@ -79,12 +81,74 @@ body {
     max-width: 100px;
 }
 
-#left #callstacks {
-    height: 100vh;
+#left #dialogstacks {
+    display:flex;
+    flex-direction: column;
+}
+
+#left #dialogstacks .user-entry {
+    display:flex;
+    flex-direction: row;
+}
+
+#left #dialogstacks .user-entry .entry {
+    background-color: forestgreen;
+    flex-grow: 1;
+    color: white;
+    border-bottom: 1px solid lightgray;
+    line-height: 100%;
+    margin: 0;
+    padding: 20px;
+    max-width: 150px;
+}
+
+#left #dialogstacks .user-entry .stacks {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 5;
+    background-color: #ccc; 
+}
+
+#left #dialogstacks .user-entry .stack {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid darkslategray;
+    padding: 10px;
+}
+
+#left #dialogstacks .user-entry .dialogs-in-stack {
+    display: flex;
+    flex-direction: row;
+}
+
+#left #dialogstacks .user-entry .data {
+    border: 1px solid darkslategray;
+    background-color: #eee;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+#left #dialogstacks .user-entry .stack .dialog-in-stack {
+    background-color: #3E3D3D;
+    color: white;
+    text-align: center;
+    flex-grow: 1;
+    height:50px;
+    line-height: 50px;
+    max-width: 100px;
+}
+
+#left #dialogstacks .user-entry .stack .dialogs-in-stack .line {
+    height: 0px;
+    width: 20px;
+    border-bottom: 1px solid black;
+    align-self: center;
 }
 
 #right {
     border-left: solid 1px gray;
+    height: 100vh;
+    overflow: hidden;
 }
 
 #right ul {
