@@ -6,9 +6,9 @@
     </head>
     <body>
         <div id="splitter">
-            <div id="left" class="hidden">
-                <div id="dialogs">
-                    <div id="dialog">
+            <div id="left">
+                <div id="dialogs" class="hidden">
+                    <div class="dialog">
                         <p class="dialog-id">Dialog id : @/</p>
                         <div class="dialog-detail">
                             <p>Waterfall steps: </p>
@@ -19,7 +19,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="dialog">
+                    <div class="dialog">
                         <p class="dialog-id">Dialog id : @/</p>
                         <div class="dialog-detail">
                             <p>Waterfall steps: </p>
@@ -31,14 +31,95 @@
                         </div>
                     </div>
                 </div>
-                <div id="callstacks">
-                    Here are callstacks
+                <div id="dialogstacks">
+                    <div class="user-entry">
+                        <p class="entry"><strong>User Entry</strong>: Hello bot!</p>
+                        <div class="stacks">
+                            <div class="stack">
+                                <div class="dialogs-in-stack">
+                                    <div class="dialog-in-stack">@/</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Hello</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Yo</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Yo</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Yo</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Yo</div>
+                                </div>
+                                <div class="data">UserData : toto</div>
+                            </div>
+                             <div class="stack">
+                                <div class="dialogs-in-stack">
+                                    <div class="dialog-in-stack">@/</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Hello</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Yo</div>
+                                </div>
+                                <div class="data">
+                                    <p>UserData :</p>
+                                    <ul>
+                                        <li>Value = toto</li>
+                                        <li>Value2 = asda</li>
+                                    </ul>
+                                </div>
+                            </div>
+                             <div class="stack">
+                                <div class="dialogs-in-stack">
+                                    <div class="dialog-in-stack">@/</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Hello</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Yo</div>
+                                </div>
+                                <div class="data">UserData : toto</div>
+                            </div>
+                             <div class="stack">
+                                <div class="dialogs-in-stack">
+                                    <div class="dialog-in-stack">@/</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Hello</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Yo</div>
+                                </div>
+                                <div class="data">UserData : toto</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-entry">
+                        <p class="entry"><strong>User Entry</strong>: Hello bot!</p>
+                        <div class="stacks">
+                            <div class="stack">
+                                <div class="dialogs-in-stack">
+                                    <div class="dialog-in-stack">@/</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Hello</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Yo</div>
+                                </div>
+                                <div class="data">UserData : toto</div>
+                            </div>
+                             <div class="stack">
+                                <div class="dialogs-in-stack">
+                                    <div class="dialog-in-stack">@/</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Hello</div>
+                                    <div class="line"></div>
+                                    <div class="dialog-in-stack">@/Yo</div>
+                                </div>
+                                <div class="data">UserData : toto</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="right">
                 <ul id="menu">
                     <li id="display-dialog">Dialogs</li>
-                    <li id="display-callstacks"  class="selected">Callstacks</li>
+                    <li id="display-dialogstacks"  class="selected">Dialogstacks</li>
                 </ul>
             </div>
         </div>
