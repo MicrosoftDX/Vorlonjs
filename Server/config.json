@@ -20,7 +20,7 @@
             "name": "Obj. Explorer",
             "panel": "top",
             "foldername": "objectExplorer",
-            "enabled": true,
+            "enabled": false,
             "nodeCompliant": true
         },
         {
@@ -28,7 +28,7 @@
             "name": "XHR",
             "panel": "top",
             "foldername": "xhrPanel",
-            "enabled": true,
+            "enabled": false,
             "nodeCompliant": true
         },
         {
@@ -36,7 +36,7 @@
             "name": "NodeJS",
             "panel": "top",
             "foldername": "nodejs",
-            "enabled": true,
+            "enabled": false,
             "nodeCompliant": true,
             "nodeOnly": true
         },
@@ -62,7 +62,7 @@
             "name": "Express",
             "panel": "top",
             "foldername": "express",
-            "enabled": true,
+            "enabled": false,
             "nodeCompliant": true,
             "nodeOnly": true
         },
