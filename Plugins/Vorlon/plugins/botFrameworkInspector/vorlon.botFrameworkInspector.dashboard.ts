@@ -1,9 +1,10 @@
-﻿module VORLON {
+﻿/// <reference path="botbuilder.d.ts" />
+
+module VORLON {
     export class BotFrameworkInspectorDashboard extends DashboardPlugin {
         private _blocksDefinition = `callstack0=>condition: 0|timeline`;
         private _callstacksGraphDefinition = [];
         private _chart;
-        private _dialogsList: HTMLUListElement;
 
         constructor() {
             super("botFrameworkInspector", "control.html", "control.css");
@@ -12,129 +13,26 @@
         }
 
         private _lastReceivedBotInfo: BotInfo;
-        private _containerDiv: HTMLElement;
-
-        private _newCallStack(sessionState) {
-            var csIndex = this._callstacksGraphDefinition.length + 1;
-            var csBlock = `callstack${csIndex}=>condition: ${csIndex}|timeline`;
-            this._blocksDefinition += '\n' + csBlock;
-
-            if (sessionState.callstack.length > 0) {
-                sessionState.callstack.forEach((element, i) => {
-                    let block = `block${i}callstack${csIndex - 1}=>inputoutput: ${element.id}`;
-                    if (element.state["BotBuilder.Data.WaterfallStep"] != undefined){
-                        block += " - step:" + element.state["BotBuilder.Data.WaterfallStep"]
-                    }
-                    this._blocksDefinition += '\n' + block;
-                });
-            }
-            else {
-                let block = `block0callstack${csIndex - 1}=>inputoutput: Empty callstack`;
-                this._blocksDefinition += '\n' + block;
-            }
-
-            var csGraphDefinition = [];
-
-            let graphDef = `callstack${csIndex - 1}(yes, right)->callstack${csIndex}\ncallstack${csIndex - 1}(no)->block0callstack${csIndex - 1}->`;
-
-            for (let i = 1; i < sessionState.callstack.length; i++) {
-                graphDef += `block${i}callstack${csIndex - 1}->`;
-            }
-
-            csGraphDefinition.push(graphDef);
-
-            this._callstacksGraphDefinition.push(csGraphDefinition);
-        }
-
-        private _updateSVGGraph() {
-            var code = this._generateCompleteGraphCode();
-            if (this._chart) {
-                this._chart.clean();
-            }
-            this._chart = window.flowchart.parse(code);
-
-            this._chart.drawSVG('canvas', {
-                // 'x': 30,
-                // 'y': 50,
-                'line-width': 3,
-                'maxWidth': 3,//ensures the flowcharts fits within a certian width
-                'line-length': 50,
-                'text-margin': 10,
-                'font-size': 14,
-                'font': 'normal',
-                'font-family': 'Helvetica',
-                'font-weight': 'normal',
-                'font-color': 'black',
-                'line-color': 'black',
-                'element-color': 'black',
-                'fill': 'white',
-                'yes-text': 'yes',
-                'no-text': 'no',
-                'arrow-end': 'block',
-                'scale': 1,
-                'symbols': {
-                    'start': {
-                        'font-color': 'red',
-                        'element-color': 'green',
-                        'fill': 'yellow'
-                    },
-                    'end': {
-                        'class': 'end-element'
-                    }
-                },
-                'flowstate': {
-                    'past': { 'fill': '#CCCCCC', 'font-size': 12 },
-                    'current': { 'fill': 'yellow', 'font-color': 'red', 'font-weight': 'bold' },
-                    'future': { 'fill': '#FFFF99' },
-                    'request': { 'fill': 'blue' },
-                    'invalid': { 'fill': '#444444' },
-                    'timeline': { 'fill': '#58C4A3', 'font-size': 12, 'yes-text': ' ', 'no-text': ' ' },
-                    'rejected': { 'fill': '#C45879', 'font-size': 12, 'yes-text': 'n/a', 'no-text': 'REJECTED' }
-                }
-            });
-        }
-
-        private _generateCompleteGraphCode() {
-            var graphCode = this._blocksDefinition + '\n';
-
-            this._callstacksGraphDefinition.forEach((csGraphCode) => {
-                csGraphCode.forEach((blockCode) => {
-                    graphCode += blockCode + '\n';
-                });
-            });
-
-            return graphCode;
-        }
-
-        private _loadScript(url, callback) {
-            var script = document.createElement("script")
-            script.type = "text/javascript";
-
-            script.onload = function () {
-                callback();
-            };
-
-            script.src = url;
-            document.getElementsByTagName("head")[0].appendChild(script);
-        }
+        private _dialogsContainer: HTMLDivElement;
+        private _dialogStacksContainer: HTMLDivElement;
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div, (filledDiv) => {
-                //this._dialogsList = <HTMLUListElement>document.getElementById("dialogsList");
-                
+                this._dialogsContainer = <HTMLDivElement>document.getElementById("dialogs");
+                this._dialogStacksContainer = <HTMLDivElement>document.getElementById("dialogstacks");
 
                 $("#menu").on("click", "li#display-dialog", function(event){
                     $("#dialogs").removeClass("hidden");  
-                    $("#callstacks").addClass("hidden");  
+                    $("#dialogstacks").addClass("hidden");  
                     $("#display-dialog").addClass("selected");  
-                    $("#display-callstacks").removeClass("selected");  
+                    $("#display-dialogstacks").removeClass("selected");  
                 });
 
-                $("#menu").on("click", "li#display-callstacks", function(event){
+                $("#menu").on("click", "li#display-dialogstacks", function(event){
                     $("#dialogs").addClass("hidden");
-                    $("#callstacks").removeClass("hidden"); 
+                    $("#dialogstacks").removeClass("hidden"); 
                     $("#display-dialog").removeClass("selected");  
-                    $("#display-callstacks").addClass("selected"); 
+                    $("#display-dialogstacks").addClass("selected"); 
                 });
 
                 this._ready = true;
@@ -149,24 +47,104 @@
 
         public display() {
             if (this._lastReceivedBotInfo) {
-                this._callstacksGraphDefinition = [];
-                this._dialogsList.innerHTML = "";
 
+                this._dialogsContainer.innerHTML = null;
                 this._lastReceivedBotInfo.dialogDataList.forEach((dataList) => {
-                    let waterFallStep = 0;
-                    if (dataList.dialog && dataList.dialog.length) {
-                        waterFallStep = dataList.dialog.length;
+                    var dialog = document.createElement("div");
+                    dialog.classList.add("dialog");
+                    
+                    var dialogid = document.createElement("p");
+                    dialogid.innerText = dataList.id;
+                    dialogid.classList.add("dialog-id");
+                    dialog.appendChild(dialogid);
+
+                    var dialogDetail = document.createElement("div");
+                    dialogDetail.classList.add("dialog-detail");
+                    dialog.appendChild(dialogDetail);
+
+                    var waterfallStepsLabel = document.createElement("p");
+                    waterfallStepsLabel.innerText = "Waterfall steps : ";
+                    dialogDetail.appendChild(waterfallStepsLabel);
+
+                    var waterfallSteps = document.createElement("div");
+                    waterfallSteps.classList.add("waterfall-steps");
+                    dialogDetail.appendChild(waterfallSteps);
+
+                     if (dataList.dialog && dataList.dialog.length) {
+                        if(dataList.dialog.length > 0){
+                            for(var i = 0; i < dataList.dialog.length; i++){
+                                var waterfallStep = document.createElement("div");
+                                waterfallStep.classList.add("waterfall-step");
+                                waterfallStep.innerText = (i + 1).toString();
+                                waterfallSteps.appendChild(waterfallStep);
+                            }
+                        }
+                        else {
+                            waterfallStepsLabel.innerText += " none.";
+                        }
+                    }
+                    else {
+                        waterfallStepsLabel.innerText += " none.";
                     }
 
-                    let newLi = `<li>${dataList.id} (${waterFallStep} step(s))</li>`;
-                    this._dialogsList.innerHTML += newLi;
+                    this._dialogsContainer.appendChild(dialog);
                 });
 
-                this._lastReceivedBotInfo.callStackHistory.forEach((botCallStack) => {
-                    console.log(botCallStack.sessionState);
-                    this._newCallStack(botCallStack.sessionState);
+                if(this._lastReceivedBotInfo.callStackHistory && this._lastReceivedBotInfo.callStackHistory.length){
+                    this._dialogStacksContainer.innerHTML = null;
+                    this._lastReceivedBotInfo.callStackHistory.forEach((botDialogStack) => {
+                        var userEntry = document.createElement("div");
+                        userEntry.classList.add("user-entry");
+                        
+                        var entry = document.createElement("p");
+                        entry.classList.add("entry");
+                        entry.innerHTML = "<strong>User entry:</strong> None for now";
+                        userEntry.appendChild(entry);
+
+                        var stacks = document.createElement("div");
+                        stacks.classList.add("stacks");
+                        userEntry.appendChild(stacks);
+
+                        //loop on each stack: one for now
+                            var stack = document.createElement("div");
+                            stack.classList.add("stack");
+                            stacks.appendChild(stack);
+
+                            var dialogsInStack = document.createElement("div");
+                            dialogsInStack.classList.add("dialogs-in-stack");
+                            stack.appendChild(dialogsInStack);
+
+                            if(botDialogStack.sessionState.callstack && botDialogStack.sessionState.callstack.length > 0){
+                                //loop on each dialog in the stack
+                                var lineSeparator:HTMLDivElement;
+                                botDialogStack.sessionState.callstack.forEach((dialog) => {
+                                    var dialogInStack = document.createElement("div");
+                                    dialogInStack.classList.add("dialog-in-stack");
+                                    dialogInStack.innerText = dialog.id;
+                                    dialogsInStack.appendChild(dialogInStack);
+
+                                    lineSeparator = document.createElement("div");
+                                    lineSeparator.classList.add("line");
+                                    dialogsInStack.appendChild(lineSeparator);
+                                });
+
+                                //remove last line
+                                lineSeparator.remove();
+                            }
+                            else {
+                                dialogsInStack.innerText = "No dialog stack.";
+                            }
+
+                            var userData = document.createElement("div");
+                            userData.classList.add("data");
+                            userData.innerText = "Available soon.";
+                            stack.appendChild(userData);
+
+                        this._dialogStacksContainer.appendChild(userEntry);
+                        
+                    console.log(botDialogStack.sessionState);
                 });
-                this._updateSVGGraph();
+                }
             }
         }
     }
