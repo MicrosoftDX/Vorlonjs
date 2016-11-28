@@ -123,8 +123,8 @@ module VORLON {
                                     var dialogInStack = document.createElement("div");
                                     dialogInStack.classList.add("dialog-in-stack");
                                     dialogInStack.innerText = dialog.id;
-                                    if(dialog["BotBuilder.Data.WaterfallStep"])
-                                        dialogInStack.innerText += " (" + dialog["BotBuilder.Data.WaterfallStep"] + ")";
+                                    if(dialog.state["BotBuilder.Data.WaterfallStep"] != undefined)
+                                        dialogInStack.innerText += " (" + dialog.state["BotBuilder.Data.WaterfallStep"] + ")";
                                     dialogsInStack.appendChild(dialogInStack);
 
                                     lineSeparator = document.createElement("div");
