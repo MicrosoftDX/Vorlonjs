@@ -33,9 +33,9 @@ module VORLON {
                         
                         var thatSession = this;
                         this.options.onSave(function(err:any){
-                            var botCallStack = new BotCallstack();
+                            var botCallStack = new BotDialogstack();
                             botCallStack.sessionState = thatSession.sessionState;
-                            that._botInfo.callStackHistory.push(botCallStack);
+                            that._botInfo.dialogStackHistory.push(botCallStack);
                             that.refresh();
                             return previousOnSaveFunction.apply(this, arguments);
                         });

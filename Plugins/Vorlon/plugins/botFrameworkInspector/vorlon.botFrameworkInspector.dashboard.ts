@@ -90,9 +90,9 @@ module VORLON {
                     this._dialogsContainer.appendChild(dialog);
                 });
 
-                if(this._lastReceivedBotInfo.callStackHistory && this._lastReceivedBotInfo.callStackHistory.length){
+                if(this._lastReceivedBotInfo.dialogStackHistory && this._lastReceivedBotInfo.dialogStackHistory.length){
                     this._dialogStacksContainer.innerHTML = null;
-                    this._lastReceivedBotInfo.callStackHistory.forEach((botDialogStack) => {
+                    this._lastReceivedBotInfo.dialogStackHistory.forEach((botDialogStack) => {
                         var userEntry = document.createElement("div");
                         userEntry.classList.add("user-entry");
                         
