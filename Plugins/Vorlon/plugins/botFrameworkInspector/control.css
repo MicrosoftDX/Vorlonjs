@@ -127,6 +127,7 @@ body {
 #left #dialogstacks .user-entry .dialogs-in-stack {
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 
 #left #dialogstacks .user-entry .data {
