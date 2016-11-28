@@ -30,15 +30,27 @@ server.post('/api/messages', connector.listen());
 
 bot.dialog('/', function (session) {
     session.send("Slash, oh oh, savior of the universe!");
+
+    session.userData.toto = "hey";
+    session.privateConversationData.tata = "Yo";
+    session.dialogData.titi = "ahahah";
+
     session.beginDialog("/hello");
 });
 
 bot.dialog('/hello', [function (session) {
     session.send("Hello World");
+    session.userData.toto = "hey2";
+    session.privateConversationData.tata = "Yo2";
+    session.dialogData.titi = "ahahah2";
     builder.Prompts.text(session, "What do you want?");
+    
 },
 function (session, args) {
     session.send("Ok!");
+    session.userData.toto = "hey3";
+    session.privateConversationData.tata = "Yo";
+    session.dialogData.titi = "ahahah";
     builder.Prompts.text(session, "Quoi d'autre?");
 },
 ]);

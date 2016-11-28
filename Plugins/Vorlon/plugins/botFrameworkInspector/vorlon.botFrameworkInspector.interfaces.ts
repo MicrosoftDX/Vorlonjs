@@ -5,14 +5,14 @@
 
     export class BotInfo {
         public dialogDataList: DialogData[];
-        public callStackHistory:BotCallstack[];
+        public dialogStackHistory:BotDialogstack[];
 
         /**
          *
          */
         constructor() {
             this.dialogDataList = [];
-            this.callStackHistory = [];      
+            this.dialogStackHistory = [];      
         }
     }
 
@@ -21,7 +21,12 @@
         public dialog:any|any[];
     }
 
-    export class BotCallstack {
-        public sessionState;
+    export class BotDialogstack {
+        public sessionState: any;
+        public dialogData: any;
+        public userData: any;
+        public conversationData: any;
+        public privateConversationData: any;
+        public message: any;
     }
 } 
