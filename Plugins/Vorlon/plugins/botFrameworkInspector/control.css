@@ -102,7 +102,7 @@ body {
 }
 
 #left #dialogstacks .user-entry .entry {
-    background-color: forestgreen;
+    background-color: gray;
     flex-grow: 1;
     color: white;
     line-height: 100%;
@@ -134,6 +134,7 @@ body {
     background-color: #eee;
     padding: 10px;
     margin-top: 10px;
+    max-width: 100vh;
 }
 
 #left #dialogstacks .user-entry .stack .dialog-in-stack {

@@ -98,7 +98,7 @@ module VORLON {
                         
                         var entry = document.createElement("p");
                         entry.classList.add("entry");
-                        entry.innerHTML = "<strong>User entry:</strong> None for now";
+                        entry.innerHTML = "<strong>User entry:</strong> " + botDialogStack.message.text;
                         userEntry.appendChild(entry);
 
                         var stacks = document.createElement("div");
@@ -135,9 +135,14 @@ module VORLON {
                                 dialogsInStack.innerText = "No dialog stack.";
                             }
 
+                            console.log(botDialogStack.message);
+
                             var userData = document.createElement("div");
                             userData.classList.add("data");
-                            userData.innerText = "Available soon.";
+                            userData.innerHTML = "<p><strong>ConversationData:</strong> " + JSON.stringify(botDialogStack.conversationData) + "</p>";
+                            userData.innerHTML += "<p><strong>DialogData:</strong> " + JSON.stringify(botDialogStack.dialogData) + "</p>";
+                            userData.innerHTML += "<p><strong>PrivateConversationData:</strong> " + JSON.stringify(botDialogStack.privateConversationData) + "</p>";
+                            userData.innerHTML += "<p><strong>UserData:</strong> " + JSON.stringify(botDialogStack.userData) + "</p>";
                             stack.appendChild(userData);
 
                         this._dialogStacksContainer.appendChild(userEntry);

@@ -33,9 +33,16 @@ module VORLON {
                         
                         var thatSession = this;
                         this.options.onSave(function(err:any){
+
                             var botCallStack = new BotDialogstack();
                             botCallStack.sessionState = thatSession.sessionState;
+                            botCallStack.conversationData = thatSession.conversationData;
+                            botCallStack.dialogData = thatSession.dialogData;
+                            botCallStack.privateConversationData = thatSession.privateConversationData;
+                            botCallStack.userData = thatSession.userData;
+                            botCallStack.message = thatSession.message;
                             that._botInfo.dialogStackHistory.push(botCallStack);
+
                             that.refresh();
                             return previousOnSaveFunction.apply(this, arguments);
                         });
@@ -48,10 +55,12 @@ module VORLON {
                     
                     result.Library.prototype.dialog = function(id: string, dialog?: any | any[] | any) {
                         if(dialog){
+
                             var dialogData = new DialogData();
                             dialogData.id = id;
                             dialogData.dialog = dialog;
                             that._botInfo.dialogDataList.push(dialogData);
+                            
                             that.refresh();
                         }                        
                         return previousDialogFunction.apply(this, arguments);
