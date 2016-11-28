@@ -51,10 +51,10 @@ function (session, args) {
     session.userData.toto = "hey3";
     session.privateConversationData.tata = "Yo";
     session.dialogData.titi = "ahahah";
-    builder.Prompts.text(session, "Quoi d'autre?");
+    session.beginDialog('/coucou');
 },
 ]);
 
 bot.dialog('/coucou', function (session) {
-    session.send("Coucou world");
+    session.endDialog("Coucou world");
 });

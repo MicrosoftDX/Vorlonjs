@@ -20,6 +20,38 @@ module VORLON {
             this.hookBotFrameworkFunctions();
         }
 
+        private clone(obj:any):any{
+            return (JSON.parse(JSON.stringify(obj || {})));
+        }
+
+        private addDialogStack(session:any, eventType:EventType, impactedDialogId:string = undefined){
+            var botCallStack = new BotDialogSessionInfo();
+            botCallStack.sessionState = this.clone(session.sessionState);
+            botCallStack.conversationData = this.clone(session.conversationData);
+            botCallStack.dialogData = this.clone(session.dialogData);
+            botCallStack.privateConversationData = this.clone(session.privateConversationData);
+            botCallStack.userData = this.clone(session.userData);
+            botCallStack.eventType = eventType;
+            botCallStack.impactedDialogId = impactedDialogId;
+
+            var found = false;
+            this._botInfo.userEntries.forEach((entry) =>{
+                if(entry.message.address.id === session.message.address.id){
+                    entry.dialogStacks.push(botCallStack);
+                    found = true;
+                }
+            });
+
+            if(!found){
+                var newEntry = new UserEntry();
+                newEntry.message = session.message;
+                newEntry.dialogStacks.push(botCallStack);
+                this._botInfo.userEntries.push(newEntry);
+            }
+            
+            this.refresh();
+        };
+
         public hookBotFrameworkFunctions(){
             var that = this;
             requireHook.setEvent(function(result, e){
@@ -33,34 +65,28 @@ module VORLON {
                         
                         var thatSession = this;
                         this.options.onSave(function(err:any){
-
-                            var botCallStack = new BotDialogSessionInfo();
-                            botCallStack.sessionState = thatSession.sessionState;
-                            botCallStack.conversationData = thatSession.conversationData;
-                            botCallStack.dialogData = thatSession.dialogData;
-                            botCallStack.privateConversationData = thatSession.privateConversationData;
-                            botCallStack.userData = thatSession.userData;
-
-                            var found = false;
-                            that._botInfo.userEntries.forEach((entry) =>{
-                                if(entry.message.address.id === thatSession.message.address.id){
-                                    entry.dialogStacks.push(botCallStack);
-                                    found = true;
-                                }
-                            });
-
-                            if(!found){
-                                var newEntry = new UserEntry();
-                                newEntry.message = thatSession.message;
-                                newEntry.dialogStacks.push(botCallStack);
-                                that._botInfo.userEntries.push(newEntry);
-                            }
-                            
-                            that.refresh();
-                            return previousOnSaveFunction.apply(this, arguments);
+                            var returned = previousOnSaveFunction.apply(this, arguments);
+                            that.addDialogStack(thatSession, EventType.FinalState);                            
+                            return returned;
                         });
                         
                         return returned;
+                    }
+
+                    //Hooking beginDialog on Session class
+                    var previousBeginDialogFunction = result.Session.prototype.beginDialog;
+
+                    result.Session.prototype.beginDialog = function(id: string, args?: any) {
+                        that.addDialogStack(this, EventType.BeginDialog, id);
+                        return previousBeginDialogFunction.apply(this, arguments);                           
+                    }
+
+                    //Hooking endDialog on Session class
+                    var previousEndDialogFunction = result.Session.prototype.endDialog;
+
+                    result.Session.prototype.endDialog = function(message?: any, ...args: any[]) {
+                        that.addDialogStack(this, EventType.EndDialog);
+                        return previousEndDialogFunction.apply(this, arguments);                           
                     }
 
                     // Hooking Dialog on Library class

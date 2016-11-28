@@ -116,25 +116,36 @@ module VORLON {
                             stack.appendChild(dialogsInStack);
 
                             if(dialogSessionInfo.sessionState.callstack && dialogSessionInfo.sessionState.callstack.length > 0){
-                                //loop on each dialog in the stack
                                 var lineSeparator:HTMLDivElement;
+
+                                //loop on each dialog in the stack
                                 dialogSessionInfo.sessionState.callstack.forEach((dialog) => {
                                     var dialogInStack = document.createElement("div");
                                     dialogInStack.classList.add("dialog-in-stack");
                                     dialogInStack.innerText = dialog.id;
+                                    if(dialog["BotBuilder.Data.WaterfallStep"])
+                                        dialogInStack.innerText += " (" + dialog["BotBuilder.Data.WaterfallStep"] + ")";
                                     dialogsInStack.appendChild(dialogInStack);
 
                                     lineSeparator = document.createElement("div");
                                     lineSeparator.classList.add("line");
                                     dialogsInStack.appendChild(lineSeparator);
                                 });
-
-                                //remove last line
-                                lineSeparator.remove();
                             }
                             else {
-                                dialogsInStack.innerText = "No dialog stack.";
+                                dialogsInStack.innerText = "(No dialog in stack)";
+                                lineSeparator = document.createElement("div");
+                                lineSeparator.classList.add("line");
+                                dialogsInStack.appendChild(lineSeparator);
                             }
+
+                            var eventType = document.createElement("p");
+                            eventType.innerText = `[${EventType[dialogSessionInfo.eventType]}`
+                            if(dialogSessionInfo.impactedDialogId) 
+                                eventType.innerText += `(${dialogSessionInfo.impactedDialogId})]`;
+                            else
+                                eventType.innerText += "]";
+                            dialogsInStack.appendChild(eventType);
 
                             console.log(botUserEntry.message);
 

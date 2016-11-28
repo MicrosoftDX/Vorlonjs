@@ -3,6 +3,10 @@
     //     public name: string;
     // }
 
+    export enum EventType {
+        BeginDialog, FinalState, EndDialog
+    }
+
     export class BotInfo {
         public dialogDataList: DialogData[];
         public userEntries:UserEntry[];
@@ -31,10 +35,12 @@
     }
 
     export class BotDialogSessionInfo {
+        public eventType: EventType;
         public sessionState: any;
         public dialogData: any;
         public userData: any;
         public conversationData: any;
         public privateConversationData: any;
+        public impactedDialogId: any;
     }
 } 
