@@ -34,15 +34,28 @@ module VORLON {
                         var thatSession = this;
                         this.options.onSave(function(err:any){
 
-                            var botCallStack = new BotDialogstack();
+                            var botCallStack = new BotDialogSessionInfo();
                             botCallStack.sessionState = thatSession.sessionState;
                             botCallStack.conversationData = thatSession.conversationData;
                             botCallStack.dialogData = thatSession.dialogData;
                             botCallStack.privateConversationData = thatSession.privateConversationData;
                             botCallStack.userData = thatSession.userData;
-                            botCallStack.message = thatSession.message;
-                            that._botInfo.dialogStackHistory.push(botCallStack);
 
+                            var found = false;
+                            that._botInfo.userEntries.forEach((entry) =>{
+                                if(entry.message.address.id === thatSession.message.address.id){
+                                    entry.dialogStacks.push(botCallStack);
+                                    found = true;
+                                }
+                            });
+
+                            if(!found){
+                                var newEntry = new UserEntry();
+                                newEntry.message = thatSession.message;
+                                newEntry.dialogStacks.push(botCallStack);
+                                that._botInfo.userEntries.push(newEntry);
+                            }
+                            
                             that.refresh();
                             return previousOnSaveFunction.apply(this, arguments);
                         });
@@ -60,7 +73,7 @@ module VORLON {
                             dialogData.id = id;
                             dialogData.dialog = dialog;
                             that._botInfo.dialogDataList.push(dialogData);
-                            
+
                             that.refresh();
                         }                        
                         return previousDialogFunction.apply(this, arguments);
