@@ -90,15 +90,15 @@ module VORLON {
                     this._dialogsContainer.appendChild(dialog);
                 });
 
-                if(this._lastReceivedBotInfo.dialogStackHistory && this._lastReceivedBotInfo.dialogStackHistory.length){
+                if(this._lastReceivedBotInfo.userEntries && this._lastReceivedBotInfo.userEntries.length){
                     this._dialogStacksContainer.innerHTML = null;
-                    this._lastReceivedBotInfo.dialogStackHistory.forEach((botDialogStack) => {
+                    this._lastReceivedBotInfo.userEntries.forEach((botUserEntry) => {
                         var userEntry = document.createElement("div");
                         userEntry.classList.add("user-entry");
                         
                         var entry = document.createElement("p");
                         entry.classList.add("entry");
-                        entry.innerHTML = "<strong>User entry:</strong> " + botDialogStack.message.text;
+                        entry.innerHTML = "<strong>User entry:</strong> " + botUserEntry.message.text;
                         userEntry.appendChild(entry);
 
                         var stacks = document.createElement("div");
@@ -106,6 +106,7 @@ module VORLON {
                         userEntry.appendChild(stacks);
 
                         //loop on each stack: one for now
+                        botUserEntry.dialogStacks.forEach((dialogSessionInfo) => {
                             var stack = document.createElement("div");
                             stack.classList.add("stack");
                             stacks.appendChild(stack);
@@ -114,10 +115,10 @@ module VORLON {
                             dialogsInStack.classList.add("dialogs-in-stack");
                             stack.appendChild(dialogsInStack);
 
-                            if(botDialogStack.sessionState.callstack && botDialogStack.sessionState.callstack.length > 0){
+                            if(dialogSessionInfo.sessionState.callstack && dialogSessionInfo.sessionState.callstack.length > 0){
                                 //loop on each dialog in the stack
                                 var lineSeparator:HTMLDivElement;
-                                botDialogStack.sessionState.callstack.forEach((dialog) => {
+                                dialogSessionInfo.sessionState.callstack.forEach((dialog) => {
                                     var dialogInStack = document.createElement("div");
                                     dialogInStack.classList.add("dialog-in-stack");
                                     dialogInStack.innerText = dialog.id;
@@ -135,20 +136,19 @@ module VORLON {
                                 dialogsInStack.innerText = "No dialog stack.";
                             }
 
-                            console.log(botDialogStack.message);
+                            console.log(botUserEntry.message);
 
                             var userData = document.createElement("div");
                             userData.classList.add("data");
-                            userData.innerHTML = "<p><strong>ConversationData:</strong> " + JSON.stringify(botDialogStack.conversationData) + "</p>";
-                            userData.innerHTML += "<p><strong>DialogData:</strong> " + JSON.stringify(botDialogStack.dialogData) + "</p>";
-                            userData.innerHTML += "<p><strong>PrivateConversationData:</strong> " + JSON.stringify(botDialogStack.privateConversationData) + "</p>";
-                            userData.innerHTML += "<p><strong>UserData:</strong> " + JSON.stringify(botDialogStack.userData) + "</p>";
+                            userData.innerHTML = "<p><strong>ConversationData:</strong> " + JSON.stringify(dialogSessionInfo.conversationData) + "</p>";
+                            userData.innerHTML += "<p><strong>DialogData:</strong> " + JSON.stringify(dialogSessionInfo.dialogData) + "</p>";
+                            userData.innerHTML += "<p><strong>PrivateConversationData:</strong> " + JSON.stringify(dialogSessionInfo.privateConversationData) + "</p>";
+                            userData.innerHTML += "<p><strong>UserData:</strong> " + JSON.stringify(dialogSessionInfo.userData) + "</p>";
                             stack.appendChild(userData);
+                        });
 
                         this._dialogStacksContainer.appendChild(userEntry);
-                        
-                    console.log(botDialogStack.sessionState);
-                });
+                    });
                 }
             }
         }
