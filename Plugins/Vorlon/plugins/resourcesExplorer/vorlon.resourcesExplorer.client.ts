@@ -7,10 +7,12 @@
         constructor() {
             super("resourcesExplorer");
             this._ready = true;
-        }
-
-        public getID(): string {
-            return "RESOURCES";
+            this._id = "RESOURCES";
+            //this.debug = true;
+            
+            window.addEventListener("load", () => {
+                this.sendClientData();
+            });
         }
 
         public sendClientData(): void {
@@ -36,20 +38,32 @@
             message.localStorageList = this.localStorageList;
             message.sessionStorageList = this.sessionStorageList;
             message.cookiesList = this.cookiesList;
-            Core.Messenger.sendRealtimeMessage(this.getID(), message, RuntimeSide.Client, "message");
-        }
-
-        public startClientSide(): void {
-            var that = this;
-            window.onload = (event) => {
-                that.sendClientData();
-            };
+            this.sendCommandToDashboard("resourceitems", message);
         }
 
         public refresh(): void {
             this.sendClientData();
         }
+        
+        public evalOrderFromDashboard(order: string) {
+            try {
+                eval(order);
+            } catch (e) {
+                console.error("Unable to execute order: " + e.message);
+            }
+        }
     }
+    
+    ResourcesExplorerClient.prototype.ClientCommands = {
+        refresh: function (data: any) {
+            var plugin = <ResourcesExplorerClient>this;
+            plugin.refresh();
+        },
+        order: function (data: any) {
+            var plugin = <ResourcesExplorerClient>this;
+            plugin.evalOrderFromDashboard(data.order);
+        }
+    };
 
     //Register the plugin with vorlon core 
     Core.RegisterClientPlugin(new ResourcesExplorerClient());

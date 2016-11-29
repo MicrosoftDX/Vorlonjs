@@ -1,0 +1,815 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dom Timeline</title>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300italic,900italic,700italic,900,700,500italic,500,400italic,300,100italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Oswald:400,700,300' rel='stylesheet' type='text/css'>
+</head>
+<body>
+    
+    <div id="dom-recorder" role="application" aria-label="DOM Timeline window" class="colorblind-off" is-recording-started="false" is-recording-ended="false" is-recording-playing="false">
+
+        <div role="presentation" aria-hidden="true" id="chrome-fix" style="height: 1px; background: #ddd; display: none"></div>
+
+        <div role="toolbar" aria-label="Actions, changes summary and settings">
+
+            <div id="pre-recording-mode" class="tb-row" style="display: none">
+
+                <button data-client-command="domHistory.startRecording()">Start recording</button>
+                <button data-client-command="sessionStorage.domTimelineOptions_startRecordingImmediately=true; location.reload()">Reload and record</button>
+
+            </div>
+
+            <div id="is-recording-now-buttons" class="tb-row" style="display: none">
+
+                <button data-client-command="domHistory.stopRecording()">Stop recording</button>
+
+            </div>
+
+            <div id="is-recording-ended-buttons" class="tb-row" style="display: none">
+
+                <button id="playStopButton">Play/Stop</button>
+                <button id="saveAsFileButton">Save as file</button>
+                <button data-client-command="domHistory.undo()">Undo</button>
+                <button data-client-command="domHistory.redo()">Redo</button>
+
+            </div>
+
+            <div id="right-aligned-buttons" style="position: absolute; right:0; text-align: right; vertical-align: middle;">
+
+                <ul id="node-changes-summary" class="inline-changes" tabindex="0" aria-label="Node changes" aria-describedby="nodes-changes-summary" style="display: inline">
+                    <li class="inline-changes-added" style="display: inline"><span>0</span> added,</li>
+                    <li class="inline-changes-modified" style="display: inline"><span>57</span> modified,</li>
+                    <li class="inline-changes-removed" style="display: inline"><span>0</span> removed</li>       
+                </ul>
+
+                <!-- todo: show them when we switch to full-height style -->
+                <input type="text" placeholder="Filter results by keyword..." style="display: none" />
+
+                <button id="open-settings-button" title="Settings" aria-label="Settings">
+                    <svg viewbox="0 0 100 100" width="16px" height="16px" style="vertical-align: middle" aria-hidden="true">
+                        <path fill="currentColor" d="M87.687 45.077c-.313-2.433-.816-4.807-1.542-7.08l8.145-11.73-5.827-7.514-.094-.123-5.825-7.514-12.955 5.577c-2.04-1.265-4.192-2.362-6.46-3.22L59.42 0H40.587l-3.71 13.474c-2.27.857-4.42 1.955-6.463 3.222L17.457 11.12l-5.825 7.513-.097.124-5.822 7.517 8.146 11.73c-.727 2.272-1.234 4.646-1.545 7.08L0 52.032l2.08 9.375.033.15 2.08 9.375 14 .76c1.296 2.03 2.772 3.927 4.4 5.67L20.2 91.587l8.416 4.173.138.068L37.17 100l9.308-10.796c1.16.11 2.335.173 3.524.173s2.358-.074 3.52-.184l9.317 10.804 8.414-4.173.14-.066 8.414-4.172-2.396-14.228c1.628-1.74 3.104-3.64 4.4-5.672l14-.76 2.078-9.374.035-.154L100 52.025l-12.313-6.948zM50.003 34.51c8.435 0 15.272 7.035 15.272 15.72 0 8.678-6.84 15.716-15.272 15.716-8.436 0-15.272-7.038-15.272-15.717 0-8.685 6.84-15.72 15.273-15.72z" />
+                    </svg>
+                </button>
+
+            </div>
+
+        </div>
+
+        <nav aria-label="Timeline" onwheel="var nav = this; clearTimeout(nav.wheelTimer); nav.style.pointerEvents='none'; nav.wheelTimer=setTimeout(function() { nav.style.pointerEvents='' }, 300)">
+
+            <div id=timeline-wrapper>
+                
+                <div id="wrapper-timeline">
+                    <div id="offsetW"></div>
+                    <div class="seconds-list"></div>
+                    <div id="timeline">
+                        <div id="timeline-seek" style="width: 2px; position: absolute; top: 0px; left: 0px; bottom: 0px; background: black; opacity: 0.5; cursor: pointer; transform: translateX(0px);"></div>
+                        <span id="lev" class="lev" style="width: 0px; display: none;">
+                            <span class="lev1 handle"></span>
+                            <span class="lev2 handle"></span>
+                            <span class="drag-lev"></span>
+                        </span>
+                        <span id="fake-lev" class="lev" style="width: 0px; opacity: 0.5; display: none;">
+                            <span class="lev1 handle"></span>
+                            <span class="lev2 handle"></span>
+                            <span class="drag-lev"></span>
+                        </span>
+                        <span id="timeline-content"></span>
+                    </div>
+                </div>
+            
+            </div>
+
+            <div id="preview-wrapper" style="width: 110px; flex: 0 0 110px; padding: 10px; padding-right: 0px; overflow: hidden;">
+                <iframe id=domtimeline-popup name=domtimeline-popup frameborder=0 border=0 allowtransparency allowfullscreen style="background: black; width: 1000px; height: 600px; transform-origin: 0 0; transform: scale(0.1);" aria-hidden="true"></iframe>
+            </div>
+
+        </nav>
+
+        <aside id="settings" aria-label="Settings pane" tabindex="0" style="display: none">
+            <input type="button" id="close-settings-button" value="Close the settings pane" />
+            <hr role="presentation">
+            <form aria-label="DOM Breakpoints" id="breakpoints-code-form" onsubmit="return false;">
+                <details style="font-size: 12px">
+                    <summary>DOM Breakpoints <span style="color: gray;font-weight: normal;float: right;">Click here for more details.</span></summary>
+                    <aside style="padding: 12px; color: gray">
+
+                        <p>
+                            As soon as you will start recording, 
+                                DOM Timeline offers you the opportunity to break into javascript
+                                whenever a specific kind of change happens.
+                            This is useful for debugging purposes.
+
+                        <p>
+                            <img alt="" width="224" height="79" src="data:image/png;base64,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">
+
+                        <p>
+                            You can use any javascript code to determine when to break into an event,
+                                and explore the "m" variable, which is a <a href="https://developer.mozilla.org/en-US/docs/Web/API/MutationRecord">mutation record</a>.
+                            In addition, you can use 
+                                m.claim (a string that represents how this mutation was being executed) and
+                                m.stack (the javascript callstack at the time of the change).
+                            <br/><br/>
+
+                        <p>
+                            Examples of things you can do (and their convenient shortcut, if any):
+                        <dl>
+
+                            <dt>ATTRIBUTES: Detect changes of the style attribute on an element whose id is "abc"</dt>
+                            <dd>
+                                <pre>if(attributeChanged('style') && matches('#abc', m.target)) { debugger; }</pre>
+                                <pre>if(m.type == 'attributes' && m.target && m.target.id == 'abc' && m.attributeName == 'style') { debugger; }</pre>
+                            </dd>
+                            
+                            <dt>ATTRIBUTES: Detect when the 'selected' class is added to an element</dt>
+                            <dd>
+                                <pre>if(attributeChanged('class', {newlyContains:'selected'})) { debugger; }</pre>
+                                <pre>if(m.type == 'attributes' && m.attributeName == 'class' && (!m.oldValue || m.oldValue.indexOf('selected') == -1) && (m.newValue && m.newValue.indexOf('selected') >= 0)) { debugger; }</pre>
+                            </dd>
+
+                            <dt>ATTRIBUTES: Detect when the 'tabindex' attribute is added to an element</dt>
+                            <dd>
+                                <pre>if(attributeChanged('class', {oldValue:null})) { debugger; }</pre>
+                                <pre>if(m.type == 'attributes' && m.attributeName == 'tabindex' && m.oldValue == null) { debugger; }</pre>
+                            </dd>
+
+                            <dt>NODES: Detect when a node with a given id is removed from the document</dt>
+                            <dd>
+                                <pre>if(anyRemovedNode(n => n.id=='abc', { deep: false })) { debugger; }</pre>
+                                <pre>if(m.removedNodes && m.removedNodes.length && [].slice.call(m.removedNodes, 0).some(n => n.id=='abc').length) { debugger; }</pre>
+                            </dd>
+
+                            <dt>NODES: Detect when a node with a given id is added to the document</dt>
+                            <dd>
+                                <pre>if(anyAddededNode(n => n.id=='abc', { deep: false })) { debugger; }</pre>
+                                <pre>if(m.addedNodes && m.addedNodes.length && [].slice.call(m.addedNodes, 0).some(n => n.id=='abc').length) { debugger; }</pre>
+                            </dd>
+
+                            <dt>NODES: Detect when a node with a given html content is added to the document</dt>
+                            <dd>
+                                <pre>if(anyAddededNode(n => n.innerHTML.indexOf('Microsoft')>=0, { deep: false })) { debugger; }</pre>
+                                <pre>if(m.addedNodes && m.addedNodes.length && [].slice.call(m.addedNodes, 0).some(n => n.id=='abc').length) { debugger; }</pre>
+                            </dd>
+
+                            <dt>NODES: Detect when any change happens within a link without href</dt>
+                            <dd>
+                                <pre>if(closest('a', m.target, link => !link.href)) { debugger; }</pre>
+                            </dd>
+
+                        </dl>
+
+                    </aside>
+                </details>
+                <input type="checkbox" id="are-breakpoints-enabled" checked />
+                <label for="are-breakpoints-enabled" aria-hidden="true">Enable DOM Breakpoints </label>
+                <textarea id="breakpoints-code" title="Javascript code for dom breakpoints. Use 'debugger;' to open your debugger." style="display: block; height: 200px; width: 100%;">//if(true) { debugger; };
+    
+function closest(selector, node, converter) {
+    while(node && !matches(selector, node)) {
+        node = node.parentNode;
+    }
+    return node ? converter(node) : node;
+}
+
+function matches(selector, node) {
+    var matches = node.matches || node.webkitMatchesSelector || node.mozMatchesSelector || node.msMatchesSelector || function() { return false };
+    return matches.call(node, selector);
+}
+
+function anyNodeInList(nodes, match, options) {
+    if(!nodes || nodes.length == 0) return false;
+    if(!options) options = { deep: true };
+    for(var i = nodes.length; i--;) {
+        if(match(nodes[i])) return true;
+        if(options.deep != false) {
+            if(anyNodeInList(nodes[i].childNodes, match, options)) {
+                return true;
+            }
+        }
+    }
+}
+
+function anyNode(match, options) {
+	if (match instanceof Function) {
+		return match(m.target) || anyAddedNode(match, options) || anyRemovedNode(match, options);
+	} else {
+		return anyNode(function(node) { return matches(match, node); }, options);
+	}
+}
+
+function anyAddedNode(match, options) {
+	if (match instanceof Function) {
+		return anyNodeInList(m.addedNodes, match, options);
+	} else {
+		return anyNodeInList(m.addedNodes, function(node) { return matches(match, node); }, options);
+	}
+}
+
+function anyRemovedNode(match, options) {
+	if (match instanceof Function) {
+		return anyNodeInList(m.removedNodes, match, options);
+	} else {
+		return anyNodeInList(m.removedNodes, function(node) { return matches(match, node); }, options);
+	}
+}
+
+function attributeAdded(name) {
+    return m.type == 'attributes' && m.newValue != null && m.oldValue == null;
+}
+
+function attributeRemoved(name) {
+    return m.type == 'attributes' && m.newValue == null && m.oldValue != null;
+}
+
+function attributeChanged(name, options) {
+    var matches = m.type == 'attributes';
+    matches = matches && (name===undefined || (m.attributeName === name));
+    matches = matches && (options.newValue===undefined || (m.newValue === options.newValue));
+    matches = matches && (options.newValueContains===undefined || (m.newValue && m.newValue.indexOf(options.newValueContains) >= 0));
+    matches = matches && (options.oldValue===undefined || (m.oldValue === options.oldValue));
+    matches = matches && (options.oldValueContains===undefined || (m.oldValue && m.oldValue.indexOf(options.oldValueContains) >= 0));
+    matches = matches && (options.newlyContains===undefined || (
+        (!m.oldValue || m.oldValue.indexOf(options.newlyContains) == -1) 
+        && (m.newValue && m.newValue.indexOf(options.newlyContains) >= 0)
+    ));
+    matches = matches && (options.previouslyContained===undefined || (
+        (!m.newValue || m.newValue.indexOf(options.previouslyContained) == -1) 
+        && (m.oldValue && m.oldValue.indexOf(options.previouslyContained) >= 0)
+    ));
+    return matches;
+}
+    </textarea>
+                <input id="save-breakpoints-code" type="submit" value="Save dom breakpoints settings" />
+            </form>
+            <hr role="presentation">
+            <form aria-label="More information" id="breakpoints-code-form" onsubmit="return false;">
+                <a href="https://github.com/FremyCompany/dom-timeline-core">Find other ways to customize the dom timeline's data collection on its Github repository</a>
+            </form>
+            <hr role="presentation">
+            <a href="#settings" onclick="document.querySelector('.plugin-domtimeline #settings').focus(); return false;">Return to the top of settings</a>
+        </aside>
+
+        <main aria-label="DOM Timeline content pane">
+
+            <div id="node-changes">
+                <ul class="accordion-changes"></ul>
+            </div>
+
+        </main>
+
+        <style>
+
+            .plugin-domtimeline {
+                overflow-y: scroll;
+            }
+
+            .plugin-domtimeline * {
+                box-sizing: border-box;
+            }
+
+            .plugin-domtimeline *:focus {
+                outline: 2px solid #00b7c7;
+            }
+
+            details { display: block; font-weight: normal !important; }
+            details > summary { font-weight: bold; cursor: pointer; }
+            details:not([open]) > aside { display: none; }
+            details:not([open]) > summary { display: block; }
+            details:not([open]) > summary:focus + aside { display: block; }
+            #if-css-supports ::-webkit-details-marker, details:not([open]) > aside { display: block; }
+            #if-css-supports ::-moz-details-marker,    details:not([open]) > aside { display: block; }
+            #if-css-supports ::-ms-details-marker,     details:not([open]) > aside { display: block; }
+            #if-css-supports ::details-marker,         details:not([open]) > aside { display: block; }
+
+            .plugin-domtimeline dl > dt { margin-top: 10px; font-weight: bold; }
+            .plugin-domtimeline pre { font-family: 'Consolas', monospace; max-width: 100%; overflow-x: hidden; }
+            .plugin-domtimeline pre:hover { overflow-x: auto; overflow-x: overlay; -ms-overflow-style: -ms-autohiding-scrollbar; }
+
+            .plugin-domtimeline #dom-recorder {
+                margin: auto;
+                padding: 10px;
+                font-size: 16px;
+                position: relative;
+            }
+
+            #dom-recorder div[role="toolbar"] {
+                position: absolute; z-index: 1; height: 32px;
+                top: 0px; left: 0px; right: 0px; 
+                display: flex; flex-direction: row;
+                background: #f5f5f5; background-clip: padding-box; padding: 3px 10px;
+            }
+
+            #dom-recorder div[role="toolbar"] > div.tb-row {
+                display: flex; flex-direction: row;
+            }
+
+            #dom-recorder div[role="toolbar"] > div.tb-row > button {
+                -webkit-appearance: none; -moz-appearance: none; appearance: none;
+                font-family: Segoe 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                font-size: 10px; padding: 4px 15px;
+                background: transparent; color: currentColor;
+                border: none; border-right: 1px solid silver; border-radius: 0px; 
+                vertical-align: middle; margin: 0px;
+            }
+
+            #dom-recorder > div[role="toolbar"] > div.tb-row > button:first-of-type {
+                font-weight: bold;
+            }
+
+            #dom-recorder > div[role="toolbar"] > div.tb-row > button:hover {
+                background: purple; color: white; border-right-color: transparent;
+            }
+
+            #dom-recorder > nav {
+                position: absolute; z-index: 1; 
+                top: calc(32px + 10px); left: 10px; right: 10px; height: 80px;
+                display: flex; flex-direction: row;
+                background: white; outline: 10px solid white;
+            }
+            #primary-button-wrapper {
+                width: 90px; text-align: left;
+            }
+            #timeline-wrapper {
+                flex: 1 1 0px; width: 0px; min-width: 0px;
+                position: relative;
+            }
+            #summary-wrapper {
+                width: 130px;
+                padding-left: 10px;
+            }
+            #actions-wrapper {
+                width: 250px;
+                text-align: right;
+            }
+            #dom-recorder > main {
+                margin-top: calc(32px + 80px + 10px + 10px);
+            }
+
+            .plugin-domtimeline #options {
+                margin-bottom: 20px;
+            }
+
+            .plugin-domtimeline #option-autorecord, #option-colorblind {
+                display: inline;
+            }
+
+            .plugin-domtimeline #option-autorecord {
+                float:left;
+            }
+
+            .plugin-domtimeline #option-colorblind {
+                float:right;
+            }
+
+            .plugin-domtimeline #dom-recorder[is-recording-started="false"] #pre-recording-mode {
+                display: flex !important;
+            }
+            .plugin-domtimeline  #dom-recorder[is-recording-started="true"] #recording-mode {
+                display: flex !important;
+            }
+
+            /*#is-recording-now-buttons, #is-recording-ended-buttons {
+                position: absolute;
+                top: 8px; right: 8px;
+                z-index: 10000;
+            }*/
+
+            .plugin-domtimeline #dom-recorder[is-recording-started="true"][is-recording-ended="true"] #is-recording-ended-buttons {
+                display: flex !important;
+            }
+            .plugin-domtimeline  #dom-recorder[is-recording-started="true"][is-recording-ended="false"] #is-recording-now-buttons {
+                display: flex !important;
+            }
+
+            .plugin-domtimeline #wrapper-timeline {
+                overflow-x: /*auto*/hidden;
+                overflow-y: hidden;
+                width: 100%;
+                position: relative;
+                padding-bottom: 10px;
+                margin-bottom: 0px;
+            }
+
+            .plugin-domtimeline #timeline {
+                cursor: crosshair;
+                height: 100px;
+                background-color: #FBFAF7;
+                background-image: url('/vorlon/plugins/domtimeline/images/rule.png');
+                background-repeat: repeat-x;
+                background-size: calc(6 * 61em / 16);
+                position: relative;
+                touch-action: none;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                -moz-user-drag: none;
+                user-drag: none;
+            }
+
+            .plugin-domtimeline #dom-recorder[is-recording-playing="true"] #timeline,
+            .plugin-domtimeline #dom-recorder[is-recording-playing="true"] #timeline * {
+                cursor: no-drop !important;
+                cursor: not-allowed !important;
+            }
+
+            .plugin-domtimeline .clear {
+                clear: both;
+                color: #75655E;
+            }
+
+            .plugin-domtimeline #node-changes {
+                position: relative;
+            }
+
+            .plugin-domtimeline #node-changes input {
+                position: absolute;
+                right: 0px;
+                top: 25px;
+                padding: 5px 8px;
+                border-radius: 5px;
+                border: 1px solid #EEE9E0;
+                outline: none;
+            }
+
+            .plugin-domtimeline #node-changes h1 {
+                font-family: 'Oswald';
+                text-transform: uppercase;
+                font-size: 22px;
+                font-weight: 500;
+                margin-top: 0px;
+                margin-bottom: 5px;
+                color: #000000;
+            }
+
+            .plugin-domtimeline ul.inline-changes {
+                padding: 0;
+                margin: 0;
+                list-style-type: none;
+                margin-bottom: 20px;
+                margin-left: 1px;
+                margin-top: 5px;
+            }
+
+            .plugin-domtimeline ul.inline-changes li {
+                /*display: inline;*/
+                margin-right: 5px;
+                font-size: 13px;
+            }
+
+            .plugin-domtimeline ul.inline-changes li:before {
+                content: '';
+                width: 10px;
+                height: 10px;
+                position:relative;
+                margin-right: 5px;
+                display: inline-block;
+            }
+
+            .plugin-domtimeline .colorblind-off ul.inline-changes li.inline-changes-added:before {
+                background-color: #007C29;   
+            }
+
+            .plugin-domtimeline .colorblind-off ul.inline-changes li.inline-changes-removed:before {
+                background-color: #F2002D;   
+            }
+
+            .plugin-domtimeline .colorblind-off ul.inline-changes li.inline-changes-modified:before {
+                background-color: #223879;   
+            }
+
+            .plugin-domtimeline .colorblind-on ul.inline-changes li.inline-changes-added:before {
+                background-color: #555555;
+            }
+
+            .plugin-domtimeline .colorblind-on ul.inline-changes li.inline-changes-removed:before {
+                background-color: none;
+                border: 1px solid #555555;
+            }
+
+            .plugin-domtimeline .colorblind-on ul.inline-changes li.inline-changes-modified:before {
+                background-color: none;
+                border: 1px solid #555555;
+                background-image: url('/vorlon/plugins/domtimeline/images/blind.png');
+            }
+
+            .plugin-domtimeline 
+            ul.accordion-changes {
+                /* height: 260px; */
+                padding: 0;
+                margin: 0;
+                /* border: 1px solid #E0E0E0; */
+                list-style-type: none;
+                /* overflow-y: scroll; */
+                overflow-x: hidden;
+            }
+
+            .plugin-domtimeline ul.accordion-changes li {
+                position: relative;
+                cursor: pointer;
+                padding: 6px 10px; 
+                font-weight: normal;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 9pt;
+                white-space: nowrap;
+                border-bottom: 1px solid #E0E0E0;
+            }
+
+            .plugin-domtimeline ul.accordion-changes li[data-id][is-cancelled="true"] {
+                text-decoration: line-through;
+                opacity: 0.40;
+            }
+            .plugin-domtimeline ul.accordion-changes li[data-id][is-cancelled="true"] + li.acc {
+                opacity: 0.40;
+            }
+
+            .plugin-domtimeline ul.accordion-changes li[data-id][is-outside-selection="true"] {
+                display: none !important;
+            }
+            .plugin-domtimeline ul.accordion-changes li[data-id][is-outside-selection="true"] + li.acc {
+                display: none !important;
+            }
+
+            .plugin-domtimeline ul.accordion-changes .td-name {
+                font-weight: bold;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 9pt;
+                white-space: nowrap;
+            }
+
+            .plugin-domtimeline ul.accordion-changes li.hide-change {
+                background: rgba(107, 45, 129, 0.58);
+                opacity: 0.7;
+            }
+
+            .plugin-domtimeline ul.accordion-changes li.hide-change::before {
+                visibility: hidden;
+            }
+            .plugin-domtimeline ul.accordion-changes li.hide-change > * {
+                visibility: hidden;
+            }
+
+            .plugin-domtimeline ul.accordion-changes li .fa-undo {
+                display: none;
+                cursor: pointer;
+                margin-right: 10px;
+                position: absolute; right: 30px; top: 9px;
+                background: white; outline: 5px solid white;
+            }
+
+            .plugin-domtimeline ul.accordion-changes li:hover .fa-undo{
+                display: inline;
+            }
+
+            .plugin-domtimeline ul.accordion-changes li[data-id]::before {
+                display: inline-block;
+                content: "";
+                width: 8px;
+                height: 15px;
+                margin-right: 13px;
+                transition: all linear 0.2s;
+                vertical-align: bottom;
+            } 
+
+            .plugin-domtimeline ul.accordion-changes li[data-id][data-are-details-visible="true"]::before {
+                -ms-transform: rotate(90deg); /* IE 9 */
+                -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
+                transform: rotate(90deg);
+            }
+
+            .plugin-domtimeline .colorblind-off ul.accordion-changes li.accordion-changes-added[data-id]::before {
+                background-image: url('/vorlon/plugins/domtimeline/images/arrow-green.png');
+            }
+
+            .plugin-domtimeline .colorblind-off ul.accordion-changes li.accordion-changes-removed[data-id]::before {
+                background-image: url('/vorlon/plugins/domtimeline/images/arrow-red.png');
+            }
+
+            .plugin-domtimeline .colorblind-off ul.accordion-changes li.accordion-changes-modified[data-id]::before {
+                background-image: url('/vorlon/plugins/domtimeline/images/arrow-blue.png');
+            }
+
+            .plugin-domtimeline .colorblind-on ul.accordion-changes li.accordion-changes-added[data-id]::before {
+                background-image: url('/vorlon/plugins/domtimeline/images/arrow-green-b.png');
+            }
+
+            .plugin-domtimeline .colorblind-on ul.accordion-changes li.accordion-changes-removed[data-id]::before {
+                background-image: url('/vorlon/plugins/domtimeline/images/arrow-red-b.png');
+            }
+
+            .plugin-domtimeline .colorblind-on ul.accordion-changes li.accordion-changes-modified[data-id]::before {
+                background-image: url('/vorlon/plugins/domtimeline/images/arrow-blue-b.png');
+            }
+
+            .plugin-domtimeline ul.accordion-changes li[data-id][data-are-details-visible="true"] + li {
+                display: block !important;
+            }
+
+            .plugin-domtimeline 
+            ul.accordion-changes li > span {
+                position: absolute; right: 5px; top: 7px;
+                background: white; outline: 5px solid white;
+            }
+
+            .plugin-domtimeline .seconds-list {
+                position: relative;
+                height: calc(22em / 16);
+                cursor: -moz-grab;
+                cursor: -webkit-grab;
+                cursor: grab;
+            }
+
+            .plugin-domtimeline .seconds-list span {
+                position: absolute;
+                display: inline-block;
+                width: calc(61em / 16);
+            }
+
+            .plugin-domtimeline #timeline div {
+                position: absolute;
+                bottom: 0px;
+                width: calc(10em / 16);
+                display: inline-block;
+            }
+
+            .plugin-domtimeline #timeline div span {
+                cursor: pointer;
+                float: left;
+                width: 100%;
+                display: inline-block;
+            }
+
+            .plugin-domtimeline .colorblind-off #timeline div span.added_h {
+                background-color: #007C29;
+            }
+
+            .plugin-domtimeline .colorblind-off #timeline div span.removed_h {
+                background-color: #F2002D;
+            }
+
+            .plugin-domtimeline .colorblind-off #timeline div span.modified_h {
+                background-color: #223879;
+            }
+
+            .plugin-domtimeline .colorblind-on #timeline div span.added_h {
+                background-color: #555555;
+            }
+
+            .plugin-domtimeline .colorblind-on #timeline div span.removed_h {
+                background-color: none;
+                border: 1px solid #555555;
+            }
+
+            .plugin-domtimeline .colorblind-on #timeline div span.modified_h {
+                background-color: none;
+                border: 1px solid #555555;
+                background-image: url('/vorlon/plugins/domtimeline/images/blind.png');
+            }
+
+            .plugin-domtimeline .acc {
+                display: none;
+                padding: 0px !important;
+                display: block;
+                overflow: hidden;
+                transition: all linear 0.3s;
+                border-bottom: none !important;
+            }
+
+            .plugin-domtimeline .acc table {
+                padding: 5px 0 5px 40px;
+                display: block;
+            }
+
+            .plugin-domtimeline .acc table .td-name {
+                margin-right: 15px;
+                padding-right: 20px;
+            }
+
+            .plugin-domtimeline .acc table code {
+                font-family: "Consolas", monospace;
+                font-size: 11px;
+                white-space: pre-line;
+            }
+
+            .plugin-domtimeline .lev {
+                background: transparent;
+                height: 100%;
+                position: relative;
+                left: 61px;
+                display: inline-block;
+                cursor: -moz-grab;
+                cursor: -webkit-grab;
+                cursor: grab;
+                border: 1px solid #6B2D81;
+                z-index: 10;
+            }
+
+            .plugin-domtimeline .lev .drag-lev {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
+
+            .plugin-domtimeline .lev .handle {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: col-resize;
+            -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none;   /* Chrome/Safari/Opera */
+            -khtml-user-select: none;    /* Konqueror */
+            -moz-user-select: none;      /* Firefox */
+            -ms-user-select: none;       /* Internet Explorer/Edge */
+            user-select: none;           /* Non-prefixed version, currently
+                                            not supported by any browser */
+            display: inline-block;
+            background: url('/vorlon/plugins/domtimeline/images/lev.png');
+            width: 14px;
+            height: 19px;
+            }
+
+            .plugin-domtimeline .lev .lev1 {
+                left: -7px;
+            }
+
+            .plugin-domtimeline .lev .lev2 {
+                right: -7px;
+            }
+
+            .plugin-domtimeline #history-control {
+                margin-top: 20px;
+            }
+
+            .plugin-domtimeline button {
+                background: #D7CDBF;
+                padding: 5px 15px;
+                border-radius: 5px;
+                border: 1px solid #D7CDBF;
+                cursor: pointer;
+            }
+
+            .plugin-domtimeline button:hover {
+                background: purple;
+                color: white;
+            }
+
+            .plugin-domtimeline button:active:hover {
+                background: darkmagenta;
+                color: violet;
+            }
+
+
+            .plugin-domtimeline .ui-selectable-helper {
+                background: #482045;
+                opacity: 0.5;
+            }
+
+            .plugin-domtimeline #offsetW {
+                width: 100% !important;
+                height: 100% !important;
+                position: absolute !important;
+                top: 0px !important;
+                left: 0px !important;
+                z-index: 555;
+                display: none;
+            }
+
+            .plugin-domtimeline #filter-changes {
+                margin-bottom: 20px;
+                display:none;
+            }
+
+            .plugin-domtimeline #filter-changes input {
+                width: 40px;
+                margin-right: 3px;
+            }
+
+            .plugin-domtimeline #filter-changes a {
+                text-decoration: none;
+                margin-left: 10px;
+            }
+
+            /* SETTINGS */
+            .plugin-domtimeline #dom-recorder[is-settings-pane-open="true"] > #settings {
+                display: block !important;
+            }
+
+            .plugin-domtimeline #dom-recorder[is-settings-pane-open="true"] > * {
+                display: none;
+            }
+
+            .plugin-domtimeline #settings #are-breakpoints-enabled:not(:checked) ~ #breakpoints-code {
+                display: none !important
+            }
+
+            .plugin-domtimeline #settings p { margin-bottom: 5px }
+            .plugin-domtimeline #settings pre { margin: 3px 0px; border: 1px dashed silver; background: #eee; padding: 2px; }
+
+
+
+
+        </style>
+
+    </div>
+
+</body>
+</html>

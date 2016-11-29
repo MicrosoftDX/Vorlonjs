@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="control.css" rel="stylesheet" />
+</head>
+<body>
+    <x-controlbar>
+        <x-action id="runTest" class="filter-btn" event="run" tabindex="0"><i class="fa fa-cog"></i>&nbsp;Run test</x-action>
+        <input type="file" aria-label="select QUnit test files" id="files" name="files[]" multiple>
+    </x-controlbar>
+    <div id="dropPanel">
+        <h1>Unit test</h1>
+        <textarea aria-label="Run test execution" id="txtRunTest"></textarea>
+    </div>
+    <div class="test-results-panel">
+        <h1>Results</h1>
+        <table class="test-results-list">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Module</th>
+                    <th scope="col">Passed</th>
+                    <th scope="col">Failed</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody id="testResultsList"></tbody>
+            <tfoot>
+                <tr id="testResultsSummary">
+                    <td>n/a</td>
+                    <td>n/a</td>
+                    <td>n/a</td>
+                    <td>n/a</td>
+                    <td>n/a</td>
+                    <td>n/a</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
+</html>

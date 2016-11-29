@@ -1,5 +1,4 @@
 ﻿module VORLON {
-
     export class _Core {
         _clientPlugins = new Array<ClientPlugin>();
         _dashboardPlugins = new Array<DashboardPlugin>();
@@ -12,6 +11,7 @@
         _socketIOWaitCount = 0;
         public debug: boolean = false;
         _RetryTimeout = 1002;
+        _isHttpsEnabled = false;
 
         public get Messenger(): ClientMessenger {
             return Core._messenger;
@@ -21,6 +21,10 @@
             return Core._clientPlugins;
         }
         
+        public get IsHttpsEnabled(): boolean {
+            return Core._isHttpsEnabled;
+        }
+
         public get DashboardPlugins(): Array<DashboardPlugin> {
             return Core._dashboardPlugins;
         }
@@ -28,23 +32,34 @@
         public RegisterClientPlugin(plugin: ClientPlugin): void {
             Core._clientPlugins.push(plugin);
         }
-        
+
         public RegisterDashboardPlugin(plugin: DashboardPlugin): void {
             Core._dashboardPlugins.push(plugin);
         }
-        
+
+        public StopListening(): void {
+            if (Core._messenger) {
+                Core._messenger.stopListening();
+                delete Core._messenger;
+            }
+        }
+
         public StartClientSide(serverUrl = "'http://localhost:1337/'", sessionId = "", listenClientId = ""): void {
             Core._side = RuntimeSide.Client;
             Core._sessionID = sessionId;
             Core._listenClientId = listenClientId;
+            
+            if(serverUrl.match("$https://")){
+                Core._isHttpsEnabled = true;
+            }
            
             // Checking socket.io
-            if ((<any>window).io === undefined) {
+            if (Tools.IsWindowAvailable && (<any>window).io === undefined) {
 
                 if (this._socketIOWaitCount < 10) {
                     this._socketIOWaitCount++;
                     // Let's wait a bit just in case socket.io was loaded asynchronously
-                    setTimeout(function () {
+                    setTimeout(function() {
                         console.log("Vorlon.js: waiting for socket.io to load...");
                         Core.StartClientSide(serverUrl, sessionId, listenClientId);
                     }, 1000);
@@ -56,14 +71,24 @@
             }
 
             // Cookie
-            var clientId = Tools.ReadCookie("vorlonJS_clientId");
-            if (!clientId) {
-                clientId = Tools.CreateGUID();
+            var clientId;
+            if(Tools.IsWindowAvailable){
+                clientId = Tools.ReadCookie("vorlonJS_clientId");
+                if (!clientId) {
+                    clientId = Tools.CreateGUID();
 
-                Tools.CreateCookie("vorlonJS_clientId", clientId, 1);
+                    Tools.CreateCookie("vorlonJS_clientId", clientId, 1);
+                }
+            }
+            else {
+                clientId = Tools.CreateGUID();
             }
 
             // Creating the messenger
+            if (Core._messenger) {
+                Core._messenger.stopListening();
+                delete Core._messenger;
+            }
             Core._messenger = new ClientMessenger(Core._side, serverUrl, sessionId, clientId, listenClientId);
 
             // Connect messenger to dispatcher
@@ -72,13 +97,9 @@
             Core.Messenger.onIdentifyReceived = Core._OnIdentifyReceived;
             Core.Messenger.onStopListenReceived = Core._OnStopListenReceived;
             Core.Messenger.onError = Core._OnError;
+            Core.Messenger.onReload = Core._OnReloadClient;
 
-            // Say 'helo'
-            var heloMessage = {
-                ua: navigator.userAgent
-            };
-
-            Core.Messenger.sendRealtimeMessage("", heloMessage, Core._side, "helo");
+            this.sendHelo();
 
             // Launch plugins
             for (var index = 0; index < Core._clientPlugins.length; index++) {
@@ -87,9 +108,32 @@
             }
 
             // Handle client disconnect
-            window.addEventListener("beforeunload", function () {
-                Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
-            }, false);
+            if (Tools.IsWindowAvailable) {
+                window.addEventListener("beforeunload", function() {
+                    Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
+                }, false);
+            }
+            else {
+                process.stdin.resume();//so the program will not close instantly
+                var exitMessageWritten = false;
+                function exitHandler(options, err) {
+                    if(!exitMessageWritten){
+                        Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
+                        console.log('Disconnected from Vorlon.js instance');
+                        exitMessageWritten = true;
+                    }
+                    process.exit(0);
+                }
+
+                //do something when app is closing
+                process.on('exit', exitHandler.bind(null,{cleanup:true}));
+
+                //catches ctrl+c event
+                process.on('SIGINT', exitHandler.bind(null, {exit:true}));
+                
+                //catches uncaught exceptions
+                process.on('uncaughtException', exitHandler.bind(null, {exit:true}));        
+            }
 
             // Start global dirty check, at this point document is not ready,
             // little timeout to defer starting dirtycheck
@@ -97,9 +141,38 @@
                 this.startClientDirtyCheck();
             }, 500);
         }
+        
+        public sendHelo(){
+           
+            // Say 'helo'
+           var heloMessage = {};
+            if(Tools.IsWindowAvailable){
+                heloMessage = {
+                    ua: navigator.userAgent,
+                    identity : sessionStorage["vorlonClientIdentity"] || localStorage["vorlonClientIdentity"]               
+                };
+            }
+            else {
+                heloMessage = {
+                    ua: "Node.js",
+                    identity : "",
+                    noWindow: true               
+                };
+            }
+
+            Core.Messenger.sendRealtimeMessage("", heloMessage, Core._side, "helo");
+        }
 
         public startClientDirtyCheck() {
-            var mutationObserver = (<any>window).MutationObserver || (<any>window).WebKitMutationObserver || null;
+            //sometimes refresh is called before document was loaded
+            if (Tools.IsWindowAvailable && !document.body) {
+                setTimeout(() => {
+                    this.startClientDirtyCheck();
+                }, 200);
+                return;
+            }
+
+            var mutationObserver = Tools.IsWindowAvailable && ((<any>window).MutationObserver || (<any>window).WebKitMutationObserver);
             if (mutationObserver) {
                 if (!document.body.__vorlon)
                     document.body.__vorlon = {};
@@ -107,13 +180,25 @@
                 var config = { attributes: true, childList: true, subtree: true, characterData: true };
                 document.body.__vorlon._observerMutationObserver = new mutationObserver((mutations) => {
                     var sended = false;
+                    var cancelSend = false;
+                    var sendComandId = [];
                     mutations.forEach((mutation) => {
+                        if (cancelSend) {
+                            for (var i = 0; i < sendComandId.length; i++) {
+                                clearTimeout(sendComandId[i]);
+                            }
+                            cancelSend = false;
+                        }
                         if (mutation.target && mutation.target.__vorlon && mutation.target.__vorlon.ignore) {
+                            cancelSend = true;
                             return;
                         }
-
+                        if (mutation.previousSibling && mutation.previousSibling.__vorlon && mutation.previousSibling.__vorlon.ignore) {
+                            cancelSend = true;
+                            return;
+                        }
                         if (mutation.target && !sended && mutation.target.__vorlon && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId) {
-                            setTimeout(() => {
+                            sendComandId.push(setTimeout(() => {
                                 var internalId = null;
                                 if (mutation && mutation.target && mutation.target.parentNode && mutation.target.parentNode.__vorlon && mutation.target.parentNode.__vorlon.internalId)
                                     internalId = mutation.target.parentNode.__vorlon.internalId;
@@ -122,13 +207,13 @@
                                     type: 'contentchanged',
                                     internalId: internalId
                                 }, Core._side, 'message');
-                            }, 300);
+                            }, 300));
                         }
                         sended = true;
                     });
                 });
                 document.body.__vorlon._observerMutationObserver.observe(document.body, config);
-            } else {
+            } else if (Tools.IsWindowAvailable) {
                 console.log("dirty check using html string");
                 var content;
                 if (document.body)
@@ -165,12 +250,12 @@
             document.body.appendChild(Core._messageNotifier);
             
             // Checking socket.io
-            if ((<any>window).io === undefined) {
+            if (Tools.IsWindowAvailable && (<any>window).io === undefined) {
 
                 if (this._socketIOWaitCount < 10) {
                     this._socketIOWaitCount++;
                     // Let's wait a bit just in case socket.io was loaded asynchronously
-                    setTimeout(function () {
+                    setTimeout(function() {
                         console.log("Vorlon.js: waiting for socket.io to load...");
                         Core.StartDashboardSide(serverUrl, sessionId, listenClientId, divMapper);
                     }, 1000);
@@ -191,6 +276,11 @@
             }
 
             // Creating the messenger
+            if (Core._messenger) {
+                Core._messenger.stopListening();
+                delete Core._messenger;
+            }
+
             Core._messenger = new ClientMessenger(Core._side, serverUrl, sessionId, clientId, listenClientId);
 
             // Connect messenger to dispatcher
@@ -224,8 +314,9 @@
                 Core._messageNotifier.innerHTML = message;
                 Core._messageNotifier.show();
             }
-            else {
+            else if (Tools.IsWindowAvailable) {
                 var div = document.createElement("div");
+                div.className = "vorlonIdentifyNumber";
                 div.style.position = "absolute";
                 div.style.left = "0";
                 div.style.top = "50%";
@@ -245,6 +336,8 @@
                 setTimeout(() => {
                     document.body.removeChild(div);
                 }, 4000);
+            } else {
+                console.log('Vorlon client n° ' + message);
             }
         }
 
@@ -255,7 +348,7 @@
                 Core._errorNotifier.setAttribute('duration', timeout);
                 Core._errorNotifier.show();
             }
-            else {
+            else if (Tools.IsWindowAvailable) {
                 var divError = document.createElement("div");
                 divError.style.position = "absolute";
                 divError.style.top = "0";
@@ -287,7 +380,6 @@
         }
 
         private _OnIdentificationReceived(id: string): void {
-            //console.log('helo received ' + id);
             Core._listenClientId = id;
 
             if (Core._side === RuntimeSide.Client) {
@@ -296,9 +388,12 @@
                     var plugin = Core._clientPlugins[index];
                     plugin.refresh();
                 }
-            } else {
-                var elt = <HTMLElement>document.querySelector('.dashboard-plugins-overlay');
-                Tools.AddClass(elt, 'hidden');
+            }            
+        }
+
+        private _OnReloadClient(id: string): void { 
+            if (Tools.IsWindowAvailable) { 
+                document.location.reload();
             }
         }
 

@@ -6,9 +6,14 @@ section.dashboard-plugins-container
     section.panel-bottom#pluginsPaneBottom
       header.tab-bar.cf#pluginsListPaneBottom
   section.dashboard-plugins-overlay
-    div.message 
-      img.logo(src="/images/VorlonLogo_Smooth.svg")
+    div.message
+      img.logo(src=baseURL + "/images/VorlonLogo_Smooth.svg", alt="Vorlon logo" )
       h3 To get started, you must add a reference to client script in the page of your website, like this :
-      h4 &lt;script src=&quot;http://localhost:1337/vorlon.js&quot;&gt;&lt;/script&gt;
-      h3 Once your page is loaded, the client will appear in the sidebar on the left. 
-      h3 Click on it to start inspecting your website. 
+      h4#scriptSrc &lt;script src=&quot;http://localhost:1337/vorlon.js&quot;&gt;&lt;/script&gt;
+      h3 Once your page is loaded, the client will appear in the sidebar on the left.
+      h3 Click on it to start inspecting your website.
+      h3 You could also inspect existing websites using 
+        a(href="/httpproxy") Vorlon proxy
+      br
+      div.waitLoader.hidden
+        span.fa.fa-spin.fa-spinner

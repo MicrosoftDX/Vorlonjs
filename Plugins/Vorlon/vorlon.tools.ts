@@ -1,5 +1,9 @@
 ﻿module VORLON {
     export class Tools {
+        
+        public static get IsWindowAvailable(): boolean {
+            return typeof window != 'undefined';
+        }
 
         public static QuerySelectorById(root: HTMLElement, id: string): HTMLElement {
             if (root.querySelector) {
@@ -8,7 +12,7 @@
 
             return document.getElementById(id);
         }
-
+ 
         public static SetImmediate(func: () => void): void {
             if (window.setImmediate) {
                 setImmediate(func);
@@ -37,6 +41,7 @@
                 }
             }
         }
+        
         public static Hook(rootObject: any, functionToHook: string, hookingFunction: (...optionalParams: any[]) => void): void {
             var previousFunction = rootObject[functionToHook];
 
@@ -45,6 +50,70 @@
                 previousFunction.apply(rootObject, optionalParams);
             }
             return previousFunction;
+        }
+        
+        public static HookProperty(rootObjectName: string, propertyToHook: string, callback){  
+            var rootObject = (Tools.IsWindowAvailable ? window : global)[rootObjectName]; 
+            var initialValue = rootObject[propertyToHook];
+            Object.defineProperty(rootObject, propertyToHook, {
+                get: function() {
+                    if (callback){
+                        var stack = VORLON.Tools.getCallStack(1);
+                        stack.property = propertyToHook;
+                        callback(stack);
+                    }
+                    return initialValue;
+                }
+            });
+        }
+        
+        public static getCallStack(skipped){  
+            skipped = skipped || 0;
+            try {
+                //Throw an error to generate a stack trace
+                throw new Error();
+            }
+            catch(e) {
+                //Split the stack trace into each line
+                var stackLines = e.stack.split('\n');
+                var callerIndex = 0;
+                
+                //Now walk though each line until we find a path reference
+                for(var i=2 + skipped, l = stackLines.length; i<l; i++){ //first lines will be error and this utility method
+                    if(!(stackLines[i].indexOf("http://") >= 0)) 
+                        continue;
+                    //We skipped all the lines with out an http so we now have a script reference
+                    //This one is the class constructor, the next is the getScriptPath() call
+                    //The one after that is the user code requesting the path info (so offset by 2)
+                    callerIndex = i;
+                    break;
+                }
+                
+                var res = <any>{
+                    stack : e.stack,
+                    // fullPath : pathParts ? pathParts[1] : null,
+                    // path : pathParts ? pathParts[2] : null,
+                    // file : pathParts ? pathParts[3] : null
+                };
+                
+                var linetext = stackLines[callerIndex];
+                //Now parse the string for each section we want to return
+                //var pathParts = linetext.match(/((http[s]?:\/\/.+\/)([^\/]+\.js))([\/]):/);
+                // if (pathParts){
+                //     
+                // }
+                var opening = linetext.indexOf("http://") || linetext.indexOf("https://");
+                if (opening > 0){
+                    var closing = linetext.indexOf(")", opening);
+                    if (closing < 0)
+                        closing = linetext.length - 1;
+                    var filename = linetext.substr(opening, closing - opening);
+                    var linestart = filename.indexOf(":", filename.lastIndexOf("/"));
+                    res.file = filename.substr(0, linestart);                    
+                    res.line = filename.substr(linestart + 1);
+                }
+                return res;
+            }
         }
 
         public static CreateCookie(name: string, value: string, days: number): void {
@@ -192,12 +261,20 @@
             }
         }
 
-        public static ToggleClass(e: HTMLElement, name: string) {
+        public static ToggleClass(e: HTMLElement, name: string, callback? : (hasClass:boolean) => void) {
             if (e.className.match(name)) {
                 Tools.RemoveClass(e, name);
+                if (callback)
+                    callback(false);
             } else {
                 Tools.AddClass(e, name);
+                if (callback)
+                    callback(true);
             }
+        }
+
+        public static htmlToString(text) {
+            return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
     }
 
@@ -222,7 +299,7 @@
             }
         }
 
-        public static for(element: HTMLElement) {
+        public static forElement(element: HTMLElement) {
             var res = new FluentDOM(null);
             res.element = element;
             return res;
@@ -230,6 +307,11 @@
 
         addClass(classname: string) {
             this.element.classList.add(classname);
+            return this;
+        }
+
+        toggleClass(classname: string) {
+            this.element.classList.toggle(classname);
             return this;
         }
 
@@ -288,7 +370,7 @@
             return this;
         }
 
-        append(nodeType: string, className?: string, callback?: (FluentDOM) => void) {
+        append(nodeType: string, className?: string, callback?: (fdom: FluentDOM) => void) {
             var child = new FluentDOM(nodeType, className, this.element, this);
             if (callback) {
                 callback(child);

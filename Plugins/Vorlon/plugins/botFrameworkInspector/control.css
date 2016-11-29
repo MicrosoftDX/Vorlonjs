@@ -1,0 +1,183 @@
+body {
+    margin: 0;
+}
+
+#splitter {
+    display: flex;
+    flex-wrap: nowrap;
+    font-family: "Menlo", "Consolas", "Lucida Console", Courier, monospace;
+    height:100%;
+    font-size: 0.9em;
+}
+
+.hidden{
+    visibility: collapse;
+    display: none!important;
+}
+
+#left {
+    flex-grow: 4;
+    overflow: scroll;
+    overflow-x: hidden;
+    height:100%;
+}
+
+#left .placeholder {
+    align-content: center;
+    height: 100%;
+    color: slategray;
+    text-align: center;
+    margin-top: 100px;
+}
+
+#left .section-header {
+    border-bottom: 1px solid lightgrey;
+    padding: 5px;
+}
+
+#left #dialogs {
+    display:flex;
+    flex-direction: column;
+}
+
+#left .dialog {
+    display:flex;
+    flex-direction: row;
+    line-height: 30px;
+    border-bottom: 1px solid lightgray;
+}
+
+#left .dialog-id {
+    background-color: mediumpurple;
+    color: white;
+    padding-left: 10px;
+    margin: 0;
+    padding: 10px;
+    width: 200px;
+}
+
+#left .dialog-detail {
+    flex-grow: 4;
+    display: flex;
+    flex-direction: row;
+    background-color: #ccc;
+    color: darkslategray;
+    padding-left: 20px;
+}
+
+#left .dialog-detail {
+    margin:0;
+    padding: 10px;
+}
+
+#left .dialog-detail p {
+    margin:0;
+    margin-left:20px;
+    margin-right:20px;
+}
+
+#left .dialog-detail .waterfall-steps {
+    display:flex;
+    flex-grow: 4;
+}
+
+#left .dialog-detail .waterfall-step {
+    background-color: #3E3D3D;
+    color: white;
+    text-align: center;
+    flex-grow: 1;
+    margin-left: 10px;
+    max-width: 40px;
+}
+
+#left #dialogstacks {
+    display:flex;
+    flex-direction: column;
+}
+
+#left #dialogstacks .user-entry {
+    display:flex;
+    flex-direction: row;
+    border-bottom: 1px solid dimgray;
+}
+
+#left #dialogstacks .user-entry .entry {
+    background-color: gray;
+    flex-grow: 1;
+    color: white;
+    line-height: 100%;
+    margin: 0;
+    padding: 20px;
+    max-width: 150px;
+}
+
+#left #dialogstacks .user-entry .stacks {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 5;
+    background-color: #ccc; 
+}
+
+#left #dialogstacks .user-entry .stack {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+#left #dialogstacks .user-entry .dialogs-in-stack {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#left #dialogstacks .user-entry .data {
+    border: 1px solid darkslategray;
+    background-color: #eee;
+    padding: 10px;
+    margin-top: 10px;
+    max-width: 100vh;
+}
+
+#left #dialogstacks .user-entry .stack .dialog-in-stack {
+    background-color: #3E3D3D;
+    color: white;
+    text-align: center;
+    height:50px;
+    line-height: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#left #dialogstacks .user-entry .stack .dialogs-in-stack .line {
+    height: 0px;
+    width: 20px;
+    border-bottom: 1px solid black;
+    align-self: center;
+}
+
+#right {
+    border-left: solid 1px gray;
+    height: 100%;
+    overflow: hidden;
+}
+
+#right ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#right ul li {
+    border: 1px solid #ccc;
+    border-top:0;   
+    border-left: 0;
+    background-color: #eee;
+    padding: 25px;
+    width: 200px;
+    text-transform: uppercase;
+}
+
+#right ul li.selected{
+    background-color: #3E3D3D;
+    color: white;
+}

@@ -1,0 +1,9 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+	
+	"editor.fontSize": 15,
+	"search.exclude": {
+		"**/node_modules": false,
+		"**/bower_components": true
+	}
+}

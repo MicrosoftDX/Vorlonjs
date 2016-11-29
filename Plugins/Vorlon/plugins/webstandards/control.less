@@ -1,0 +1,246 @@
+@import "../vorlontheme.less";
+
+.plugin-webstandards {
+    #webstandardspanel {
+        width: 100%;
+        height: 100%;
+        position: relative;
+
+        x-controlbar {
+            .loadingstate {
+                font-size: 16pt;
+                line-height: 26px;
+                margin-left: 10px;
+                display: none;
+            }
+        }
+
+        #webstandards-results{
+            position: absolute;
+            left: 0;
+            right : 0;
+            bottom : 0;
+            top : 36px;
+            display: flex;
+            flex-flow : row nowrap;
+            
+            #webstandards-rulespanel{
+                width: 300px; 
+                min-width: 300px;
+                height : 100%;
+                max-width : 30%;
+                background-color: #EEE;
+                overflow-x: hidden;
+                overflow-y: auto;
+                
+                .rule{
+                    .state{
+                        display: inline-block;
+                        width: 22px;
+                        height : 22px;
+                        line-height: 18px;
+                        text-align: center;
+                        border-radius: 50%;
+                        border : 2px solid #999;
+                        box-sizing: border-box;
+                        margin-right : 8px;
+                        
+                        &.fa-check{
+                            color : seagreen;
+                            border-color : seagreen;
+                        }
+                        
+                        &.fa-close{
+                            color : indianred;
+                            border-color : indianred;
+                        }
+                    }
+                    .title{
+                        padding : 0.3em 1em;
+                        font-size: 12px;
+                        font-size: 0.9em;
+                        cursor : pointer;
+                        color: black;
+                        
+                         .ruleSummary-container{
+                             float: right;
+                                .ruleSummary-succeed{
+                                    padding-left: 5px;
+                                    &::before{
+                                        content: "(";
+                                    }
+                                    &::after{
+                                        content: " ✓ |";
+                                    }
+                                }
+                            
+                                .ruleSummary-failed{ 
+                                    padding-left: 3px;
+                                    &::after{
+                                        content: " x)";
+                                    }
+                                } 
+                         }
+                    }
+                    
+                    &.collapsible {
+                        &.collapsed{
+                            >.childs{
+                                display: none;   
+                            }
+                        }
+                    }
+                    
+                    &.level1{
+                        >.title{
+                            background-color: #636363;
+                            color : white;
+                            text-transform: uppercase;
+                        }
+                    }
+                    
+                     &.level2, &.level3, &.level4{
+                        &:hover{
+                            background-color: #AAA;
+                            color: black;
+                        }
+                        
+                        &:hover.selected, &.selected{
+                            background-color: #CCC;
+                            color: black;
+                        }
+                     }
+                }
+            }
+            
+            #webstandards-ruledetailpanel{
+                flex: 1;
+                
+                .empty{
+                    margin : auto;
+                    margin-top : 10%;
+                    width: 80%;
+                    max-width: 400px;
+                    color: #565555;
+                    text-align: center;    
+                }
+                
+                h1.title{
+                    display: -webkit-flex;
+                    display: flex;
+                    flex-flow: row nowrap;
+                    align-items : center;
+                    .state{
+                                        display: inline-block;
+                                        width: 28px;
+                                        height : 28px;
+                                        line-height: 24px;
+                                        text-align: center;
+                                        border-radius: 50%;
+                                        border : 2px solid #999;
+                                        box-sizing: border-box;
+                                        margin-right : 8px;
+                                        
+                                        &.fa-check{
+                                            color : seagreen;
+                                            border-color : seagreen;
+                                        }
+                                        
+                                        &.fa-close{
+                                            color : indianred;
+                                            border-color : indianred;
+                                        }
+                                    }
+                }
+                
+                .ruledetailpanel-content {
+                    width: 100%;
+                    height : 100%;
+                    box-sizing: border-box;
+                    padding : 20px;
+                    overflow-x: hidden;
+                    overflow-y: auto;
+                    
+                    >.description{
+                        margin-bottom: 1em;
+                    }
+                    
+                    strong{
+                        font-weight: 600;
+                    }
+                    
+                    .item {
+                        >.items{
+                            margin-top : 10px;
+                        }
+                    }
+                    
+                    .blockitems{
+                        >.items{
+                            margin-top : 20px;
+                            >.item{
+                                border : 1px solid #AAA;
+                                padding : 10px;
+                                margin-bottom: 10px;
+                                background-color: #EEE;
+                            }
+                        }
+                    }
+                    
+                    .itemslist{
+                        margin-bottom: 0.5em;
+                        >.title{
+                            background-color:  #555;
+                            color: white;
+                            padding : 0.2em 0.3em;
+                            margin-bottom: 0.2em;
+                        }
+                        
+                        
+                        >.items{
+                            padding-left : 20px;
+                            margin-top : 0;
+                            
+                            >.item{
+                                >.title{
+                                    font-weight: 500;
+                                    
+                                }
+                                
+                                >.content{
+                                    color: #777;
+                                    font-size : 0.9em;
+                                }
+                                
+                                >.items{
+                                    padding-left : 20px;
+                                    >.item{
+                                        color: #790505;
+                                        font-style: italic;
+                                        font-size : 0.9em;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &.loading {
+            x-controlbar {
+                .loadingstate {
+                    display: block;
+                }
+            }
+
+            .contentpanel {
+                position: absolute;
+                top: 36px;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+        }
+    }
+}

@@ -1,0 +1,124 @@
+#babylonInspector-displayer {
+    position: absolute;
+    display: none;
+    left: 300px;
+    top: 100px;
+    width: 300px;
+    height: 300px;
+}
+
+.tree-node {
+    margin-left: 20px;
+}
+
+.tree-node-button {
+    display: inline-block;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+.tree-node-content {
+    display: inline-block;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.tree-node-features {
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.tree-node-features * {
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.tree-node-hidden {
+    display: none;
+}
+
+.tree-node-type-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+}
+
+.tree-node-type-icon-mesh {
+    background-image: url("img/mesh.png");
+}
+
+.tree-node-type-icon-light {
+    background-image: url("img/light.png");
+}
+
+.tree-node-type-icon-camera {
+    background-image: url("img/camera.png");
+}
+
+.tree-node-type-icon-skeleton {
+    background-image: url("img/skeleton.png");
+}
+
+.tree-node-features-element {
+    display: inline-block;
+}
+
+.tree-node-color-sample {
+    width: 12px;
+    height: 12px;
+    margin-left: 5px;
+    border: 1px solid;
+}
+
+.tree-node-texture-thumbnail {
+    width: 20px;
+    height: 20px;
+}
+
+.tree-node-texture-view {
+    width: 300px;
+    height: 300px;
+}
+
+.tree-node-animation-button {
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.tree-node-animation-button-play {
+    background-image: url("img/play.png");
+}
+
+.tree-node-animation-button-pause {
+    background-image: url("img/pause.png");
+}
+
+.tree-node-animation-button-stop {
+    background-image: url("img/stop.png");
+}
+
+.tree-node-animation-button-stop-pressed {
+    background-image: url("img/stop_pressed.png");
+}
+
+.tree-node-spot-mesh-button {
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.tree-node-spot-mesh-button-on {
+    background-image: url("img/spot_on.png");
+}
+
+.tree-node-spot-mesh-button-off {
+    background-image: url("img/spot_off.png");
+}
+
+.clickable {
+    cursor: pointer;
+}

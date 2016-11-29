@@ -1,10 +1,12 @@
+@import "../vorlontheme.less";
+
 .plugin-dom {
-    @bracketColor: #BBB;
-    @nodeNameColor: #6b2d81;
+    @bracketColor: #6d6d6d;
+    @nodeNameColor: @lightpurple;
     @nodeTextColor: #111;
-    @attributeNameColor: #ed2424;
+    @attributeNameColor: #e11212;
     @attributeValueColor: #007ca7;
-    @quotesColor: #6b2d81;
+    @quotesColor: @lightpurple;
 
     [button-block] {
         display: block;
@@ -14,13 +16,11 @@
         background: none;
     }
 
-    .dom-explorer-container {
+    .split {
         height: 100%;
         overflow: hidden !important;
     }
-
-
-
+ 
     .panel-left,
     .panel-right {
         height: 100%;
@@ -315,7 +315,11 @@
             }
         }
     }
-
+.notexpansible{
+        .treeNodeButton {
+            display: none;
+        }
+}
     .treeNodeButton {
         display: inline-block;
         color: #444;
@@ -526,15 +530,26 @@
 
     .nodeAttribute {
         padding-left: 0.5em;
-        color: @quotesColor;
-
+        color: @quotesColor; 
+        
         span.attr-name {
             color: @attributeNameColor;
         }
-
-        span.attr-value {
-            color: @attributeValueColor;
+        
+        span.link-hovered{
+            text-decoration: underline; 
         }
+        
+        span.attr-value {
+            color: @attributeValueColor; 
+        }
+    }
+    
+    .colored-square{
+        display: inline-flex;
+        height: 10px;
+        width: 10px;
+        border: 1px #000 solid; 
     }
 
     .styleLabel, .attributeName {
@@ -608,13 +623,14 @@ body .b-m-mpanel {
         cursor: pointer;
         border: none;
     }
+    
     /*.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
         background: #CCC;
     }
-
-
+ 
     .ui-menu-item {
         padding: 10px;
         font-size: 10pt;
     }*/
 }
+    

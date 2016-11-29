@@ -1,0 +1,112 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    meta(name='description', content='')
+    meta(name='author', content='')
+  title Vorlonjs HTTP Proxy
+  link(rel='stylesheet', href='/stylesheets/httpproxy.css')
+  link(href='https://fonts.googleapis.com/css?family=Oswald:400' rel='stylesheet')
+  link(href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,300|Roboto:400,300' rel='stylesheet')
+  script(src='/javascripts/jquery-2.1.1.min.js' type="text/javascript")
+    body
+  
+  div.home
+    div.top
+      img.logo(src="/images/VorlonLogo_Smooth.svg", alt="Vorlon logo" )
+    div.form
+      div.message Vorlon proxy allows you to use Vorlon on an existing website. Just enter the website url, and click on the button. Couldn't be easier !
+      div.input
+        input#url(type='text', placeholder='enter website url')
+      div.button
+        div.spacebutton
+          a#inject.btn.btn-default.left(role='button', tabindex='0') Inspect with VORLON.JS
+          a#openSite.btn.btn-default.left(role='button', tabindex='0') Open website only
+          a#openDashboard.btn.btn-default.left(role='button', tabindex='0') Open dashboard only
+          a#error.message.left.error.hide(role='button', tabindex='0') URL is not valid
+
+ script(type='text/javascript').
+ 	$(document).ready(function() {	
+     function getProxyData(url, callback){
+       $.ajax({
+            type: "GET",
+            url: "/HttpProxy/inject?url=" + encodeURIComponent(url) + "&ts=" + new Date(),
+            success: function (data) {
+              callback(JSON.parse(data));
+            },
+       });
+     }
+     
+     function openDashboard(url){
+       var pat = /^(https?:\/\/)?(?:www\.)?([^\/]+)/;
+       var match = url.match(pat); 
+       var target = match[2].replace('.', '');
+       window.open("/dashboard/" + target);
+     }
+     
+     function inject(){
+       var url = urlinput.value;
+         if (checkUrl()) {
+           getProxyData(url, function(data){              
+              window.open("/dashboard/" + data.session);
+              setTimeout(function(){
+                window.open(data.url);
+              }, 200);
+           });
+         }
+     }
+     
+     function checkUrl() {
+       var url = urlinput.value;
+       if (url && url.length) {
+         if (url.match(/^(http[s]?:\/\/)/)) {
+           document.querySelector("#error").classList.add("hide");
+           return true;
+         } else {
+           document.querySelector("#error").classList.remove("hide");
+           return false;
+         }
+       }
+     }
+     
+     var urlinput = document.querySelector("#url");
+     
+     var btninject = document.querySelector("#inject");
+     btninject.addEventListener("click", function () {
+       inject();
+     });
+     
+     var btnopenSite = document.querySelector("#openSite");
+     btnopenSite.addEventListener("click", function () {
+       var url = urlinput.value;
+         if (checkUrl()) {
+           getProxyData(url, function(data){   
+             window.open(data.url);   
+           });
+         }
+     });
+     
+     var btnopenDashboard = document.querySelector("#openDashboard");
+     btnopenDashboard.addEventListener("click", function () {
+       var url = urlinput.value;
+         if (checkUrl()) {
+           getProxyData(url, function(data){   
+             window.open("/dashboard/" + data.session);
+           });
+         }
+     });
+     
+     urlinput.addEventListener("keypress", function(e){
+       var key = e.which ? e.which : e.keyCode;
+       if (key == 13) {         
+         e.preventDefault();
+         inject();
+       }
+     });
+     
+     urlinput.addEventListener("blur", function (e) {
+       checkUrl();
+     });
+ 	});

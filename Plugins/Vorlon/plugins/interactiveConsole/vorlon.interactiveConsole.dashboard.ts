@@ -35,7 +35,8 @@
                 this._interactiveInput.addEventListener("keydown", (evt) => {
                     if (evt.keyCode === 13) { //enter
                         this.sendCommandToClient('order', {
-                            order: this._interactiveInput.value
+                            order: this.isLoggable(this._interactiveInput.value) ? "console.log(" + this._interactiveInput.value + ")" 
+                                                                            : this._interactiveInput.value
                         });
 
                         this._commandHistory.push(this._interactiveInput.value);
@@ -108,6 +109,21 @@
                 this._ready = true;
             });
         }
+        
+        private isLoggable(input:string) : boolean{
+            // "val" && 'val
+            if(input[0] == '"' &&  input[input.length - 1] == '"' || (input[0] == '\'' &&  input[input.length - 1] == '\''))
+                return true;
+                
+             if(input.indexOf('.') > 0){
+                 // .command, c.command(), c.command
+                 return (input.indexOf("(") > -1  && input.indexOf(")") > -1 ) ? false : true;
+             }  
+             
+             // funct("") => return something or not
+             // Other case, will return a console error from the client
+             return false;
+        }
 
         public addDashboardEntries(entries: ConsoleEntry[]) {
             for (var i = 0, l = entries.length; i < l; i++) {
@@ -121,6 +137,7 @@
         }
 
         public clearDashboard() {
+            this._logEntries.splice(0, this._logEntries.length);
             this._containerDiv.innerHTML = '';
         }
 
@@ -217,7 +234,7 @@
         }
 
         public renderContent() {
-            if (this.contentRendered)
+            if (!this.obj || this.contentRendered)
                 return;
 
             if (this.obj.proto) {
@@ -312,19 +329,22 @@
             this.entry = entry;
             this.element = document.createElement("div");
             this.element.className = 'log-entry ' + this.getTypeClass();
-            parent.insertBefore(this.element, parent.childNodes.length > 0 ? parent.childNodes[0] : null);
+            this.element.title = "Message received at " + new Date().toLocaleTimeString();
+            parent.appendChild(this.element);
+            this.element.scrollIntoView();
 
             for (var i = 0, l = entry.messages.length; i < l; i++) {
                 this.addMessage(entry.messages[i]);
             }
         }
+        
 
         private addMessage(msg: any) {
             if (typeof msg === 'string' || typeof msg === 'number') {
                 var elt = document.createElement('DIV');
                 elt.className = 'log-message text-message';
                 this.element.appendChild(elt);
-                elt.textContent = msg;
+                elt.textContent = msg + '';
             } else {
                 var obj = new InteractiveConsoleObject(this.element, <ObjectDescriptor>msg, true);
                 this.objects.push(obj);
@@ -335,22 +355,16 @@
             switch (this.entry.type) {
                 case "log":
                     return "logMessage";
-                    break;
                 case "debug":
                     return "logDebug";
-                    break;
                 case "info":
                     return "logInfo";
-                    break;
                 case "warn":
                     return "logWarning";
-                    break;
                 case "error":
                     return "logError";
-                    break;
                 case "exception":
                     return "logException";
-                    break;
                 default:
                     return "logMessage";
             }

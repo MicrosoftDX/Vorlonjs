@@ -1,19 +1,21 @@
 npm-debug.log
 *.log
-/plugins/**/*.css
-tsconfig.json
 /Plugins/obj
 **/node_modules
 sync.bat
 *.suo
 /.vs/
 bin/
-GLE id�es.txt
+**/control.css
+!Plugins/Vorlon/plugins/office/control.css
 sync.bat
-Plugins/Vorlon/plugins/remoteDebugging.zip
-<<<<<<< HEAD
 .settings/launch.json
-=======
 *.dat
->>>>>>> 8e38a9097a969c97676d00f30898bb85b7de6c5c
 Server/public/stylesheets/style.css
+/Server/public/stylesheets/style.css
+/DeploymentTools/deployment-package.zip
+DeploymentTools/deployment-package.zip
+!/Plugins/Vorlon/plugins/domtimeline/**
+!/Plugins/Vorlon/plugins/domtimeline/**/*.css
+!/Plugins/Vorlon/plugins/domtimeline/**/*.js
+!/Plugins/Vorlon/plugins/domtimeline/dom-timeline.js

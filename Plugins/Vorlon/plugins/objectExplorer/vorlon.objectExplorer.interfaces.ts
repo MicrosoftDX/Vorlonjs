@@ -1,10 +1,21 @@
 ﻿module VORLON {
-    export interface ObjPropertyDescriptor {
-        type: string;
+    export interface ObjExplorerPropertyDescriptor {
         name: string;
+        type: string;
         fullpath: string;
-        contentFetched: boolean;
         value?: any;
-        content: Array<ObjPropertyDescriptor>;
+    }
+
+    export interface ObjExplorerFunctionDescriptor {
+        name: string;
+        args: string[];
+        fullpath: string;
+    }
+    
+    export interface ObjExplorerObjDescriptor extends ObjExplorerPropertyDescriptor {
+        proto?: ObjExplorerObjDescriptor;
+        functions: Array<ObjExplorerFunctionDescriptor>;
+        properties: Array<ObjExplorerPropertyDescriptor>;        
+        contentFetched: boolean;
     }    
 }

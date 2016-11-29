@@ -2,6 +2,7 @@
 import http = require("http");
 import https = require("https");
 import path = require("path");
+import config = require("./vorlon.configprovider");
 
 export module VORLON {
     export class HttpConfig {
@@ -9,9 +10,15 @@ export module VORLON {
         public protocol: String;
         public httpModule;
         public options;
+        public port;
+        public proxyPort;
+        public enableWebproxy: boolean;
+        public vorlonServerURL: string;
+        public vorlonProxyURL: string;
+        public proxyEnvPort: boolean;
 
-        public constructor() {            
-            var catalogdata: string = fs.readFileSync(path.join(__dirname, "../config.json"), "utf8");            
+        public constructor() {
+            var catalogdata: string = fs.readFileSync(config.VORLON.ConfigProvider.getConfigPath(), "utf8");
             var catalogstring = catalogdata.toString().replace(/^\uFEFF/, '');
             var catalog = JSON.parse(catalogstring);
 
@@ -20,15 +27,31 @@ export module VORLON {
                 this.protocol = "https";
                 this.httpModule = https;
                 this.options = {
-                    key: fs.readFileSync(catalog.SSLkey),
-                    cert: fs.readFileSync(catalog.SSLcert) 
+                    key: fs.readFileSync(path.join(__dirname, "../", catalog.SSLkey)),
+                    cert: fs.readFileSync(path.join(__dirname, "../", catalog.SSLcert))
                 }
             }
             else {
                 this.useSSL = false;
-                this.protocol = "http";
-                this.httpModule = http;
+                if (catalog.useSSLAzure) {
+                    this.protocol = "https";
+                    this.httpModule = http;
+                }
+                else {
+                    this.protocol = "http";
+                    this.httpModule = http;
+                }
             }
+            this.proxyEnvPort = catalog.proxyEnvPort;
+            if (catalog.proxyEnvPort)
+                this.proxyPort = process.env.PORT;
+            else
+                this.proxyPort = catalog.proxyPort || 5050;
+            this.port = process.env.PORT || catalog.port || 1337;
+            this.proxyPort = catalog.proxyPort || 5050;
+            this.enableWebproxy = catalog.enableWebproxy || false;
+            this.vorlonServerURL = catalog.vorlonServerURL || "";
+            this.vorlonProxyURL = catalog.vorlonProxyURL || "";
         }
     }
 }

@@ -6,10 +6,8 @@
         constructor() {
             super("modernizrReport", "control.html", "control.css");
             this._ready = false;
-        }
-
-        public getID(): string {
-            return "MODERNIZR";
+            this._id = "MODERNIZR";
+            //this.debug = true;
         }
 
         private _filterList: any = {};
@@ -18,7 +16,7 @@
         private _miscFeaturesListTable: HTMLTableElement;
         private _nonCoreFeaturesListTable: HTMLTableElement;
 
-        public startDashboardSide(div: HTMLDivElement = null): void {
+        public startDashboardSide(div: HTMLDivElement = null): void {            
             this._insertHtmlContentAsync(div,(filledDiv) => {
 
                 this._cssFeaturesListTable = <HTMLTableElement>Tools.QuerySelectorById(div, "cssFeaturesList");
@@ -39,9 +37,10 @@
             });
         }
 
-        public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
+        public displayClientFeatures(receivedObject: any): void {
             if (!receivedObject || !receivedObject.features)
                 return;
+                
             var targettedTable;
             var supportedFeatures: FeatureSupported[] = receivedObject.features;
             if (supportedFeatures && supportedFeatures.length)
@@ -81,6 +80,13 @@
         }
     }
 
+    ModernizrReportDashboard.prototype.DashboardCommands = {
+        clientfeatures: function(data: any) {
+            var plugin = <ModernizrReportDashboard>this;
+            plugin.displayClientFeatures(data);
+        }
+    };
+    
     // Register
     Core.RegisterDashboardPlugin(new ModernizrReportDashboard());
 }
