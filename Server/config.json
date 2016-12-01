@@ -20,7 +20,7 @@
             "name": "Obj. Explorer",
             "panel": "top",
             "foldername": "objectExplorer",
-            "enabled": false,
+            "enabled": true,
             "nodeCompliant": true
         },
         {
@@ -28,7 +28,7 @@
             "name": "XHR",
             "panel": "top",
             "foldername": "xhrPanel",
-            "enabled": false,
+            "enabled": true,
             "nodeCompliant": true
         },
         {
@@ -36,7 +36,7 @@
             "name": "NodeJS",
             "panel": "top",
             "foldername": "nodejs",
-            "enabled": false,
+            "enabled": true,
             "nodeCompliant": true,
             "nodeOnly": true
         },
@@ -141,7 +141,7 @@
             "name": "Modernizr",
             "panel": "bottom",
             "foldername": "modernizrReport",
-            "enabled": false
+            "enabled": true
         },
         {
             "id": "DOMTIMELINE",
