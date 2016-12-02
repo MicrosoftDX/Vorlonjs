@@ -34,7 +34,6 @@
     "gulp-concat": "~2.2.0",
     "gulp-filter": "~0.4.1",
     "gulp-less": "~3.0.3",
-    "gulp-mocha": "~2.2.0",
     "gulp-rename": "~1.2.0",
     "gulp-sourcemaps": "~1.5.2",
     "gulp-typescript": "~2.13.6",
@@ -43,7 +42,6 @@
     "gulp-webserver": "~0.9.0",
     "gulp-zip": "~3.0.2",
     "merge2": "~0.3.5",
-    "mocha-junit-reporter": "^1.9.1",
     "through": "~2.3.4",
     "typescript": "^1.8.10"
   },
