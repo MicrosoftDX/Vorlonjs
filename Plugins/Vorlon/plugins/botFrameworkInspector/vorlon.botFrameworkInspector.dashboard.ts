@@ -2,10 +2,6 @@
 
 module VORLON {
     export class BotFrameworkInspectorDashboard extends DashboardPlugin {
-        private _blocksDefinition = `callstack0=>condition: 0|timeline`;
-        private _callstacksGraphDefinition = [];
-        private _chart;
-
         constructor() {
             super("botFrameworkInspector", "control.html", "control.css");
             this._ready = false;
@@ -20,20 +16,6 @@ module VORLON {
             this._insertHtmlContentAsync(div, (filledDiv) => {
                 this._dialogsContainer = <HTMLDivElement>document.getElementById("dialogs");
                 this._dialogStacksContainer = <HTMLDivElement>document.getElementById("dialogstacks");
-
-                $("#menu").on("click", "li#display-dialog", function(event){
-                    $("#dialogs").removeClass("hidden");  
-                    $("#dialogstacks").addClass("hidden");  
-                    $("#display-dialog").addClass("selected");  
-                    $("#display-dialogstacks").removeClass("selected");  
-                });
-
-                $("#menu").on("click", "li#display-dialogstacks", function(event){
-                    $("#dialogs").addClass("hidden");
-                    $("#dialogstacks").removeClass("hidden"); 
-                    $("#display-dialog").removeClass("selected");  
-                    $("#display-dialogstacks").addClass("selected"); 
-                });
 
                 this._ready = true;
                 this.display();

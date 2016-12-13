@@ -16,27 +16,11 @@
     "vorlonProxyURL": "",
     "plugins": [
         {
-            "id": "OBJEXPLORER",
-            "name": "Obj. Explorer",
-            "panel": "top",
-            "foldername": "objectExplorer",
-            "enabled": false,
-            "nodeCompliant": true
-        },
-        {
-            "id": "XHRPANEL",
-            "name": "XHR",
-            "panel": "top",
-            "foldername": "xhrPanel",
-            "enabled": false,
-            "nodeCompliant": true
-        },
-        {
             "id": "NODEJS",
             "name": "NodeJS",
             "panel": "top",
             "foldername": "nodejs",
-            "enabled": false,
+            "enabled": true,
             "nodeCompliant": true,
             "nodeOnly": true
         },
@@ -50,11 +34,19 @@
             "nodeOnly": true
         },
         {
-            "id": "CONSOLE",
-            "name": "Interactive Console",
+            "id": "OBJEXPLORER",
+            "name": "Obj. Explorer",
             "panel": "bottom",
-            "foldername": "interactiveConsole",
+            "foldername": "objectExplorer",
             "enabled": true,
+            "nodeCompliant": true
+        },
+        {
+            "id": "XHRPANEL",
+            "name": "XHR",
+            "panel": "top",
+            "foldername": "xhrPanel",
+            "enabled": false,
             "nodeCompliant": true
         },
         {
@@ -100,6 +92,14 @@
             "panel": "top",
             "foldername": "resourcesExplorer",
             "enabled": true
+        },
+        {
+            "id": "CONSOLE",
+            "name": "Interactive Console",
+            "panel": "bottom",
+            "foldername": "interactiveConsole",
+            "enabled": true,
+            "nodeCompliant": true
         },
         {
             "id": "UNITTEST",
