@@ -6,8 +6,8 @@ body {
     display: flex;
     flex-wrap: nowrap;
     font-family: "Menlo", "Consolas", "Lucida Console", Courier, monospace;
-    height:100%;
     font-size: 0.9em;
+    height:100%;
 }
 
 .hidden{
@@ -17,9 +17,8 @@ body {
 
 #left {
     flex-grow: 4;
-    overflow: scroll;
-    overflow-x: hidden;
-    height:100%;
+    display: flex;
+    flex-direction: column;
 }
 
 #left .placeholder {
@@ -30,14 +29,12 @@ body {
     margin-top: 100px;
 }
 
-#left .section-header {
-    border-bottom: 1px solid lightgrey;
-    padding: 5px;
-}
-
 #left #dialogs {
     display:flex;
     flex-direction: column;
+    overflow: scroll;
+    overflow-x: hidden;
+    flex-grow: 1;
 }
 
 #left .dialog {
@@ -52,8 +49,9 @@ body {
     color: white;
     padding-left: 10px;
     margin: 0;
-    padding: 10px;
+    padding: 5px;
     width: 200px;
+    height:30px;
 }
 
 #left .dialog-detail {
@@ -63,22 +61,23 @@ body {
     background-color: #ccc;
     color: darkslategray;
     padding-left: 20px;
+    height:30px;
 }
 
 #left .dialog-detail {
     margin:0;
-    padding: 10px;
+    padding: 5px;
 }
 
 #left .dialog-detail p {
     margin:0;
-    margin-left:20px;
-    margin-right:20px;
+    margin-left:5px;
+    margin-right:5px;
 }
 
 #left .dialog-detail .waterfall-steps {
     display:flex;
-    flex-grow: 4;
+    flex-grow: 2;
 }
 
 #left .dialog-detail .waterfall-step {
@@ -93,12 +92,16 @@ body {
 #left #dialogstacks {
     display:flex;
     flex-direction: column;
+    border-top: 5px solid darkslategray;
+    overflow: scroll;
+    overflow-x: hidden;
+    flex-grow: 4;
 }
 
 #left #dialogstacks .user-entry {
     display:flex;
-    flex-direction: row;
-    border-bottom: 1px solid dimgray;
+    flex-direction: column;
+    border-left: 5px solid gray;
 }
 
 #left #dialogstacks .user-entry .entry {
@@ -107,8 +110,7 @@ body {
     color: white;
     line-height: 100%;
     margin: 0;
-    padding: 20px;
-    max-width: 150px;
+    padding: 10px;
 }
 
 #left #dialogstacks .user-entry .stacks {
@@ -121,7 +123,7 @@ body {
 #left #dialogstacks .user-entry .stack {
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 5px;
 }
 
 #left #dialogstacks .user-entry .dialogs-in-stack {
@@ -133,9 +135,8 @@ body {
 #left #dialogstacks .user-entry .data {
     border: 1px solid darkslategray;
     background-color: #eee;
-    padding: 10px;
-    margin-top: 10px;
-    max-width: 100vh;
+    padding: 5px;
+    margin-top: 5px;
 }
 
 #left #dialogstacks .user-entry .stack .dialog-in-stack {
@@ -159,25 +160,6 @@ body {
     border-left: solid 1px gray;
     height: 100%;
     overflow: hidden;
+    flex-grow: 5;
 }
 
-#right ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-#right ul li {
-    border: 1px solid #ccc;
-    border-top:0;   
-    border-left: 0;
-    background-color: #eee;
-    padding: 25px;
-    width: 200px;
-    text-transform: uppercase;
-}
-
-#right ul li.selected{
-    background-color: #3E3D3D;
-    color: white;
-}
