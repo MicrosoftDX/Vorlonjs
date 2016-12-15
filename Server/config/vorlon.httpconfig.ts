@@ -10,7 +10,9 @@ export module VORLON {
         public protocol: String;
         public httpModule;
         public options;
+        public host;
         public port;
+        public proxyHost;
         public proxyPort;
         public enableWebproxy: boolean;
         public vorlonServerURL: string;
@@ -42,11 +44,13 @@ export module VORLON {
                     this.httpModule = http;
                 }
             }
+            this.proxyHost = process.env.PROXY_HOST || catalog.proxyHost || 'localhost';
             this.proxyEnvPort = catalog.proxyEnvPort;
             if (catalog.proxyEnvPort)
                 this.proxyPort = process.env.PORT;
             else
                 this.proxyPort = catalog.proxyPort || 5050;
+            this.host = process.env.HOST || catalog.host || 'localhost';
             this.port = process.env.PORT || catalog.port || 1337;
             this.proxyPort = catalog.proxyPort || 5050;
             this.enableWebproxy = catalog.enableWebproxy || false;
