@@ -96,7 +96,7 @@ export module VORLON {
             } else {
                 http.createServer(this._server).listen(
                     this._server.get('port'), this._server.get('host'), undefined, () => {
-                    this._log.info('Vorlon.js PROXY listening at ' + this._server.get('host') + ':' + this._server.get('port'));
+                        this._log.info('Vorlon.js PROXY listening at ' + this._server.get('host') + ':' + this._server.get('port'));
                 });
             }
 
