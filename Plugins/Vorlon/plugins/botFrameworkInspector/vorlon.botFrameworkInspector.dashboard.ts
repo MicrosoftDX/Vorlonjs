@@ -1,5 +1,7 @@
 ﻿/// <reference path="botbuilder.d.ts" />
 
+declare var cytoscape: any;
+
 module VORLON {
     export class BotFrameworkInspectorDashboard extends DashboardPlugin {
         constructor() {
@@ -11,15 +13,104 @@ module VORLON {
         private _lastReceivedBotInfo: BotInfo;
         private _dialogsContainer: HTMLDivElement;
         private _dialogStacksContainer: HTMLDivElement;
+        private _divPluginBot: HTMLDivElement;
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div, (filledDiv) => {
                 this._dialogsContainer = <HTMLDivElement>document.getElementById("dialogs");
                 this._dialogStacksContainer = <HTMLDivElement>document.getElementById("dialogstacks");
 
-                this._ready = true;
-                this.display();
+                var firstInitialization = () => {
+                    if (!this._ready && this._divPluginBot.style.display === "none") {
+                        window.setTimeout(firstInitialization, 500);
+                    }
+                    else {
+                        this._ready = true;
+                        this.display();
+                        this._drawGraphNodes();
+                    }   
+                };
+
+                this._loadScript("/vorlon/plugins/botFrameworkInspector/cytoscape.min.js", () => {
+                    this._loadScript("/vorlon/plugins/botFrameworkInspector/dagre.min.js", () => {
+                        this._loadScript("/vorlon/plugins/botFrameworkInspector/cytoscape-dagre.js", () => {
+                            this._divPluginBot = <HTMLDivElement>document.getElementsByClassName("plugin-botframeworkinspector")[0];
+                            window.setTimeout(firstInitialization, 500);
+                        });
+                    });
+                });
             });
+        }
+
+        private _drawGraphNodes() {
+            var cy = cytoscape({
+            container: <HTMLElement>document.getElementById('right'),
+            boxSelectionEnabled: false,
+            autounselectify: true,
+            layout: {
+                name: 'dagre'
+            },
+            style: [
+                {
+                selector: 'node',
+                style: {
+                    'content': 'data(value)',
+                    'text-opacity': 0.5,
+                    'text-valign': 'center',
+                    'text-halign': 'right',
+                    'background-color': '#11479e'
+                }
+                },
+                {
+                selector: 'edge',
+                style: {
+                        'width': 2,
+                        'target-arrow-shape': 'triangle',
+                        'line-color': '#9dbaea',
+                        'target-arrow-color': '#9dbaea',
+                        'curve-style': 'bezier'
+                    }
+                }
+            ],
+            elements: {
+                nodes: [
+                    { data: { id: 'n0', value: '/' } },
+                    { data: { id: 'n1', value: '/Dialog1' } },
+                    { data: { id: 'n2', value: "/Dialog2" } },
+                    { data: { id: 'n3', value: "/Dialog1/Step1" } },
+                    { data: { id: 'n4', value: "/Dialog1/Step2" } },
+                    { data: { id: 'n5', value: "/Dialog2/Step1" } },
+                    { data: { id: 'n6', value: "/Dialog2/Step2" } },
+                    { data: { id: 'n7', value: "/Dialog2/Step3" } },
+                    ],
+                edges: [
+                    { data: { source: 'n0', target: 'n1' } },
+                    { data: { source: 'n0', target: 'n2' } },
+                    { data: { source: 'n1', target: 'n3' } },
+                    { data: { source: 'n1', target: 'n4' } },
+                    { data: { source: 'n3', target: 'n1' } },
+                    { data: { source: 'n2', target: 'n5' } },
+                    { data: { source: 'n2', target: 'n6' } },
+                    { data: { source: 'n6', target: 'n7' } }
+                ]
+                },
+            });
+            cy.on('tap', 'node', function(event){
+                var evtTarget = event.cyTarget;
+                console.log(evtTarget.id());
+            });
+        }
+
+        private _loadScript(url, callback) {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+
+            script.onload = function () {
+                callback();
+            };
+
+            script.src = url;
+            document.getElementsByTagName("head")[0].appendChild(script);
         }
 
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
