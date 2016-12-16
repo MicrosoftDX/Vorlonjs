@@ -134,12 +134,14 @@ export module VORLON {
             this.init();
 
             if (this.httpConfig.useSSL) {
-                this._httpServer = this.httpConfig.httpModule.createServer(this.httpConfig.options, app).listen(app.get('port'), app.get('host'), () => {
-                    this._log.info('Vorlon.js SERVER with SSL listening at ' + app.get('host') + ':' + app.get('port'));
+                this._httpServer = this.httpConfig.httpModule.createServer(this.httpConfig.options, app).listen(
+                    app.get('port'), app.get('host'), undefined, () => {
+                        this._log.info('Vorlon.js SERVER with SSL listening at ' + app.get('host') + ':' + app.get('port'));
                 });
             } else {
-                this._httpServer = this.httpConfig.httpModule.createServer(app).listen(app.get('port'), app.get('host'), () => {
-                    this._log.info('Vorlon.js SERVER listening  at ' + app.get('host') + ':' + app.get('port'));
+                this._httpServer = this.httpConfig.httpModule.createServer(app).listen(
+                    app.get('port'), app.get('host'), undefined, () => {
+                        this._log.info('Vorlon.js SERVER listening  at ' + app.get('host') + ':' + app.get('port'));
                 });
             }
 
