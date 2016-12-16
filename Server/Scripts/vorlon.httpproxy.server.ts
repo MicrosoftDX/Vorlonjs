@@ -89,11 +89,13 @@ export module VORLON {
             // });            
             
             if (this.httpConfig.useSSL) {
-                https.createServer(this.httpConfig.options, this._server).listen(this._server.get('port'), this._server.get('host'), () => {
-                    this._log.info('Vorlon.js PROXY with SSL listening at ' + this._server.get('host') + ':' + this._server.get('port'));
+                https.createServer(this.httpConfig.options, this._server).listen(
+                    this._server.get('port'), this._server.get('host'), undefined, () => {
+                        this._log.info('Vorlon.js PROXY with SSL listening at ' + this._server.get('host') + ':' + this._server.get('port'));
                 });
             } else {
-                http.createServer(this._server).listen(this._server.get('port'), this._server.get('host'), () => {
+                http.createServer(this._server).listen(
+                    this._server.get('port'), this._server.get('host'), undefined, () => {
                     this._log.info('Vorlon.js PROXY listening at ' + this._server.get('host') + ':' + this._server.get('port'));
                 });
             }
