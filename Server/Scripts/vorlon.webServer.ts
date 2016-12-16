@@ -79,6 +79,7 @@ export module VORLON {
             var cors = require("cors");
 
             //Sets
+            app.set('host', this.httpConfig.host);
             app.set('port', this.httpConfig.port);
             app.set('views', path.join(__dirname, '../views'));
             app.set('view engine', 'jade');
@@ -133,12 +134,14 @@ export module VORLON {
             this.init();
 
             if (this.httpConfig.useSSL) {
-                this._httpServer = this.httpConfig.httpModule.createServer(this.httpConfig.options, app).listen(app.get('port'), () => {
-                    this._log.info('Vorlon.js SERVER with SSL listening on port ' + app.get('port'));
+                this._httpServer = this.httpConfig.httpModule.createServer(this.httpConfig.options, app).listen(
+                    app.get('port'), app.get('host'), undefined, () => {
+                        this._log.info('Vorlon.js SERVER with SSL listening at ' + app.get('host') + ':' + app.get('port'));
                 });
             } else {
-                this._httpServer = this.httpConfig.httpModule.createServer(app).listen(app.get('port'), () => {
-                    this._log.info('Vorlon.js SERVER listening on port ' + app.get('port'));
+                this._httpServer = this.httpConfig.httpModule.createServer(app).listen(
+                    app.get('port'), app.get('host'), undefined, () => {
+                        this._log.info('Vorlon.js SERVER listening  at ' + app.get('host') + ':' + app.get('port'));
                 });
             }
 

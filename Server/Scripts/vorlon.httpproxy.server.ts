@@ -73,6 +73,7 @@ export module VORLON {
 
         public startProxyServer() {
             this._server = express();
+            this._server.set('host', this.httpConfig.proxyHost);
             if(this.httpConfig.proxyEnvPort)
                 this._server.set('port', process.env.PORT);            
             else
@@ -88,12 +89,14 @@ export module VORLON {
             // });            
             
             if (this.httpConfig.useSSL) {
-                https.createServer(this.httpConfig.options, this._server).listen(this._server.get('port'), () => {
-                    this._log.info('Vorlon.js PROXY with SSL listening on port ' + this._server.get('port'));
+                https.createServer(this.httpConfig.options, this._server).listen(
+                    this._server.get('port'), this._server.get('host'), undefined, () => {
+                        this._log.info('Vorlon.js PROXY with SSL listening at ' + this._server.get('host') + ':' + this._server.get('port'));
                 });
             } else {
-                http.createServer(this._server).listen(this._server.get('port'), () => {
-                    this._log.info('Vorlon.js PROXY listening on port ' + this._server.get('port'));
+                http.createServer(this._server).listen(
+                    this._server.get('port'), this._server.get('host'), undefined, () => {
+                        this._log.info('Vorlon.js PROXY listening at ' + this._server.get('host') + ':' + this._server.get('port'));
                 });
             }
 
