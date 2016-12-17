@@ -7,6 +7,7 @@ body {
     flex-wrap: nowrap;
     font-family: "Menlo", "Consolas", "Lucida Console", Courier, monospace;
     font-size: 0.9em;
+    background-color: lightgray;
     height:100%;
 }
 
@@ -16,9 +17,8 @@ body {
 }
 
 #left {
-    flex-grow: 4;
-    display: flex;
-    flex-direction: column;
+    flex-grow: 3;
+    height: 100%;
 }
 
 #left .placeholder {
@@ -34,24 +34,28 @@ body {
     flex-direction: column;
     overflow: scroll;
     overflow-x: hidden;
-    flex-grow: 1;
+    height: 30%;
+    margin: 5px;
+    margin-bottom: 5px;
+    border: 1px solid black;
 }
 
 #left .dialog {
     display:flex;
     flex-direction: row;
-    line-height: 30px;
+    line-height: 25px;
     border-bottom: 1px solid lightgray;
+    flex-shrink: 0;
 }
 
 #left .dialog-id {
-    background-color: mediumpurple;
+    background-color: #3E3D3D;
     color: white;
     padding-left: 10px;
     margin: 0;
     padding: 5px;
     width: 200px;
-    height:30px;
+    height:25px;
 }
 
 #left .dialog-detail {
@@ -61,7 +65,6 @@ body {
     background-color: #ccc;
     color: darkslategray;
     padding-left: 20px;
-    height:30px;
 }
 
 #left .dialog-detail {
@@ -81,7 +84,7 @@ body {
 }
 
 #left .dialog-detail .waterfall-step {
-    background-color: #3E3D3D;
+    background-color: dimgray;
     color: white;
     text-align: center;
     flex-grow: 1;
@@ -92,25 +95,30 @@ body {
 #left #dialogstacks {
     display:flex;
     flex-direction: column;
-    border-top: 5px solid darkslategray;
     overflow: scroll;
     overflow-x: hidden;
     flex-grow: 4;
+    margin: 5px;
+    margin-top: 5px;
+    border: 1px solid black;
+    height: calc(70% - 20px);
 }
 
 #left #dialogstacks .user-entry {
     display:flex;
     flex-direction: column;
-    border-left: 5px solid gray;
+    border-left: 5px solid #3E3D3D;
+    flex-shrink: 0;
 }
 
 #left #dialogstacks .user-entry .entry {
-    background-color: gray;
+    background-color: #3E3D3D;
     flex-grow: 1;
     color: white;
     line-height: 100%;
     margin: 0;
     padding: 10px;
+    padding-left: 0;
 }
 
 #left #dialogstacks .user-entry .stacks {
@@ -123,7 +131,8 @@ body {
 #left #dialogstacks .user-entry .stack {
     display: flex;
     flex-direction: column;
-    padding: 5px;
+    padding: 4px 5px 4px 5px;
+    border-top: 1px solid #3E3D3D;
 }
 
 #left #dialogstacks .user-entry .dialogs-in-stack {
@@ -136,17 +145,21 @@ body {
     border: 1px solid darkslategray;
     background-color: #eee;
     padding: 5px;
-    margin-top: 5px;
+    margin: 5px 5px 0px 0px;
 }
 
 #left #dialogstacks .user-entry .stack .dialog-in-stack {
-    background-color: #3E3D3D;
+    background-color: dimgray;
     color: white;
     text-align: center;
-    height:50px;
-    line-height: 50px;
+    height:25px;
+    line-height: 25px;
     padding-left: 10px;
     padding-right: 10px;
+}
+
+#left #dialogstacks .user-entry .stack p {
+    margin: 0;
 }
 
 #left #dialogstacks .user-entry .stack .dialogs-in-stack .line {
@@ -157,9 +170,25 @@ body {
 }
 
 #right {
-    border-left: solid 1px gray;
     height: 100%;
     overflow: hidden;
     flex-grow: 5;
 }
 
+.scroll {
+   background: #3E3D3D;
+   overflow: scroll;
+}
+.scroll::-webkit-scrollbar {
+    width: 12px;
+}
+
+.scroll::-webkit-scrollbar-track {
+    background: #3E3D3D;
+}
+
+.scroll::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(256,256,256,1); 
+}
+​
