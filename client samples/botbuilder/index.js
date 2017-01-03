@@ -52,9 +52,14 @@ function (session, args) {
     session.privateConversationData.tata = "Yo";
     session.dialogData.titi = "ahahah";
     session.beginDialog('/coucou');
+    session.beginDialog('/coucou');
 },
 ]);
 
 bot.dialog('/coucou', function (session) {
     session.endDialog("Coucou world");
+});
+
+bot.dialog('/coucou2', function (session) {
+    session.endDialogWithResult("Coucou world");
 });
