@@ -43,6 +43,23 @@ module VORLON {
         }
 
         private _drawGraphNodes() {
+             if (this._lastReceivedBotInfo) {
+                var nodesList = [];
+                this._lastReceivedBotInfo.dialogDataList.forEach((dataList) => {
+                    nodesList.push({data: { id: nodesList.length, value: dataList.id}});
+
+                     if (dataList.dialog && dataList.dialog.length) {
+                        if(dataList.dialog.length > 0){
+                            for(var i = 0; i < dataList.dialog.length; i++){
+                                nodesList.push({data: { id: nodesList.length, value: dataList.id + '/' + 'Step' + (i + 1)}});
+                            }
+                        }
+                    }
+                });
+
+                console.log(nodesList);
+             }
+
             var cy = cytoscape({
             container: <HTMLElement>document.getElementById('right'),
             boxSelectionEnabled: false,
@@ -73,25 +90,16 @@ module VORLON {
                 }
             ],
             elements: {
-                nodes: [
-                    { data: { id: 'n0', value: '/' } },
-                    { data: { id: 'n1', value: '/Dialog1' } },
-                    { data: { id: 'n2', value: "/Dialog2" } },
-                    { data: { id: 'n3', value: "/Dialog1/Step1" } },
-                    { data: { id: 'n4', value: "/Dialog1/Step2" } },
-                    { data: { id: 'n5', value: "/Dialog2/Step1" } },
-                    { data: { id: 'n6', value: "/Dialog2/Step2" } },
-                    { data: { id: 'n7', value: "/Dialog2/Step3" } },
-                    ],
+                nodes: nodesList,
                 edges: [
-                    { data: { source: 'n0', target: 'n1' } },
-                    { data: { source: 'n0', target: 'n2' } },
-                    { data: { source: 'n1', target: 'n3' } },
-                    { data: { source: 'n1', target: 'n4' } },
-                    { data: { source: 'n3', target: 'n1' } },
-                    { data: { source: 'n2', target: 'n5' } },
-                    { data: { source: 'n2', target: 'n6' } },
-                    { data: { source: 'n6', target: 'n7' } }
+                    // { data: { source: 'n0', target: 'n1' } },
+                    // { data: { source: 'n0', target: 'n2' } },
+                    // { data: { source: 'n1', target: 'n3' } },
+                    // { data: { source: 'n1', target: 'n4' } },
+                    // { data: { source: 'n3', target: 'n1' } },
+                    // { data: { source: 'n2', target: 'n5' } },
+                    // { data: { source: 'n2', target: 'n6' } },
+                    // { data: { source: 'n6', target: 'n7' } }
                 ]
                 },
             });
@@ -116,6 +124,7 @@ module VORLON {
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
             this._lastReceivedBotInfo = receivedObject;
             this.display();
+            this._drawGraphNodes();
         }
 
         public display() {
