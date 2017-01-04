@@ -76,6 +76,18 @@
 			"env": {}
 		},
 		{
+			"name": "Launch ContosoFlowers sample",
+			"type": "node",
+			"program": "${workspaceRoot}/client samples/contosoflowers/app.js",
+			"stopOnEntry": false,
+			"args": [
+				"--nolazy"
+			],
+			"cwd": "${workspaceRoot}/client samples/contosoflowers",
+			"runtimeExecutable": null,
+			"env": {}
+		},
+		{
 			// Name of configuration; appears in the launch configuration drop down menu.
 			"name": "Launch w/TypeScript",
 			// Type of configuration. Possible values: "node", "mono".
