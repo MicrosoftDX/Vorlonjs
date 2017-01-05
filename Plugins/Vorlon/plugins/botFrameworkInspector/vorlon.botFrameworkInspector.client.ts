@@ -106,6 +106,7 @@ module VORLON {
                             var dialogData = new DialogData();
                             dialogData.id = id;
                             dialogData.dialog = dialog;
+                            dialogData.library = this.name;
                             that._botInfo.dialogDataList.push(dialogData);
 
                             that.refresh();
