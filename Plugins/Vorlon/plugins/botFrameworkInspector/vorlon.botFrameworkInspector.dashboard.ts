@@ -136,7 +136,7 @@ module VORLON {
                     dialog.classList.add("dialog");
                     
                     var dialogid = document.createElement("p");
-                    dialogid.innerText = dataList.id;
+                    dialogid.innerText = `${dataList.library} > ${dataList.id}`;
                     dialogid.classList.add("dialog-id");
                     dialog.appendChild(dialogid);
 

@@ -23,6 +23,7 @@
     export class DialogData {
         public id:string;
         public dialog:any|any[];
+        public library:string;
     }
 
     export class UserEntry {
