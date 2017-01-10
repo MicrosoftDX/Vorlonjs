@@ -27,7 +27,7 @@ module VORLON {
                     else {
                         this._ready = true;
                         this.display();
-                        this._drawGraphNodes();
+                        //this._drawGraphNodes();
                     }   
                 };
 
@@ -42,28 +42,12 @@ module VORLON {
             });
         }
 
-        private _drawGraphNodes() {
-             if (this._lastReceivedBotInfo) {
-                var nodesList = [];
-                this._lastReceivedBotInfo.dialogDataList.forEach((dataList) => {
-                    nodesList.push({data: { id: nodesList.length, value: dataList.id}});
-
-                     if (dataList.dialog && dataList.dialog.length) {
-                        if(dataList.dialog.length > 0){
-                            for(var i = 0; i < dataList.dialog.length; i++){
-                                nodesList.push({data: { id: nodesList.length, value: dataList.id + '/' + 'Step' + (i + 1)}});
-                            }
-                        }
-                    }
-                });
-
-                console.log(nodesList);
-             }
-
+        private _drawGraphNodes(nodesList: any[], edgesList: any[]) {
             var cy = cytoscape({
             container: <HTMLElement>document.getElementById('right'),
             boxSelectionEnabled: false,
             autounselectify: true,
+            wheelSensitivity: 0.2,
             layout: {
                 name: 'dagre'
             },
@@ -87,20 +71,17 @@ module VORLON {
                         'target-arrow-color': '#9dbaea',
                         'curve-style': 'bezier'
                     }
+                },
+                {
+                selector: 'node.currentState',
+                style: {
+                        'background-color': '#86B342'
+                    }
                 }
             ],
             elements: {
                 nodes: nodesList,
-                edges: [
-                    // { data: { source: 'n0', target: 'n1' } },
-                    // { data: { source: 'n0', target: 'n2' } },
-                    // { data: { source: 'n1', target: 'n3' } },
-                    // { data: { source: 'n1', target: 'n4' } },
-                    // { data: { source: 'n3', target: 'n1' } },
-                    // { data: { source: 'n2', target: 'n5' } },
-                    // { data: { source: 'n2', target: 'n6' } },
-                    // { data: { source: 'n6', target: 'n7' } }
-                ]
+                edges: edgesList
                 },
             });
             cy.on('tap', 'node', function(event){
@@ -124,10 +105,14 @@ module VORLON {
         public onRealtimeMessageReceivedFromClientSide(receivedObject: any): void {
             this._lastReceivedBotInfo = receivedObject;
             this.display();
-            this._drawGraphNodes();
+            //this._drawGraphNodes();
         }
 
         public display() {
+            var nodesList = [];
+            var edgesList = [];
+            var currentTreeBranch = [];
+
             if (this._lastReceivedBotInfo) {
 
                 this._dialogsContainer.innerHTML = null;
@@ -222,11 +207,32 @@ module VORLON {
                             }
 
                             var eventType = document.createElement("p");
-                            eventType.innerText = `[${EventType[dialogSessionInfo.eventType]}`
-                            if(dialogSessionInfo.impactedDialogId) 
+                            eventType.innerText = `[${EventType[dialogSessionInfo.eventType]}`;
+
+                            if(dialogSessionInfo.impactedDialogId) {
                                 eventType.innerText += `(${dialogSessionInfo.impactedDialogId})]`;
-                            else
+                                if (dialogSessionInfo.eventType === EventType.BeginDialog) {
+                                    var newNode = {data: { id: nodesList.length, value: dialogSessionInfo.impactedDialogId}};
+                                    nodesList.push(newNode);
+                                    currentTreeBranch.push(newNode);
+                                    if (currentTreeBranch.length > 1) {
+                                        var currentIndex = currentTreeBranch.length - 1;
+                                        var newEdge = { data: { source: currentTreeBranch[currentIndex-1].data.id, target: currentTreeBranch[currentIndex].data.id } };
+                                        edgesList.push(newEdge);
+                                    }
+                                }
+                            }
+                            else {
                                 eventType.innerText += "]";
+                            }
+                            if (dialogSessionInfo.eventType === EventType.EndDialog || dialogSessionInfo.eventType === EventType.EndDialogWithResult) {
+                                    if (currentTreeBranch.length > 1) {
+                                        var currentIndex = currentTreeBranch.length - 1;
+                                        var newEdge = { data: { source: currentTreeBranch[currentIndex].data.id, target: currentTreeBranch[currentIndex-1].data.id } };
+                                        edgesList.push(newEdge);
+                                        currentTreeBranch.pop();
+                                    }
+                            }
                             dialogsInStack.appendChild(eventType);
 
                             console.log(botUserEntry.message);
@@ -239,9 +245,10 @@ module VORLON {
                             userData.innerHTML += "<p><strong>UserData:</strong> " + JSON.stringify(dialogSessionInfo.userData) + "</p>";
                             stack.appendChild(userData);
                         });
-
                         this._dialogStacksContainer.appendChild(userEntry);
                     });
+                    nodesList[nodesList.length - 1].classes = 'currentState';
+                    this._drawGraphNodes(nodesList, edgesList);
                 }
             }
         }
