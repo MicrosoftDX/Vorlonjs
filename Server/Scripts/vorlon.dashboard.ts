@@ -8,16 +8,17 @@ var packageJson = require("../../package.json");
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
 import vauth = require("./vorlon.authentication");
-import vorloncontext = require("../config/vorlon.servercontext"); 
+import vorloncontext = require("../config/vorlon.servercontext");
+import config = require("../config/vorlon.configprovider");
 
 export module VORLON {
     export class Dashboard implements iwsc.VORLON.IWebServerComponent {
         private baseURLConfig: vorloncontext.VORLON.IBaseURLConfig;
         private _log: vorloncontext.VORLON.ILogger;
-        
+
         constructor(context : vorloncontext.VORLON.IVorlonServerContext) {
-            this.baseURLConfig = context.baseURLConfig;   
-            this._log = context.logger;    
+            this.baseURLConfig = context.baseURLConfig;
+            this._log = context.logger;
         }
 
         public addRoutes(app: express.Express, passport: any): void {
@@ -28,18 +29,18 @@ export module VORLON {
             app.route(this.baseURLConfig.baseURL + '/dashboard/:sessionid/reset').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboardServerReset());
             app.route(this.baseURLConfig.baseURL + '/dashboard/:sessionid/:clientid').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboardWithClient());
             app.route(this.baseURLConfig.baseURL + '/config').get(vauth.VORLON.Authentication.ensureAuthenticated,this.dashboardConfig());
-            
+
             //login
-            app.post(this.baseURLConfig.baseURL + '/login',   
-                    passport.authenticate('local', 
+            app.post(this.baseURLConfig.baseURL + '/login',
+                    passport.authenticate('local',
                         { failureRedirect: '/login',
                           successRedirect: '/',
                           failureFlash: false })
                 );
-            
+
            app.route(this.baseURLConfig.baseURL + '/login').get((req: express.Request, res: express.Response) => {
                     res.render('login', { baseURL: this.baseURLConfig.baseURL, message: 'Please login' });
-                });  
+                });
            app.get(this.baseURLConfig.baseURL + '/logout', this.logout);
         }
 
@@ -57,13 +58,13 @@ export module VORLON {
         private dashboard() {
             return (req: express.Request, res: express.Response) => {
                 var authent = false;
-                var configastext = fs.readFileSync(path.join(__dirname, "../config.json"));
-                var catalog = JSON.parse(configastext.toString().replace(/^\uFEFF/, ''));   
-                
+                var configastext = fs.readFileSync(config.VORLON.ConfigProvider.getConfigPath());
+                var catalog = JSON.parse(configastext.toString().replace(/^\uFEFF/, ''));
+
                 if(catalog.activateAuth){
                     authent = catalog.activateAuth;
                 }
-                
+
                 this._log.debug("authenticated " + authent);
                 res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: "", authenticated: authent, version: packageJson.version });
             }
@@ -74,10 +75,10 @@ export module VORLON {
                 res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: req.params.clientid, version: packageJson.version });
             }
         }
-        
+
         private dashboardConfig() {
             return (req: express.Request, res: express.Response) => {
-                res.render('config', { baseURL: this.baseURLConfig.baseURL, title: 'Configuration', sessionid: "default", clientid: "" });
+                res.render('config', { baseURL: this.baseURLConfig.baseURL, title: 'Configuration', sessionid: "default", clientid: "", version: packageJson.version });
             };
         }
 
@@ -86,7 +87,7 @@ export module VORLON {
                  res.render('getsession', { title: 'Get Session' });
             }
         }
-        
+
         private logout(req: any, res: any) {
             req.logout();
             res.redirect('/');
@@ -103,7 +104,7 @@ export module VORLON {
                         }
                     }
                 }
-    
+
                 xhr.open("GET", "http://" + req.headers.host + this.baseURLConfig.baseURL + "/api/reset/" + sessionid);
                 xhr.send();
             }

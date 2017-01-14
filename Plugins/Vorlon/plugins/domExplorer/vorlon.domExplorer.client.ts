@@ -206,7 +206,7 @@
                     var styles = winObject.getComputedStyle(element);
                     var l = [];
                     for (var style in styles) {
-                        if (isNaN(style) && style !== "parentRule" && style !== "length" && style !== "cssText" && typeof styles[style] !== 'function' && styles[style]) {
+                        if (isNaN(Number(style)) && style !== "parentRule" && style !== "length" && style !== "cssText" && typeof styles[style] !== 'function' && styles[style]) {
 
                             l.push({ name: style, value: styles[style] });
                         }

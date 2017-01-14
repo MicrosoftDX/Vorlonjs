@@ -36,11 +36,11 @@ export module VORLON {
             res.header('Pragma', 'no-cache');
         }
 
-        public addRoutes(app: express.Express, passport: any): void {
+        public addRoutes(app: express.Express, passport: express.Response): void {
             app.get(this.baseURLConfig.baseURL + "/api/createsession", (req: any, res: any) => {
                 this.json(res, this.guid());
             });
-
+            
             app.get(this.baseURLConfig.baseURL + "/api/reset/:idSession", (req: any, res: any) => {
                 var session = this._sessions.get(req.params.idSession);
                 if (session && session.connectedClients) {
@@ -103,6 +103,7 @@ export module VORLON {
             });
 
             app.get(this.baseURLConfig.baseURL + "/getplugins/:idsession", (req: any, res: any) => {
+                this.noCache(res);
                 this._sendConfigJson(req, res);
             });
             
@@ -123,6 +124,7 @@ export module VORLON {
             });
             
             app.get(this.baseURLConfig.baseURL + "/getplugin/:pluginfolder/icon", (req: any, res: any) => {
+                this.noCache(res);
                 this.sendPluginIcon(req, res);
             });
             
@@ -199,7 +201,7 @@ export module VORLON {
             });
         }
 
-        private setPluginPanel(req: any, res: any) {
+        private setPluginPanel(req: express.Request, res: express.Response) {
             var pluginid = req.params.pluginid;
             var panel = req.body.panel;
             this.pluginsConfig.setPluginPanel(pluginid, panel, (err) => {
@@ -225,6 +227,7 @@ export module VORLON {
 
                 var catalogdata = JSON.stringify(catalog);
                 res.header('Content-Type', 'application/json');
+				res.header('Access-Control-Allow-Origin', '*');
                 res.send(catalogdata);
             });
         }
@@ -286,6 +289,7 @@ export module VORLON {
                 }
 
                 res.header('Content-Type', 'application/javascript');
+				res.header('Access-Control-Allow-Origin', '*');
                 res.send(javascriptFile);
             });
         }

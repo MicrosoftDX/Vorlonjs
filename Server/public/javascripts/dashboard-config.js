@@ -9,7 +9,7 @@ $.get(VORLON.DashboardManager.CatalogUrl, function(data) {
             nodeClass: (data[plugin].nodeCompliant) ? 'nodeCompliant_enable' : 'nodeCompliant_disable',
             selectedTop: (data[plugin].panel == 'top') ? 'selected=selected' : '',
             selectedBottom: (data[plugin].panel == 'bottom') ? 'selected=selected' : '',
-            nodeText: (data[plugin].nodeCompliant) ? 'This plugin do use NodeJS' : 'This plugin do not use NodeJS',
+            nodeText: (data[plugin].nodeCompliant) ? 'This plugin is Node.JS compatible' : 'This plugin is not Node.JS compatible',
             id: data[plugin].id,
             folder: data[plugin].foldername
         }

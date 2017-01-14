@@ -13,3 +13,4 @@ public/vorlon/**/*
 public/stylesheets/**/*.css
 Scripts/typings/vorlon/**/*.d.ts
 public/stylesheets/style.css
+Scripts/typings/Vorlon/**/*.*

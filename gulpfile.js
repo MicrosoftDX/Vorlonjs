@@ -93,6 +93,22 @@ gulp.task('concat-webstandards-rules-plugins', ['typescript-to-js-plugins'], fun
  * Do not hesitate to update it if you need to add your own files
  */
 gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
+    // DOMTimeline
+    gulp.src([
+        'Plugins/Vorlon/plugins/domtimeline/mapping-system.js',
+        'Plugins/release/plugins/domtimeline/vorlon.domtimeline.dashboard.js',
+    ])
+        .pipe(concat('vorlon.domtimeline.dashboard.min.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/domtimeline/'));
+	gulp.src([
+		'Plugins/Vorlon/plugins/domtimeline/dom-timeline.js',
+        'Plugins/Vorlon/plugins/domtimeline/mapping-system.js',
+        'Plugins/release/plugins/domtimeline/vorlon.domtimeline.client.js',
+    ])
+        .pipe(concat('vorlon.domtimeline.client.js'))
+        .pipe(gulp.dest('Plugins/release/plugins/domtimeline/'));
+
+		
     // Babylon Inspector
     gulp.src([
         'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
@@ -133,8 +149,6 @@ gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
     ])
         .pipe(concat('vorlon.office.dashboard.js'))
         .pipe(gulp.dest('Plugins/release/plugins/office/'));
-
-    
 
      gulp.src([
         'Plugins/release/plugins/office/vorlon.office.interfaces.min.js',
@@ -185,9 +199,8 @@ gulp.task('scripts-specific-plugins-plugins', ['scripts-plugins'], function() {
 gulp.task('scripts-plugins', ['concat-webstandards-rules-plugins'], function () {
 
     return gulp.src([
-            './Plugins/**/vorlon.*.interfaces.js',
-            './Plugins/**/vorlon.*.client.js',
-            './Plugins/**/vorlon.*.dashboard.js'
+            './Plugins/**/vorlon.*.js',
+            '!./Plugins/**/vorlon.*.min.js'
         ])
         .pipe(rename(function (path) {
                 path.extname = ".min.js";
@@ -217,6 +230,7 @@ gulp.task('copyPlugins-plugins', function () {
           'Plugins/Vorlon/plugins/**/*.css',
           'Plugins/Vorlon/plugins/**/*.html',
           'Plugins/Vorlon/plugins/**/*.png',
+          'Plugins/Vorlon/plugins/**/*.PNG',          
           'Plugins/release/plugins/**/*.js'
     ])
         .pipe(gulp.dest('./Server/public/vorlon/plugins'));

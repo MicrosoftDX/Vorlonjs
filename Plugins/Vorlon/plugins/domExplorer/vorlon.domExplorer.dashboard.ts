@@ -867,7 +867,6 @@
                         case "mousemove": $(node).addClass("link-hovered");
                         default: return true;
                     }  
-                    return true;
                 } 
             }
             else{ 

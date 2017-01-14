@@ -3,7 +3,7 @@ module VORLON.WebStandards.Rules.DOM {
     export var useViewport = <IDOMRule>{
         id: "mobileweb.use-viewport",
         title: "use meta viewport",
-        description: "Use meta viewport tag to choose how your website will get scaled on smaller devices like phones. Define at least &lt;meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"&gt;",
+        description: "Use meta viewport tag to choose how your website will get scaled on smaller devices like phones. Define at least <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
         nodeTypes: ["meta"],
 
         prepare: function(rulecheck : IRuleCheck, analyzeSummary) {
@@ -15,7 +15,7 @@ module VORLON.WebStandards.Rules.DOM {
             if (viewportattr && viewportattr.toLowerCase() == "viewport") {
                 rulecheck.failed = false;
             }
-            
+
         }
     }
 

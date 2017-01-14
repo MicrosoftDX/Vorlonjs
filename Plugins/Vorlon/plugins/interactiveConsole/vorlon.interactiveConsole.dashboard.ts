@@ -355,22 +355,16 @@
             switch (this.entry.type) {
                 case "log":
                     return "logMessage";
-                    break;
                 case "debug":
                     return "logDebug";
-                    break;
                 case "info":
                     return "logInfo";
-                    break;
                 case "warn":
                     return "logWarning";
-                    break;
                 case "error":
                     return "logError";
-                    break;
                 case "exception":
                     return "logException";
-                    break;
                 default:
                     return "logMessage";
             }

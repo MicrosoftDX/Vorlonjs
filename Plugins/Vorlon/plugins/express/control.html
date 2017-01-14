@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="control.css" rel="stylesheet" />
+</head>
+<body>
+<div id="headers-req">
+  <div>
+      <h2>HEADERS : <i class="fa fa-times"></i></h2>
+      <pre class="header-req-din"></pre>
+  </div>
+</div>
+<div id="no_vorlon">
+    <div class="logos">
+        <img src="/images/VorlonLogo_Smooth.svg" class="logo_vorlon"><span>+</span><img src="/images/express.png" class="logo_express">
+    </div>
+    <p style="margin-top: 22px;">VorlonJS did not find you Express app :(</p>
+    <p>To connect your express application into the vorlon plugin,</p>
+    <p>add this line in your nodejs application :</p>
+    <p class="vorlon-script">`EXPRESS_VORLONJS = app;` <span>where app is your express application</span></p>
+</div>
+<div class="split" data-orientation="vertical" data-limit="50" data-position="70%">
+        <div class="tree-view-wrapper panel-left">
+            <div id="treeView3" class="code-text">
+                <div class="explorer-menu" id="express-routes" style="display:block;">
+                    <x-controlbar id="searchbox">
+                        <input type="text" name="txtFilter" id="routeFilter" class="dashboard-input" placeholder="Filter by name">
+                        <select id="methodFilter">
+                            <option value="any" selected="selected">Any</option>
+                            <option value="get">Get</option>
+                            <option value="post">Post</option>
+                            <option value="put">Put</option>
+                            <option value="delete">Delete</option>
+                        </select>
+                    </x-controlbar>
+                    <ul class="routes-list">
+                        
+                    </ul>
+                </div>
+                <div class="explorer-menu" id="express-request" style="display:none;">
+                    <x-controlbar id="searchbox">
+                        <input type="button" id="requestClear" class="dashboard-input" value="Clear">
+                    </x-controlbar>
+                    <ul class="routes-list"></ul>
+                </div>
+                <div class="explorer-menu" id="express-sessions" style="display:none;">
+                    
+                </div>
+                <div class="explorer-menu" id="express-locals" style="display:none;">
+                    <h2 style="font-size: 20px;margin: 10px;">Locals</h2>
+                    <pre></pre>
+                </div>
+            </div>
+        </div>
+        <div class="style-view-wrapper panel-right code-text">
+            <div id="accordion-express">
+                <h3 class="open-menu active-menu" data-menu="express-routes"><i class="fa fa-list" aria-hidden="true"></i> Routes</h3>
+                <h3 class="open-menu" data-menu="express-request"><i class="fa fa-exchange" aria-hidden="true"></i> Requests</h3>
+                <h3 class="open-menu" data-menu="express-sessions"><i class="fa fa-database" aria-hidden="true"></i> Sessions</h3>
+                <h3 class="open-menu" data-menu="express-locals"><i class="fa fa-home" aria-hidden="true"></i> Locals</h3>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

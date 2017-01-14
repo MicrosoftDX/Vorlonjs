@@ -31,19 +31,26 @@
             "nodeCompliant": true
         },
         {
-            "id": "WEBSTANDARDS",
-            "name": "Best practices",
-            "panel": "top",
-            "foldername": "webstandards",
-            "enabled": true
-        },
-        {
             "id": "XHRPANEL",
             "name": "XHR",
             "panel": "top",
             "foldername": "xhrPanel",
             "enabled": true,
             "nodeCompliant": true
+        },
+        {
+            "id": "BABYLONINSPECTOR",
+            "name": "Babylon Inspector",
+            "panel": "top",
+            "foldername": "babylonInspector",
+            "enabled": false
+        },
+        {
+            "id": "WEBSTANDARDS",
+            "name": "Best practices",
+            "panel": "top",
+            "foldername": "webstandards",
+            "enabled": true
         },
         {
             "id": "NETWORK",
@@ -60,6 +67,27 @@
             "enabled": true
         },
         {
+            "id": "UNITTEST",
+            "name": "Unit Test",
+            "panel": "top",
+            "foldername": "unitTestRunner",
+            "enabled": true
+        },
+        {
+            "id": "UWP",
+            "name": "UWP apps",
+            "panel": "top",
+            "foldername": "uwp",
+            "enabled": false
+        },
+        {
+            "id": "NGINSPECTOR",
+            "name": "Ng. Inspector",
+            "panel": "top",
+            "foldername": "ngInspector",
+            "enabled": false
+        },
+        {
             "id": "DEVICE",
             "name": "My Device",
             "panel": "top",
@@ -67,11 +95,20 @@
             "enabled": true
         },
         {
-            "id": "UNITTEST",
-            "name": "Unit Test",
+            "id": "OFFICE",
+            "name": "Office Addin",
             "panel": "top",
-            "foldername": "unitTestRunner",
-            "enabled": true
+            "foldername": "office",
+            "enabled": false
+        },
+        {
+            "id": "NODEJS",
+            "name": "NodeJS",
+            "panel": "top",
+            "foldername": "nodejs",
+            "enabled": true,
+            "nodeCompliant": true,
+            "nodeOnly": true
         },
         {
             "id": "CONSOLE",
@@ -89,32 +126,22 @@
             "enabled": true
         },
         {
-            "id": "NGINSPECTOR",
-            "name": "Ng. Inspector",
-            "panel": "top",
-            "foldername": "ngInspector",
-            "enabled": false
+            "id": "EXPRESS",
+            "name": "Express",
+            "panel": "bottom",
+            "foldername": "express",
+            "enabled": true,
+            "nodeCompliant": true,
+            "nodeOnly": true
         },
         {
-            "id": "BABYLONINSPECTOR",
-            "name": "Babylon Inspector",
+            "id": "DOMTIMELINE",
+            "name": "Dom timeline",
             "panel": "top",
-            "foldername": "babylonInspector",
-            "enabled": false
-        },
-        {
-            "id": "OFFICE",
-            "name": "Office Addin",
-            "panel": "top",
-            "foldername": "office",
-            "enabled": false
-        },
-        {
-            "id": "UWP",
-            "name": "UWP apps",
-            "panel": "top",
-            "foldername": "uwp",
-            "enabled": false
+            "foldername": "domtimeline",
+            "enabled": true,
+            "nodeCompliant": false,
+            "nodeOnly": false
         }
     ]
 }

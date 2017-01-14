@@ -1,7 +1,3 @@
-///<reference path='vorlon.office.tools.ts' />
-///<reference path='vorlon.office.interfaces.ts' />
-///<reference path='../../vorlon.dashboardPlugin.ts' />
-
 var $: any;
 module VORLON {
 

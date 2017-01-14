@@ -1,6 +1,6 @@
 {
   "name": "vorlon",
-  "version": "0.2.2",
+  "version": "0.4.0",
   "description": "vorlon",
   "main": "Server/server.js",
   "dependencies": {
@@ -18,10 +18,11 @@
     "method-override": "2.3.4",
     "minimist": "^1.2.0",
     "multer": "~0.1.8",
+    "pageres": "^4.1.2",
     "passport": "~0.2.1",
     "passport-local": "~1.0.0",
     "passport-twitter": "~1.0.3",
-    "socket.io": "1.4.4",
+    "socket.io": "^1.5.0",
     "stylus": "~0.50.0",
     "winston": "~1.0.1",
     "winston-azure": "0.0.4",
@@ -36,7 +37,7 @@
     "gulp-mocha": "~2.2.0",
     "gulp-rename": "~1.2.0",
     "gulp-sourcemaps": "~1.5.2",
-    "gulp-typescript": "~2.8.2",
+    "gulp-typescript": "~2.13.6",
     "gulp-uglify": "~0.3.0",
     "gulp-util": "~2.2.14",
     "gulp-webserver": "~0.9.0",
@@ -44,7 +45,7 @@
     "merge2": "~0.3.5",
     "mocha-junit-reporter": "^1.9.1",
     "through": "~2.3.4",
-    "typescript": "~1.6.0-beta"
+    "typescript": "^1.8.10"
   },
   "scripts": {
     "global-deploy-gulp": "npm install -g gulp",
