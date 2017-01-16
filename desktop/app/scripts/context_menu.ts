@@ -29,18 +29,24 @@
         }
     });
 
-    var textMenu = new Menu();
-    textMenu.append(cut);
-    textMenu.append(copy);
-    textMenu.append(paste);
-
     document.addEventListener('contextmenu', function(e:any) {
+        var textMenu = new Menu();
+            textMenu.append(copy);
+
         switch (e.target.nodeName) {
             case 'TEXTAREA':
             case 'INPUT':
                 e.preventDefault();
+                textMenu.append(cut);
+                textMenu.append(paste);
                 textMenu.popup(remote.getCurrentWindow());
                 break;
+            default:
+                if(window.getSelection().toString() !== ''){
+                  e.preventDefault();
+                  textMenu.popup(remote.getCurrentWindow());
+                }
+            break;
         }
 
     }, false);
