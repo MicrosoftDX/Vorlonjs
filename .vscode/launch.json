@@ -85,7 +85,9 @@
 			],
 			"cwd": "${workspaceRoot}/client samples/contosoflowers",
 			"runtimeExecutable": null,
-			"env": {}
+			"env": {
+				"BING_MAPS_KEY":"K8LDhHtIMTPZO2lkv0RQ~obPXA8ITMZ2m8JanyFpxqg~Aix9KcaOiNfYAEfw3wIjvWXfmK6zMF9anDvj5u44vvPbgow2Ns_EsIsUz4pcmrSa"
+			}
 		},
 		{
 			// Name of configuration; appears in the launch configuration drop down menu.
