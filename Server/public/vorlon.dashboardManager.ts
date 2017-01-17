@@ -363,7 +363,7 @@ module VORLON {
         }
 
         public static goConfig(): void {
-            location.href = '/config';
+            location.href = DashboardManager.vorlonBaseURL + '/config';
         }
         
         public static ResetDashboard(reload: boolean = true): void {
