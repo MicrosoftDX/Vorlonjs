@@ -11,6 +11,8 @@ body {
     height:100%;
 }
 
+
+
 .hidden{
     visibility: collapse;
     display: none!important;
@@ -30,6 +32,7 @@ body {
     margin-top: 100px;
 }
 
+
 #left #dialogs {
     display:flex;
     flex-direction: column;
@@ -40,6 +43,9 @@ body {
     margin-bottom: 5px;
     border: 1px solid black;
 }
+
+
+
 
 #left .dialog {
     display:flex;
@@ -102,7 +108,11 @@ body {
     margin: 5px;
     margin-top: 5px;
     border: 1px solid black;
-    height: calc(70% - 20px);
+    height: calc(70% - 40px);
+}
+
+#left #dialogstacks label {
+    color: white;
 }
 
 #left #dialogstacks .user-entry {
@@ -147,6 +157,11 @@ body {
     background-color: #eee;
     padding: 5px;
     margin: 5px 5px 0px 0px;
+}
+
+#left #dialogstacks .user-entry .data-hidden {
+    visibility: collapse;
+    display: none!important;
 }
 
 #left #dialogstacks .user-entry .stack .dialog-in-stack {
