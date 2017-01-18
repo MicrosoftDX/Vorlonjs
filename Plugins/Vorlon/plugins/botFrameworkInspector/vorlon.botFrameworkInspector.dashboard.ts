@@ -39,6 +39,22 @@ module VORLON {
                         });
                     });
                 });
+
+                var checkbox = document.getElementById("showdatacheckbox") as HTMLInputElement;
+                checkbox.addEventListener("click", (elem) => {
+                        if (checkbox.checked){
+                            var els = document.getElementsByClassName('data-hidden');
+                            while (els.length) {
+                                els[0].className = 'data';
+                            }
+                        }
+                        else {
+                            var els = document.getElementsByClassName('data');
+                            while (els.length) {
+                                els[0].className = 'data-hidden';
+                        }
+                    }
+                });
             });
         }
 
