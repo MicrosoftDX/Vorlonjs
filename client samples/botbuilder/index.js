@@ -31,7 +31,7 @@ server.post('/api/messages', connector.listen());
 bot.dialog('/', function (session) {
     session.send("Slash, oh oh, savior of the universe!");
 
-    session.userData.toto = "hey";
+    session.userData.toto = "data1";
     session.privateConversationData.tata = "Yo";
     session.dialogData.titi = "ahahah";
 
@@ -51,15 +51,15 @@ function (session, args) {
     session.userData.toto = "hey3";
     session.privateConversationData.tata = "Yo";
     session.dialogData.titi = "ahahah";
-    session.beginDialog('/coucou');
-    session.beginDialog('/coucou');
+    session.beginDialog('/foo');
+    session.beginDialog('/foo');
 },
 ]);
 
-bot.dialog('/coucou', function (session) {
-    session.endDialog("Coucou world");
+bot.dialog('/foo', function (session) {
+    session.endDialog("foo world");
 });
 
-bot.dialog('/coucou2', function (session) {
-    session.endDialogWithResult("Coucou world");
+bot.dialog('/foo2', function (session) {
+    session.endDialogWithResult("foo world");
 });
