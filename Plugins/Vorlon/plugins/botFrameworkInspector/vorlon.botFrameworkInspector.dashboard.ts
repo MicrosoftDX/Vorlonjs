@@ -212,6 +212,12 @@ module VORLON {
                             if(dialogSessionInfo.impactedDialogId) {
                                 eventType.innerText += `(${dialogSessionInfo.impactedDialogId})]`;
                                 if (dialogSessionInfo.eventType === EventType.BeginDialog) {
+                                    //If begin dialog is called from an empty start
+                                    if(!dialogSessionInfo.sessionState.callstack || dialogSessionInfo.sessionState.callstack.length == 0){
+                                        //Make sure we start from scratch
+                                        currentTreeBranch = [];
+                                    }
+
                                     var newNode = {data: { id: nodesList.length, value: dialogSessionInfo.impactedDialogId}};
                                     nodesList.push(newNode);
                                     currentTreeBranch.push(newNode);
@@ -233,6 +239,13 @@ module VORLON {
                                         currentTreeBranch.pop();
                                     }
                             }
+
+                            if (dialogSessionInfo.eventType === EventType.EndConversation) {
+                                    if (currentTreeBranch.length > 1) {
+                                        currentTreeBranch = [];
+                                    }
+                            }
+
                             dialogsInStack.appendChild(eventType);
 
                             console.log(botUserEntry.message);

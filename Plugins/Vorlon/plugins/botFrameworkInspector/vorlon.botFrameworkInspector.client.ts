@@ -97,6 +97,14 @@ module VORLON {
                         return previousEndDialogWithResultFunction.apply(this, arguments);                           
                     }
 
+                    //Hooking endDialog on Session class
+                    var previousEndConversationFunction = result.Session.prototype.endConversation;
+
+                    result.Session.prototype.endConversation = function(message?: any, ...args: any[]) {
+                        that.addDialogStack(this, EventType.EndConversation);
+                        return previousEndConversationFunction.apply(this, arguments);                           
+                    }
+
                     //Hooking Dialog on Library class
                     var previousDialogFunction = result.Library.prototype.dialog;
                     

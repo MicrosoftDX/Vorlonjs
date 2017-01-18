@@ -4,7 +4,7 @@
     // }
 
     export enum EventType {
-        BeginDialog, FinalState, EndDialog, EndDialogWithResult
+        BeginDialog, FinalState, EndDialog, EndDialogWithResult, EndConversation
     }
 
     export class BotInfo {
