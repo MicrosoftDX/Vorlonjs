@@ -14,6 +14,7 @@ module VORLON {
         private _dialogsContainer: HTMLDivElement;
         private _dialogStacksContainer: HTMLDivElement;
         private _divPluginBot: HTMLDivElement;
+        private _datacheckbox: HTMLInputElement;
 
         public startDashboardSide(div: HTMLDivElement = null): void {
             this._insertHtmlContentAsync(div, (filledDiv) => {
@@ -40,19 +41,18 @@ module VORLON {
                     });
                 });
 
-                var checkbox = document.getElementById("showdatacheckbox") as HTMLInputElement;
-                checkbox.addEventListener("click", (elem) => {
-                        if (checkbox.checked){
-                            var els = document.getElementsByClassName('data-hidden');
-                            while (els.length) {
-                                els[0].className = 'data';
-                            }
-                        }
-                        else {
-                            var els = document.getElementsByClassName('data');
-                            while (els.length) {
-                                els[0].className = 'data-hidden';
-                        }
+                this._datacheckbox = document.getElementById("showdatacheckbox") as HTMLInputElement;
+                this._datacheckbox.addEventListener("click", (elem) => {
+                    var from = 'data';
+                    var to = 'data-hidden';
+                    if (this._datacheckbox.checked) {
+                        from = 'data-hidden';
+                        to = 'data';
+                    }
+
+                    var els = document.getElementsByClassName(from);
+                    while (els.length) {
+                        els[0].className = to;
                     }
                 });
             });
@@ -159,6 +159,7 @@ module VORLON {
                                 var waterfallStep = document.createElement("div");
                                 waterfallStep.classList.add("waterfall-step");
                                 waterfallStep.innerText = (i + 1).toString();
+                               //console.log(dataList.dialog[i]);
                                 waterfallSteps.appendChild(waterfallStep);
                             }
                         }
@@ -267,7 +268,7 @@ module VORLON {
                             console.log(botUserEntry.message);
 
                             var userData = document.createElement("div");
-                            userData.classList.add("data");
+                            userData.classList.add(this._datacheckbox.checked ? "data" : "data-hidden");
                             userData.innerHTML = "<p><strong>ConversationData:</strong> " + JSON.stringify(dialogSessionInfo.conversationData) + "</p>";
                             userData.innerHTML += "<p><strong>DialogData:</strong> " + JSON.stringify(dialogSessionInfo.dialogData) + "</p>";
                             userData.innerHTML += "<p><strong>PrivateConversationData:</strong> " + JSON.stringify(dialogSessionInfo.privateConversationData) + "</p>";
