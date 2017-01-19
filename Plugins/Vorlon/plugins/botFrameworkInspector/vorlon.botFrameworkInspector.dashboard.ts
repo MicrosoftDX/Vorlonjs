@@ -159,7 +159,7 @@ module VORLON {
                                 var waterfallStep = document.createElement("div");
                                 waterfallStep.classList.add("waterfall-step");
                                 waterfallStep.innerText = (i + 1).toString();
-                               //console.log(dataList.dialog[i]);
+                                waterfallStep.title = dataList.dialog[i];
                                 waterfallSteps.appendChild(waterfallStep);
                             }
                         }
