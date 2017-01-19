@@ -1,14 +1,22 @@
 ﻿///<reference path="../../typings/botbuilder/botbuilder.d.ts" />
-var path = require("path");
-var requireHook = require("require-hook");
 
 module VORLON {
+    
     export class BotFrameworkInspectorClient extends ClientPlugin {
+        private path;
+        private requireHook;
         private _hooked:boolean;
         private _botInfo:BotInfo;
 
         constructor() {
             super("botFrameworkInspector");
+            
+            //In case the plugin is activated but not running on node client
+            if(Tools.IsWindowAvailable)
+                return;
+
+            this.path = require("path");
+            this.requireHook = require("require-hook");
             //this.debug = true;
             this._ready = true;
             this._hooked = false;
@@ -16,7 +24,11 @@ module VORLON {
         }
 
         public startClientSide(): void {
-            requireHook.attach(path.resolve());
+            //In case the plugin is activated but not running on node client
+            if(Tools.IsWindowAvailable)
+                return;
+
+            this.requireHook.attach(this.path.resolve());
             this.hookBotFrameworkFunctions();
         }
 
@@ -54,7 +66,9 @@ module VORLON {
 
         public hookBotFrameworkFunctions(){
             var that = this;
-            requireHook.setEvent(function(result, e){
+           
+
+            this.requireHook.setEvent(function(result, e){
                 if (!that._hooked && e.require === "botbuilder") {
                     //Hooking onSave on Session class
                     var previousSendBatchFunction = result.Session.prototype.sendBatch;
