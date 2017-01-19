@@ -149,7 +149,7 @@ module VORLON {
             }
             
             var pluginlistelementa = document.createElement("a");
-            pluginlistelementa.innerHTML = " <img src='/images/systems/"+client.icon+"' alt='icon_system'> " + (client.identity ? client.identity : client.name) + " - " + client.displayid;
+            pluginlistelementa.innerHTML = " <img src='" + DashboardManager.vorlonBaseURL + "/images/systems/"+client.icon+"' alt='icon_system'> " + (client.identity ? client.identity : client.name) + " - " + client.displayid;
             pluginlistelementa.setAttribute("href", vorlonBaseURL + "/dashboard/" + DashboardManager.SessionId + "/" + client.clientid);
             pluginlistelement.appendChild(pluginlistelementa);
 
@@ -363,7 +363,7 @@ module VORLON {
         }
 
         public static goConfig(): void {
-            location.href = '/config';
+            location.href = DashboardManager.vorlonBaseURL + '/config';
         }
         
         public static ResetDashboard(reload: boolean = true): void {
