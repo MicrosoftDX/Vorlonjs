@@ -113,7 +113,11 @@ module VORLON {
 
                             var dialogData = new DialogData();
                             dialogData.id = id;
-                            dialogData.dialog = dialog;
+                            if(dialog instanceof Array){
+                                dialogData.dialog = dialog.map((d) => { return d.toString(); });
+                            } else {
+                                dialogData.dialog = [dialog.toString()];
+                            }
                             dialogData.library = this.name;
                             that._botInfo.dialogDataList.push(dialogData);
 
