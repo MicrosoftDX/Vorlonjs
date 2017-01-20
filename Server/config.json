@@ -7,9 +7,11 @@
     "activateAuth": false,
     "username": "",
     "password": "",
+    "host": "localhost",
     "port": 1337,
     "enableWebproxy": true,
     "baseProxyURL": "",
+    "proxyHost": "localhost",
     "proxyPort": 5050,
     "proxyEnvPort": false,
     "vorlonServerURL": "",
@@ -37,13 +39,6 @@
             "foldername": "xhrPanel",
             "enabled": true,
             "nodeCompliant": true
-        },
-        {
-            "id": "BABYLONINSPECTOR",
-            "name": "Babylon Inspector",
-            "panel": "top",
-            "foldername": "babylonInspector",
-            "enabled": false
         },
         {
             "id": "WEBSTANDARDS",
@@ -74,6 +69,55 @@
             "enabled": true
         },
         {
+            "id": "DEVICE",
+            "name": "My Device",
+            "panel": "top",
+            "foldername": "device",
+            "enabled": true
+        },
+        {
+            "id": "NODEJS",
+            "name": "NodeJS",
+            "panel": "top",
+            "foldername": "nodejs",
+            "enabled": true,
+            "nodeCompliant": true,
+            "nodeOnly": true
+        },
+        {
+            "id": "BOTFRAMEWORKINSPECTOR",
+            "name": "Bot Framework Inspector",
+            "panel": "top",
+            "foldername": "botFrameworkInspector",
+            "enabled": true,
+            "nodeCompliant": true,
+            "nodeOnly": true
+        },
+        {
+            "id": "EXPRESS",
+            "name": "Express",
+            "panel": "top",
+            "foldername": "express",
+            "enabled": false,
+            "nodeCompliant": true,
+            "nodeOnly": true
+        },
+        {
+            "id": "BABYLONINSPECTOR",
+            "name": "Babylon Inspector",
+            "panel": "top",
+            "foldername": "babylonInspector",
+            "enabled": false
+        },
+        {
+            "id": "CONSOLE",
+            "name": "Interactive Console",
+            "panel": "bottom",
+            "foldername": "interactiveConsole",
+            "enabled": true,
+            "nodeCompliant": true
+        },
+        {
             "id": "UWP",
             "name": "UWP apps",
             "panel": "top",
@@ -88,13 +132,6 @@
             "enabled": false
         },
         {
-            "id": "DEVICE",
-            "name": "My Device",
-            "panel": "top",
-            "foldername": "device",
-            "enabled": true
-        },
-        {
             "id": "OFFICE",
             "name": "Office Addin",
             "panel": "top",
@@ -102,44 +139,18 @@
             "enabled": false
         },
         {
-            "id": "NODEJS",
-            "name": "NodeJS",
-            "panel": "top",
-            "foldername": "nodejs",
-            "enabled": true,
-            "nodeCompliant": true,
-            "nodeOnly": true
-        },
-        {
-            "id": "CONSOLE",
-            "name": "Interactive Console",
-            "panel": "bottom",
-            "foldername": "interactiveConsole",
-            "enabled": true,
-            "nodeCompliant": true
-        },
-        {
             "id": "MODERNIZR",
             "name": "Modernizr",
             "panel": "bottom",
             "foldername": "modernizrReport",
-            "enabled": true
-        },
-        {
-            "id": "EXPRESS",
-            "name": "Express",
-            "panel": "bottom",
-            "foldername": "express",
-            "enabled": true,
-            "nodeCompliant": true,
-            "nodeOnly": true
+            "enabled": false
         },
         {
             "id": "DOMTIMELINE",
             "name": "Dom timeline",
             "panel": "top",
             "foldername": "domtimeline",
-            "enabled": true,
+            "enabled": false,
             "nodeCompliant": false,
             "nodeOnly": false
         }
