@@ -14,3 +14,4 @@
 !plugins/nodejs/**/*.css
 !plugins/nodejs/**/*.js
 !plugins/nodejs/dom-timeline.js
+!plugins/botFrameworkInspector/**/*.css

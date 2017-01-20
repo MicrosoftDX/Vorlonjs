@@ -64,6 +64,32 @@
 			"env": {}
 		},
 		{
+			"name": "Launch botbuilder sample",
+			"type": "node",
+			"program": "${workspaceRoot}/client samples/botbuilder/index.js",
+			"stopOnEntry": false,
+			"args": [
+				"--nolazy"
+			],
+			"cwd": "${workspaceRoot}/client samples/botbuilder",
+			"runtimeExecutable": null,
+			"env": {}
+		},
+		{
+			"name": "Launch ContosoFlowers sample",
+			"type": "node",
+			"program": "${workspaceRoot}/client samples/contosoflowers/app.js",
+			"stopOnEntry": false,
+			"args": [
+				"--nolazy"
+			],
+			"cwd": "${workspaceRoot}/client samples/contosoflowers",
+			"runtimeExecutable": null,
+			"env": {
+				"BING_MAPS_KEY":"K8LDhHtIMTPZO2lkv0RQ~obPXA8ITMZ2m8JanyFpxqg~Aix9KcaOiNfYAEfw3wIjvWXfmK6zMF9anDvj5u44vvPbgow2Ns_EsIsUz4pcmrSa"
+			}
+		},
+		{
 			// Name of configuration; appears in the launch configuration drop down menu.
 			"name": "Launch w/TypeScript",
 			// Type of configuration. Possible values: "node", "mono".
