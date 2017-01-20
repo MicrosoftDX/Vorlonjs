@@ -1,3 +1,14 @@
+## 0.5.0
+- Plugins
+	- Bot Framework Inspector 
+		- Plugin creation
+		- Helps you inspect and debug bot created in Node.js using Bot Builder (https://github.com/Microsoft/BotBuilder)
+		- Features: Get dialogs list, See live dialog stacks and events, live graph showing path in the bot.
+- Various fixes and improvements
+	- Add support for listening with host 0.0.0.0 (https://github.com/kkeybbs)
+	- Dashboard working correctly if baseUrl is set in config file  (https://github.com/mboelter)
+	- Add missing baseURL inside templates and dashboard config (https://github.com/xiaodoudou)
+
 ## 0.4.0
 - Plugins
 	- Dom Timeline
