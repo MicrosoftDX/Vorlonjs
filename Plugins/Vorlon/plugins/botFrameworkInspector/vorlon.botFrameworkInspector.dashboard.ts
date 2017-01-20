@@ -146,7 +146,7 @@ module VORLON {
                     dialog.appendChild(dialogDetail);
 
                     var waterfallStepsLabel = document.createElement("p");
-                    waterfallStepsLabel.innerText = "Waterfall steps : ";
+                    waterfallStepsLabel.innerText = "Steps ";
                     dialogDetail.appendChild(waterfallStepsLabel);
 
                     var waterfallSteps = document.createElement("div");
@@ -208,7 +208,7 @@ module VORLON {
                                     dialogInStack.classList.add("dialog-in-stack");
                                     dialogInStack.innerText = dialog.id;
                                     if(dialog.state["BotBuilder.Data.WaterfallStep"] != undefined)
-                                        dialogInStack.innerText += " (" + dialog.state["BotBuilder.Data.WaterfallStep"] + ")";
+                                        dialogInStack.innerText += "(" + (dialog.state["BotBuilder.Data.WaterfallStep"] + 1) + ")";
                                     dialogsInStack.appendChild(dialogInStack);
 
                                     lineSeparator = document.createElement("div");
@@ -264,8 +264,6 @@ module VORLON {
                             }
 
                             dialogsInStack.appendChild(eventType);
-
-                            console.log(botUserEntry.message);
 
                             var userData = document.createElement("div");
                             userData.classList.add(this._datacheckbox.checked ? "data" : "data-hidden");
