@@ -53,19 +53,23 @@
             Core._listenClientId = listenClientId;
             this._serverUrl = serverUrl;
 
+            var options = {
+               "path": serverUrl.split(window.location.protocol + "/")[0] + "/socket.io"
+            }
+
             switch (side) {
                 case RuntimeSide.Client:
-                    this._socket = io.connect(serverUrl);
+                    this._socket = io.connect(serverUrl, options);
                     this._isConnected = true;
                     break;
                 case RuntimeSide.Dashboard:
-                    this._socket = io.connect(serverUrl + "/dashboard");
+                    this._socket = io.connect(serverUrl + "/dashboard", options);
                     this._isConnected = true;
                     break;
             }
 
             if (this.isConnected) { 
-                var manager = io.Manager(serverUrl);
+                var manager = io.Manager(serverUrl, options);
                 manager.on('connect_error',(err) => {
                     if (this.onError) {
                         this.onError(err);
