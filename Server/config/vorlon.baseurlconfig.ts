@@ -13,14 +13,14 @@ export module VORLON {
             var catalogstring = catalogdata.toString().replace(/^\uFEFF/, '');
             var catalog = JSON.parse(catalogstring);
 			if (catalog.baseURL != undefined) {
-				this.baseURL = catalog.baseURL;
+				this.baseURL = process.env.BASE_URL || catalog.baseURL;
 			}
 			else {
 				this.baseURL = "";
 			}
 
 			if (catalog.baseProxyURL != undefined) {
-				this.baseProxyURL = catalog.baseProxyURL;
+				this.baseProxyURL = process.env.BASE_PROXY_URL || catalog.baseProxyURL;
 			}
 			else {
 				this.baseProxyURL = "";

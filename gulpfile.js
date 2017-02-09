@@ -320,7 +320,7 @@ gulp.task('webserver', function() {
 
 gulp.task('typescript-to-js-server', function() {
   var tsResult = gulp.src(['./Server/**/*.ts', '!./Server/node_modules', '!./Server/node_modules/**'], { base: './' })
-                      .pipe(sourcemaps.init())
+                     // .pipe(sourcemaps.init())
                       .pipe(typescript({ noExternalResolve: true, target: 'ES5', module: 'commonjs' }));
 
   return tsResult.js
@@ -328,8 +328,8 @@ gulp.task('typescript-to-js-server', function() {
               includeContent: false,
               // Return relative source map root directories per file.
               sourceRoot: function (file) {
-                var sourceFile = path.join(file.cwd, file.sourceMap.file);
-                return path.relative(path.dirname(sourceFile), file.cwd);
+                // var sourceFile = path.join(file.cwd, file.sourceMap.file);
+                // return path.relative(path.dirname(sourceFile), file.cwd);
               }
             }))
             .pipe(gulp.dest('.'));

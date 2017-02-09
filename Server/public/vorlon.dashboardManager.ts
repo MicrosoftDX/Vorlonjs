@@ -30,6 +30,11 @@ module VORLON {
         public static StartListeningServer(clientid: string = ""): void{
             var getUrl = window.location;
             var baseUrl = getUrl.protocol + "//" + getUrl.host;
+            
+            if(this.vorlonBaseURL) {
+                baseUrl = this.vorlonBaseURL.split('//')[0] === getUrl.protocol ? this.vorlonBaseURL : baseUrl + this.vorlonBaseURL;
+            }
+
             VORLON.Core.StopListening(); 
             VORLON.Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, clientid, DashboardManager.divMapper);
                 if(!VORLON.Core.Messenger.onAddClient && !VORLON.Core.Messenger.onAddClient){

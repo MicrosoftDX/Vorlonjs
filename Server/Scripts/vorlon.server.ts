@@ -296,7 +296,7 @@ export module VORLON {
 
         public start(httpServer: http.Server): void {
             //SOCKET.IO
-            var io = socketio(httpServer);
+            var io = socketio(httpServer, { path: this.baseURLConfig.baseURL + "/socket.io" });
             this._io = io;
 
             //Listen on /
@@ -306,7 +306,7 @@ export module VORLON {
 
             //Listen on /dashboard
             var dashboardio = io
-                .of("/dashboard")
+                .of(this.baseURLConfig.baseURL + "/dashboard")
                 .on("connection", socket => {
                     this.addDashboard(socket);
                 });
