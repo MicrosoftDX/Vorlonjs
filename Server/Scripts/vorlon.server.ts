@@ -429,7 +429,7 @@ export module VORLON {
                 this._sessions.all().forEach((session) => {
                     for (var clientid in session.connectedClients) {
                         var client = session.connectedClients[clientid];
-                        if ("/client#" + receiveMessage.data.socketid === client.socket.id) {
+                        if (this.baseURLConfig.baseURL + "/client#" + receiveMessage.data.socketid === client.socket.id) {
                             client.opened = false;
                             if (this.dashboards[session.sessionId]) {
                                 this._log.debug(formatLog("PLUGIN", "Send RemoveClient to Dashboard " + socket.id, receiveMessage));
