@@ -79,7 +79,7 @@ export module VORLON {
             });
 
             app.get(this.baseURLConfig.baseURL + "/vorlon.max.js/", (req: any, res: any) => {
-                res.redirect("/vorlon.max.js/default");
+                res.redirect(this.baseURLConfig.baseURL + "/vorlon.max.js/default");
             });
 
             app.get(this.baseURLConfig.baseURL + "/vorlon.max.js/:idsession", (req: any, res: any) => {
