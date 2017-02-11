@@ -18,13 +18,13 @@ module VORLON {
             DashboardManager.SessionId = sessionid;
             DashboardManager.PluginsLoaded = false;
             DashboardManager.DisplayingClient = false;
+            DashboardManager.vorlonBaseURL = vorlonBaseURL;
             //Client ID
             DashboardManager.ListenClientid = listenClientid;
             DashboardManager.ClientList = {};
             DashboardManager.StartListeningServer()
             DashboardManager.GetClients();
             DashboardManager.CatalogUrl =  vorlonBaseURL + "/getplugins/" + sessionid;
-            DashboardManager.vorlonBaseURL = vorlonBaseURL;
         }
         
         public static StartListeningServer(clientid: string = ""): void{
