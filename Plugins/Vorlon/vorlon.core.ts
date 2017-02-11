@@ -48,6 +48,10 @@
             Core._side = RuntimeSide.Client;
             Core._sessionID = sessionId;
             Core._listenClientId = listenClientId;
+
+            if(serverUrl[serverUrl.length-1] === '/'){
+                serverUrl = serverUrl.slice(0, -1);
+            }
             
             if(serverUrl.match("$https://")){
                 Core._isHttpsEnabled = true;
