@@ -284,8 +284,14 @@ export module VORLON {
                 javascriptFile += "if (((typeof window != 'undefined' && window.module) || (typeof module != 'undefined')) && typeof module.exports != 'undefined') {\r\n";
                 javascriptFile += "module.exports = VORLON;};\r\n"; 
                 
+                var startUrl = this.httpConfig.protocol + "://" + req.headers.host;
+                if(baseUrl) {
+                    var splittedBaseUrl = baseUrl.split('//');
+                    startUrl = splittedBaseUrl[splittedBaseUrl.length - 1] === this.httpConfig.protocol ? baseUrl : startUrl + baseUrl;
+                }
+                
                 if (autostart) {
-                    javascriptFile += "\r (function() { VORLON.Core.StartClientSide('" + this.httpConfig.protocol + "://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
+                    javascriptFile += "\r (function() { VORLON.Core.StartClientSide('" + startUrl + "/', '" + req.params.idsession + "'); }());";
                 }
 
                 res.header('Content-Type', 'application/javascript');
@@ -295,17 +301,20 @@ export module VORLON {
         }
 
         public start(httpServer: http.Server): void {
+
             //SOCKET.IO
             var io = socketio(httpServer, { path: this.baseURLConfig.baseURL + "/socket.io" });
             this._io = io;
 
             //Listen on /
-            io.on("connection", socket => {
+            this._io 
+               .of(this.baseURLConfig.baseURL + "/client")
+               .on("connection", socket => { 
                 this.addClient(socket);
             });
 
             //Listen on /dashboard
-            var dashboardio = io
+            this._io  
                 .of(this.baseURLConfig.baseURL + "/dashboard")
                 .on("connection", socket => {
                     this.addDashboard(socket);
@@ -420,7 +429,7 @@ export module VORLON {
                 this._sessions.all().forEach((session) => {
                     for (var clientid in session.connectedClients) {
                         var client = session.connectedClients[clientid];
-                        if ("/#" + receiveMessage.data.socketid === client.socket.id) {
+                        if ("/client#" + receiveMessage.data.socketid === client.socket.id) {
                             client.opened = false;
                             if (this.dashboards[session.sessionId]) {
                                 this._log.debug(formatLog("PLUGIN", "Send RemoveClient to Dashboard " + socket.id, receiveMessage));

@@ -54,12 +54,12 @@
             this._serverUrl = serverUrl;
 
             var options = {
-               "path": serverUrl.split(window.location.protocol + "/")[0] + "/socket.io"
+               "path": serverUrl.replace(/h.*:\/\/[^\/]*/, "") + "/socket.io"
             }
 
             switch (side) {
                 case RuntimeSide.Client:
-                    this._socket = io.connect(serverUrl, options);
+                    this._socket = io.connect(serverUrl + "/client", options);
                     this._isConnected = true;
                     break;
                 case RuntimeSide.Dashboard:
