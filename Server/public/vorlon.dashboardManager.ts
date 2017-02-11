@@ -31,8 +31,8 @@ module VORLON {
             var getUrl = window.location;
             var baseUrl = getUrl.protocol + "//" + getUrl.host;
             
-            if(this.vorlonBaseURL) {
-                baseUrl = this.vorlonBaseURL.split('//')[0] === getUrl.protocol ? this.vorlonBaseURL : baseUrl + this.vorlonBaseURL;
+            if(DashboardManager.vorlonBaseURL) {
+                baseUrl = DashboardManager.vorlonBaseURL.split('//')[0] === getUrl.protocol ? DashboardManager.vorlonBaseURL : baseUrl + DashboardManager.vorlonBaseURL;
             }
 
             VORLON.Core.StopListening(); 
