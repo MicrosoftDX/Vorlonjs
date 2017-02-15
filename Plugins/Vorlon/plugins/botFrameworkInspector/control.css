@@ -189,6 +189,7 @@ body {
     height: 100%;
     overflow: hidden;
     flex-grow: 5;
+    max-width: 50%;
 }
 
 .scroll {
