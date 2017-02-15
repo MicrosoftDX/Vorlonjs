@@ -7,6 +7,7 @@
 			// Name of configuration; appears in the launch configuration drop down menu.
 			"name": "Launch Server/server.js",
 			// Type of configuration. Possible values: "node", "mono".
+			"request": "launch",
 			"type": "node",
 			// Workspace relative or absolute path to the program.
 			"program": "${workspaceRoot}/Server/server.js",
@@ -30,18 +31,10 @@
 			"outDir": null
 		},
 		{
-			"name": "Attach",
-			"type": "node",
-			// TCP/IP address. Default is "localhost".
-			"address": "localhost",
-			// Port to attach to.
-			"port": 5858,
-			"sourceMaps": false
-		},
-		{
 			// not working since latest vs code and electron versions :-(
 			"name": "Launch desktop App",
 			"type": "node",
+			"request": "launch",
 			"program": "${workspaceRoot}/desktop/app/background.js",
 			"stopOnEntry": false,
 			"args": [
@@ -54,6 +47,7 @@
         {
 			"name": "Launch node.js sample",
 			"type": "node",
+			"request": "launch",
 			"program": "${workspaceRoot}/client samples/nodejs/app.js",
 			"stopOnEntry": false,
 			"args": [
@@ -66,6 +60,7 @@
 		{
 			"name": "Launch botbuilder sample",
 			"type": "node",
+			"request": "launch",
 			"program": "${workspaceRoot}/client samples/botbuilder/index.js",
 			"stopOnEntry": false,
 			"args": [
@@ -78,6 +73,7 @@
 		{
 			"name": "Launch ContosoFlowers sample",
 			"type": "node",
+			"request": "launch",
 			"program": "${workspaceRoot}/client samples/contosoflowers/app.js",
 			"stopOnEntry": false,
 			"args": [

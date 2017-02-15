@@ -18,18 +18,23 @@ module VORLON {
             DashboardManager.SessionId = sessionid;
             DashboardManager.PluginsLoaded = false;
             DashboardManager.DisplayingClient = false;
+            DashboardManager.vorlonBaseURL = vorlonBaseURL;
             //Client ID
             DashboardManager.ListenClientid = listenClientid;
             DashboardManager.ClientList = {};
             DashboardManager.StartListeningServer()
             DashboardManager.GetClients();
             DashboardManager.CatalogUrl =  vorlonBaseURL + "/getplugins/" + sessionid;
-            DashboardManager.vorlonBaseURL = vorlonBaseURL;
         }
         
         public static StartListeningServer(clientid: string = ""): void{
             var getUrl = window.location;
             var baseUrl = getUrl.protocol + "//" + getUrl.host;
+            
+            if(DashboardManager.vorlonBaseURL) {
+                baseUrl = DashboardManager.vorlonBaseURL.split('//')[0] === getUrl.protocol ? DashboardManager.vorlonBaseURL : baseUrl + DashboardManager.vorlonBaseURL;
+            }
+
             VORLON.Core.StopListening(); 
             VORLON.Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, clientid, DashboardManager.divMapper);
                 if(!VORLON.Core.Messenger.onAddClient && !VORLON.Core.Messenger.onAddClient){
