@@ -1,3 +1,11 @@
+## 0.5.4
+- Plugins
+	- Bot Framework Inspector 
+		- Fixes on UI
+- Vorlon behind proxy
+	- Fixing Socket.io when Vorlon.js is behind a proxy and BaseUrl is configured
+
+
 ## 0.5.0
 - Plugins
 	- Bot Framework Inspector 
