@@ -3,7 +3,10 @@
 declare var cytoscape: any;
 
 module VORLON {
+    declare var vorlonBaseURL: string;
+
     export class BotFrameworkInspectorDashboard extends DashboardPlugin {
+        
         constructor() {
             super("botFrameworkInspector", "control.html", "control.css");
             this._ready = false;
@@ -114,7 +117,7 @@ module VORLON {
                 callback();
             };
 
-            script.src = url;
+            script.src = vorlonBaseURL + url;
             document.getElementsByTagName("head")[0].appendChild(script);
         }
 
