@@ -1,0 +1,41 @@
+﻿{
+  "manifest_version": 2,
+
+  "name": "Page Analyzer (powered by Vorlon.js)",
+  "short_name": "Page Analyzer",
+  "author": "Microsoft Corporation",
+  "description": "Powered by Vorlon.js, Page Analyzer helps developers improve their website’s compatibility, performance, and accessibility by scanning for common errors, optimizations, and opportunities to apply best coding practices.",
+  "version": "1.0",
+  
+  "icons": { 
+          "16": "icons/PageAnalyzer-Active.16.png",
+          "48": "icons/PageAnalyzer-Active.48.png",
+          "128": "icons/PageAnalyzer-Active.128.png" 
+  },
+
+  "browser_action": {
+       "default_title": "Page Analyzer",
+       "default_icon": { 
+         "20":"icons/PageAnalyzer-Active.20.png",
+         "38":"icons/PageAnalyzer-Active.38.png"
+       }
+  },
+  "background": {
+      "persistent": true,
+      "page": "background.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["vorlonExtension.runtime.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ],
+  "web_accessible_resources": [
+     "*.js"
+  ]
+}
