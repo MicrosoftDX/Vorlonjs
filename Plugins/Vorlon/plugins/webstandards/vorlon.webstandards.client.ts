@@ -11,11 +11,6 @@ module VORLON {
             super("webstandards");
             this._id = "WEBSTANDARDS";
             //this.debug = true;
-            this._loadNewScriptAsync("css.js", () => {
-                this._loadNewScriptAsync("axe.min.js", () => {
-                    this._ready = true;
-                }, true);
-            }, true); 
         }
 
 
@@ -24,14 +19,20 @@ module VORLON {
 
         // Start the clientside code
         public startClientSide(): void {
-            for (var generalRuleName in VORLON.WebStandards.Rules) {
-                for (var ruleName in VORLON.WebStandards.Rules[generalRuleName]) {
-                    var rule = VORLON.WebStandards.Rules[generalRuleName][ruleName];
-                    if (rule.init) {
-                        rule.init();
+            this._loadNewScriptAsync("css.js", () => {
+                this._loadNewScriptAsync("axe.min.js", () => {
+                    this._ready = true;
+
+                    for (var generalRuleName in VORLON.WebStandards.Rules) {
+                        for (var ruleName in VORLON.WebStandards.Rules[generalRuleName]) {
+                            var rule = VORLON.WebStandards.Rules[generalRuleName][ruleName];
+                            if (rule.init) {
+                                rule.init();
+                            }
+                        }
                     }
-                }
-            }
+                }, true);
+            }, true);
         }    
 
         public startNewAnalyze(data): void {            
