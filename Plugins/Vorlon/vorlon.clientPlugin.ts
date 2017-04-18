@@ -47,9 +47,9 @@
             }
             
             if(Core.IsHttpsEnabled){
-                basedUrl = basedUrl.replace("$http://", "https://");
+                basedUrl = basedUrl.replace(/^http/, "https");
             }
-            
+
             function loadScript() {
                 var scriptToLoad = document.createElement("script");
                 scriptToLoad.setAttribute("src", basedUrl + scriptName);
