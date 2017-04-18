@@ -25,6 +25,7 @@ export module VORLON {
 		httpModule: any;
         host: String;
         port: number;
+		socket: String;
         proxyHost: String;
         proxyPort: number;
         enableWebproxy: boolean;

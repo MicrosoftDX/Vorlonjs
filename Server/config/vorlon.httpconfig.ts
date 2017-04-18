@@ -12,6 +12,7 @@ export module VORLON {
         public options;
         public host;
         public port;
+        public socket;
         public proxyHost;
         public proxyPort;
         public enableWebproxy: boolean;
@@ -52,6 +53,7 @@ export module VORLON {
                 this.proxyPort = catalog.proxyPort || 5050;
             this.host = process.env.HOST || catalog.host || 'localhost';
             this.port = process.env.PORT || catalog.port || 1337;
+            this.socket = (typeof catalog.socket === 'string' && catalog.socket.length > 0) ? catalog.socket : undefined;
             this.proxyPort = catalog.proxyPort || 5050;
             this.enableWebproxy = catalog.enableWebproxy || false;
             this.vorlonServerURL = catalog.vorlonServerURL || "";
