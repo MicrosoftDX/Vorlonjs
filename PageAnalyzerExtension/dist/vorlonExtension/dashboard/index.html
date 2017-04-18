@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Page Analyzer (powered by Vorlon.js)</title>
+    <link rel="stylesheet" href="./stylesheets/jquery-ui.css">
+    <link rel="stylesheet" href="./stylesheets/contextMenu.css">
+    <link rel="stylesheet" href="./stylesheets/jquery.switchButton.css">
+    <link href="https://fonts.googleapis.com/css?family=Oswald:400" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,300|Roboto:400,300" rel="stylesheet">
+    <link rel="icon" type="image/png" href="./images/favicon.png">
+    <link rel="stylesheet" href="./stylesheets/style.css">
+    <link rel="stylesheet" href="./stylesheets/x-tag-components.css">
+  </head>
+  <body>
+    <div class="dashboard cf">
+      <section class="sidebar">
+        <header class="sidebar-header">
+          <img src="images/logo.png" id="logo"/>
+          <span id="title">Page Analyzer</span>
+        </header>
+        <div id="clientsListPane" class="client-pane">
+          <div id="subTitle">Open tabs</div>
+          <div id="clientsListPaneContent" class="client-list"></div>
+        </div>
+      </section>
+      <section class="dashboard-plugins-container">
+        <section class="dashboard-plugins">
+          <section id="pluginsPaneTop" class="panel-top">
+          </section>
+        </section>
+        <section class="dashboard-plugins-overlay">
+          <div class="message"><img src="./images/bigLogo.png" class="logo">
+            <h2>Page Analyzer</h2>
+            <h3>Powered by Vorlon.js</h3>
+            <h3>Please select a tab in the list</h3>
+          </div>
+        </section>
+      </section>
+    </div>
+    <script src="./javascripts/jquery-2.1.1.min.js"></script>
+    <script src="../vorlonCore/vorlon.enums.js"></script>
+    <script src="../vorlonCore/vorlon.tools.js"></script>
+    <script src="../vorlonCore/vorlon.core.js"></script>
+    <script src="../vorlonCore/vorlon.basePlugin.js"></script>
+    <script src="../vorlonCore/vorlon.clientMessenger.js"></script>
+    <script src="../vorlonCore/vorlon.dashboardPlugin.js"></script>
+    <script src="./vorlonExtension.dashboard.js"></script>
+    <script src="./index.js"></script>
+    <script src="./javascripts/dashboard.js"></script>
+    <script src="./javascripts/jquery-ui.js" type="text/javascript"></script>
+    <script src="./javascripts/contextMenu.js" type="text/javascript"></script>
+    <script src="./javascripts/jquery.switchButton.js" type="text/javascript"></script>
+     <script src="./javascripts/x-tag-components.js" type="text/javascript"></script>
+  </body>
+</html>
