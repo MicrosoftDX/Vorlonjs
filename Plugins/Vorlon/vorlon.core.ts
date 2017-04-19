@@ -52,11 +52,11 @@
             if(serverUrl[serverUrl.length-1] === '/'){
                 serverUrl = serverUrl.slice(0, -1);
             }
-            
-            if(serverUrl.match("$https://")){
+
+            if(serverUrl.match("^https:\/\/")){
                 Core._isHttpsEnabled = true;
             }
-           
+
             // Checking socket.io
             if (Tools.IsWindowAvailable && (<any>window).io === undefined) {
 
