@@ -46,7 +46,7 @@
                 }
             }
             
-            if(Core.IsHttpsEnabled){
+            if(Core.IsHttpsEnabled && basedUrl.indexOf('https://') === -1){
                 basedUrl = basedUrl.replace(/^http/, "https");
             }
 
