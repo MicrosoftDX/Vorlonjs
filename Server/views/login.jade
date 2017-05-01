@@ -7,7 +7,7 @@ block content
       h1 We need your credentials :)
     
       //- submit to /login
-      form(action="/login", method="post")
+      form(action="#{baseURL}/login", method="post")
         input(type="text", id="username", name="username", placeholder="Username")
         input(type="password", id="password", name="password", placeholder="Password")
         button(type="submit") Login

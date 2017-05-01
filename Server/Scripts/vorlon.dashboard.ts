@@ -33,8 +33,8 @@ export module VORLON {
             //login
             app.post(this.baseURLConfig.baseURL + '/login',
                     passport.authenticate('local',
-                        { failureRedirect: '/login',
-                          successRedirect: '/',
+                        { failureRedirect: this.baseURLConfig.baseURL + '/login',
+                          successRedirect: this.baseURLConfig.baseURL + '/',
                           failureFlash: false })
                 );
 
