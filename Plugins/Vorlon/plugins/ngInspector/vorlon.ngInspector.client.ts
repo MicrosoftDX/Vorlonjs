@@ -21,6 +21,7 @@
 
         public startClientSide(): void {
             document.addEventListener("DOMContentLoaded",() => {
+                this._ready = true;
                 this.refresh();
             });
         }

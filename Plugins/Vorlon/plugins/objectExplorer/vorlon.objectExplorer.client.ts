@@ -14,7 +14,7 @@ module VORLON {
         constructor() {
             super("objectExplorer");
             this._id = "OBJEXPLORER";
-            this._ready = false;
+            this._ready = true;
         }
 
         private STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
