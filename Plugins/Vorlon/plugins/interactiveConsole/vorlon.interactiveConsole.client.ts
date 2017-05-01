@@ -259,6 +259,8 @@
                     }
                 });
             }
+
+            this._ready = true;
         }
 
         public clearClientConsole() {
