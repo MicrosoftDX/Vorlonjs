@@ -192,7 +192,7 @@ There also is a task workflow integration and we prepared you a [file in the rep
 
 ### Committing & Pull Requests
 
-Once you've made a change, you can commit and submit a pull request to this repository. You will also need to electronically sign the `Microsoft Contributor License Agreement (CLA)[https://cla.microsoft.com/] if you wish for your changes to be merged.
+Once you've made a change, you can commit and submit a pull request to this repository. You will also need to electronically sign the Microsoft Contributor License Agreement ([CLA](https://cla.microsoft.com/)) if you wish for your changes to be merged.
 
 When committing changes, ensure that compiled JavaScript files (those compiled from TypeScript) are not committed, only the original TypeScript files should be committed.
 
