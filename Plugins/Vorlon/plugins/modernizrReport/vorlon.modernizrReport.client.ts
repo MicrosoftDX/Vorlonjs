@@ -7,7 +7,7 @@
 
         constructor() {
             super("modernizrReport");
-            this._ready = false;
+            this._ready = true;
             this._id = "MODERNIZR";
             //this.debug = true;
         }
