@@ -55,7 +55,7 @@
 
             var options = {
                "path": serverUrl.replace(/h.*:\/\/[^\/]*/, "") + "/socket.io"
-            }
+            };
 
             switch (side) {
                 case RuntimeSide.Client:

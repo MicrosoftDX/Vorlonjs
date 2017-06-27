@@ -132,7 +132,7 @@ export module VORLON {
             app.use(this._passport.initialize());
             app.use(this._passport.session());
             
-            vauth.VORLON.Authentication.loadAuthConfig();
+            vauth.VORLON.Authentication.loadAuthConfig(this.baseURLConfig.baseURL);
           
             this.init();
 
