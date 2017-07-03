@@ -9,6 +9,7 @@
     "password": "",
     "host": "0.0.0.0",
     "port": 1337,
+    "socket": "",
     "enableWebproxy": true,
     "baseProxyURL": "",
     "proxyHost": "0.0.0.0",

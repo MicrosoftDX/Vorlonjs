@@ -3,6 +3,8 @@ import path = require("path");
 import stylus = require("stylus");
 import fs = require("fs");
 import http = require("http");
+import mkdirp = require("mkdirp");
+
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
 import vauth = require("./vorlon.authentication");
@@ -81,6 +83,7 @@ export module VORLON {
             //Sets
             app.set('host', this.httpConfig.host);
             app.set('port', this.httpConfig.port);
+            app.set('socket', this.httpConfig.socket);
             app.set('views', path.join(__dirname, '../views'));
             app.set('view engine', 'jade');
             
@@ -129,11 +132,22 @@ export module VORLON {
             app.use(this._passport.initialize());
             app.use(this._passport.session());
             
-            vauth.VORLON.Authentication.loadAuthConfig();
+            vauth.VORLON.Authentication.loadAuthConfig(this.baseURLConfig.baseURL);
           
             this.init();
 
-            if (this.httpConfig.useSSL) {
+            if (this.httpConfig.socket) {
+                // In case we didn't shutdown gracefully last time
+                if (fs.existsSync(app.get('socket'))) {
+                    fs.unlinkSync(app.get('socket'));
+                }
+                mkdirp.sync(path.dirname(app.get('socket')));
+                this._httpServer = this.httpConfig.httpModule.createServer(app).listen(
+                    app.get('socket'), () => {
+                        fs.chmodSync(app.get('socket'), '700'); // Socket is user only for security
+                        this._log.info('Vorlon.js SERVER listening on socket ' + app.get('socket'));
+                    });
+            } else if (this.httpConfig.useSSL) {
                 this._httpServer = this.httpConfig.httpModule.createServer(this.httpConfig.options, app).listen(
                     app.get('port'), app.get('host'), undefined, () => {
                         this._log.info('Vorlon.js SERVER with SSL listening at ' + app.get('host') + ':' + app.get('port'));
@@ -141,7 +155,7 @@ export module VORLON {
             } else {
                 this._httpServer = this.httpConfig.httpModule.createServer(app).listen(
                     app.get('port'), app.get('host'), undefined, () => {
-                        this._log.info('Vorlon.js SERVER listening  at ' + app.get('host') + ':' + app.get('port'));
+                        this._log.info('Vorlon.js SERVER listening at ' + app.get('host') + ':' + app.get('port'));
                 });
             }
 

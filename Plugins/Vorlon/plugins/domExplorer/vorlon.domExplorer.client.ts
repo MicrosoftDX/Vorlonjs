@@ -13,7 +13,7 @@
             super("domExplorer");
             this._id = "DOM";
             //this.debug = true;
-            this._ready = false;
+            this._ready = true;
         }
 
         public static GetAppliedStyles(node: HTMLElement): string[] {

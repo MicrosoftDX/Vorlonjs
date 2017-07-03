@@ -36,6 +36,7 @@ module VORLON {
         // This code will run on the client //////////////////////
 
         public startClientSide(): void {
+            this._ready = true;
             //this.setupXMLHttpRequestHook();
         }
 

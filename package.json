@@ -17,6 +17,7 @@
     "json": "~9.0.3",
     "method-override": "2.3.4",
     "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
     "multer": "~0.1.8",
     "pageres": "^4.1.2",
     "passport": "~0.2.1",
