@@ -52,11 +52,11 @@
             if(serverUrl[serverUrl.length-1] === '/'){
                 serverUrl = serverUrl.slice(0, -1);
             }
-            
-            if(serverUrl.match("$https://")){
+
+            if(serverUrl.match("^https:\/\/")){
                 Core._isHttpsEnabled = true;
             }
-           
+
             // Checking socket.io
             if (Tools.IsWindowAvailable && (<any>window).io === undefined) {
 
@@ -308,6 +308,20 @@
             }
         }
 
+        public GetNumClientPluginsReady() : Number {
+            var ready = 0;
+            Core.ClientPlugins.forEach(plugin => {
+                if(plugin.isReady()) {
+                    ready++;
+                }
+            });
+            return ready;
+        }
+
+        public AllClientPluginsReady() : boolean {
+            return  Core.ClientPlugins.length === Core.GetNumClientPluginsReady();
+        }
+
         private _OnStopListenReceived(): void {
             Core._listenClientId = "";
         }
@@ -380,7 +394,7 @@
         }
 
         private _OnError(err: Error): void {
-            Core.ShowError("Error while connecting to server. Server may be offline.<BR>Error message: " + err.message);
+            Core.ShowError("Error while connecting to Vorlon server. Server may be offline.<BR>Error message: " + err.message);
         }
 
         private _OnIdentificationReceived(id: string): void {

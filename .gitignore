@@ -19,3 +19,5 @@ DeploymentTools/deployment-package.zip
 !/Plugins/Vorlon/plugins/domtimeline/**/*.css
 !/Plugins/Vorlon/plugins/domtimeline/**/*.js
 !/Plugins/Vorlon/plugins/domtimeline/dom-timeline.js
+.idea
+/Page Analyzer Extension/.gitignore
