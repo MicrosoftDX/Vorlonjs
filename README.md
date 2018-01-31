@@ -66,6 +66,18 @@ If you want to run the server with SSL support proceed as follows:
 4. Exit and save JSON file
 5. Navigate with https protole on your Azure WebSite
 
+Sample of azure hosted config.json file 
+```console
+
+{
+    "baseURL": "",
+    "useSSLAzure": true,
+    "useSSL": false,
+    "SSLkey": "cert/server.key",
+    ....
+    ...
+}
+```
 ## Custom log file
 
 By default Vorlon.JS application logs with debug level and files are stored in the installation folder.
