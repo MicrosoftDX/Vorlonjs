@@ -182,7 +182,7 @@ There is a demo webpage that includes the vorlon code that you can open to test 
 
 ### Visual Studio users
 
-For Visual Studio users, we provide an integrated solution through VorlonJS.sln. In order to interact with Node.js, you just need to install the NodeJS Tool for Visual Studio [plugin](https://nodejstools.codeplex.com/).
+For Visual Studio users, we provide an integrated solution through VorlonJS.sln. In order to interact with Node.js, you just need to install the NodeJS Tool for Visual Studio [plugin](https://github.com/Microsoft/nodejstools/).
 Once the plugin is installed, just open the solution and you'll be ready to develop for Vorlon.js
 
 ### Visual Studio Code users
