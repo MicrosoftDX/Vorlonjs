@@ -107,7 +107,9 @@
                 for (var i = 0, l = messages.length; i < l; i++) {
                     var msg = messages[i];
                     if (typeof msg === 'string' || typeof msg === 'number') {
-                        resmessages.push(msg);  
+                        resmessages.push(msg);
+                    } else if (typeof msg === 'undefined' || typeof msg === 'boolean') {
+                        resmessages.push(String(msg));
                     } else {
                         if (!Tools.IsWindowAvailable){
                             resmessages.push(this.inspect(msg, msg, 0));
@@ -172,12 +174,12 @@
             this._cache = [];
             this._pendingEntries = [];
             var console = Tools.IsWindowAvailable ? window.console : global.console;
-            
+
             // Overrides clear, log, error and warn
             this._hooks.clear = Tools.Hook(console, "clear",(): void => {
                 this.clearClientConsole();
             });
-            
+
             this._hooks.dir = Tools.Hook(console, "dir",(message: any): void => {
                 var data = {
                     messages: this.getMessages(message),
@@ -237,7 +239,7 @@
 
             Error = <any>((message: any) => {
                 var error = new previousError(message);
-                
+
                 var data = {
                     messages: this.getMessages(message),
                     type: "exception"
@@ -252,7 +254,7 @@
 
             if (Tools.IsWindowAvailable) {
                 window.addEventListener('error', (err) => {
-                    
+
                     if (err && (<any>err).error) {
                         //this.addEntry({ messages: [err.error.message], type: "exception" });
                         this.addEntry({ messages: [(<any>err).error.stack], type: "exception" });
@@ -269,14 +271,20 @@
         }
 
         public evalOrderFromDashboard(order: string) {
+            // Indirectly calling 'eval' causes it to execute in the global context.
+            var geval = eval;
+            var result;
+            console.log(order);
             try {
-                eval(order);
+                result = geval(order);
             } catch (e) {
-                console.error("Unable to execute order: " + e.message);
+                console.error(e.message);
+                return;
             }
+            console.log(result);
         }
 
-        public refresh(): void {           
+        public refresh(): void {
             //delay sending cache to dashboard to let other plugins load...
             setTimeout(() => {
                 this.sendCommandToDashboard("clear");
