@@ -21,7 +21,7 @@
     "fs-jetpack": "^0.7.0",
     "http-proxy": "^1.11.2",
     "jade": "^1.9.2",
-    "jquery": "3.0.0",
+    "jquery": "3.4.1",
     "json": "^9.0.3",
     "method-override": "2.3.4",
     "multer": "^0.1.8",
