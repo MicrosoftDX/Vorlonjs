@@ -15,7 +15,7 @@
     "http-proxy": "~1.11.2",
     "jade": "~1.9.2",
     "json": "~9.0.3",
-    "method-override": "2.3.4",
+    "method-override": "3.0.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "multer": "~0.1.8",
