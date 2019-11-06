@@ -23,7 +23,7 @@
     "jade": "^1.9.2",
     "jquery": "3.0.0",
     "json": "^9.0.3",
-    "method-override": "2.3.4",
+    "method-override": "3.0.0",
     "multer": "^0.1.8",
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
