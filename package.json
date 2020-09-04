@@ -12,7 +12,7 @@
     "express": "~4.12.3",
     "express-session": "~1.11.1",
     "favicon": "0.0.2",
-    "http-proxy": "~1.11.2",
+    "http-proxy": "~1.18.1",
     "jade": "~1.9.2",
     "json": "~9.0.3",
     "method-override": "2.3.4",
