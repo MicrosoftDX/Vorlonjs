@@ -25,6 +25,7 @@
     "passport-local": "~1.0.0",
     "passport-twitter": "~1.0.4",
     "pug": "^3.0.2",
+    "puppeteer": "^19.4.1",
     "socket.io": "^4.5.2",
     "stylus": "~0.59.0",
     "winston": "~3.8.2",
@@ -33,22 +34,22 @@
     "xmlhttprequest": "~1.8.0"
   },
   "devDependencies": {
-    "gulp": "^4.0.2",
+    "typescript": "^2.7.1",
+    "gulp": "^4.0.0",
     "gulp-concat": "~2.6.1",
     "gulp-filter": "~7.0.0",
     "gulp-less": "~5.0.0",
     "gulp-mocha": "~8.0.0",
     "gulp-rename": "~2.0.0",
     "gulp-sourcemaps": "~3.0.0",
-    "gulp-typescript": "~6.0.0-alpha.1",
+    "gulp-typescript": "^6.0.0-alpha.1",
     "gulp-uglify": "~3.0.2",
     "gulp-util": "~3.0.8",
     "gulp-webserver": "~0.9.1",
     "gulp-zip": "~5.1.0",
     "merge2": "~1.4.1",
     "mocha-junit-reporter": "^2.0.2",
-    "through": "~2.3.8",
-    "typescript": "^2.7.1"
+    "through": "~2.3.8"
   },
   "scripts": {
     "global-deploy-gulp": "npm install -g gulp",

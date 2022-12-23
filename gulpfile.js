@@ -366,8 +366,4 @@ gulp.task('default-server-all', gulp.series('default-plugins', 'copyDTS-plugins'
     return gulp.series('default-server');
   }));
 
-// gulp.task('default', function(){
-//   return gulp.series('default-server-all');
-// });
-
 exports.default = series('default-server-all')

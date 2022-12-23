@@ -233,21 +233,21 @@
             });
 
             // Override Error constructor
-            var previousError = Error;
-            (Error as any) = <any>((message: any) => {
-                var error = new previousError(message);
+            // var previousError = Error;
+            // Error = <any>((message: any) => {
+            //     var error = new previousError(message);
                 
-                var data = {
-                    messages: this.getMessages(message),
-                    type: "exception"
-                };
+            //     var data = {
+            //         messages: this.getMessages(message),
+            //         type: "exception"
+            //     };
 
-                this.addEntry(data);
+            //     this.addEntry(data);
 
-                return error;
-            });
+            //     return error;
+            // });
 
-            (<any>Object).setPrototypeOf(Error, previousError.prototype);
+            // (<any>Object).setPrototypeOf(Error, previousError.prototype);
 
             if (Tools.IsWindowAvailable) {
                 window.addEventListener('error', (err) => {
