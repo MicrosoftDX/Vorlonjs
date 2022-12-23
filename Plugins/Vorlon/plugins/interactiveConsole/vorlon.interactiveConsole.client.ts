@@ -234,8 +234,7 @@
 
             // Override Error constructor
             var previousError = Error;
-
-            Error = <any>((message: any) => {
+            (Error as any) = <any>((message: any) => {
                 var error = new previousError(message);
                 
                 var data = {
@@ -248,7 +247,7 @@
                 return error;
             });
 
-            Error.prototype = previousError.prototype;
+            (<any>Object).setPrototypeOf(Error, previousError.prototype);
 
             if (Tools.IsWindowAvailable) {
                 window.addEventListener('error', (err) => {

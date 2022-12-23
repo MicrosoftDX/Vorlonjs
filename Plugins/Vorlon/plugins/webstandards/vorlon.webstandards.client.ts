@@ -95,7 +95,7 @@ module VORLON {
             var scripts = document.querySelectorAll("script");
             var nbScripts = scripts.length;
             for (var i = 0; i < scripts.length; i++) {
-                var s = scripts[i];
+                var s: Element = scripts[i];
                 var src = s.attributes.getNamedItem("src");
                 if (src && src.value) {
                     var isVorlon = src.value.indexOf('vorlon.js') > 0 || src.value.indexOf('vorlon.min.js') > 0 || src.value.indexOf('vorlon.max.js') > 0;
