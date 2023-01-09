@@ -13,7 +13,7 @@
     "express-session": "^1.11.3",
     "favicon": "0.0.2",
     "graceful-fs": "^4.2.2",
-    "http-proxy": "^1.11.3",
+    "http-proxy": "^1.18.1",
     "json": "^9.0.6",
     "method-override": "^2.3.4",
     "minimist": "^1.2.6",
@@ -34,7 +34,6 @@
     "xmlhttprequest": "~1.8.0"
   },
   "devDependencies": {
-    "typescript": "^2.7.1",
     "gulp": "^4.0.0",
     "gulp-concat": "~2.6.1",
     "gulp-filter": "~7.0.0",
@@ -42,14 +41,15 @@
     "gulp-mocha": "~8.0.0",
     "gulp-rename": "~2.0.0",
     "gulp-sourcemaps": "~3.0.0",
-    "gulp-typescript": "^6.0.0-alpha.1",
+    "gulp-typescript": "^4.0.2",
     "gulp-uglify": "~3.0.2",
     "gulp-util": "~3.0.8",
     "gulp-webserver": "~0.9.1",
     "gulp-zip": "~5.1.0",
     "merge2": "~1.4.1",
     "mocha-junit-reporter": "^2.0.2",
-    "through": "~2.3.8"
+    "through": "~2.3.8",
+    "typescript": "^3.9.6"
   },
   "scripts": {
     "global-deploy-gulp": "npm install -g gulp",

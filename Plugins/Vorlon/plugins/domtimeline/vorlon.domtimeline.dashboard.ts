@@ -45,7 +45,8 @@ module VORLON {
 				var clientCommands = applicationDiv.querySelectorAll("[data-client-command]");
 				for(var i = clientCommands.length; i--;) { var clientCommand = <HTMLElement>clientCommands[i];
 					clientCommand.onclick = function(event) {
-						me.sendMessageToClient(this.getAttribute("data-client-command"), (e)=>me.logMessage(e));
+                        //TODO:- (gakeshre) Temporary code commit to silence errors
+						//me.sendMessageToClient(this.getAttribute("data-client-command"), (e)=>me.logMessage(e));
 					};
 				}
 
