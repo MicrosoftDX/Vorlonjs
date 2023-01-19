@@ -97,8 +97,8 @@ gulp.task('watch-plugins', function() {
   return gulp.watch([
     'Plugins/Vorlon/**/*.ts',
     'Plugins/Vorlon/**/*.less',
-    'Plugins/Vorlon/**/*.html'
-    //'Vorlon/plugins/**/*.*',
+    'Plugins/Vorlon/**/*.html',
+    'Vorlon/plugins/**/*.*'
   ], ['default-plugins']);
 });
 

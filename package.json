@@ -3,6 +3,9 @@
   "version": "0.5.4",
   "description": "vorlon",
   "main": "Server/server.js",
+  "engines": {
+    "node": "<=12.14.0"
+  },
   "dependencies": {
     "body-parser": "^1.12.4",
     "colors": "^1.1.2",
@@ -20,13 +23,13 @@
     "mkdirp": "^1.0.4",
     "mocha": "^10.0.0",
     "multer": "^1.4.5-lts.1",
-    "pageres": "^7.0.0",
     "passport": "^0.6.0",
     "passport-local": "~1.0.0",
     "passport-twitter": "~1.0.4",
     "pug": "^3.0.2",
-    "puppeteer": "^19.4.1",
-    "socket.io": "^4.5.2",
+    "puppeteer": "^10.0.0",
+    "puppeteer-core": "^1.20.0",
+    "socket.io": "^4.5.4",
     "stylus": "~0.59.0",
     "winston": "~3.8.2",
     "winston-azure": "0.0.4",
