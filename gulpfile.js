@@ -31,7 +31,8 @@ gulp.task('typescript-to-js-plugins', function() {
   var tsResult = gulp.src(['Plugins/Vorlon/**/*.ts', 'Plugins/libs/**.ts'])
                        .pipe(typescript({ 
                             declarationFiles: true,
-                            noResolve: true, target: 'ES5'}
+                            noResolve: true, 
+                            target: 'ES5'}
                           ));
   
    return merge([
@@ -371,3 +372,4 @@ gulp.task('default-server-all', gulp.series('default-plugins', 'copyDTS-plugins'
 // });
 
 exports.default = series('default-server-all')
+exports.ts = series('typescript-to-js-plugins')

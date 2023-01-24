@@ -47,8 +47,7 @@
     "gulp-zip": "~5.1.0",
     "merge2": "~1.4.1",
     "mocha-junit-reporter": "^2.0.2",
-    "through": "~2.3.8",
-    "typescript": "^2.7.1"
+    "through": "~2.3.8"
   },
   "scripts": {
     "global-deploy-gulp": "npm install -g gulp",

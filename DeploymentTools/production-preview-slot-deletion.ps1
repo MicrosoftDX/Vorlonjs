@@ -1,1 +1,0 @@
-Remove-AzureWebsite -Name vorlonjs-production -Slot staging -Force -ErrorAction SilentlyContinu
