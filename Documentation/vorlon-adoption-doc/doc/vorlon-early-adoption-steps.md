@@ -1,5 +1,9 @@
 # Teams App Mobile debugging tool setup guide
 
+> Document version: 1.0.0
+
+> Document last updated: Jan 25 2023 19:53:44 IST
+
 ## Introduction
 
 This guide will help you setup debug tool using which you will have access to following for your Teams mobile app
