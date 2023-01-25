@@ -377,9 +377,13 @@ gulp.task('default-server-all', gulp.series('default-plugins', 'copyDTS-plugins'
  */
 gulp.task('get-env-snapshot', function(cb) {
 
+    console.log("------ DATE ------");
     const date = new Date();
-    console.log(date);
-    
+    const day = date.toDateString();
+    const time = date.toLocaleTimeString();
+    console.log(day + " " + time);
+    console.log("------------------");
+        
         version('node');
         version('npm');
         version('tsc');
