@@ -12,6 +12,7 @@ const path = require('path');
 const sourcemaps = require('gulp-sourcemaps');
 const zip = require('gulp-zip');
 const { series } = require('gulp');
+const cp = require('child_process');
 
 var paths = {
     out: "./output/"
@@ -371,5 +372,28 @@ gulp.task('default-server-all', gulp.series('default-plugins', 'copyDTS-plugins'
 //   return gulp.series('default-server-all');
 // });
 
+/**
+ * Gets version of all the required binaries and stores them in .env-snap file
+ */
+gulp.task('get-env-snapshot', function(cb) {
+
+    const date = new Date();
+    console.log(date);
+    
+        version('node');
+        version('npm');
+        version('tsc');
+        version('gulp');    
+        cb();
+});
+  
+function version(pkg) {
+    return cp.exec(pkg + ' -v', function (err, stdout, stderr) {
+        console.log(pkg + " -v");
+        console.log(stdout);
+        console.log(" ");
+      });
+  }
 exports.default = series('default-server-all')
 exports.ts = series('typescript-to-js-plugins')
+exports.snap = series('get-env-snapshot')
