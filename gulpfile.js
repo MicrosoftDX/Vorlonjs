@@ -13,6 +13,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const zip = require('gulp-zip');
 const { series } = require('gulp');
 const cp = require('child_process');
+const log = require('fancy-log');
 
 var paths = {
     out: "./output/"
@@ -80,8 +81,8 @@ gulp.task('copyPlugins-plugins', function () {
 
 gulp.task('copyDTS-plugins', function () {
 
-    return  gulp.src(['Plugins/release/*.d.ts'])
-      .pipe(gulp.dest('./Server/Scripts/typings/Vorlon'));
+    return  Promise.resolve(gulp.src(['Plugins/release/*.d.ts'])
+      .pipe(gulp.dest('./Server/Scripts/typings/Vorlon')));
       
 });
 
@@ -99,8 +100,8 @@ gulp.task('watch-plugins', function() {
   return gulp.watch([
     'Plugins/Vorlon/**/*.ts',
     'Plugins/Vorlon/**/*.less',
-    'Plugins/Vorlon/**/*.html'
-    //'Vorlon/plugins/**/*.*',
+    'Plugins/Vorlon/**/*.html',
+    'Vorlon/plugins/**/*.*'
   ], ['default-plugins']);
 });
 
@@ -142,14 +143,13 @@ gulp.task('typescript-to-js-server', function() {
 
 gulp.task('build-server', gulp.series('typescript-to-js-server', function() {
 	//copy server files to desktop app
-  return gulp.src([
+  return Promise.resolve(gulp.src([
   		'./server/**/*.*'
   	])
-  	.pipe(gulp.dest(paths.out+'build-server/'));
+  	.pipe(gulp.dest(paths.out+'build-server/')));
 }));
 
-gulp.task('default-server', gulp.series('build-server', function() {
-}));
+gulp.task('default-server', gulp.series('build-server'));
 
 /**
  * Watch typescript task, will call the default typescript task if a typescript file is updated.
@@ -161,8 +161,7 @@ gulp.task('watch-server', function() {
 });
 
 
-gulp.task('watch', gulp.series("watch-server", "watch-plugins", "webserver", function() {
-}));
+gulp.task('watch', gulp.series("watch-server", "watch-plugins", "webserver"));
 
 /**
  * Zip task used within the build to create an archive that will be deployed using VSTS Release Management
@@ -177,9 +176,9 @@ gulp.task('zip', function() {
 //--------------------
 
 gulp.task('concat-webstandards-rules-plugins', gulp.series('typescript-to-js-plugins', function () {
-	return gulp.src(['./Plugins/release/**/webstandards/rules/*.js', './Plugins/release/**/webstandards/vorlon.webstandards.client.js'])
+	return Promise.resolve(gulp.src(['./Plugins/release/**/webstandards/rules/*.js', './Plugins/release/**/webstandards/vorlon.webstandards.client.js'])
 		.pipe(concat('vorlon.webstandards.client.js'))
-		.pipe(gulp.dest('Plugins/release/plugins/webstandards/'));
+		.pipe(gulp.dest('Plugins/release/plugins/webstandards/')));
 }));
 
 /**
@@ -188,7 +187,7 @@ gulp.task('concat-webstandards-rules-plugins', gulp.series('typescript-to-js-plu
  */
  gulp.task('scripts-plugins', gulp.series('concat-webstandards-rules-plugins', function () {
 
-    return gulp.src([
+    return Promise.resolve(gulp.src([
             './Plugins/**/vorlon.*.js',
             '!./Plugins/**/vorlon.*.min.js'
         ])
@@ -197,7 +196,7 @@ gulp.task('concat-webstandards-rules-plugins', gulp.series('typescript-to-js-plu
               })
             )
         .pipe(uglify())
-        .pipe(gulp.dest('./Plugins'));
+        .pipe(gulp.dest('./Plugins')));
 }));
 
 /**
@@ -244,33 +243,33 @@ gulp.task('concat-webstandards-rules-plugins', gulp.series('typescript-to-js-plu
 
 		
     // Babylon Inspector
-    gulp.src([
-        'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
-        'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.client.js'
-    ])
-        .pipe(concat('vorlon.babylonInspector.client.js'))
-        .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
+    // gulp.src([
+    //     'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
+    //     'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.client.js'
+    // ])
+    //     .pipe(concat('vorlon.babylonInspector.client.js'))
+    //     .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
 
-    gulp.src([
-        'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
-        'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.dashboard.js'
-    ])
-        .pipe(concat('vorlon.babylonInspector.dashboard.js'))
-        .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
+    // gulp.src([
+    //     'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.js',
+    //     'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.dashboard.js'
+    // ])
+    //     .pipe(concat('vorlon.babylonInspector.dashboard.js'))
+    //     .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
         
-    gulp.src([
-        'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.min.js',
-        'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.client.min.js'
-    ])
-        .pipe(concat('vorlon.babylonInspector.client.min.js'))
-        .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
+    // gulp.src([
+    //     'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.min.js',
+    //     'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.client.min.js'
+    // ])
+    //     .pipe(concat('vorlon.babylonInspector.client.min.js'))
+    //     .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
 
-    gulp.src([
-        'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.min.js',
-        'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.dashboard.min.js'
-    ])
-        .pipe(concat('vorlon.babylonInspector.dashboard.min.js'))
-        .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
+    // gulp.src([
+    //     'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.interfaces.min.js',
+    //     'Plugins/release/plugins/babylonInspector/vorlon.babylonInspector.dashboard.min.js'
+    // ])
+    //     .pipe(concat('vorlon.babylonInspector.dashboard.min.js'))
+    //     .pipe(gulp.dest('Plugins/release/plugins/babylonInspector/'));
 
     // Bot framework inspector
     gulp.src([
@@ -358,19 +357,11 @@ gulp.task('concat-webstandards-rules-plugins', gulp.series('typescript-to-js-plu
 /**
  * The default task, call the tasks: scripts, scripts-noplugin, copy, copyPlugins
  */
- gulp.task('default-plugins', gulp.series('scripts-plugins', 'scripts-noplugin-plugins', 'less-to-css-plugins', 'scripts-specific-plugins-plugins', function() {
-    return gulp.series('copy-plugins', 'copyPlugins-plugins', 'copyDTS-plugins');
-}));
+ gulp.task('default-plugins', gulp.series('scripts-plugins', 'scripts-noplugin-plugins', 'less-to-css-plugins', 'scripts-specific-plugins-plugins', 
+ 'copy-plugins', 'copyPlugins-plugins', 'copyDTS-plugins'));
 
 /// GLOBAL 
-
-gulp.task('default-server-all', gulp.series('default-plugins', 'copyDTS-plugins', function(){
-    return gulp.series('default-server');
-  }));
-
-// gulp.task('default', function(){
-//   return gulp.series('default-server-all');
-// });
+gulp.task('default-server-all', gulp.series('default-plugins', 'copyDTS-plugins', 'default-server'));
 
 /**
  * Gets version of all the required binaries and stores them in .env-snap file

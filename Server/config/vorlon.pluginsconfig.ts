@@ -38,8 +38,9 @@ export module VORLON {
             for (var i = 0; i < configuration.plugins.length; i++) {
                 if (configuration.plugins[i].id == pluginid) {
                     configuration.plugins[i].enabled = !configuration.plugins[i].enabled;
-                    fs.writeFileSync(config.VORLON.ConfigProvider.getConfigPath(), JSON.stringify(configuration, null, 4) ,"utf8");
-                    return callback(null);
+                    throw new Error("Commented code due to compliation issue");
+                    // fs.writeFileSync(config.VORLON.ConfigProvider.getConfigPath(), JSON.stringify(configuration, null, 4) ,"utf8");
+                    // return callback(null);
                 }
             }
 
@@ -58,8 +59,9 @@ export module VORLON {
             for (var i = 0; i < configuration.plugins.length; i++) {
                 if (configuration.plugins[i].id == pluginid) {
                     configuration.plugins[i].name = name;
-                    fs.writeFileSync(config.VORLON.ConfigProvider.getConfigPath(), JSON.stringify(configuration, null, 4) ,"utf8");
-                    return callback(null);
+                    throw new Error("Commented code due to compliation issue")
+                    // fs.writeFileSync(config.VORLON.ConfigProvider.getConfigPath(), JSON.stringify(configuration, null, 4) ,"utf8");
+                    // return callback(null);
                 }
             }
 
@@ -82,8 +84,9 @@ export module VORLON {
             for (var i = 0; i < configuration.plugins.length; i++) {
                 if (configuration.plugins[i].id == pluginid) {
                     configuration.plugins[i].panel = panel;
-                    fs.writeFileSync(config.VORLON.ConfigProvider.getConfigPath(), JSON.stringify(configuration, null, 4) ,"utf8");
-                    return callback(null);
+                    throw new Error("Commented code due to compliation issue")
+                    // fs.writeFileSync(config.VORLON.ConfigProvider.getConfigPath(), JSON.stringify(configuration, null, 4) ,"utf8");
+                    // return callback(null);
                 }
             }
 
@@ -112,11 +115,11 @@ export module VORLON {
             }
 
             configuration.plugins = plugins_reorganised;
+            throw new Error("Commented code due to compliation issue")
+            // fs.writeFileSync(config.VORLON.ConfigProvider.getConfigPath(), JSON.stringify(configuration, null, 4) ,"utf8");
 
-            fs.writeFileSync(config.VORLON.ConfigProvider.getConfigPath(), JSON.stringify(configuration, null, 4) ,"utf8");
 
-
-            return callback('PluginID unknown');
+            // return callback('PluginID unknown');
         }
     }
 }

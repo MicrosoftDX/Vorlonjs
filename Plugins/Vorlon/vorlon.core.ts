@@ -120,23 +120,15 @@
             else {
                 process.stdin.resume();//so the program will not close instantly
                 var exitMessageWritten = false;
-                function exitHandler(options, err) {
-                    if(!exitMessageWritten){
-                        Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
-                        console.log('Disconnected from Vorlon.js instance');
-                        exitMessageWritten = true;
-                    }
-                    process.exit(0);
-                }
 
                 //do something when app is closing
-                process.on('exit', exitHandler.bind(null,{cleanup:true}));
+                process.on('exit', this.ExitHandlerBlock.bind(null,{cleanup:true}));
 
                 //catches ctrl+c event
-                process.on('SIGINT', exitHandler.bind(null, {exit:true}));
+                process.on('SIGINT', this.ExitHandlerBlock.bind(null, {exit:true}));
                 
                 //catches uncaught exceptions
-                process.on('uncaughtException', exitHandler.bind(null, {exit:true}));        
+                process.on('uncaughtException', this.ExitHandlerBlock.bind(null, {exit:true}));        
             }
 
             // Start global dirty check, at this point document is not ready,
@@ -320,6 +312,15 @@
 
         public AllClientPluginsReady() : boolean {
             return  Core.ClientPlugins.length === Core.GetNumClientPluginsReady();
+        }
+
+        private ExitHandlerBlock(exitMessageWritten: boolean) {
+            if(!exitMessageWritten){
+                Core.Messenger.sendRealtimeMessage("", { socketid: Core.Messenger.socketId }, Core._side, "clientclosed");
+                console.log('Disconnected from Vorlon.js instance');
+                exitMessageWritten = true;
+            }
+            process.exit(0);
         }
 
         private _OnStopListenReceived(): void {
