@@ -171,7 +171,7 @@
         public startClientSide(): void {
             this._cache = [];
             this._pendingEntries = [];
-            var console = Tools.IsWindowAvailable ? window.console : global.console;
+            var console = Tools.IsWindowAvailable ? window.console : globalThis.console;
             
             // Overrides clear, log, error and warn
             this._hooks.clear = Tools.Hook(console, "clear",(): void => {

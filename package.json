@@ -7,7 +7,6 @@
     "node": ">=16.0.0"
   },
   "dependencies": {
-    "@types/node": "^18.11.19",
     "body-parser": "^1.20.1",
     "colors": "^1.4.0",
     "cookie-parser": "^1.4.6",
@@ -24,13 +23,15 @@
     "passport": "^0.6.0",
     "passport-local": "~1.0.0",
     "passport-twitter": "~1.0.4",
-    "socket.io": "^4.5.4",
+    "socket.io": "^4.6.0",
     "stylus": "~0.59.0",
     "winston": "~3.8.2",
     "winston-logs-display": "~1.0.0",
     "xmlhttprequest": "~1.8.0"
   },
   "devDependencies": {
+    "@types/node": "^18.13.0",
+    "@types/socket.io": "^3.0.2",
     "gulp": "^4.0.2",
     "gulp-concat": "~2.6.1",
     "gulp-filter": "~7.0.0",

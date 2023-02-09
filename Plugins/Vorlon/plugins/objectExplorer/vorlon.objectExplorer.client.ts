@@ -159,7 +159,7 @@ module VORLON {
         }
 
         private _getProperty(propertyPath: string): ObjExplorerObjDescriptor {
-            var selectedObj = Tools.IsWindowAvailable ? window : global;
+            var selectedObj = Tools.IsWindowAvailable ? window : globalThis;
             var tokens = [this.rootProperty];
 
             this.trace("getting obj at " + propertyPath);

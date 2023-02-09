@@ -33,7 +33,7 @@ gulp.task('typescript-to-js-plugins', function() {
   var tsResult = gulp.src(['Plugins/Vorlon/**/*.ts', 'Plugins/libs/**.ts'])
                        .pipe(typescript({ 
                             declarationFiles: true,
-                            noResolve: true, 
+                            noResolve: false, 
                             target: 'ES5'}
                           ));
   

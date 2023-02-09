@@ -1,6 +1,11 @@
 {
     "compilerOptions": {
         "target": "ES5",
-        "skipLibCheck": true
-    }
+        "skipLibCheck": true,
+        "types": ["node"],
+        "typeRoots": [
+            "node_modules/@types"
+        ]
+    },
+    "exclude": ["node_modules", "**/*.spec.ts"]
 }
