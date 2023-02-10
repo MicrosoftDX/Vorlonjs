@@ -22,3 +22,4 @@ DeploymentTools/deployment-package.zip
 .idea
 /Page Analyzer Extension/.gitignore
 .DS_Store
+output
