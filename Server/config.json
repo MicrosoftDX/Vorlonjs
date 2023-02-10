@@ -86,15 +86,6 @@
             "nodeOnly": true
         },
         {
-            "id": "BOTFRAMEWORKINSPECTOR",
-            "name": "Bot Framework Inspector",
-            "panel": "top",
-            "foldername": "botFrameworkInspector",
-            "enabled": true,
-            "nodeCompliant": true,
-            "nodeOnly": true
-        },
-        {
             "id": "EXPRESS",
             "name": "Express",
             "panel": "top",
@@ -102,13 +93,6 @@
             "enabled": false,
             "nodeCompliant": true,
             "nodeOnly": true
-        },
-        {
-            "id": "BABYLONINSPECTOR",
-            "name": "Babylon Inspector",
-            "panel": "top",
-            "foldername": "babylonInspector",
-            "enabled": false
         },
         {
             "id": "CONSOLE",
