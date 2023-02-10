@@ -20,7 +20,7 @@ export module VORLON {
 			
 			//LOGS      
             // winston.cli();
-            this._log = new winston.Logger(<any>{
+            this._log = winston.createLogger(<any>{
                 levels: {
                     info: 0,
                     warn: 1,
