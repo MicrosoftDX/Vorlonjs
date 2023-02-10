@@ -4,6 +4,7 @@ import logConfig = require("./vorlon.logconfig");
 import pluginsConfig = require("./vorlon.pluginsconfig");
 import redisConfig = require("./vorlon.redisconfig");
 import tools = require("../Scripts/vorlon.tools");
+import { Socket } from "socket.io";
 
 export module VORLON {
 	export interface IBaseURLConfig {
@@ -158,7 +159,7 @@ export module VORLON {
     export class Client {
         public clientId: string;
         public displayId: number;
-        public socket: SocketIO.Socket;
+        public socket: Socket;
         public opened: boolean;
         public ua: string;
         public icon: string;
@@ -178,7 +179,7 @@ export module VORLON {
 			};
         }
 
-        constructor(clientId: string, ua: string, noWindow: boolean, socket: SocketIO.Socket, displayId: number, opened: boolean = true) {
+        constructor(clientId: string, ua: string, noWindow: boolean, socket: Socket, displayId: number, opened: boolean = true) {
             this.clientId = clientId;
             this.ua = ua;
             this.socket = socket;

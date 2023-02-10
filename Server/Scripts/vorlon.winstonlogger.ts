@@ -6,19 +6,20 @@ import http = require("http");
 import iwsc = require("./vorlon.IWebServerComponent");
 import tools = require("./vorlon.tools");
 import vorloncontext = require("../config/vorlon.servercontext"); 
+import { format } from "path";
+import { formatWithOptions } from "util";
 
 var winstonDisplay = require("winston-logs-display");
-
 export module VORLON {
     export class WinstonLogger implements iwsc.VORLON.IWebServerComponent {
 		private logConfig: vorloncontext.VORLON.ILogConfig;
-		private _log: winston.LoggerInstance;
+		private _log: winston.Logger;
         
 		constructor(context : vorloncontext.VORLON.IVorlonServerContext) {
 			this.logConfig = context.logConfig;
 			
 			//LOGS      
-            winston.cli();
+            // winston.cli();
             this._log = new winston.Logger(<any>{
                 levels: {
                     info: 0,
@@ -40,21 +41,14 @@ export module VORLON {
             context.logger = this._log;
 
             if (this.logConfig.enableConsole) {
-                this._log.add(winston.transports.Console, <any>{
-                        level: this.logConfig.level,
-                        handleExceptions: true,
-                        json: false,
-                        timestamp: function() {
-                            var date:Date = new Date();
-                            return date.getFullYear() + "-" + 
-                            date.getMonth() + "-" +
-                            date.getDate() + " " +
-                            date.getHours() + ":" + 
-                            date.getMinutes() + ":" +
-                            date.getSeconds();
-                        },
-                        colorize: true
-                    });
+                this._log.add(new winston.transports.Console({
+                    level:this.logConfig.level,
+                    handleExceptions: true,
+                    format: winston.format.combine(
+                        winston.format.colorize(),
+                        winston.format.timestamp({format:'YYYY-MMM-DD T hh:mm:ss.sss A'})
+                    ),
+                }));
             }
 
             winston.addColors({
@@ -67,7 +61,7 @@ export module VORLON {
                 plugin: 'yellow'
             });
 
-            this._log.cli();
+            // this._log.cli();
 		}
 		
 		public addRoutes(app: express.Express, passport: any): void {

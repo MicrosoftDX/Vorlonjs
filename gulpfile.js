@@ -127,7 +127,7 @@ gulp.task('webserver', function() {
 gulp.task('typescript-to-js-server', function() {
   var tsResult = gulp.src(['./Server/**/*.ts', '!./Server/node_modules', '!./Server/node_modules/**'], { base: './' })
                      // .pipe(sourcemaps.init())
-                      .pipe(typescript({ noResolve: true, target: 'ES5', module: 'commonjs' }));
+                      .pipe(typescript({ noResolve: false, target: 'ES5', module: 'commonjs' }));
 
   return tsResult.js
             .pipe(sourcemaps.write({
@@ -390,5 +390,5 @@ function version(pkg) {
       });
   }
 exports.default = series('default-server-all')
-exports.ts = series('typescript-to-js-plugins')
+exports.ts = series('typescript-to-js-server')
 exports.snap = series('get-env-snapshot')
