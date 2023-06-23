@@ -1,8 +1,7 @@
 # Teams App Mobile debugging tool setup guide
 
 > Document version: 1.0.0
-
-> Document last updated: Jan 25 2023 19:53:44 IST
+> Document last updated: March 22 2023 11:55:44 IST
 
 ## Introduction
 
@@ -52,6 +51,21 @@ $ where vorlon
 Now edit the file and toggle the `"useSSLAzure" :flase` to `true`
 
 ### Run
+
+> Ensure that your node version is set to `16.13.0`
+
+#### You can use NVM tp set node version to `16.13.0`
+
+```bash
+$ node -v
+v18.13.0 ❌
+
+$ nvm use 16.13
+Now using node v16.13.0 (npm v8.1.0)
+
+$ node -v      
+v16.13.0 ✅
+```
 
 ```bash
 $ vorlon
