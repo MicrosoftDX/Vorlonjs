@@ -1,7 +1,6 @@
 ﻿module VORLON {
-    import Socket = SocketIO.Socket;
-    declare var io;
-    
+    const io = require('socket.io')
+
     export interface VorlonMessageMetadata {
         pluginID : string;
         side : RuntimeSide;

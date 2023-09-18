@@ -1,9 +1,9 @@
 ﻿import redis = require("redis");
 import express = require("express");
 import http = require("http");
-import socketio = require("socket.io");
 import fs = require("fs");
 import path = require("path");
+import { Server, Socket } from "socket.io";
 
 //Vorlon
 import iwsc = require("./vorlon.IWebServerComponent");
@@ -13,7 +13,7 @@ import vorloncontext = require("../config/vorlon.servercontext");
 export module VORLON {
     export class Server implements iwsc.VORLON.IWebServerComponent {
         private _sessions: vorloncontext.VORLON.SessionManager;
-        public dashboards = new Array<SocketIO.Socket>();
+        public dashboards = new Array<Socket>();
 
         private _io: any;
         private _log: vorloncontext.VORLON.ILogger;
@@ -303,7 +303,8 @@ export module VORLON {
         public start(httpServer: http.Server): void {
 
             //SOCKET.IO
-            var io = socketio(httpServer, { path: this.baseURLConfig.baseURL + "/socket.io" });
+            //var io = socketio(httpServer, { path: this.baseURLConfig.baseURL + "/socket.io" });
+            var io;// = new Server(httpServer);
             this._io = io;
 
             //Listen on /
@@ -346,7 +347,7 @@ export module VORLON {
         }
 
 
-        public addClient(socket: SocketIO.Socket): void {
+        public addClient(socket: Socket): void {
             socket.on("helo", (message: string) => {
                 var receiveMessage = <VorlonMessage>JSON.parse(message);
                 var metadata = receiveMessage.metadata;
@@ -445,7 +446,7 @@ export module VORLON {
             });
         }
 
-        public addDashboard(socket: SocketIO.Socket): void {
+        public addDashboard(socket: Socket): void {
             socket.on("helo", (message: string) => {
                 //this._log.warn("DASHBOARD helo " + message);
                 var receiveMessage = <VorlonMessage>JSON.parse(message);

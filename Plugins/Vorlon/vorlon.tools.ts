@@ -53,7 +53,7 @@
         }
         
         public static HookProperty(rootObjectName: string, propertyToHook: string, callback){  
-            var rootObject = (Tools.IsWindowAvailable ? window : global)[rootObjectName]; 
+            var rootObject = (Tools.IsWindowAvailable ? window : globalThis)[rootObjectName]; 
             var initialValue = rootObject[propertyToHook];
             Object.defineProperty(rootObject, propertyToHook, {
                 get: function() {

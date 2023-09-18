@@ -35,7 +35,6 @@ module VORLON {
                 baseUrl = DashboardManager.vorlonBaseURL.split('//')[0] === getUrl.protocol ? DashboardManager.vorlonBaseURL : baseUrl + DashboardManager.vorlonBaseURL;
             }
 
-            VORLON.Core.StopListening(); 
             VORLON.Core.StartDashboardSide(baseUrl, DashboardManager.SessionId, clientid, DashboardManager.divMapper);
                 if(!VORLON.Core.Messenger.onAddClient && !VORLON.Core.Messenger.onAddClient){
                 VORLON.Core.Messenger.onAddClient = DashboardManager.addClient;

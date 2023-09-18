@@ -122,7 +122,7 @@ export module VORLON {
             app.use(this._bodyParser.urlencoded({ extended: false }));
             app.use(this._bodyParser.json());
             app.use(this._cookieParser());
-            app.use(this._multer());
+            app.set(this._multer());
             app.use(this._methodOverride());
             app.use(this._session({
                 secret: '1th3is4is3as2e5cr6ec7t7keyf23or1or5lon5',

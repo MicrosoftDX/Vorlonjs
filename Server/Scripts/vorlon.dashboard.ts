@@ -65,7 +65,7 @@ export module VORLON {
                     authent = catalog.activateAuth;
                 }
 
-                this._log.debug("authenticated " + authent);
+                //this._log.debug("authenticated " + authent);
                 res.render('dashboard', { baseURL: this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: "", authenticated: authent, version: packageJson.version });
             }
         }

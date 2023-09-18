@@ -667,7 +667,8 @@
                         footer.createChild("SPAN", "nodeName").text(this.node.name);
                         footer.createChild("SPAN", "closetag").text('>');
                         if (!footer.element.dataset)
-                            footer.element.dataset = {};
+                            // footer.element.dataset = {};
+                        
                         $(footer.element).data("internalid", this.node.internalId);
                         footer.element.id = `treeNodeClosingText${ this.node.internalId}`;
                         footer.element.addEventListener("contextmenu",() => {

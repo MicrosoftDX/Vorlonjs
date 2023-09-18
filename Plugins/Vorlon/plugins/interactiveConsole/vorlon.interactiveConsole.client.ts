@@ -171,7 +171,7 @@
         public startClientSide(): void {
             this._cache = [];
             this._pendingEntries = [];
-            var console = Tools.IsWindowAvailable ? window.console : global.console;
+            var console = Tools.IsWindowAvailable ? window.console : globalThis.console;
             
             // Overrides clear, log, error and warn
             this._hooks.clear = Tools.Hook(console, "clear",(): void => {
@@ -233,22 +233,21 @@
             });
 
             // Override Error constructor
-            var previousError = Error;
-
-            Error = <any>((message: any) => {
-                var error = new previousError(message);
+            // var previousError = Error;
+            // Error = <any>((message: any) => {
+            //     var error = new previousError(message);
                 
-                var data = {
-                    messages: this.getMessages(message),
-                    type: "exception"
-                };
+            //     var data = {
+            //         messages: this.getMessages(message),
+            //         type: "exception"
+            //     };
 
-                this.addEntry(data);
+            //     this.addEntry(data);
 
-                return error;
-            });
+            //     return error;
+            // });
 
-            Error.prototype = previousError.prototype;
+            // (<any>Object).setPrototypeOf(Error, previousError.prototype);
 
             if (Tools.IsWindowAvailable) {
                 window.addEventListener('error', (err) => {

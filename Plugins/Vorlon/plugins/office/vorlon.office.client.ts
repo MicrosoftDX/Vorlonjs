@@ -76,7 +76,7 @@ module VORLON {
                 return res;
             }
             if (obj === null) {
-                res.type = "null";
+                res.type = null;
                 res.value = null;
                 return res;
             }

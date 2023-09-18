@@ -103,7 +103,7 @@ module VORLON {
         public getMetaViewport(): string {
             var metaViewportTag: any = document.querySelector('meta[name="viewport"]');
             var metaViewport;
-            if ((metaViewport !== null || metaViewport === []) && typeof metaViewportTag != 'undefined' && metaViewportTag != null) {
+            if ((metaViewport !== null || metaViewport.length == 0) && typeof metaViewportTag != 'undefined' && metaViewportTag != null) {
                 metaViewport = metaViewportTag.outerHTML;
             } else {
                 console.log('No meta viewport tag found.');

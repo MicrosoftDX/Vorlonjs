@@ -1,5 +1,5 @@
-declare var Map: { new(): Map<any,any> };
-interface Map<IndexType, ValueType> {
+declare var AMap: { new(): Map<any,any> };
+interface AMap<IndexType, ValueType> {
     get(index:IndexType): ValueType,
     set(index:IndexType, value:ValueType)
 }
@@ -12,8 +12,8 @@ interface MappingSystemConstructor {
 }
 interface MappingSystem<IndexType, MetaType, DataType, LiveType> {
     data: DataType[],
-    p2oMap: Map<IndexType,LiveType>,
-    o2pMap: Map<LiveType,MappingSystemPointer<IndexType,MetaType>>
+    p2oMap: AMap<IndexType,LiveType>,
+    o2pMap: AMap<LiveType,MappingSystemPointer<IndexType,MetaType>>
     addToMaps(index: IndexType, meta: MetaType, value: LiveType)
 }
 interface NodeMappingSystemConstructor {

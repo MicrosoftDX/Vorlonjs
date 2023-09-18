@@ -7,18 +7,14 @@
 // ${cwd}: the current working directory of the spawned process
 
 {
-	"version": "2.0.0",
+	"version": "0.1.0",
 	"command": "gulp",
+	"isShellCommand": true,
 	"tasks": [
 		{
-			"label": "default",
-			"type": "gulp",
-			"task": "default",
-			"problemMatcher": [],
-			"group": {
-				"_id": "build",
-				"isDefault": false
-			}
+			"taskName": "default",
+			"isBuildCommand": true,
+			"showOutput": "always"
 		}
 	]
 }

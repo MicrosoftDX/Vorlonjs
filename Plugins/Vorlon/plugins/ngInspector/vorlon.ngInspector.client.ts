@@ -1,4 +1,5 @@
-﻿module VORLON {
+﻿
+module VORLON {
     declare var angular: any;
 
     export class NgInspectorClient extends ClientPlugin {
@@ -83,10 +84,12 @@
                 var childScope = angular.element(childNode).scope();
 
                 if (!!childScope
+                    && childNode instanceof Element
                     && childScope.$id !== parentScope.$id
                     && parentScope.$children.indexOf(childScope) === -1) {
                     var cleanedChildScope = this._cleanScope(childScope);
-
+                    
+                    
                     if (childNode.attributes &&
                         (childNode.attributes["ng-repeat"] ||
                          childNode.attributes["data-ng-repeat"] ||
