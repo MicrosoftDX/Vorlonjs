@@ -30,8 +30,8 @@ export module VORLON {
                 this.protocol = "https";
                 this.httpModule = https;
                 this.options = {
-                    key: fs.readFileSync(path.join(__dirname, "../", catalog.SSLkey)),
-                    cert: fs.readFileSync(path.join(__dirname, "../", catalog.SSLcert))
+                    key: fs.readFileSync(path.resolve(__dirname, "../", catalog.SSLkey)),
+                    cert: fs.readFileSync(path.resolve(__dirname, "../", catalog.SSLcert))
                 }
             }
             else {
